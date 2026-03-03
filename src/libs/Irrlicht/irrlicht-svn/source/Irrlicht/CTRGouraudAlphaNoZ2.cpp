@@ -84,16 +84,16 @@ public:
 	CTRGouraudAlphaNoZ2(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
-	virtual void drawTriangle (const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) _IRR_OVERRIDE_;
+	virtual void drawTriangle (const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
 
 
 private:
-	void scanline_bilinear ();
+	void fragmentShader();
 };
 
 //! constructor
 CTRGouraudAlphaNoZ2::CTRGouraudAlphaNoZ2(CBurningVideoDriver* driver)
-: IBurningShader(driver)
+: IBurningShader(driver, EMT_TRANSPARENT_ALPHA_CHANNEL)
 {
 	#ifdef _DEBUG
 	setDebugName("CTRGouraudAlphaNoZ2");
@@ -104,7 +104,7 @@ CTRGouraudAlphaNoZ2::CTRGouraudAlphaNoZ2(CBurningVideoDriver* driver)
 
 /*!
 */
-void CTRGouraudAlphaNoZ2::scanline_bilinear ()
+void CTRGouraudAlphaNoZ2::fragmentShader()
 {
 	tVideoSample *dst;
 
@@ -144,7 +144,7 @@ void CTRGouraudAlphaNoZ2::scanline_bilinear ()
 		return;
 
 	// slopes
-	const f32 invDeltaX = reciprocal_zero2( line.x[1] - line.x[0] );
+	const f32 invDeltaX = fill_step_x( line.x[1] - line.x[0] );
 
 #ifdef IPOL_Z
 	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
@@ -201,7 +201,7 @@ void CTRGouraudAlphaNoZ2::scanline_bilinear ()
 	tFixPoint r2, g2, b2;
 #endif
 
-	for ( s32 i = 0; i <= dx; ++i )
+	for ( s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
 	{
 #ifdef CMP_Z
 		if ( line.z[0] < z[i] )
@@ -271,9 +271,9 @@ void CTRGouraudAlphaNoZ2::drawTriangle(const s4DVertex* burning_restrict a, cons
 	const f32 ba = b->Pos.y - a->Pos.y;
 	const f32 cb = c->Pos.y - b->Pos.y;
 	// calculate delta y of the edges
-	scan.invDeltaY[0] = reciprocal_zero( ca );
-	scan.invDeltaY[1] = reciprocal_zero( ba );
-	scan.invDeltaY[2] = reciprocal_zero( cb );
+	scan.invDeltaY[0] = fill_step_y( ca );
+	scan.invDeltaY[1] = fill_step_y( ba );
+	scan.invDeltaY[2] = fill_step_y( cb );
 
 	if ( F32_LOWER_EQUAL_0 ( scan.invDeltaY[0] ) )
 		return;
@@ -286,7 +286,7 @@ void CTRGouraudAlphaNoZ2::drawTriangle(const s4DVertex* burning_restrict a, cons
 	temp[2] = b->Pos.x - a->Pos.x;
 	temp[3] = ba;
 
-	scan.left = ( temp[0] * temp[3] - temp[1] * temp[2] ) > 0.f ? 0 : 1;
+	scan.left = ( temp[0] * temp[3] - temp[1] * temp[2] ) < 0.f ? 1 : 0;
 	scan.right = 1 - scan.left;
 
 	// calculate slopes for the major edge
@@ -359,8 +359,8 @@ void CTRGouraudAlphaNoZ2::drawTriangle(const s4DVertex* burning_restrict a, cons
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_left( a->Pos.y );
-		yEnd = fill_convention_right( b->Pos.y );
+		yStart = fill_convention_top( a->Pos.y );
+		yEnd = fill_convention_down( b->Pos.y );
 
 #ifdef SUBTEXEL
 		subPixel = ( (f32) yStart ) - a->Pos.y;
@@ -397,7 +397,7 @@ void CTRGouraudAlphaNoZ2::drawTriangle(const s4DVertex* burning_restrict a, cons
 #endif
 
 		// rasterize the edge scanlines
-		for( line.y = yStart; line.y <= yEnd; ++line.y)
+		for( line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -428,7 +428,7 @@ void CTRGouraudAlphaNoZ2::drawTriangle(const s4DVertex* burning_restrict a, cons
 #endif
 
 			// render a scanline
-			scanline_bilinear ();
+			if_interlace_scanline fragmentShader();
 
 			scan.x[0] += scan.slopeX[0];
 			scan.x[1] += scan.slopeX[1];
@@ -518,8 +518,8 @@ void CTRGouraudAlphaNoZ2::drawTriangle(const s4DVertex* burning_restrict a, cons
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_left( b->Pos.y );
-		yEnd = fill_convention_right( c->Pos.y );
+		yStart = fill_convention_top( b->Pos.y );
+		yEnd = fill_convention_down( c->Pos.y );
 
 #ifdef SUBTEXEL
 
@@ -557,7 +557,7 @@ void CTRGouraudAlphaNoZ2::drawTriangle(const s4DVertex* burning_restrict a, cons
 #endif
 
 		// rasterize the edge scanlines
-		for( line.y = yStart; line.y <= yEnd; ++line.y)
+		for( line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -588,7 +588,7 @@ void CTRGouraudAlphaNoZ2::drawTriangle(const s4DVertex* burning_restrict a, cons
 #endif
 
 			// render a scanline
-			scanline_bilinear ();
+			if_interlace_scanline fragmentShader();
 
 			scan.x[0] += scan.slopeX[0];
 			scan.x[1] += scan.slopeX[1];
@@ -636,7 +636,7 @@ namespace video
 //! creates a flat triangle renderer
 IBurningShader* createTRGouraudAlphaNoZ2(CBurningVideoDriver* driver)
 {
-	//ETR_GOURAUD_ALPHA_NOZ  - draw2DRectangle Gradient
+	// ETR_GOURAUD_ALPHA_NOZ  - draw2DRectangle Gradient
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CTRGouraudAlphaNoZ2(driver);
 	#else

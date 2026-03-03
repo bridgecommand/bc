@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __S_MATERIAL_LAYER_H_INCLUDED__
-#define __S_MATERIAL_LAYER_H_INCLUDED__
+#ifndef S_MATERIAL_LAYER_H_INCLUDED
+#define S_MATERIAL_LAYER_H_INCLUDED
 
 #include "matrix4.h"
 #include "irrAllocator.h"
@@ -45,13 +45,14 @@ namespace video
 			"texture_clamp_mirror_clamp_to_border", 0};
 
 	//! Struct for holding material parameters which exist per texture layer
-	// Note for implementors: Serialization is in CNullDriver
+	// Note for implementers: Serialization is in CNullDriver
 	class SMaterialLayer
 	{
 	public:
 		//! Default constructor
 		SMaterialLayer() : Texture(0), TextureWrapU(ETC_REPEAT), TextureWrapV(ETC_REPEAT), TextureWrapW(ETC_REPEAT),
-			BilinearFilter(true), TrilinearFilter(false), AnisotropicFilter(0), LODBias(0), TextureMatrix(0)
+			BilinearFilter(true), TrilinearFilter(false), AnisotropicFilter(0), LODBias(0), 
+			TextureMatrixUsed(false), TextureMatrix(0)
 		{
 		}
 
@@ -84,26 +85,22 @@ namespace video
 				return *this;
 
 			Texture = other.Texture;
-			if (TextureMatrix)
+			if (other.TextureMatrixUsed)
 			{
-				if (other.TextureMatrix)
-					*TextureMatrix = *other.TextureMatrix;
-				else
+				if (TextureMatrix)
 				{
-					MatrixAllocator.destruct(TextureMatrix);
-					MatrixAllocator.deallocate(TextureMatrix);
-					TextureMatrix = 0;
+					*TextureMatrix = *other.TextureMatrix;
 				}
-			}
-			else
-			{
-				if (other.TextureMatrix)
+				else
 				{
 					TextureMatrix = MatrixAllocator.allocate(1);
 					MatrixAllocator.construct(TextureMatrix,*other.TextureMatrix);
 				}
-				else
-					TextureMatrix = 0;
+				TextureMatrixUsed = true;
+			}
+			else
+			{
+				TextureMatrixUsed = false;
 			}
 			TextureWrapU = other.TextureWrapU;
 			TextureWrapV = other.TextureWrapV;
@@ -124,6 +121,12 @@ namespace video
 			{
 				TextureMatrix = MatrixAllocator.allocate(1);
 				MatrixAllocator.construct(TextureMatrix,core::IdentityMatrix);
+				TextureMatrixUsed = true;
+			}
+			else if ( !TextureMatrixUsed )
+			{
+				*TextureMatrix = core::IdentityMatrix;
+				TextureMatrixUsed = true;
 			}
 			return *TextureMatrix;
 		}
@@ -132,7 +135,7 @@ namespace video
 		/** \return Texture matrix of this layer. */
 		const core::matrix4& getTextureMatrix() const
 		{
-			if (TextureMatrix)
+			if (TextureMatrixUsed)
 				return *TextureMatrix;
 			else
 				return core::IdentityMatrix;
@@ -151,6 +154,27 @@ namespace video
 			}
 			else
 				*TextureMatrix = mat;
+			TextureMatrixUsed = true;
+		}
+
+		//! Check if we have set a custom texture matrix
+		//! Note that otherwise we get an IdentityMatrix as default
+		inline bool hasSetTextureMatrix() const
+		{
+			return TextureMatrixUsed;
+		}
+
+		//! Reset texture matrix to identity matrix
+		/** \param releaseMemory Releases also texture memory. Otherwise done in destructor */
+		void resetTextureMatrix(bool releaseMemory=true)
+		{
+			if ( TextureMatrix && releaseMemory)
+			{
+				MatrixAllocator.destruct(TextureMatrix);
+				MatrixAllocator.deallocate(TextureMatrix);
+				TextureMatrix = 0;
+			}
+			TextureMatrixUsed = false;
 		}
 
 		//! Inequality operator
@@ -170,8 +194,11 @@ namespace video
 			if (different)
 				return true;
 			else
-				different |= (TextureMatrix != b.TextureMatrix) &&
-					(!TextureMatrix || !b.TextureMatrix || (*TextureMatrix != *(b.TextureMatrix)));
+			{
+				different = (TextureMatrixUsed && b.TextureMatrixUsed && (*TextureMatrix != *b.TextureMatrix))
+				         || (TextureMatrixUsed && !b.TextureMatrixUsed && (*TextureMatrix != core::IdentityMatrix))
+				         || (!TextureMatrixUsed && b.TextureMatrixUsed && (core::IdentityMatrix != *b.TextureMatrix));
+			}
 			return different;
 		}
 
@@ -216,15 +243,18 @@ namespace video
 
 	private:
 		friend class SMaterial;
-		irr::core::irrAllocator<irr::core::matrix4> MatrixAllocator;
+
+		// TextureMatrix memory stays until destructor even when unused to avoid unnecessary allocation/de-allocations
+		bool TextureMatrixUsed;	
 
 		//! Texture Matrix
 		/** Do not access this element directly as the internal
 		resource management has to cope with Null pointers etc. */
 		core::matrix4* TextureMatrix;
+		irr::core::irrAllocator<irr::core::matrix4> MatrixAllocator;
 	};
 
 } // end namespace video
 } // end namespace irr
 
-#endif // __S_MATERIAL_LAYER_H_INCLUDED__
+#endif // S_MATERIAL_LAYER_H_INCLUDED

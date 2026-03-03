@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_DIMENSION2D_H_INCLUDED__
-#define __IRR_DIMENSION2D_H_INCLUDED__
+#ifndef IRR_DIMENSION2D_H_INCLUDED
+#define IRR_DIMENSION2D_H_INCLUDED
 
 #include "irrTypes.h"
 #include "irrMath.h" // for irr::core::equals()
@@ -195,7 +195,7 @@ namespace core
 			\return Interpolated dimension. */
 			dimension2d<T> getInterpolated(const dimension2d<T>& other, f32 d) const
 			{
-				f32 inv = (1.0f - d);
+				const f32 inv = (1.0f - d);
 				return dimension2d<T>( (T)(other.Width*inv + Width*d), (T)(other.Height*inv + Height*d));
 			}
 

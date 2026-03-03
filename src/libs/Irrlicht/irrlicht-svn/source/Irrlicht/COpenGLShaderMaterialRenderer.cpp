@@ -6,14 +6,12 @@
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "IGPUProgrammingServices.h"
 #include "IShaderConstantSetCallBack.h"
 #include "IVideoDriver.h"
 #include "os.h"
 
 #include "COpenGLDriver.h"
 #include "COpenGLCacheHandler.h"
-#include "COpenGLMaterialRenderer.h"
 
 namespace irr
 {
@@ -158,10 +156,10 @@ bool COpenGLShaderMaterialRenderer::OnRender(IMaterialRendererServices* service,
 void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 	bool resetAllRenderstates, video::IMaterialRendererServices* services)
 {
-	if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_ENABLE)
-		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE_TO_DISABLE);
+	if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_FIXED)
+		Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED_TO_SHADER);
 	else
-		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
+		Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER);
 
 	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
 

@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_LINE_2D_H_INCLUDED__
-#define __IRR_LINE_2D_H_INCLUDED__
+#ifndef IRR_LINE_2D_H_INCLUDED
+#define IRR_LINE_2D_H_INCLUDED
 
 #include "irrTypes.h"
 #include "vector2d.h"
@@ -24,8 +24,6 @@ class line2d
 		line2d(T xa, T ya, T xb, T yb) : start(xa, ya), end(xb, yb) {}
 		//! Constructor for line between the two points given as vectors.
 		line2d(const vector2d<T>& start, const vector2d<T>& end) : start(start), end(end) {}
-		//! Copy constructor.
-		line2d(const line2d<T>& other) : start(other.start), end(other.end) {}
 
 		// operators
 
@@ -68,7 +66,7 @@ class line2d
 		vector2d<T> getVector() const { return vector2d<T>( end.X - start.X, end.Y - start.Y); }
 
 		/*! Check if this segment intersects another segment,
-			or if segments are coincindent (colinear). */
+			or if segments are coincident (colinear). */
 		bool intersectAsSegments( const line2d<T>& other) const
 		{
 			// Taken from:
@@ -85,7 +83,7 @@ class line2d
 			if (o1 != o2 && o3 != o4)
 				return true;
 
-			// Special Cases to check if segments are coolinear
+			// Special Cases to check if segments are colinear
 			if (o1 == 0 && other.start.isBetweenPoints( start, end)) return true;
 			if (o2 == 0 && other.end.isBetweenPoints( start, end)) return true;
 			if (o3 == 0 && start.isBetweenPoints( other.start, other.end)) return true;
@@ -97,12 +95,12 @@ class line2d
 		/*! Check if 2 segments are incident (intersects in exactly 1 point).*/
 		bool incidentSegments( const line2d<T>& other) const
 		{
-			return 
+			return
 				start.checkOrientation( end, other.start) != start.checkOrientation( end, other.end)
 			&&  other.start.checkOrientation( other.end, start) != other.start.checkOrientation( other.end, end);
 		}
 
-		/*! Check if 2 lines/segments are parallel or nearly parallel.*/ 
+		/*! Check if 2 lines/segments are parallel or nearly parallel.*/
 		bool nearlyParallel( const line2d<T>& line, const T factor = relativeErrorFactor<T>()) const
 		{
 			const vector2d<T> a = getVector();
@@ -112,14 +110,14 @@ class line2d
 		}
 
 		/*! returns a intersection point of 2 lines (if lines are not parallel). Behaviour
-		undefined if lines are parallel or coincident. 
+		undefined if lines are parallel or coincident.
 		It's on optimized intersectWith with checkOnlySegments=false and ignoreCoincidentLines=true
 		*/
 		vector2d<T> fastLinesIntersection( const line2d<T>& l) const
 		{
 			const f32 commonDenominator = (f32)((l.end.Y - l.start.Y)*(end.X - start.X) -
 				(l.end.X - l.start.X)*(end.Y - start.Y));
-			
+
 			if ( commonDenominator != 0.f )
 			{
 				const f32 numeratorA = (f32)((l.end.X - l.start.X)*(start.Y - l.start.Y) -
@@ -129,7 +127,7 @@ class line2d
 
 				// Calculate the intersection point.
 				return vector2d<T> (
-					(T)(start.X + uA * (end.X - start.X)), 
+					(T)(start.X + uA * (end.X - start.X)),
 					(T)(start.Y + uA * (end.Y - start.Y))
 					);
 			}
@@ -161,20 +159,20 @@ class line2d
 		{
 			// Uses the method given at:
 			// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
-			const f32 commonDenominator = (f32)((l.end.Y - l.start.Y)*(end.X - start.X) -
+			const f64 commonDenominator = (f64)((l.end.Y - l.start.Y)*(end.X - start.X) -
 											(l.end.X - l.start.X)*(end.Y - start.Y));
 
-			const f32 numeratorA = (f32)((l.end.X - l.start.X)*(start.Y - l.start.Y) -
+			const f64 numeratorA = (f64)((l.end.X - l.start.X)*(start.Y - l.start.Y) -
 											(l.end.Y - l.start.Y)*(start.X -l.start.X));
 
-			const f32 numeratorB = (f32)((end.X - start.X)*(start.Y - l.start.Y) -
+			const f64 numeratorB = (f64)((end.X - start.X)*(start.Y - l.start.Y) -
 											(end.Y - start.Y)*(start.X -l.start.X));
 
-			if(equals(commonDenominator, 0.f))
+			if(equals(commonDenominator, 0.0))
 			{
 				// The lines are either coincident or parallel
 				// if both numerators are 0, the lines are coincident
-				if(!ignoreCoincidentLines && equals(numeratorA, 0.f) && equals(numeratorB, 0.f))
+				if(!ignoreCoincidentLines && equals(numeratorA, 0.0) && equals(numeratorB, 0.0))
 				{
 					// Try and find a common endpoint
 					if(l.start == start || l.end == start)
@@ -237,14 +235,14 @@ class line2d
 
 			// Get the point of intersection on this line, checking that
 			// it is within the line segment.
-			const f32 uA = numeratorA / commonDenominator;
+			const f64 uA = numeratorA / commonDenominator;
 			if (checkOnlySegments)
 			{
-				if(uA < 0.f || uA > 1.f)
+				if(uA < 0.0 || uA > 1.0)
 					return false; // Outside the line segment
 
-				const f32 uB = numeratorB / commonDenominator;
-				if(uB < 0.f || uB > 1.f)
+				const f64 uB = numeratorB / commonDenominator;
+				if(uB < 0.0 || uB > 1.0)
 					return false; // Outside the line segment
 			}
 
@@ -293,12 +291,13 @@ class line2d
 		/** Assumes that the point is already somewhere on the line. */
 		bool isPointBetweenStartAndEnd(const vector2d<T>& point) const
 		{
-			return point.isBetweenPoints(start, end); 
+			return point.isBetweenPoints(start, end);
 		}
 
 		//! Get the closest point on this line to a point
-		/** \param checkOnlySegments: Default (true) is to return a point on the line-segment (between begin and end) of the line.
-		When set to false the function will check for the first the closest point on the the line even when outside the segment. */
+		/** \param point: Starting search at this point
+		\param checkOnlySegments: Default (true) is to return a point on the line-segment (between begin and end) of the line.
+		When set to false the function will check for the closest point on the the line even when outside the segment. */
 		vector2d<T> getClosestPoint(const vector2d<T>& point, bool checkOnlySegments=true) const
 		{
 			vector2d<f64> c((f64)(point.X-start.X), (f64)(point.Y- start.Y));

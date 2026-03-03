@@ -42,10 +42,11 @@ class OtherShips
         irr::u32 getNumber() const;
         irr::core::vector3df getPosition(int number) const;
         irr::f32 getLength(int number) const;
-        irr::f32 getWidth(int number) const;
+        irr::f32 getBreadth(int number) const;
         irr::f32 getHeading(int number) const;
         irr::f32 getSpeed(int number) const; //Speed in m/s
         irr::u32 getMMSI(int number) const;
+        irr::f32 getEstimatedDisplacement(int number) const;
         void setSpeed(int number, irr::f32 speed); //Speed in m/s
         void setMMSI(int number, irr::u32 mmsi);
         void setPos(int number, irr::f32 positionX, irr::f32 positionZ);

@@ -13,7 +13,6 @@
 #include "SViewFrustum.h"
 #include "IMeshManipulator.h"
 #include "SMesh.h"
-#include "IMaterialRenderer.h"
 #ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "CShadowVolumeSceneNode.h"
 #else
@@ -478,7 +477,7 @@ void CQuake3ShaderSceneNode::render()
 			for ( u32 a = 0; a != mesh->getMeshBufferCount(); ++a )
 				driver->drawMeshBuffer ( mesh->getMeshBuffer ( a ) );
 
-			v = (const video::S3DVertex*) ( (u8*) v + vSize );
+			v = (const video::S3DVertex*) ( (const u8*) v + vSize );
 		}
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	}

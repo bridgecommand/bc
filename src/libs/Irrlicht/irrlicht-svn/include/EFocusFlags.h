@@ -1,8 +1,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef E_FOCUS_FLAGS_H_INCLUDED__
-#define E_FOCUS_FLAGS_H_INCLUDED__
+#ifndef IRR_E_FOCUS_FLAGS_H_INCLUDED
+#define IRR_E_FOCUS_FLAGS_H_INCLUDED
 
 namespace irr
 {
@@ -28,11 +28,15 @@ enum EFOCUS_FLAG
 	EFF_SET_ON_TAB = 0x8,
 
 	//! When set it's possible to set the focus to disabled elements.
-	EFF_CAN_FOCUS_DISABLED = 0x16
+	EFF_CAN_FOCUS_DISABLED = 0x16,
+
+	//! When no ui element has the focus mouse events are passed on to the hovered element
+	EFF_HOVERED_HANDLES_UNFOCUSED_MOUSE_EVENTS = 0x32,
+
+	EFF_DEFAULT = EFF_SET_ON_LMOUSE_DOWN|EFF_SET_ON_TAB|EFF_HOVERED_HANDLES_UNFOCUSED_MOUSE_EVENTS
 };
 
 } // namespace gui
 } // namespace irr
 
 #endif
-

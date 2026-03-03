@@ -9,13 +9,9 @@
 
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
-#include "IVideoDriver.h"
 #include "IGUIButton.h"
-#include "IGUIStaticText.h"
 #include "IGUIFont.h"
-#include "IGUIFontBitmap.h"
 #include "IFileList.h"
-#include "os.h"
 
 namespace irr
 {
@@ -206,11 +202,11 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 				else
 				if (event.GUIEvent.Caller == OKButton )
 				{
-					if ( FileDirectory != L"" )
+					if ( !FileDirectory.empty() )
 					{
 						sendSelectedEvent( EGET_DIRECTORY_SELECTED );
 					}
-					if ( FileName != L"" )
+					if ( !FileName.empty() )
 					{
 						sendSelectedEvent( EGET_FILE_SELECTED );
 						remove();
@@ -342,7 +338,7 @@ void CGUIFileOpenDialog::draw()
 
 		IGUIFont* font = skin->getFont(EGDF_WINDOW);
 		if (font)
-			font->draw(Text.c_str(), rect,
+			font->draw(Text, rect,
 					skin->getColor(EGDC_ACTIVE_CAPTION),
 					false, true, &AbsoluteClippingRect);
 	}

@@ -30,10 +30,13 @@
 #include "Network.hpp"
 #include "ShipPositions.hpp"
 #include "LinesData.hpp"
+#include "EventReceiver.hpp"
 
 #include <fstream> //To save to log
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // For GetSystemMetrics
 #include <direct.h> //for windows _mkdir
 #else
 #include <sys/stat.h>
@@ -157,19 +160,27 @@ int main()
     }
 
     //Sensible defaults if not set
+    irr::core::dimension2d<irr::u32> deskres;
+    #ifdef _WIN32
+    // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
+    deskres.Width=GetSystemMetrics(SM_CXSCREEN);
+    deskres.Height=GetSystemMetrics(SM_CYSCREEN);
+    #else
+    // For other OSs, use Irrlicht's resolution call
     irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
-	irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
-	nulldevice->drop();
+    deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+    nulldevice->drop();
+    #endif
     if (graphicsWidth==0) {
         graphicsWidth = 1200 * fontScale;
-        if (graphicsWidth > deskres.Width*0.9) {
-            graphicsWidth = deskres.Width*0.9;
+        if (graphicsWidth > deskres.Width*0.90) {
+            graphicsWidth = deskres.Width*0.90;
         }
     }
     if (graphicsHeight==0) {
         graphicsHeight = 900 * fontScale;
-        if (graphicsHeight > deskres.Height*0.9) {
-            graphicsHeight = deskres.Height*0.9;
+        if (graphicsHeight > deskres.Height*0.90) {
+            graphicsHeight = deskres.Height*0.90;
         }
     }
     if (graphicsDepth==0) {graphicsDepth=32;}
@@ -282,6 +293,22 @@ int main()
     //irr::u32 previousTime = currentTime; //Computer clock time (ms)
     irr::f32 accelerator = 1.0;
 
+    //Add some simple information to the GUI, so the user knows it's running
+    //Add text, which will list connected peers, and current time.
+    irr::u32 su = driver->getScreenSize().Width;
+    irr::u32 sh = driver->getScreenSize().Height;
+    irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.74*sh),true);
+
+    // Add run and pause buttons
+    irr::s32 runButtonID = 101;
+    irr::s32 pauseButtonID = 102;
+    irr::gui::IGUIButton* runButton = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.76*sh,0.49*su,0.99*sh), 0, runButtonID, language.translate("run").c_str());
+    irr::gui::IGUIButton* pauseButton = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.51*su,0.76*sh,0.99*su,0.99*sh), 0, pauseButtonID, language.translate("pause").c_str());
+
+    // Setup event receiver
+    EventReceiver eventReceiver(pauseButtonID, runButtonID, accelerator);
+    device->setEventReceiver(&eventReceiver);
+
     //Fixme: Think about time zone handling
     //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
     scenarioOffsetTime = Utilities::dmyToTimestamp(masterScenarioData.startDay,masterScenarioData.startMonth,masterScenarioData.startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
@@ -310,7 +337,7 @@ int main()
             thisPeerData.otherShipsData.erase(thisPeerData.otherShipsData.begin()+thisPeer);
 
             //Send initial scenario information (reliable packet)
-            network.sendString(thisPeerData.serialise(),true,thisPeer);
+            network.sendString(thisPeerData.serialise(false),true,thisPeer);
 
             //Store the data for this peer
             peerScenarioData.push_back(thisPeerData);
@@ -321,12 +348,6 @@ int main()
         }
     }
 
-    //Add some simple information to the GUI, so the user knows it's running
-    //Add text, which will list connected peers, and current time.
-    irr::u32 su = driver->getScreenSize().Width;
-    irr::u32 sh = driver->getScreenSize().Height;
-    irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.99*sh),true);
-
     //Start main loop, listening for updates from PCs and sending out scenario update, including time handling
     while(device->run())
     {
@@ -335,6 +356,9 @@ int main()
 
         // Pause, so we don't flood clients with data
         device->sleep(sleepTime);
+
+        // Find current time acceleration
+        accelerator = eventReceiver.getAccelerator();
 
         //Do time handling here.
         currentTime = std::chrono::system_clock::now();
@@ -414,13 +438,17 @@ int main()
             //Intermediate entries need to be present, but values aren't used
             stringToSend.append("4#5#6#7#8#9#10#");
 
-            //Lines information (mooring/towing)
+            //11: Lines information (mooring/towing)
             std::string linesString = linesData.getLineDataString(thisPeer);
             //strip trailing '|' if present
             if(linesString.length()>0) {
                 linesString = linesString.substr(0,linesString.length()-1);
             }
             stringToSend.append(linesString);
+            stringToSend.append("#");
+
+            //12: 13 basic records in data sent, entry 12 is engine and wheel data for secondary controls, not needed, so send blank entry
+            stringToSend.append("12");
 
             //std::cout << stringToSend << std::endl;
 

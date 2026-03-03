@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __S_EXPOSED_VIDEO_DATA_H_INCLUDED__
-#define __S_EXPOSED_VIDEO_DATA_H_INCLUDED__
+#ifndef S_EXPOSED_VIDEO_DATA_H_INCLUDED
+#define S_EXPOSED_VIDEO_DATA_H_INCLUDED
 
 // forward declarations for internal pointers
 struct IDirect3D9;
@@ -61,6 +61,7 @@ struct SExposedVideoData
 		void* X11Display;
 		void* X11Context;
 		unsigned long X11Window;
+		unsigned long GLXWindow;
 	};
 
     struct SOpenGLOSX
@@ -84,6 +85,4 @@ struct SExposedVideoData
 } // end namespace video
 } // end namespace irr
 
-
 #endif
-

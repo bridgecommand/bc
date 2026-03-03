@@ -12,10 +12,6 @@
 #include "IGUIButton.h"
 #include "IGUIStaticText.h"
 #include "IGUIFont.h"
-#include "IGUISpriteBank.h"
-#include "IFileList.h"
-#include "os.h"
-#include "fast_atof.h"
 
 namespace irr
 {
@@ -411,7 +407,7 @@ void CGUIColorSelectDialog::draw()
 
 		IGUIFont* font = skin->getFont(EGDF_WINDOW);
 		if (font)
-			font->draw(Text.c_str(), rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true,
+			font->draw(Text, rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true,
 			&AbsoluteClippingRect);
 	}
 

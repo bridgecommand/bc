@@ -136,7 +136,8 @@ void NMEA::ReceiveThread(std::string udpListenPortName)
             }
             terminateNmeaReceiveMutex.unlock();
 
-            char * buf = new char[128]();
+            int bufferSize = 128;
+            char * buf = new char[bufferSize]();
             
             // set socket timeout as in AISOverUDP
             #ifdef WIN32
@@ -149,9 +150,9 @@ void NMEA::ReceiveThread(std::string udpListenPortName)
             
             // read from socket
             #ifdef WIN32
-            int nread = ::recv(rcvSocket.native_handle(), buf, sizeof(buf),0);
+            int nread = ::recv(rcvSocket.native_handle(), buf, bufferSize,0);
             #else
-            ssize_t nread = ::read(rcvSocket.native_handle(), buf, sizeof(buf));
+            ssize_t nread = ::read(rcvSocket.native_handle(), buf, bufferSize);
             #endif
 
             if (nread > 0) 
@@ -380,13 +381,21 @@ void NMEA::updateNMEA()
     std::string dateString = dateTimeString.substr(0, 8);
     std::string timeString = dateTimeString.substr(8, 6);
 
-    const char *year = dateString.substr(0, 4).c_str();
-    const char *mon  = dateString.substr(4, 2).c_str();
-    const char *mday = dateString.substr(6, 2).c_str();
+    std::string yearString = dateString.substr(0, 4);
+    std::string monthString = dateString.substr(4, 2);
+    std::string dayString = dateString.substr(6, 2);
 
-    const char *hour = timeString.substr(0, 4).c_str();
-    const char *min  = timeString.substr(4, 2).c_str();
-    const char *sec  = timeString.substr(6, 2).c_str();
+    std::string hourString = timeString.substr(0, 4);
+    std::string minuteString = timeString.substr(4, 2);
+    std::string secondsString = timeString.substr(6, 2);
+    
+    const char *year = yearString.c_str();
+    const char *mon  = monthString.c_str();
+    const char *mday = dayString.c_str();
+
+    const char *hour = hourString.c_str();
+    const char *min  = minuteString.c_str();
+    const char *sec  =secondsString.c_str();
 
     irr::f32 rudderAngle = model->getRudder();
 
@@ -454,11 +463,11 @@ void NMEA::updateNMEA()
         }
         case TTM: // 8.3.85 Tracked target message
         {
-            if (model->getARPATracks() > 0) {
+            if (model->getARPATracksSize() > 0) {
                 std::string messageToSend = "";
                 //To think about/add: Lost contacts? Manually aquired contacts?
-                for (int i=0; i<model->getARPATracks(); i++) {
-                    ARPAContact contact = model->getARPATrack(i);
+                for (int i=0; i<model->getARPATracksSize(); i++) {
+                    ARPAContact contact = model->getARPAContactFromTrackIndex(i);
                     ARPAEstimatedState state = contact.estimate;
                     snprintf(messageBuffer,maxSentenceChars,"$RATTM,%02d,%.1f,%.1f,T,%.1f,%.1f,T,%.1f,%.1f,N,TGT%02d,T,,%s.00,A",
                         state.displayID - 1,
@@ -597,7 +606,10 @@ void NMEA::sendNMEAUDP()
 {    
     if (!messageQueue.empty()) {
         try {
-            if (!socket->is_open()) socket->open(asio::ip::udp::v4());
+            if (!socket->is_open()) {
+                socket->open(asio::ip::udp::v4());
+                socket->set_option(asio::socket_base::broadcast(true));
+            }
             for (auto message : messageQueue)
             {
                 socket->send_to(asio::buffer(message), receiver_endpoint);

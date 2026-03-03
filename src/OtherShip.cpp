@@ -21,22 +21,27 @@
 #include "Constants.hpp"
 #include "OtherShip.hpp"
 #include "Utilities.hpp"
+#include "SimulationModel.hpp"
+#include "Terrain.hpp"
 
 #include <iostream>
 #include <algorithm>
 
 //using namespace irr;
 
-OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information
-    spd = 0;
+    axialSpd = 0;
     hdg = 0;
     rateOfTurn = 0; // Not normally used, but used to smooth behaviour in multiplayer
 
+    this->model = model;
+
     this->name = name;
     this->mmsi = mmsi;
+    this->drifting = drifting;
 
     std::string basePath = "Models/Othership/" + name + "/";
     std::string userFolder = Utilities::getUserDir();
@@ -96,8 +101,10 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     //store length and RCS information for radar etc
     ship->updateAbsolutePosition();
     length = ship->getTransformedBoundingBox().getExtent().Z;
-    width = ship->getTransformedBoundingBox().getExtent().X;
+    breadth = ship->getTransformedBoundingBox().getExtent().X;
     height = ship->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
+    draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
+    airDraught = ship->getTransformedBoundingBox().MaxEdge.Y;
     
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     std::string logMessage = "Loading '";
@@ -127,7 +134,11 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
         for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
-            ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+            if (ship->getMaterial(mat).AmbientColor.getAlpha() != 255 || 
+                ship->getMaterial(mat).DiffuseColor.getAlpha() != 255) {
+                // Only allow rendering with transparency if required to avoid Z order problems
+                ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+            }
             ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
@@ -149,6 +160,9 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
             irr::f32 lightRange = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRange",currentLight)); //Range (Nm)
             lightRange = lightRange * M_IN_NM; //Convert to metres
 
+            std::string lightSequence = IniFile::iniFileToString(iniFilename, IniFile::enumerate1("Sequence", currentLight));
+            irr::u32 phaseStart = IniFile::iniFileTou32(iniFilename, IniFile::enumerate1("PhaseStart", currentLight));
+
             //correct to local scaled coordinates
             /*
             lightX *= scaleFactor;
@@ -157,7 +171,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
             */ //Whole entity scaled, so not needed
 
             //add this Nav light into array
-            navLights.push_back(new NavLight (ship,smgr,irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
+            navLights.push_back(new NavLight (ship,smgr,irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange,lightSequence,phaseStart));
         }
     }
 
@@ -186,17 +200,41 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
         //Work out which leg we're on
         std::vector<Leg>::size_type currentLeg = findCurrentLeg(scenarioTime);
 
-        spd = legs[currentLeg].speed*KTS_TO_MPS;
+        axialSpd = legs[currentLeg].speed*KTS_TO_MPS;
         hdg = legs[currentLeg].bearing;
     }
 
     if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        xPos = xPos + sin(hdg*irr::core::DEGTORAD)*spd*deltaTime;
-        zPos = zPos + cos(hdg*irr::core::DEGTORAD)*spd*deltaTime;
+        xPos = xPos + sin(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime;
+        zPos = zPos + cos(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime;
     } else {
         positionManuallyUpdated = false;
     }
     yPos = tideHeight+heightCorrection;
+
+    if (drifting) {
+        //Move with tidal stream (if not aground)
+        irr::f32 depth = -1 * model->getTerrain()->getHeight(xPos, zPos) + yPos;
+        irr::core::vector2df streamVector = model->getTidalStream(model->getTerrain()->xToLong(xPos), model->getTerrain()->zToLat(zPos), model->getTimestamp());
+
+        // Add component from wind
+        irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;
+        irr::f32 windDirection = model->getWindDirection();
+        // Convert this into wind axial speed and wind lateral speed
+        irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
+        irr::f32 windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);
+        irr::f32 windZ = windSpeed * cos(windFlowDirection * irr::core::DEGTORAD);
+        // Assume that the drifting vessel moves at 1/10 of the wind speed
+        streamVector.X += windX * 0.1;
+        streamVector.Y += windZ * 0.1;
+
+        // Apply movement vector
+        if (depth > 0) {
+            irr::f32 streamScaling = fmin(1, depth); //Reduce effect as water gets shallower
+            xPos += streamVector.X * deltaTime * streamScaling;
+            zPos += streamVector.Y * deltaTime * streamScaling;
+        }
+    }
 
     //Set position & speed by calling ship methods
     //setPosition(irr::core::vector3df(xPos,yPos,zPos));
@@ -401,7 +439,7 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.solidHeight=solidHeight;
     //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
     radarData.length=getLength();
-    radarData.width=getWidth();
+    radarData.width=getBreadth();
     radarData.rcs=getRCS();
 
     //Calculate angles and ranges to each end of the contact

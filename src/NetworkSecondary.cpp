@@ -97,7 +97,10 @@ void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not use
 
             //Basic checks
             if (receivedString.length() > 4) { //Check if more than 4 chars long, ie we have at least some data
-                if (receivedString.substr(0,4).compare("SCN1") == 0 ) { //Check if it starts with SCN1
+                if ((receivedString.substr(0,4) == "SCN1") || 
+                    (receivedString.substr(0,4) == "SCN2") ||
+                    (receivedString.substr(0,4) == "SCN3") ||
+                    (receivedString.substr(0,4) == "SCN4")) { //Check if it starts with SCN1-SCN4
                     //If valid, use this string
                     dataString = receivedString;
                 }
@@ -121,6 +124,11 @@ int NetworkSecondary::getPort()
     return 0;
 }
 
+void NetworkSecondary::shutdownAllSecondaries(void)
+{
+  //Not relevant for now
+}
+
 void NetworkSecondary::update()
 {
 
@@ -133,9 +141,6 @@ void NetworkSecondary::update()
     while (enet_host_service (server, & event, 10) > 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_CONNECT:
-                printf ("A new client connected from %x:%u.\n",
-                    event.peer->address.host,
-                    event.peer->address.port);
                 /* Store any relevant client information here. */
                 //event.peer -> data = "Client information";
                 break;
@@ -168,7 +173,7 @@ void NetworkSecondary::receiveMessage()
     //std::cout << "Received data:" << receivedStrings << std::endl;
 
     //Basic checks
-    if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
+    if (receivedString.length() >= 2) { //Check if more than 2 chars long, ie we have at least some data
         if (receivedString.substr(0,2).compare("BC") == 0 ) { //Check if it starts with BC
             //Strip 'BC'
             receivedString = receivedString.substr(2,receivedString.length()-2);
@@ -177,7 +182,7 @@ void NetworkSecondary::receiveMessage()
             std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
             //Check number of elements
-            if (receivedData.size() == 12) { //12 basic records in data sent
+            if (receivedData.size() == 13) { //13 basic records in data sent
 
                 irr::f32 timeError;
 
@@ -268,7 +273,7 @@ void NetworkSecondary::receiveMessage()
                         if (numberLines > model->getLines()->getNumberOfLines(true)) {
                             // Need to add lines, initially undefined
                             while (numberLines > model->getLines()->getNumberOfLines(true)) {
-                                model->getLines()->addLine(true);
+                                model->getLines()->addLine(model, true);
                             }
                         } else if (numberLines < model->getLines()->getNumberOfLines(true)) {
                             // Need to remove lines
@@ -348,6 +353,9 @@ void NetworkSecondary::receiveMessage()
                                             } else if (lineStartType == 4) {
                                                 // Land object
                                                 startParent = model->getLandObjectSceneNode(lineStartID);
+                                            } else if (lineStartType == 5) {
+                                                // Terrain
+                                                startParent = model->getTerrainSceneNode(lineStartID);
                                             }
 
                                             if (lineEndType == 1) {
@@ -362,6 +370,9 @@ void NetworkSecondary::receiveMessage()
                                             } else if (lineEndType == 4) {
                                                 // Land object
                                                 endParent = model->getLandObjectSceneNode(lineEndID);
+                                            } else if (lineEndType == 5) {
+                                                // Terrain
+                                                endParent = model->getTerrainSceneNode(lineEndID);
                                             }
 
                                             // Make child sphere nodes based on these (in the right position), then pass in to create the lines
@@ -394,9 +405,12 @@ void NetworkSecondary::receiveMessage()
                                                 endNode->setName(endParent->getName());
                                             }
 
+                                            // Length factor can be hard coded as 1.0, as line nominal length will be updated later
+                                            irr::f32 lengthFactor = 1.0;
+
                                             // Create the lines
                                             model->getLines()->setLineStart(startNode, lineStartType, lineStartID, true, i);
-                                            model->getLines()->setLineEnd(endNode, lineNominalShipMass, lineEndType, lineEndID, true, i);
+                                            model->getLines()->setLineEnd(endNode, lineNominalShipMass, lineEndType, lineEndID, lengthFactor, true, i);
                                         }
 
                                     }
@@ -426,12 +440,18 @@ void NetworkSecondary::receiveMessage()
                 } //Check if 4 number elements for Other ships, buoys, MOBs and lines
 
                 //Get weather info from record 7
-                //0 is weather, 1 is visibility, 3 is rain
+                // Weather, Fog range, wind dirn, rain, wind speed, stream direction, stream speed, stream override #
                 std::vector<std::string> weatherData = Utilities::split(receivedData.at(7),',');
-                if (weatherData.size() == 5) {
+                if (weatherData.size() == 8) {
                     model->setWeather(Utilities::lexical_cast<irr::f32>(weatherData.at(0)));
                     model->setVisibility(Utilities::lexical_cast<irr::f32>(weatherData.at(1)));
+                    model->setWindDirection(Utilities::lexical_cast<irr::f32>(weatherData.at(2)));
                     model->setRain(Utilities::lexical_cast<irr::f32>(weatherData.at(3)));
+                    model->setWindSpeed(Utilities::lexical_cast<irr::f32>(weatherData.at(4)));
+
+                    model->setStreamOverrideDirection(Utilities::lexical_cast<irr::f32>(weatherData.at(5)));
+                    model->setStreamOverrideSpeed(Utilities::lexical_cast<irr::f32>(weatherData.at(6)));
+                    model->setStreamOverride(weatherData.at(7)=="1"); 
                 }
 
                 //Get view information from record 9
@@ -439,6 +459,41 @@ void NetworkSecondary::receiveMessage()
                 if (viewData.size() == 1) {
                     if (model->getMoveViewWithPrimary()) {
                         model->setView(Utilities::lexical_cast<irr::f32>(viewData.at(0)));
+                    }
+                }
+
+                // Get engine control information from record 12, only used for display 
+                std::vector<std::string> controlsData = Utilities::split(receivedData.at(12),',');
+                if (controlsData.size() == 10) {
+                    // Only set display values if we are not already controlling it
+                    if (!model->getIsSecondaryControlWheel()) {
+                        model->setWheel(Utilities::lexical_cast<irr::f32>(controlsData.at(0)));
+                    }
+                    // Rudder can always be set, as rudder motion is always set by primary
+                    model->setRudder(Utilities::lexical_cast<irr::f32>(controlsData.at(1)));
+                    if (!model->getIsSecondaryControlPortEngine()) {
+                        model->setPortEngine(Utilities::lexical_cast<irr::f32>(controlsData.at(2)));
+                    }
+                    if (!model->getIsSecondaryControlStbdEngine()) {
+                        model->setStbdEngine(Utilities::lexical_cast<irr::f32>(controlsData.at(3)));
+                    }
+                    if (!model->getIsSecondaryControlPortSchottel()) {
+                        model->setPortSchottel(Utilities::lexical_cast<irr::f32>(controlsData.at(4)));
+                    }
+                    if (!model->getIsSecondaryControlStbdSchottel()) {
+                        model->setStbdSchottel(Utilities::lexical_cast<irr::f32>(controlsData.at(5)));
+                    }
+                    if (!model->getIsSecondaryControlPortThrustLever()) {
+                        model->setPortAzimuthThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(6)));
+                    }
+                    if (!model->getIsSecondaryControlStbdThrustLever()) {
+                        model->setStbdAzimuthThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(7)));
+                    }
+                    if (!model->getIsSecondaryControlBowThruster()) {
+                        model->setBowThruster(Utilities::lexical_cast<irr::f32>(controlsData.at(8)));
+                    }
+                    if (!model->getIsSecondaryControlSternThruster()) {
+                        model->setSternThruster(Utilities::lexical_cast<irr::f32>(controlsData.at(9)));
                     }
                 }
 
@@ -456,7 +511,7 @@ void NetworkSecondary::receiveMessage()
                     multiplayerFeedback.append("#");
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getRateOfTurn()*irr::core::RADTODEG));
                     multiplayerFeedback.append("#");
-                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getSpeed()));
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getSOG()));
                     multiplayerFeedback.append("#");
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getTimeDelta()));
                     multiplayerFeedback.append("#");
@@ -471,6 +526,63 @@ void NetworkSecondary::receiveMessage()
                         enet_host_flush (server);
                     }
                 }
+
+                // If overriding control input to the primary, send back a message with the thrust lever and wheel controls etc
+                std::string controlOverride = "";
+                if (model->getIsSecondaryControlWheel()) {
+                    controlOverride.append("MCCO,0,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getWheel()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlPortEngine()) {
+                    controlOverride.append("MCCO,1,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortEngine()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlStbdEngine()) {
+                    controlOverride.append("MCCO,2,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdEngine()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlPortSchottel()) {
+                    controlOverride.append("MCCO,3,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortSchottel()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlStbdSchottel()) {
+                    controlOverride.append("MCCO,4,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdSchottel()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlPortThrustLever()) {
+                    controlOverride.append("MCCO,5,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortAzimuthThrustLever()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlStbdThrustLever()) {
+                    controlOverride.append("MCCO,6,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdAzimuthThrustLever()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlBowThruster()) {
+                    controlOverride.append("MCCO,7,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getBowThruster()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlSternThruster()) {
+                    controlOverride.append("MCCO,8,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getSternThruster()));
+                    controlOverride.append("|");
+                }
+                if (controlOverride != "") {
+                    //Send back to event.peer
+                    ENetPacket* packet = enet_packet_create (controlOverride.c_str(), strlen (controlOverride.c_str()) + 1,0/*reliable flag*/);
+                    if (packet!=0) {
+                        enet_peer_send (event.peer, 0, packet);
+                        enet_host_flush (server);
+                    }
+                }
+                
 
             } //Check for right number of elements in received data
         } //Check received message starts with BC
@@ -491,6 +603,10 @@ void NetworkSecondary::receiveMessage()
             }
 
         }
+	else if(receivedString.substr(0,2).compare("SD") == 0 )
+	{
+	  device->closeDevice();
+	}
     }
 
 }

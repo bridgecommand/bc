@@ -7,6 +7,8 @@
 
 #include "CMD2MeshFileLoader.h"
 #include "CAnimatedMeshMD2.h"
+#include "coreutil.h"
+#include "IReadFile.h"
 #include "os.h"
 
 namespace irr
@@ -151,6 +153,13 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 		return false;
 	}
 
+	const int MAX_FRAME_SIZE = MD2_MAX_VERTS*4+128;
+	if ( header.frameSize > MAX_FRAME_SIZE || header.frameSize < 0)
+	{
+		os::Printer::log("MD2 Loader: Invalid frame size in header", file->getFileName(), ELL_WARNING);
+		return false;
+	}
+
 	//
 	// prepare mesh and allocate memory
 	//
@@ -192,7 +201,7 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 	if (!file->read(textureCoords, sizeof(SMD2TextureCoordinate)*header.numTexcoords))
 	{
 		delete[] textureCoords;
-		os::Printer::log("MD2 Loader: Error reading TextureCoords.", file->getFileName(), ELL_ERROR);
+		os::Printer::log("MD2 Loader: Error reading TextureCoords", file->getFileName(), ELL_ERROR);
 		return false;
 	}
 
@@ -214,7 +223,7 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 		delete[] triangles;
 		delete[] textureCoords;
 
-		os::Printer::log("MD2 Loader: Error reading triangles.", file->getFileName(), ELL_ERROR);
+		os::Printer::log("MD2 Loader: Error reading triangles", file->getFileName(), ELL_ERROR);
 		return false;
 	}
 
@@ -232,7 +241,7 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 
 	// read Vertices
 
-	u8 buffer[MD2_MAX_VERTS*4+128];
+	u8 buffer[MAX_FRAME_SIZE];
 	SMD2Frame* frame = (SMD2Frame*)buffer;
 
 	file->seek(header.offsetFrames);
@@ -310,13 +319,12 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 		// calculate bounding boxes
 		if (header.numVertices)
 		{
-			core::aabbox3d<f32> box;
 			core::vector3df pos;
 			pos.X = f32(mesh->FrameList[i] [0].Pos.X) * mesh->FrameTransforms[i].scale.X + mesh->FrameTransforms[i].translate.X;
 			pos.Y = f32(mesh->FrameList[i] [0].Pos.Y) * mesh->FrameTransforms[i].scale.Y + mesh->FrameTransforms[i].translate.Y;
 			pos.Z = f32(mesh->FrameList[i] [0].Pos.Z) * mesh->FrameTransforms[i].scale.Z + mesh->FrameTransforms[i].translate.Z;
 
-			box.reset(pos);
+			core::aabbox3d<f32> box(pos);
 
 			for (s32 j=1; j<header.numTriangles*3; ++j)
 			{

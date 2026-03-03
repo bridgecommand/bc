@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_SCENE_COLLISION_MANAGER_H_INCLUDED__
-#define __I_SCENE_COLLISION_MANAGER_H_INCLUDED__
+#ifndef IRR_I_SCENE_COLLISION_MANAGER_H_INCLUDED
+#define IRR_I_SCENE_COLLISION_MANAGER_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "vector3d.h"
@@ -30,7 +30,7 @@ namespace scene
 		core::triangle3df Triangle;
 
 		//! Triangle selector which contained the colliding triangle (useful when having MetaTriangleSelector)
-		ITriangleSelector* TriangleSelector;
+		const ITriangleSelector* TriangleSelector;
 
 		//! Node which contained the triangle (is 0 when selector doesn't have that information)
 		ISceneNode* Node;

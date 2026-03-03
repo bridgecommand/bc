@@ -40,13 +40,11 @@
 //  4. You may not use this software to directly or indirectly cause harm to others.
 
 
-#ifndef __C_OCT_LOADER_H_INCLUDED__
-#define __C_OCT_LOADER_H_INCLUDED__
+#ifndef IRR_C_OCT_LOADER_H_INCLUDED
+#define IRR_C_OCT_LOADER_H_INCLUDED
 
 #include "IMeshLoader.h"
 #include "IReadFile.h"
-#include "SMesh.h"
-#include "irrString.h"
 
 namespace irr
 {
@@ -70,13 +68,13 @@ namespace scene
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".cob")
-		virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
+		virtual bool isALoadableFileExtension(const io::path& filename) const IRR_OVERRIDE;
 
 		//! creates/loads an animated mesh from the file.
 		//! \return Pointer to the created mesh. Returns 0 if loading failed.
 		//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 		//! See IReferenceCounted::drop() for more information.
-		virtual IAnimatedMesh* createMesh(io::IReadFile* file) _IRR_OVERRIDE_;
+		virtual IAnimatedMesh* createMesh(io::IReadFile* file) IRR_OVERRIDE;
 
 		void OCTLoadLights(io::IReadFile* file,
 				ISceneNode * parent = 0, f32 radius = 500.0f,
@@ -115,12 +113,10 @@ namespace scene
 		};
 
 		struct octTexture {
-			u32 id;
 			char fileName[64];
 		};
 
 		struct octLightmap {
-			u32 id;
 			u8 data[128][128][3];
 		};
 
@@ -138,4 +134,3 @@ namespace scene
 } // end namespace irr
 
 #endif
-

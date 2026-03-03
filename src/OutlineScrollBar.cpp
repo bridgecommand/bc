@@ -497,6 +497,34 @@ s32 OutlineScrollBar::getSecondary() const
 	return PosSecondary;
 }
 
+//! Sets whether to draw a background color (EGDC_SCROLLBAR)
+/** Ignored */
+void OutlineScrollBar::setDrawBackground(bool draw)
+{
+
+}
+
+//! Checks if a background is drawn
+/** Ignored */
+bool OutlineScrollBar::isDrawBackgroundEnabled() const
+{
+	return false;
+}
+
+//! Access the up (vertical) or left (horizontal) button
+/** \return null, as no button exists for this type of scroll bar */
+IGUIButton* OutlineScrollBar::getUpLeftButton() const
+{
+	return 0;
+}
+
+//! Access the right (vertical) or down (horizontal) button
+/** \return null, as no button exists for this type of scroll bar */
+IGUIButton* OutlineScrollBar::getDownRightButton() const
+{
+	return 0;
+}
+
 /*
 //! refreshes the position and text on child buttons
 void OutlineScrollBar::refreshControls()

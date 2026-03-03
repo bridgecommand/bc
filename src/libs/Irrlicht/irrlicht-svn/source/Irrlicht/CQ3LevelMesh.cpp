@@ -8,9 +8,7 @@
 #include "CQ3LevelMesh.h"
 #include "ISceneManager.h"
 #include "os.h"
-#include "SMeshBufferLightMap.h"
 #include "irrString.h"
-#include "ILightSceneNode.h"
 #include "IQ3Shader.h"
 #include "IFileList.h"
 
@@ -112,7 +110,7 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 			( header.strID != 0x50534252 || header.version != 1 ) // RBSP, starwars jedi, sof
 		)
 	{
-		os::Printer::log("Could not load .bsp file, unknown header.", file->getFileName(), ELL_ERROR);
+		os::Printer::log("Could not load .bsp file, unknown header", file->getFileName(), ELL_ERROR);
 		return false;
 	}
 
@@ -952,7 +950,7 @@ scene::SMesh** CQ3LevelMesh::buildMesh(s32 num)
 						item[g].index != E_Q3_MESH_FOG ? material : material2 );
 				}
 
-				// create a seperate mesh buffer
+				// create a separate mesh buffer
 				if ( 0 == buffer )
 				{
 					buffer = new scene::SMeshBufferLightMap();
@@ -971,7 +969,7 @@ scene::SMesh** CQ3LevelMesh::buildMesh(s32 num)
 					break;
 				case 2: // patches
 					createCurvedSurface_bezier( buffer, i,
-									LoadParam.patchTesselation,
+									LoadParam.patchTessellation,
 									item[g].takeVertexColor
 								  );
 					break;
@@ -1274,7 +1272,7 @@ void CQ3LevelMesh::SBezier::tesselate( s32 level )
 */
 void CQ3LevelMesh::createCurvedSurface_nosubdivision(SMeshBufferLightMap* meshBuffer,
 					s32 faceIndex,
-					s32 patchTesselation,
+					s32 patchTessellation,
 					s32 storevertexcolor)
 {
 	tBSPFace * face = &Faces[faceIndex];
@@ -1318,7 +1316,7 @@ void CQ3LevelMesh::createCurvedSurface_nosubdivision(SMeshBufferLightMap* meshBu
 */
 void CQ3LevelMesh::createCurvedSurface_bezier(SMeshBufferLightMap* meshBuffer,
 					s32 faceIndex,
-					s32 patchTesselation,
+					s32 patchTessellation,
 					s32 storevertexcolor)
 {
 
@@ -1372,7 +1370,7 @@ void CQ3LevelMesh::createCurvedSurface_bezier(SMeshBufferLightMap* meshBuffer,
 			Bezier.control[7] = controlPoint[ inx + controlWidth * 2 + 1];
 			Bezier.control[8] = controlPoint[ inx + controlWidth * 2 + 2];
 
-			Bezier.tesselate( patchTesselation );
+			Bezier.tesselate( patchTessellation );
 		}
 	}
 

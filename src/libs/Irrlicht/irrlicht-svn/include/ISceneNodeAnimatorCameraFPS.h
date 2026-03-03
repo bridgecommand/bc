@@ -2,11 +2,10 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_SCENE_NODE_ANIMATOR_CAMERA_FPS_H_INCLUDED__
-#define __I_SCENE_NODE_ANIMATOR_CAMERA_FPS_H_INCLUDED__
+#ifndef IRR_I_SCENE_NODE_ANIMATOR_CAMERA_FPS_H_INCLUDED
+#define IRR_I_SCENE_NODE_ANIMATOR_CAMERA_FPS_H_INCLUDED
 
 #include "ISceneNodeAnimator.h"
-#include "IEventReceiver.h"
 #include "irrArray.h"
 
 namespace irr
@@ -72,4 +71,3 @@ namespace scene
 } // end namespace irr
 
 #endif
-

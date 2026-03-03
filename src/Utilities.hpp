@@ -48,6 +48,7 @@ namespace Utilities
     std::string getUserDirBase(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory, the first level folder in the user's filesystem (eg %appdata%/Bridge Command/ on windows)
     std::string getUserDir(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory (eg %appdata%/Bridge Command/VERSIONUMBER/ on windows)
     bool pathExists(std::string filePath);
+    int copyDir(std::string source, std::string dest);
     ScenarioData getScenarioDataFromFile(std::string scenarioPath, std::string scenarioName); //Read a scenario from ini files
     bool hasEnding(std::string const &fullString, std::string const &ending);
 

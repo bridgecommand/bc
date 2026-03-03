@@ -4,12 +4,11 @@
 #include "CGUISpinBox.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
 
-#include "CGUIEditBox.h"
-#include "CGUIButton.h"
+#include "IGUIEditBox.h"
+#include "IGUIButton.h"
 #include "IGUIEnvironment.h"
 #include "IEventReceiver.h"
 #include "fast_atof.h"
-#include <wchar.h>
 
 
 namespace irr
@@ -19,11 +18,12 @@ namespace gui
 
 //! constructor
 CGUISpinBox::CGUISpinBox(const wchar_t* text, bool border,IGUIEnvironment* environment,
-			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle)
+			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle, bool hasButtons)
 : IGUISpinBox(environment, parent, id, rectangle),
 	EditBox(0), ButtonSpinUp(0), ButtonSpinDown(0), StepSize(1.f),
 	RangeMin(-FLT_MAX), RangeMax(FLT_MAX), FormatString(L"%f"),
-	DecimalPlaces(-1), ValidateOn(EGUI_SBV_ENTER|EGUI_SBV_LOSE_FOCUS)
+	DecimalPlaces(-1), ValidateOn(EGUI_SBV_ENTER|EGUI_SBV_LOSE_FOCUS),
+	OldValue(0.f)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUISpinBox");
@@ -32,21 +32,28 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, bool border,IGUIEnvironment* envir
 	CurrentIconColor = video::SColor(255,255,255,255);
 	s32 ButtonWidth = 16;
 
-	ButtonSpinDown = Environment->addButton(
-		core::rect<s32>(rectangle.getWidth() - ButtonWidth, rectangle.getHeight()/2 +1,
-						rectangle.getWidth(), rectangle.getHeight()), this);
-	ButtonSpinDown->grab();
-	ButtonSpinDown->setSubElement(true);
-	ButtonSpinDown->setTabStop(false);
-	ButtonSpinDown->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_CENTER, EGUIA_LOWERRIGHT);
+	if ( hasButtons )
+	{
+		ButtonSpinDown = Environment->addButton(
+			core::rect<s32>(rectangle.getWidth() - ButtonWidth, rectangle.getHeight()/2 +1,
+							rectangle.getWidth(), rectangle.getHeight()), this);
+		ButtonSpinDown->grab();
+		ButtonSpinDown->setSubElement(true);
+		ButtonSpinDown->setTabStop(false);
+		ButtonSpinDown->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_CENTER, EGUIA_LOWERRIGHT);
 
-	ButtonSpinUp = Environment->addButton(
-		core::rect<s32>(rectangle.getWidth() - ButtonWidth, 0,
-						rectangle.getWidth(), rectangle.getHeight()/2), this);
-	ButtonSpinUp->grab();
-	ButtonSpinUp->setSubElement(true);
-	ButtonSpinUp->setTabStop(false);
-	ButtonSpinUp->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_CENTER);
+		ButtonSpinUp = Environment->addButton(
+			core::rect<s32>(rectangle.getWidth() - ButtonWidth, 0,
+							rectangle.getWidth(), rectangle.getHeight()/2), this);
+		ButtonSpinUp->grab();
+		ButtonSpinUp->setSubElement(true);
+		ButtonSpinUp->setTabStop(false);
+		ButtonSpinUp->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_CENTER);
+	}
+	else
+	{
+		ButtonWidth = 0;
+	}
 
 	const core::rect<s32> rectEdit(0, 0, rectangle.getWidth() - ButtonWidth - 1, rectangle.getHeight());
 	EditBox = Environment->addEditBox(text, rectEdit, border, this, -1);
@@ -71,6 +78,9 @@ CGUISpinBox::~CGUISpinBox()
 
 void CGUISpinBox::refreshSprites()
 {
+	if ( !ButtonSpinDown )
+		return;
+
 	IGUISpriteBank *sb = 0;
 	if (Environment && Environment->getSkin())
 	{
@@ -104,22 +114,24 @@ IGUIEditBox* CGUISpinBox::getEditBox() const
 void CGUISpinBox::setValue(f32 val)
 {
 	wchar_t str[100];
-
 	swprintf_irr(str, 99, FormatString.c_str(), val);
 	EditBox->setText(str);
-	verifyValueRange();
+	verifyValueRange(getValue());
 }
 
 
 f32 CGUISpinBox::getValue() const
 {
-	const wchar_t* val = EditBox->getText();
+	return getValueFor(EditBox->getText());
+}
+
+f32 CGUISpinBox::getValueFor(const wchar_t* val) const
+{
 	if ( !val )
 		return 0.f;
 	core::stringc tmp(val);
 	return core::fast_atof(tmp.c_str());
 }
-
 
 void CGUISpinBox::setRange(f32 min, f32 max)
 {
@@ -128,14 +140,14 @@ void CGUISpinBox::setRange(f32 min, f32 max)
 	RangeMin = min;
 	RangeMax = max;
 
-	// we have to round the range - otherwise we can get into an infinte setValue/verifyValueRange cycle.
+	// we have to round the range - otherwise we can get into an infinite setValue/verifyValueRange cycle.
 	wchar_t str[100];
 	swprintf_irr(str, 99, FormatString.c_str(), RangeMin);
 	RangeMin = core::fast_atof(core::stringc(str).c_str());
 	swprintf_irr(str, 99, FormatString.c_str(), RangeMax);
 	RangeMax = core::fast_atof(core::stringc(str).c_str());
 
-	verifyValueRange();
+	verifyValueRange(getValue());
 }
 
 
@@ -203,7 +215,8 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 			{
 			case EMIE_MOUSE_WHEEL:
 				{
-					f32 val = getValue() + (StepSize * (event.MouseInput.Wheel < 0 ? -1.f : 1.f));
+					OldValue = getValue();
+					f32 val = OldValue + (StepSize * (event.MouseInput.Wheel < 0 ? -1.f : 1.f));
 					setValue(val);
 					changeEvent = true;
 					eatEvent = true;
@@ -220,15 +233,15 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 			{
 				if (event.GUIEvent.Caller == ButtonSpinUp)
 				{
-					f32 val = getValue();
-					val += StepSize;
+					OldValue = getValue();
+					f32 val = OldValue + StepSize;
 					setValue(val);
 					changeEvent = true;
 				}
 				else if ( event.GUIEvent.Caller == ButtonSpinDown)
 				{
-					f32 val = getValue();
-					val -= StepSize;
+					OldValue = getValue();
+					f32 val = OldValue - StepSize;
 					setValue(val);
 					changeEvent = true;
 				}
@@ -240,7 +253,8 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 					||	(event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST && ValidateOn & EGUI_SBV_LOSE_FOCUS)
 					)
 				{
-					verifyValueRange();
+					OldValue = getValue();	// no call to setValue when text was changed without setText call
+					verifyValueRange(OldValue);
 					changeEvent = true;
 				}
 			}
@@ -251,14 +265,16 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 
 		if ( changeEvent )
 		{
-			SEvent e;
-			e.EventType = EET_GUI_EVENT;
-			e.GUIEvent.Caller = this;
-			e.GUIEvent.Element = 0;
-
-			e.GUIEvent.EventType = EGET_SPINBOX_CHANGED;
 			if ( Parent )
+			{
+				SEvent e;
+				e.EventType = EET_GUI_EVENT;
+				e.GUIEvent.Caller = this;
+				e.GUIEvent.Element = 0;
+				e.GUIEvent.EventType = EGET_SPINBOX_CHANGED;
+			
 				Parent->OnEvent(e);
+			}
 			if ( eatEvent )
 				return true;
 		}
@@ -286,17 +302,12 @@ void CGUISpinBox::draw()
 	IGUISpinBox::draw();
 }
 
-void CGUISpinBox::verifyValueRange()
+void CGUISpinBox::verifyValueRange(f32 val)
 {
-	f32 val = getValue();
 	if ( val+core::ROUNDING_ERROR_f32 < RangeMin )
-		val = RangeMin;
+		setValue(RangeMin);
 	else if ( val-core::ROUNDING_ERROR_f32 > RangeMax )
-		val = RangeMax;
-	else
-		return;
-
-	setValue(val);
+		setValue(RangeMax);
 }
 
 
@@ -305,7 +316,6 @@ void CGUISpinBox::setText(const wchar_t* text)
 {
 	EditBox->setText(text);
 	setValue(getValue());
-	verifyValueRange();
 }
 
 

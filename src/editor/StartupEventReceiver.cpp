@@ -17,17 +17,39 @@
 #include "StartupEventReceiver.hpp"
 
 #include <iostream>
+#include <string>
+#include "../ScenarioDataStructure.hpp"
+#include "../Utilities.hpp"
+#include "ImportExportGUI.hpp"
 
 //using namespace irr;
 
-    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID) //Constructor
+    StartupEventReceiver::StartupEventReceiver(
+        irr::gui::IGUIListBox* scenarioListBox, 
+        irr::gui::IGUIListBox* worldListBox, 
+        irr::gui::IGUIWindow* selectWindow,
+        irr::s32 scenarioListBoxID, 
+        irr::s32 worldListBoxID, 
+        irr::s32 okScenarioButtonID, 
+        irr::s32 okWorldButtonID, 
+        irr::s32 importScenarioButtonID, 
+        irr::s32 exportScenarioButtonID, 
+        irr::s32 importExportOKButtonID,
+        GUIImportExport* guiImportExport,
+        ScenarioData* scenarioData) //Constructor
 	{
 		this->scenarioListBox = scenarioListBox;
 		this->worldListBox = worldListBox;
+        this->selectWindow = selectWindow;
 		this->scenarioListBoxID = scenarioListBoxID;
 		this->worldListBoxID = worldListBoxID;
 		this->okScenarioButtonID = okScenarioButtonID;
 		this->okWorldButtonID = okWorldButtonID;
+        this->importScenarioButtonID = importScenarioButtonID;
+        this->exportScenarioButtonID = exportScenarioButtonID;
+        this->importExportOKButtonID = importExportOKButtonID;
+        this->guiImportExport = guiImportExport;
+        this->scenarioData = scenarioData;
 		scenarioSelected = -1; //Set as initially invalid
 		worldSelected = -1; //Set as initially invalid
 	}
@@ -50,6 +72,45 @@
             {
                 if (worldListBox->getSelected() > -1 ) {
                     worldSelected = worldListBox->getSelected();
+                }
+            }
+
+            // Other buttons
+            if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) 
+            {
+                if (id == importScenarioButtonID) {
+                    guiImportExport->setText("");
+                    selectWindow->setVisible(false);
+                    guiImportExport->setVisible(true, 1); //importExportMode: 0 = export, 1 = import
+                }
+
+                if (id == exportScenarioButtonID) {
+                    if (scenarioListBox->getSelected() > -1 ) {
+                        
+                        std::wstring scenarioWName = std::wstring(scenarioListBox->getListItem(scenarioListBox->getSelected()));
+                        std::string scenarioName(scenarioWName.begin(), scenarioWName.end());
+                        
+                        std::string userFolder = Utilities::getUserDir();
+                        std::string scenarioPath = "Scenarios/";
+                        if (Utilities::pathExists(userFolder + scenarioPath)) {
+                            scenarioPath = userFolder + scenarioPath;
+                        }
+                        // Load scenario data, and show in window
+                        ScenarioData scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName); //Read a scenario from ini files
+                        guiImportExport->setText(scenarioData.serialise(true));
+                    }
+                    selectWindow->setVisible(false);
+                    guiImportExport->setVisible(true, 0);
+                }
+
+                if (id == importExportOKButtonID) {
+                    // Mode: 0 = export, 1 = import
+                    if (guiImportExport->getMode() == 1) {
+                        // Import mode
+                        scenarioData->deserialise(guiImportExport->getText());
+                    }
+                    guiImportExport->setVisible(false, 0);
+                    selectWindow->setVisible(true);
                 }
             }
 

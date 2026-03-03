@@ -2,9 +2,10 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __S_VERTEX_MANIPULATOR_H_INCLUDED__
-#define __S_VERTEX_MANIPULATOR_H_INCLUDED__
+#ifndef S_VERTEX_MANIPULATOR_H_INCLUDED
+#define S_VERTEX_MANIPULATOR_H_INCLUDED
 
+#include "matrix4.h"
 #include "S3DVertex.h"
 #include "SColor.h"
 
@@ -276,6 +277,32 @@ namespace scene
 		core::matrix4 Transformation;
 	};
 
+	//! Vertex manipulator which transforms the normal of the vertex with the rotate/scale part of the given matrix (inner 3x3)
+	class SVertexNormalRotateScaleManipulator : public IVertexManipulator
+	{
+	public:
+		SVertexNormalRotateScaleManipulator(const core::matrix4& m) : Transformation(m) {}
+		template <typename VType>
+		void operator()(VType& vertex) const
+		{
+			Transformation.rotateVect(vertex.Normal);
+		}
+	private:
+		core::matrix4 Transformation;
+	};
+
+	//! Vertex manipulator which normalizes the normal of the vertex
+	class SVertexNormalizeNormalManipulator : public IVertexManipulator
+	{
+	public:
+		SVertexNormalizeNormalManipulator() {}
+		template <typename VType>
+		void operator()(VType& vertex) const
+		{
+			vertex.Normal.normalize();
+		}
+	};
+
 	//! Vertex manipulator which scales the TCoords of the vertex
 	class SVertexTCoordsScaleManipulator : public IVertexManipulator
 	{
@@ -301,6 +328,5 @@ namespace scene
 
 } // end namespace scene
 } // end namespace irr
-
 
 #endif

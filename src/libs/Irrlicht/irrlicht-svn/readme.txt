@@ -2,7 +2,7 @@
 The Irrlicht Engine SDK version 1.9
 ==========================================================================
 
-  Welcome the Irrlicht Engine SDK.
+  Welcome to the Irrlicht Engine SDK.
 
   Content of this file:
 
@@ -102,7 +102,7 @@ The Irrlicht Engine SDK version 1.9
 4. Release Notes
 ==========================================================================
 
-  Informations about changes in this new version of the engine can be
+  Information about changes in this new version of the engine can be
   found in changes.txt.
 
   Please note that the textures, 3D models and levels are copyright
@@ -123,7 +123,7 @@ The Irrlicht Engine SDK version 1.9
   in your documentation that you've used the IJG code and libpng. It would
   also be nice to mention that you use the Irrlicht Engine and the zlib.
   See the README files in the jpeglib and the zlib for
-  further informations.
+  further information.
 
 
   The Irrlicht Engine License
@@ -167,14 +167,17 @@ The Irrlicht Engine SDK version 1.9
 
   Please also not that parts of the engine have been written or contributed
   by other people. Especially: (There are probably more people, sorry if I forgot one.
-  See http://irrlicht.sourceforge.net/author.html for more informations)
+  See http://irrlicht.sourceforge.net/author.html for more information)
 
-  Christian Stehno (hybrid)   Contribution Coordinator/Developer
-  Michael Zeilfelder (cutealien) Developer
-  Patryk Nadrowski (Nadro)    Developer  
+  Michael Zeilfelder (cutealien) Developer/Maintainer
+  Thomas Alten (burningwater)  Wrote the burningsvideo software rasterizer  
   Yoran Bosman (Yoran)        Webserver administrator
+  
+  Former developers:
+  Nikolaus Gebhardt (niko)    Founder
+  Christian Stehno (hybrid)   Developer
+  Patryk Nadrowski (Nadro)    Developer  
   Gareth Davidson (bitplane)  Developer/ Forum admin
-  Thomas Alten (burningwater) Wrote the burningsvideo software rasterizer
   Luke P. Hoschke (luke)      Wrote the b3d loader, the new animation system, VBOs and other things
   Colin MacDonald (rogerborg) All hands person
   Ahmed Hilali (blindside)    The shader and advanced effects man

@@ -11,6 +11,7 @@
 #include "IWriteFile.h"
 #include "IXMLWriter.h"
 #include "IMesh.h"
+#include "IMeshBuffer.h"
 #include "IAttributes.h"
 
 namespace irr
@@ -175,14 +176,14 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 	{
 	case video::EVT_STANDARD:
 		{
-			video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
+			const video::S3DVertex* vtx = (const video::S3DVertex*)buffer->getVertices();
 			for (u32 j=0; j<vertexCount; ++j)
 			{
 				core::stringw str = getVectorAsStringLine(vtx[j].Pos);
 				str += L" ";
 				str += getVectorAsStringLine(vtx[j].Normal);
 
-				char tmp[12];
+				char tmp[36];
 				sprintf(tmp, " %02x%02x%02x%02x ", vtx[j].Color.getAlpha(), vtx[j].Color.getRed(), vtx[j].Color.getGreen(), vtx[j].Color.getBlue());
 				str += tmp;
 
@@ -195,14 +196,14 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 		break;
 	case video::EVT_2TCOORDS:
 		{
-			video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
+			const video::S3DVertex2TCoords* vtx = (const video::S3DVertex2TCoords*)buffer->getVertices();
 			for (u32 j=0; j<vertexCount; ++j)
 			{
 				core::stringw str = getVectorAsStringLine(vtx[j].Pos);
 				str += L" ";
 				str += getVectorAsStringLine(vtx[j].Normal);
 
-				char tmp[12];
+				char tmp[36];
 				sprintf(tmp, " %02x%02x%02x%02x ", vtx[j].Color.getAlpha(), vtx[j].Color.getRed(), vtx[j].Color.getGreen(), vtx[j].Color.getBlue());
 				str += tmp;
 
@@ -217,14 +218,14 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 		break;
 	case video::EVT_TANGENTS:
 		{
-			video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
+			const video::S3DVertexTangents* vtx = (const video::S3DVertexTangents*)buffer->getVertices();
 			for (u32 j=0; j<vertexCount; ++j)
 			{
 				core::stringw str = getVectorAsStringLine(vtx[j].Pos);
 				str += L" ";
 				str += getVectorAsStringLine(vtx[j].Normal);
 
-				char tmp[12];
+				char tmp[36];
 				sprintf(tmp, " %02x%02x%02x%02x ", vtx[j].Color.getAlpha(), vtx[j].Color.getRed(), vtx[j].Color.getGreen(), vtx[j].Color.getBlue());
 				str += tmp;
 
@@ -256,7 +257,7 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 	video::E_INDEX_TYPE iType = buffer->getIndexType();
 
 	const u16* idx16 = buffer->getIndices();
-	const u32* idx32 = (u32*) buffer->getIndices();
+	const u32* idx32 = (const u32*) buffer->getIndices();
 	const int maxIndicesPerLine = 25;
 
 	for (int i=0; i<indexCount; ++i)

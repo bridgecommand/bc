@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GUI_LIST_BOX_H_INCLUDED__
-#define __I_GUI_LIST_BOX_H_INCLUDED__
+#ifndef IRR_I_GUI_LIST_BOX_H_INCLUDED
+#define IRR_I_GUI_LIST_BOX_H_INCLUDED
 
 #include "IGUIElement.h"
 #include "SColor.h"
@@ -26,6 +26,11 @@ namespace gui
 		EGUI_LBC_ICON,
 		//! Color of selected icon
 		EGUI_LBC_ICON_HIGHLIGHT,
+		//! Color of background. 
+		//! Note that this one is drawn over the listbox background and when not used there is no other default
+		EGUI_LBC_BACKGROUND,
+		//! Color of selected background
+		EGUI_LBC_BACKGROUND_HIGHLIGHT,
 		//! Not used, just counts the number of available colors
 		EGUI_LBC_COUNT
 	};
@@ -46,17 +51,21 @@ namespace gui
 		//! returns amount of list items
 		virtual u32 getItemCount() const = 0;
 
-		//! returns string of a list item. the may id be a value from 0 to itemCount-1
+		//! returns string for a list item. The id may be a value from 0 to itemCount-1
 		virtual const wchar_t* getListItem(u32 id) const = 0;
-
-		//! adds an list item, returns id of item
-		virtual u32 addItem(const wchar_t* text) = 0;
 
 		//! adds an list item with an icon
 		/** \param text Text of list entry
 		\param icon Sprite index of the Icon within the current sprite bank. Set it to -1 if you want no icon
 		\return The id of the new created item */
-		virtual u32 addItem(const wchar_t* text, s32 icon) = 0;
+		virtual u32 addItem(const wchar_t* text, s32 icon=-1) = 0;
+
+		//! Insert the item at the given index
+		/** \return The index on success or -1 on failure. */
+		virtual s32 insertItem(u32 index, const wchar_t* text, s32 icon=-1) = 0;
+
+		//! set the item at the given index
+		virtual void setItem(u32 index, const wchar_t* text, s32 icon=-1) = 0;
 
 		//! Removes an item from the list
 		virtual void removeItem(u32 index) = 0;
@@ -102,7 +111,7 @@ namespace gui
 		//! clear all item colors at index
 		virtual void clearItemOverrideColor(u32 index) = 0;
 
-		//! clear item color at index for given colortype
+		//! clear item color at index for given color type
 		virtual void clearItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) = 0;
 
 		//! has the item at index its color overwritten?
@@ -114,17 +123,11 @@ namespace gui
 		//! return the default color which is used for the given colorType
 		virtual video::SColor getItemDefaultColor(EGUI_LISTBOX_COLOR colorType) const = 0;
 
-		//! set the item at the given index
-		virtual void setItem(u32 index, const wchar_t* text, s32 icon) = 0;
-
-		//! Insert the item at the given index
-		/** \return The index on success or -1 on failure. */
-		virtual s32 insertItem(u32 index, const wchar_t* text, s32 icon) = 0;
-
 		//! Swap the items at the given indices
 		virtual void swapItems(u32 index1, u32 index2) = 0;
 
-		//! set global itemHeight
+		//! Set fixed itemHeight
+		//! Reset to automatic height (based on font) with 0
 		virtual void setItemHeight( s32 height ) = 0;
 
 		//! Sets whether to draw the background
@@ -132,6 +135,19 @@ namespace gui
 
 		//! Access the vertical scrollbar
 		virtual IGUIScrollBar* getVerticalScrollBar() const = 0;
+
+		//! Sets a skin independent font.
+		/** \param font: New font to set or 0 to use the skin-font. */
+		virtual void setOverrideFont(IGUIFont* font=0) = 0;
+
+		//! Gets the override font (if any)
+		/** \return The override font (may be 0) */
+		virtual IGUIFont* getOverrideFont(void) const = 0;
+
+		//! Get the font which is used for drawing
+		/** This is the override font when one is set and the
+		font of the skin otherwise. */
+		virtual IGUIFont* getActiveFont() const = 0;
 };
 
 
@@ -139,4 +155,3 @@ namespace gui
 } // end namespace irr
 
 #endif
-

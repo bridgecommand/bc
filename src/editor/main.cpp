@@ -6,19 +6,18 @@
 #include <algorithm>
 #include <string>
 #include "PositionDataStruct.hpp"
-#include "OwnShipDataStruct.hpp"
-#include "OtherShipDataStruct.hpp"
-#include "GeneralDataStruct.hpp"
 #include "StartupEventReceiver.hpp"
 //#include "Network.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
+#include "ImportExportGUI.hpp"
 #include "EventReceiver.hpp"
 
 #include "../Constants.hpp"
 #include "../IniFile.hpp"
 #include "../Lang.hpp"
 #include "../Utilities.hpp"
+#include "../ScenarioDataStructure.hpp"
 
 //Mac OS:
 #ifdef __APPLE__
@@ -30,24 +29,25 @@
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-//Includes for copying scenario files
-#ifdef _WIN32
-    #include <windows.h>
-    #include <Shellapi.h>
-#else // _WIN32
-    #ifdef __APPLE__
-        #include <copyfile.h>
-        #include <sys/stat.h>
-    #else
-        #include <dirent.h>
-        #include <sys/stat.h>
-        #include <fstream>
-    #endif
-#endif // __APPLE__
-
 #ifdef __linux__
     #include <unistd.h>
 #endif
+
+//Includes for copying scenario files
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // Also for GetSystemMetrics
+#include <Shellapi.h>
+#else // _WIN32
+#ifdef __APPLE__
+#include <copyfile.h>
+#include <sys/stat.h>
+#else
+#include <dirent.h>
+#include <sys/stat.h>
+#include <fstream>
+#endif
+#endif // __APPLE__
 
 // Irrlicht Namespaces
 //using namespace irr;
@@ -99,7 +99,7 @@ void getDirectoryList(irr::IrrlichtDevice* device, std::vector<std::string>&dirL
     fileList->drop();
 }
 
-void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::string& scenarioName, bool& multiplayer, Lang* language, std::string userFolder)
+void findWhatToLoad(irr::IrrlichtDevice* device, ScenarioData* scenarioData, std::string& worldName, std::string& scenarioName, bool& multiplayer, Lang* language, std::string userFolder)
 //Will fill one of worldName of scenarioName, depending on user's selection.
 {
 
@@ -130,6 +130,9 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     const irr::s32 WORLD_BOX_ID = 102;
     const irr::s32 OK_SCENARIO_BUTTON_ID = 103;
     const irr::s32 OK_WORLD_BUTTON_ID = 104;
+    const irr::s32 IMPORT_SCENARIO_BUTTON_ID = 105;
+    const irr::s32 EXPORT_SCENARIO_BUTTON_ID = 106;
+    const irr::s32 IMPORT_EXPORT_OK_BUTTON_ID = 107;
 
     irr::gui::IGUIWindow* scnWorldChoiceWindow = device->getGUIEnvironment()->addWindow(irr::core::rect<irr::s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
     irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(irr::core::rect<irr::s32>(0.06*su,0.200*sh,0.435*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
@@ -139,6 +142,8 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     irr::gui::IGUIStaticText* worldText = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),irr::core::rect<irr::s32>(0.520*su,0.150*sh,0.970*su,0.190*sh),false,true,scnWorldChoiceWindow);
     irr::gui::IGUIButton* scenarioOK = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.85*sh,0.485*su,0.90*sh),scnWorldChoiceWindow,OK_SCENARIO_BUTTON_ID,language->translate("editScenario").c_str());
     irr::gui::IGUIButton* worldOK = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.495*su,0.85*sh,0.970*su,0.90*sh),scnWorldChoiceWindow,OK_WORLD_BUTTON_ID,language->translate("newScenario").c_str());
+    irr::gui::IGUIButton* importScenario = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.91*sh,0.485*su,0.96*sh),scnWorldChoiceWindow,IMPORT_SCENARIO_BUTTON_ID,language->translate("importScenario").c_str());
+    irr::gui::IGUIButton* exportScenario = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.495*su,0.91*sh,0.970*su,0.96*sh),scnWorldChoiceWindow,EXPORT_SCENARIO_BUTTON_ID,language->translate("exportScenario").c_str());
     scnWorldChoiceWindow->getCloseButton()->setVisible(false);
 
     //Add scenarios to list box
@@ -157,41 +162,73 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     if (worldListBox->getItemCount()>0) {
         worldListBox->setSelected(0);
     }
-
+    
     //set focus on first box
     //device->getGUIEnvironment()->setFocus(scenarioListBox);
 
+    // Create a different set of GUI components that we can show/hide to import and export scenarios
+    GUIImportExport importExport(device, language, su, sh, IMPORT_EXPORT_OK_BUTTON_ID);
+    importExport.setVisible(false, 0);
+    
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,worldListBox,SCENARIO_BOX_ID,WORLD_BOX_ID,OK_SCENARIO_BUTTON_ID,OK_WORLD_BUTTON_ID);
+    StartupEventReceiver startupReceiver(
+        scenarioListBox,
+        worldListBox,
+        scnWorldChoiceWindow,
+        SCENARIO_BOX_ID,
+        WORLD_BOX_ID,
+        OK_SCENARIO_BUTTON_ID,
+        OK_WORLD_BUTTON_ID,
+        IMPORT_SCENARIO_BUTTON_ID,
+        EXPORT_SCENARIO_BUTTON_ID,
+        IMPORT_EXPORT_OK_BUTTON_ID,
+        &importExport,
+        scenarioData);
     device->setEventReceiver(&startupReceiver);
 
-    while (device->run() && startupReceiver.getScenarioSelected() < 0 && startupReceiver.getWorldSelected() < 0 ) {
+    // Run until we know scenario data to use
+    while (device->run() && startupReceiver.getScenarioSelected() < 0 && startupReceiver.getWorldSelected() < 0 && scenarioData->dataPopulated == false ) {
         driver->beginScene();
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
     }
 
-    irr::s32 selectedScenario = startupReceiver.getScenarioSelected();
-    if (selectedScenario >= 0 && selectedScenario < scenarioDirList.size()) {
-        scenarioName = scenarioDirList.at(selectedScenario); //Get scenario name
+    if (scenarioData->dataPopulated == false) {
+        // Normal case
+        irr::s32 selectedScenario = startupReceiver.getScenarioSelected();
+        if (selectedScenario >= 0 && selectedScenario < scenarioDirList.size()) {
+            scenarioName = scenarioDirList.at(selectedScenario); //Get scenario name
 
-        //check if name ends in _mp, and if so, record that this is a multiplayer scenario
-        multiplayer = false;
-        if (scenarioName.length() >= 3) {
-            std::string endChars = scenarioName.substr(scenarioName.length()-3,3);
-            if (endChars == "_mp" || endChars == "_MP") {
-                multiplayer = true;
+            //check if name ends in _mp, and if so, record that this is a multiplayer scenario
+            multiplayer = false;
+            if (scenarioName.length() >= 3) {
+                std::string endChars = scenarioName.substr(scenarioName.length()-3,3);
+                if (endChars == "_mp" || endChars == "_MP") {
+                    multiplayer = true;
+                }
             }
         }
-    }
 
-    irr::s32 selectedWorld = startupReceiver.getWorldSelected();
-    if (selectedWorld >= 0 && selectedWorld < worldDirList.size()) {
-        worldName = worldDirList.at(selectedWorld);
-        multiplayer = multiplayerBox->isChecked();
+        irr::s32 selectedWorld = startupReceiver.getWorldSelected();
+        if (selectedWorld >= 0 && selectedWorld < worldDirList.size()) {
+            worldName = worldDirList.at(selectedWorld);
+            multiplayer = multiplayerBox->isChecked();
+        }
+        //Store multiplayer status if new scenario    
+    } else {
+        // Scenario data already populated directly (by import), just set worldName, scenarioName, and multiplayer
+        worldName = scenarioData->worldName;
+        scenarioName = scenarioData->worldName;
+        // multiplayerName isn't set in deserialise, so check and update here
+        if (scenarioData->scenarioName.length() >= 3) {
+            std::string endChars = scenarioData->scenarioName.substr(scenarioData->scenarioName.length()-3,3);
+            if (endChars == "_mp" || endChars == "_MP") {
+                scenarioData->multiplayerName = true;
+            }
+        }
+        multiplayer = scenarioData->multiplayerName;
     }
-    //Store multiplayer status if new scenario
-
+    
     //Clean up
     scenarioText->remove();
     worldText->remove();
@@ -216,103 +253,6 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
 
 }
 
-int copyDir(std::string source, std::string dest)
-{
-
-    //Copy contents of source dir into dest dir
-
-    #ifdef _WIN32
-        //Windows version: Creates dest dir automatically
-        source.append(1,'\0'); //Add an extra null to end of string
-        dest.append(1,'\0');
-        replace(dest.begin(),dest.end(),'/','\\'); //Replace / with \ in dest (think about network paths??)
-
-        SHFILEOPSTRUCT fileOp;
-        fileOp.wFunc = FO_COPY;
-        fileOp.pFrom = source.c_str();
-        fileOp.pTo = dest.c_str();
-        fileOp.fFlags = /*FOF_SILENT | */FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
-
-        return SHFileOperation(&fileOp);
-    #else
-        #ifdef __APPLE__
-            //Apple version: Requires that dest dir exists
-            copyfile_state_t s;
-            s=copyfile_state_alloc();
-            //use copyfile here to do recursive copy
-            int returnValue = copyfile(source.c_str(), dest.c_str(), s, COPYFILE_DATA | COPYFILE_RECURSIVE);
-            copyfile_state_free(s);
-            return returnValue;
-        #else // __APPLE__
-            //Other posix
-            //Note: Not implemented yet for other posix: need to implement recursive directory copy.
-            //Requires that dest dir exists
-            //std::cout << "Copying from:" << source << " to:" << dest << std::endl;
-            if (!Utilities::pathExists(dest)) {
-                return -1;
-            }
-
-            //For each folder at root level, create new folder in dest, and call copyDir on this
-            DIR *dir = opendir(source.c_str());
-            if (!dir) {return -1;}
-            struct dirent *entry = readdir(dir);
-            while (entry != NULL) {
-                if (entry->d_type == DT_DIR && entry->d_name[0] != '.') {
-                    std::string newDir = dest;
-
-                    newDir.append(source);
-                    newDir.append("/");
-                    newDir.append(entry->d_name);
-                    //newDir.append("/");
-
-                    //std::cout << "Dest: " << dest << std::endl;
-                    //std::cout << "Trying to create '" << newDir << "'" << std::endl;
-                    if (mkdir(newDir.c_str(),0755)==0) {
-                        //Recursive here
-                        std::string fromDir = source;
-                        fromDir.append("/");
-                        fromDir.append(entry->d_name);
-
-                        std::string toDir = dest;
-
-                        copyDir(fromDir, toDir);
-                    } else {
-                        return -1;
-                    }
-                } else if (entry->d_type == DT_REG) {
-                    //Copy file
-                    //entry->d_name;
-                    std::string newFile = dest;
-                    newFile.append(source);
-                    newFile.append("/");
-                    newFile.append(entry->d_name);
-
-                    std::string fromFile = source;
-                    fromFile.append("/");
-                    fromFile.append(entry->d_name);
-
-                    //std::cout << "About to try and create >>" << newFile << "<< from >>" << fromFile << "<<" << std::endl;
-
-                    std::ifstream fromStream(fromFile.c_str(), std::ios::binary);
-                    std::ofstream destStream(newFile.c_str(), std::ios::binary);
-                    if (fromStream && destStream) {
-                        destStream << fromStream.rdbuf();
-                    }
-
-                }
-
-                entry = readdir(dir);
-            }
-
-            //For each file at root level, create the file and copy contents
-
-
-        #endif // __APPLE__
-    #endif // _WIN32
-
-    return -1;
-}
-
 void checkUserScenarioDir(void)
 {
     //Check if scenarios are in the user dir, and if not, try to copy in
@@ -324,7 +264,7 @@ void checkUserScenarioDir(void)
 
         #ifdef _WIN32
         std::cout << "Copying scenario files into " << userFolder + scenarioPath << std::endl;
-        copyDir("Scenarios", userFolder + scenarioPath);
+        Utilities::copyDir("Scenarios", userFolder + scenarioPath);
         #else
         //Make sure destination folder for scenarios exists. Not needed on windows as the copy method creates the output folder and directories above it.
         if (!Utilities::pathExists(Utilities::getUserDirBase())) {
@@ -342,7 +282,7 @@ void checkUserScenarioDir(void)
             mkdir(pathToMake.c_str(),0755);
         }
         std::cout << "Copying scenario files into " << userFolder << std::endl;
-        copyDir("Scenarios", userFolder);
+        Utilities::copyDir("Scenarios", userFolder);
         #endif // __APPLE__
 
 
@@ -398,19 +338,27 @@ int main (int argc, char ** argv)
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
+    irr::core::dimension2d<irr::u32> deskres;
+    #ifdef _WIN32
+    // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
+    deskres.Width=GetSystemMetrics(SM_CXSCREEN);
+    deskres.Height=GetSystemMetrics(SM_CYSCREEN);
+    #else
+    // For other OSs, use Irrlicht's resolution call
     irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
-	irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
-	nulldevice->drop();
+    deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+    nulldevice->drop();
+    #endif
     if (graphicsWidth==0) {
         graphicsWidth = 1200 * fontScale;
-        if (graphicsWidth > deskres.Width*0.9) {
-            graphicsWidth = deskres.Width*0.9;
+        if (graphicsWidth > deskres.Width*0.90) {
+            graphicsWidth = deskres.Width*0.90;
         }
     }
     if (graphicsHeight==0) {
         graphicsHeight = 900 * fontScale;
-        if (graphicsHeight > deskres.Height*0.9) {
-            graphicsHeight = deskres.Height*0.9;
+        if (graphicsHeight > deskres.Height*0.90) {
+            graphicsHeight = deskres.Height*0.90;
         }
     }
 
@@ -463,11 +411,18 @@ int main (int argc, char ** argv)
     device->sleep(200);
     device->clearSystemMessages();
 
+    //Classes:  Data structures created in main, and shared with controller by pointer. Controller then pushes data to the GUI
+
+    //Create data structures to hold own ship, other ship and buoy data
+    ScenarioData scenarioData;
+    std::vector<PositionData> buoysData;
+    std::vector<PositionData> landObjectsData;
+
     //Query which scenario or world to start with
     std::string worldName;
     std::string scenarioName;
     bool multiplayer;
-    findWhatToLoad(device, worldName, scenarioName, multiplayer, &language, userFolder); //worldName or scenarioName updated by reference
+    findWhatToLoad(device, &scenarioData, worldName, scenarioName, multiplayer, &language, userFolder); //worldName or scenarioName updated by reference
     //check that one of worldName and scenarioName have been set
     if (worldName.length() == 0 && scenarioName.length() == 0) {
         std::cout << "Failed to select a scenario or world model to use" << std::endl;
@@ -524,153 +479,211 @@ int main (int argc, char ** argv)
 
     //GUI class
     GUIMain guiMain(device, &language, ownShipTypes, otherShipTypes, multiplayer);
+    
+    if (scenarioData.dataPopulated == false) {
+        // Initialise defaults for new scenario
+        scenarioData.startTime = 10*SECONDS_IN_HOUR;
+        scenarioData.sunRise = 6;
+        scenarioData.sunSet = 18;
+        scenarioData.weather = 1.0;
+        scenarioData.windDirection = 0.0;
+        scenarioData.windSpeed = 5; // Nm/h
+        scenarioData.visibilityRange = 8.0;
+        scenarioData.rainIntensity = 0.0;
+        scenarioData.startDay = 1;
+        scenarioData.startMonth = 1;
+        scenarioData.startYear = 2024;
+        scenarioData.description = "Scenario description";
+        scenarioData.multiplayerName = false;
+        scenarioData.willOverwrite = false;
+        scenarioData.scenarioName = "New Scenario";
 
-    //Classes:  Data structures created in main, and shared with controller by pointer. Controller then pushes data to the GUI
+        //Change default scenario name if in multiplayer mode
+        if (multiplayer) {
+            scenarioData.scenarioName.append("_mp");
+        }
 
-    //Create data structures to hold own ship, other ship and buoy data
-    GeneralData generalData;
-    OwnShipEditorData ownShipData;
-    std::vector<PositionData> buoysData;
-    std::vector<OtherShipEditorData> otherShipsData;
-
-    //Change default scenario name if in multiplayer mode
-    if (multiplayer) {
-        generalData.scenarioName.append("_mp");
-    }
-
-    //Make default name the first in the list, in case it isn't set by an update later
-    if (ownShipTypes.size() > 0) {
-        ownShipData.name = ownShipTypes.at(0);
-    }
-    if (otherShipTypes.size() > 0) {
-        for (int i=0; i<otherShipsData.size(); i++)
-        otherShipsData.at(i).name = otherShipTypes.at(0);
+        //Make default name the first in the list, in case it isn't set by an update later
+        if (ownShipTypes.size() > 0) {
+            scenarioData.ownShipData.ownShipName = ownShipTypes.at(0);
+        }
+        if (otherShipTypes.size() > 0) {
+            for (int i=0; i<scenarioData.otherShipsData.size(); i++)
+            scenarioData.otherShipsData.at(i).shipName = otherShipTypes.at(0);
+        }
     }
 
     //Main model
-    ControllerModel controller(device, &language, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &generalData, zoomLevels);
+    ControllerModel controller(device, &language, &guiMain, worldName, &scenarioData, &buoysData, &landObjectsData, zoomLevels);
 
-    //If an existing scenario, load data into these structures
-    if(scenarioName.length() != 0) {
-        //Find scenario path
-        std::string scenarioPath = "Scenarios/";
-        if (Utilities::pathExists(userFolder + scenarioPath)) {
-            scenarioPath = userFolder + scenarioPath;
+    if (scenarioData.dataPopulated == false) {
+        //If an existing scenario, load data into these structures
+        if(scenarioName.length() != 0) {
+            //Find scenario path
+            std::string scenarioPath = "Scenarios/";
+            if (Utilities::pathExists(userFolder + scenarioPath)) {
+                scenarioPath = userFolder + scenarioPath;
+            }
+            scenarioPath.append(scenarioName);
+
+            //Need to read in ownship.ini, othership.ini, environment.ini
+            std::string environmentIniFilename = scenarioPath;
+            environmentIniFilename.append("/environment.ini");
+
+            std::string ownShipIniFilename = scenarioPath;
+            ownShipIniFilename.append("/ownship.ini");
+
+            std::string otherShipIniFilename = scenarioPath;
+            otherShipIniFilename.append("/othership.ini");
+
+            std::string descriptionFilename = scenarioPath;
+            descriptionFilename.append("/description.ini");
+
+            //Load general information
+            scenarioData.startTime = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
+            scenarioData.startDay = IniFile::iniFileTou32(environmentIniFilename,"StartDay");
+            scenarioData.startMonth = IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
+            scenarioData.startYear = IniFile::iniFileTou32(environmentIniFilename,"StartYear");
+            scenarioData.sunRise = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
+            scenarioData.sunSet = IniFile::iniFileTof32(environmentIniFilename,"SunSet");
+            scenarioData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
+            scenarioData.visibilityRange = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange");
+            scenarioData.rainIntensity = IniFile::iniFileTof32(environmentIniFilename,"Rain");
+            scenarioData.scenarioName = scenarioName;
+            //defaults
+            if(scenarioData.sunRise==0.0) {scenarioData.sunRise=6;}
+            if(scenarioData.sunSet==0.0) {scenarioData.sunSet=18;}
+
+            // Load wind information
+            scenarioData.windDirection = IniFile::iniFileTof32(environmentIniFilename,"WindDirection");
+            scenarioData.windSpeed = IniFile::iniFileTof32(environmentIniFilename,"WindSpeed");
+            
+            //Load own ship information
+            scenarioData.ownShipData.initialX = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
+            scenarioData.ownShipData.initialZ = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
+            scenarioData.ownShipData.initialBearing = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
+            scenarioData.ownShipData.ownShipName = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
+            scenarioData.ownShipData.initialSpeed = IniFile::iniFileTof32(ownShipIniFilename,"InitialSpeed");
+
+            //Load other ship information
+            int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");
+            for(irr::u32 i=1;i<=numberOfOtherShips;i++) {
+
+                //Temporary structure to load data
+                OtherShipData thisShip;
+
+                //Get initial position
+                thisShip.initialX = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
+                thisShip.initialZ = controller.latToZ(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLat",i)));
+                thisShip.shipName = IniFile::iniFileToString(otherShipIniFilename,IniFile::enumerate1("Type",i));
+                thisShip.mmsi = IniFile::iniFileTou32(otherShipIniFilename,IniFile::enumerate1("mmsi",i));
+                
+                if (IniFile::iniFileTou32(otherShipIniFilename, IniFile::enumerate1("Drifting", i)) == 1) {
+                    thisShip.drifting = true;
+                }
+                else {
+                    thisShip.drifting = false;
+                }
+                
+                int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
+
+                irr::f32 legStartTime = scenarioData.startTime; //Legs start at the start of the scenario
+                for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
+                    //go through each leg (if any), and load
+                    LegData currentLeg;
+                    currentLeg.bearing = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
+                    currentLeg.speed = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Speed",i,currentLegNo));
+                    currentLeg.startTime = legStartTime;
+
+                    //Use distance to calculate startTime of next leg, and stored for later reference.
+                    irr::f32 distance = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Distance",i,currentLegNo));
+                    currentLeg.distance = distance;
+
+                    //Add the leg to the array
+                    thisShip.legs.push_back(currentLeg);
+
+                    //find the start time for the next leg
+                    legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
+                }
+                //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
+
+                LegData stopLeg;
+                stopLeg.bearing=0;
+                stopLeg.speed=0;
+                stopLeg.distance=0;
+                stopLeg.startTime = legStartTime;
+                thisShip.legs.push_back(stopLeg);
+
+                //Add to array.
+                scenarioData.otherShipsData.push_back(thisShip);
+
+
+            }
+
+            //Load description information
+            std::ifstream descriptionStream (descriptionFilename.c_str());
+            //Set UTF-8 on Linux/OSX etc
+            #ifndef _WIN32
+                try {
+            #  ifdef __APPLE__
+                    char* thisLocale = setlocale(LC_ALL, "");
+                    if (thisLocale) {
+                        descriptionStream.imbue(std::locale(thisLocale));
+                    }
+            #  else
+                    descriptionStream.imbue(std::locale("en_US.UTF8"));
+            #  endif
+                } catch (const std::runtime_error& runtimeError) {
+                    descriptionStream.imbue(std::locale(""));
+                }
+            #endif
+
+            std::string descriptionLines = "";
+            if (descriptionStream.is_open()) {
+                std::string descriptionLine;
+                while ( std::getline (descriptionStream,descriptionLine) )
+                {
+                    descriptionLines.append(descriptionLine);
+                    descriptionLines.append("\n");
+                }
+                descriptionStream.close();
+            }
+            scenarioData.description = descriptionLines;
+
         }
-        scenarioPath.append(scenarioName);
+    } else {
+        // Populate scenario editor specific data here
 
-        //Need to read in ownship.ini, othership.ini, environment.ini
-        std::string environmentIniFilename = scenarioPath;
-        environmentIniFilename.append("/environment.ini");
+        // TODO: StartTime as used in scenario editor is in seconds, but in hours elsewhere that scenarioDataStructure is used, convert here
+        scenarioData.startTime = scenarioData.startTime * SECONDS_IN_HOUR;
+        
+        // Own ship irr::f32 initialX, initialZ;
+        scenarioData.ownShipData.initialX = controller.longToX(scenarioData.ownShipData.initialLong);
+        scenarioData.ownShipData.initialZ = controller.latToZ(scenarioData.ownShipData.initialLat);
 
-        std::string ownShipIniFilename = scenarioPath;
-        ownShipIniFilename.append("/ownship.ini");
+        // Other ship irr::f32 initialX, initialZ, leg stop times, and add final 'stop leg'
+        for (int i=0; i < scenarioData.otherShipsData.size(); i++) {
+            // Position
+            scenarioData.otherShipsData.at(i).initialX = controller.longToX(scenarioData.otherShipsData.at(i).initialLong);
+            scenarioData.otherShipsData.at(i).initialZ = controller.latToZ(scenarioData.otherShipsData.at(i).initialLat);
 
-        std::string otherShipIniFilename = scenarioPath;
-        otherShipIniFilename.append("/othership.ini");
-
-        std::string descriptionFilename = scenarioPath;
-        descriptionFilename.append("/description.ini");
-
-        //Load general information
-        generalData.startTime = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
-        generalData.startDay = IniFile::iniFileTou32(environmentIniFilename,"StartDay");
-        generalData.startMonth = IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
-        generalData.startYear = IniFile::iniFileTou32(environmentIniFilename,"StartYear");
-        generalData.sunRiseTime = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
-        generalData.sunSetTime = IniFile::iniFileTof32(environmentIniFilename,"SunSet");
-        generalData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
-        generalData.visibility = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange");
-        generalData.rain = IniFile::iniFileTof32(environmentIniFilename,"Rain");
-        generalData.scenarioName = scenarioName;
-        //defaults
-        if(generalData.sunRiseTime==0.0) {generalData.sunRiseTime=6;}
-        if(generalData.sunSetTime==0.0) {generalData.sunSetTime=18;}
-
-        //Load own ship information
-        ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
-        ownShipData.Z = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
-        ownShipData.heading = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
-        ownShipData.name = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
-        ownShipData.initialSpeed = IniFile::iniFileTof32(ownShipIniFilename,"InitialSpeed");
-
-        //Load other ship information
-        int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");
-        for(irr::u32 i=1;i<=numberOfOtherShips;i++) {
-
-            //Temporary structure to load data
-            OtherShipEditorData thisShip;
-
-            //Get initial position
-            thisShip.X = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
-            thisShip.Z = controller.latToZ(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLat",i)));
-            thisShip.name = IniFile::iniFileToString(otherShipIniFilename,IniFile::enumerate1("Type",i));
-            thisShip.mmsi = IniFile::iniFileTou32(otherShipIniFilename,IniFile::enumerate1("mmsi",i));
-            int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
-
-            irr::f32 legStartTime = generalData.startTime; //Legs start at the start of the scenario
-            for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
-                //go through each leg (if any), and load
-                Leg currentLeg;
-                currentLeg.bearing = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
-                currentLeg.speed = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Speed",i,currentLegNo));
-                currentLeg.startTime = legStartTime;
-
-                //Use distance to calculate startTime of next leg, and stored for later reference.
-                irr::f32 distance = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Distance",i,currentLegNo));
-                currentLeg.distance = distance;
-
-                //Add the leg to the array
-                thisShip.legs.push_back(currentLeg);
-
-                //find the start time for the next leg
-                legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
+            // Legs
+            irr::f32 legStartTime = scenarioData.startTime; // Legs start at the start of the scenario
+            for (int thisLeg = 0; thisLeg < scenarioData.otherShipsData.at(i).legs.size(); thisLeg++) {
+                scenarioData.otherShipsData.at(i).legs.at(thisLeg).startTime = legStartTime;
+                irr::f32 thisLegDistance = scenarioData.otherShipsData.at(i).legs.at(thisLeg).distance;
+                irr::f32 thisLegSpeed = scenarioData.otherShipsData.at(i).legs.at(thisLeg).speed;
+                //Update legStart time for start of next leg:
+                legStartTime+= SECONDS_IN_HOUR*(thisLegDistance/fabs(thisLegSpeed)); // nm/kts -> hours, so convert to seconds
             }
             //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
-
-            Leg stopLeg;
+            LegData stopLeg;
             stopLeg.bearing=0;
             stopLeg.speed=0;
             stopLeg.distance=0;
             stopLeg.startTime = legStartTime;
-            thisShip.legs.push_back(stopLeg);
-
-            //Add to array.
-            otherShipsData.push_back(thisShip);
-
-
+            scenarioData.otherShipsData.at(i).legs.push_back(stopLeg);
         }
-
-        //Load description information
-        std::ifstream descriptionStream (descriptionFilename.c_str());
-        //Set UTF-8 on Linux/OSX etc
-        #ifndef _WIN32
-            try {
-        #  ifdef __APPLE__
-                char* thisLocale = setlocale(LC_ALL, "");
-                if (thisLocale) {
-                    descriptionStream.imbue(std::locale(thisLocale));
-                }
-        #  else
-                descriptionStream.imbue(std::locale("en_US.UTF8"));
-        #  endif
-            } catch (const std::runtime_error& runtimeError) {
-                descriptionStream.imbue(std::locale(""));
-            }
-        #endif
-
-        std::string descriptionLines = "";
-        if (descriptionStream.is_open()) {
-            std::string descriptionLine;
-            while ( std::getline (descriptionStream,descriptionLine) )
-            {
-                descriptionLines.append(descriptionLine);
-                descriptionLines.append("\n");
-            }
-            descriptionStream.close();
-        }
-        generalData.description = descriptionLines;
-
     }
 
     //Load buoy data
@@ -693,6 +706,21 @@ int main (int argc, char ** argv)
         thisBuoy.X = controller.longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
         thisBuoy.Z = controller.latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
         buoysData.push_back(thisBuoy);
+    }
+
+    std::string scenarioLandObjectFilename = worldPath;
+    scenarioLandObjectFilename.append("/landobject.ini");
+    //Find number of land objects
+    irr::u32 numberOfLandObjects;
+    numberOfLandObjects = IniFile::iniFileTou32(scenarioLandObjectFilename, "Number");
+    for (irr::u32 currentLandObject = 1; currentLandObject <= numberOfLandObjects; currentLandObject++) {
+
+        PositionData thisLandObject;
+        //Get land object position
+        thisLandObject.X = controller.longToX(IniFile::iniFileTof32(scenarioLandObjectFilename, IniFile::enumerate1("Long", currentLandObject)));
+        thisLandObject.Z = controller.latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename, IniFile::enumerate1("Lat", currentLandObject)));
+        thisLandObject.name = IniFile::iniFileToString(scenarioLandObjectFilename, IniFile::enumerate1("Type", currentLandObject));
+        landObjectsData.push_back(thisLandObject);
     }
 
     //Check if pre-set scenario name will cause an overwrite when saved

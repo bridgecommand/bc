@@ -84,17 +84,17 @@ public:
 	CTRTextureDetailMap2(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
-	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) _IRR_OVERRIDE_;
-	virtual bool canWireFrame () { return true; }
+	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
+	virtual bool canWireFrame () IRR_OVERRIDE { return false; } // not that ready
 
 protected:
-	virtual void scanline_bilinear ();
+	virtual void fragmentShader();
 
 };
 
 //! constructor
 CTRTextureDetailMap2::CTRTextureDetailMap2(CBurningVideoDriver* driver)
-: IBurningShader(driver)
+: IBurningShader(driver, EMT_DETAIL_MAP)
 {
 	#ifdef _DEBUG
 	setDebugName("CTRTextureDetailMap2");
@@ -105,7 +105,7 @@ CTRTextureDetailMap2::CTRTextureDetailMap2(CBurningVideoDriver* driver)
 
 /*!
 */
-void CTRTextureDetailMap2::scanline_bilinear ()
+void CTRTextureDetailMap2::fragmentShader()
 {
 	tVideoSample *dst;
 
@@ -140,12 +140,11 @@ void CTRTextureDetailMap2::scanline_bilinear ()
 	xEnd = fill_convention_right( line.x[1] );
 
 	dx = xEnd - xStart;
-
 	if ( dx < 0 )
 		return;
 
 	// slopes
-	const f32 invDeltaX = reciprocal_zero2( line.x[1] - line.x[0] );
+	const f32 invDeltaX = fill_step_x( line.x[1] - line.x[0] );
 
 #ifdef IPOL_Z
 	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
@@ -200,9 +199,9 @@ void CTRTextureDetailMap2::scanline_bilinear ()
 	tFixPoint r2, g2, b2;
 
 
-	for ( s32 i = 0; i <= dx; ++i )
+	for ( s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
 	{
-		if ( (0 == EdgeTestPass) & i ) break;
+		if ( (0 == EdgeTestPass) & (i > line.x_edgetest)) break;
 
 #ifdef CMP_Z
 		if ( line.z[0] < z[i] )
@@ -285,7 +284,7 @@ void CTRTextureDetailMap2::drawTriangle(const s4DVertex* burning_restrict a, con
 	temp[2] = b->Pos.x - a->Pos.x;
 	temp[3] = ba;
 
-	scan.left = ( temp[0] * temp[3] - temp[1] * temp[2] ) > 0.f ? 0 : 1;
+	scan.left = (temp[0] * temp[3] - temp[1] * temp[2]) < 0.f ? 1 : 0;
 	scan.right = 1 - scan.left;
 
 	// calculate slopes for the major edge
@@ -326,7 +325,7 @@ void CTRTextureDetailMap2::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 	// rasterize upper sub-triangle
-	if ( (f32) 0.0 != scan.invDeltaY[1]  )
+	if (F32_GREATER_0(scan.invDeltaY[1])  )
 	{
 		// calculate slopes for top edge
 		scan.slopeX[1] = (b->Pos.x - a->Pos.x) * scan.invDeltaY[1];
@@ -358,8 +357,8 @@ void CTRTextureDetailMap2::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_left( a->Pos.y );
-		yEnd = fill_convention_right( b->Pos.y );
+		yStart = fill_convention_top( a->Pos.y );
+		yEnd = fill_convention_down( b->Pos.y );
 
 #ifdef SUBTEXEL
 		subPixel = ( (f32) yStart ) - a->Pos.y;
@@ -394,9 +393,10 @@ void CTRTextureDetailMap2::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 #endif
+		line.x_edgetest = fill_convention_edge(scan.slopeX[scan.left]);
 
 		// rasterize the edge scanlines
-		for( line.y = yStart; line.y <= yEnd; ++line.y)
+		for( line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -427,7 +427,8 @@ void CTRTextureDetailMap2::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 			// render a scanline
-			scanline_bilinear ();
+			if_interlace_scanline fragmentShader();
+			if (EdgeTestPass & edge_test_first_line) break;
 
 			scan.x[0] += scan.slopeX[0];
 			scan.x[1] += scan.slopeX[1];
@@ -460,11 +461,12 @@ void CTRTextureDetailMap2::drawTriangle(const s4DVertex* burning_restrict a, con
 		}
 	}
 
+
 	// rasterize lower sub-triangle
-	if ( (f32) 0.0 != scan.invDeltaY[2] )
+	if (F32_GREATER_0(scan.invDeltaY[2]) )
 	{
 		// advance to middle point
-		if( (f32) 0.0 != scan.invDeltaY[1] )
+		if(F32_GREATER_0(scan.invDeltaY[1]) )
 		{
 			temp[0] = b->Pos.y - a->Pos.y;	// dy
 
@@ -517,11 +519,10 @@ void CTRTextureDetailMap2::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_left( b->Pos.y );
-		yEnd = fill_convention_right( c->Pos.y );
+		yStart = fill_convention_top( b->Pos.y );
+		yEnd = fill_convention_down( c->Pos.y );
 
 #ifdef SUBTEXEL
-
 		subPixel = ( (f32) yStart ) - b->Pos.y;
 
 		// correct to pixel center
@@ -555,8 +556,10 @@ void CTRTextureDetailMap2::drawTriangle(const s4DVertex* burning_restrict a, con
 
 #endif
 
+		line.x_edgetest = fill_convention_edge(scan.slopeX[scan.left]);
+
 		// rasterize the edge scanlines
-		for( line.y = yStart; line.y <= yEnd; ++line.y)
+		for( line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -587,7 +590,8 @@ void CTRTextureDetailMap2::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 			// render a scanline
-			scanline_bilinear ();
+			if_interlace_scanline fragmentShader();
+			if (EdgeTestPass & edge_test_first_line) break;
 
 			scan.x[0] += scan.slopeX[0];
 			scan.x[1] += scan.slopeX[1];

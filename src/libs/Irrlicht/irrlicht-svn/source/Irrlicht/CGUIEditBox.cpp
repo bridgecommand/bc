@@ -8,7 +8,6 @@
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IGUIFont.h"
-#include "IVideoDriver.h"
 #include "rect.h"
 #include "os.h"
 #include "Keycodes.h"
@@ -880,7 +879,7 @@ void CGUIEditBox::draw()
 
 
 				// draw normal text
-				font->draw(txtLine->c_str(), CurrentTextRect,
+				font->draw(*txtLine, CurrentTextRect,
 					OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
 					false, true, &localClipRect);
 
@@ -924,7 +923,7 @@ void CGUIEditBox::draw()
 					s = txtLine->subString(lineStartPos, lineEndPos - lineStartPos);
 
 					if (s.size())
-						font->draw(s.c_str(), CurrentTextRect,
+						font->draw(s, CurrentTextRect,
 							OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_HIGH_LIGHT_TEXT),
 							false, true, &localClipRect);
 
@@ -963,7 +962,7 @@ void CGUIEditBox::draw()
 						mend = font->getDimension(CursorChar.c_str()).Width;
 					CurrentTextRect.LowerRightCorner.X = CurrentTextRect.UpperLeftCorner.X + mend;
 					skin->draw2DRectangle(this, skin->getColor(EGDC_HIGH_LIGHT), CurrentTextRect, &localClipRect);
-					font->draw(character.c_str(), CurrentTextRect,
+					font->draw(character, CurrentTextRect,
 								OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_HIGH_LIGHT_TEXT),
 								false, true, &localClipRect);
 				}

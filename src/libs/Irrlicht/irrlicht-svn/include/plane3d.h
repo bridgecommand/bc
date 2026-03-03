@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_PLANE_3D_H_INCLUDED__
-#define __IRR_PLANE_3D_H_INCLUDED__
+#ifndef IRR_PLANE_3D_H_INCLUDED
+#define IRR_PLANE_3D_H_INCLUDED
 
 #include "irrMath.h"
 #include "vector3d.h"
@@ -107,8 +107,8 @@ class plane3d
 		f32 getKnownIntersectionWithLine(const vector3d<T>& linePoint1,
 			const vector3d<T>& linePoint2) const
 		{
-			vector3d<T> vect = linePoint2 - linePoint1;
-			T t2 = (f32)Normal.dotProduct(vect);
+			const vector3d<T> vect = linePoint2 - linePoint1;
+			const T t2 = (f32)Normal.dotProduct(vect);
 			return (f32)-((Normal.dotProduct(linePoint1) + D) / t2);
 		}
 
@@ -149,6 +149,13 @@ class plane3d
 		void recalculateD(const vector3d<T>& MPoint)
 		{
 			D = - MPoint.dotProduct(Normal);
+		}
+
+		//! Flip plane direction to opposite side
+		void flip()
+		{
+			Normal = -Normal;
+			D = -D;
 		}
 
 		//! Gets a member point of the plane.

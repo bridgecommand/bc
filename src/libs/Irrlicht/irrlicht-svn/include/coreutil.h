@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_CORE_UTIL_H_INCLUDED__
-#define __IRR_CORE_UTIL_H_INCLUDED__
+#ifndef IRR_CORE_UTIL_H_INCLUDED
+#define IRR_CORE_UTIL_H_INCLUDED
 
 #include "irrString.h"
 #include "path.h"
@@ -47,7 +47,7 @@ inline bool hasFileExtension(const io::path& filename, const io::path& ext0,
 //! cut the filename extension from a source file path and store it in a dest file path
 inline io::path& cutFilenameExtension ( io::path &dest, const io::path &source )
 {
-	s32 endPos = source.findLast ( '.' );
+	const s32 endPos = source.findLast ( '.' );
 	dest = source.subString ( 0, endPos < 0 ? source.size () : endPos );
 	return dest;
 }
@@ -55,7 +55,7 @@ inline io::path& cutFilenameExtension ( io::path &dest, const io::path &source )
 //! get the filename extension from a file path
 inline io::path& getFileNameExtension ( io::path &dest, const io::path &source )
 {
-	s32 endPos = source.findLast ( '.' );
+	const s32 endPos = source.findLast ( '.' );
 	if ( endPos < 0 )
 		dest = "";
 	else
@@ -176,16 +176,16 @@ static inline io::path mergeFilename(const io::path& path, const io::path& filen
 
 	if ( !result.empty() )
 	{
-		fschar_t last = result.lastChar();
-		if ( last != _IRR_TEXT('/') && last != _IRR_TEXT('\\') )
-			result += _IRR_TEXT('/');
+		const fschar_t last = result.lastChar();
+		if ( last != IRR_TEXT('/') && last != IRR_TEXT('\\') )
+			result += IRR_TEXT('/');
 	}
 	if ( !filename.empty() )
 		result += filename;
 	if ( !extension.empty() )
 	{
-		if ( !result.empty() && extension[0] != _IRR_TEXT('.') )
-			result += _IRR_TEXT('.');
+		if ( !result.empty() && extension[0] != IRR_TEXT('.') )
+			result += IRR_TEXT('.');
 		result += extension;
 	}
 

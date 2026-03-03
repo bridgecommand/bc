@@ -2,13 +2,15 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_OGLCORE_CACHE_HANDLER_H_INCLUDED__
-#define __C_OGLCORE_CACHE_HANDLER_H_INCLUDED__
+#ifndef IRR_C_OGLCORE_CACHE_HANDLER_H_INCLUDED
+#define IRR_C_OGLCORE_CACHE_HANDLER_H_INCLUDED
 
 #include "IrrCompileConfig.h"
 
 #if defined(_IRR_COMPILE_WITH_OPENGL_) || defined(_IRR_COMPILE_WITH_OGLES1_) || defined(_IRR_COMPILE_WITH_OGLES2_)
 
+#include "COpenGLCoreFeature.h"
+#include "COpenGLCoreTexture.h"
 #include "SMaterial.h"
 #include "ITexture.h"
 
@@ -146,9 +148,7 @@ class COpenGLCoreCacheHandler
 			{
 				if (Texture[i] == texture)
 				{
-					Texture[i] = 0;
-
-					texture->drop();
+					set(i, nullptr);
 				}
 			}
 		}
@@ -159,11 +159,7 @@ class COpenGLCoreCacheHandler
 			{
 				if (Texture[i])
 				{
-					const TOpenGLTexture* prevTexture = Texture[i];
-
-					Texture[i] = 0;
-
-					prevTexture->drop();
+					set(i, nullptr);
 				}
 			}
 		}
@@ -413,7 +409,7 @@ public:
 
 	// Color Mask.
 
-	void getColorMask(u8& mask)
+	void getColorMask(u8& mask) const
 	{
 		mask = ColorMask[0];
 	}
@@ -468,6 +464,11 @@ public:
 
 	// Depth calls.
 
+	void getDepthFunc(GLenum& mode) const
+	{
+		mode = DepthFunc;
+	}
+
 	void setDepthFunc(GLenum mode)
 	{
 		if (DepthFunc != mode)
@@ -477,7 +478,7 @@ public:
 		}
 	}
 
-	void getDepthMask(bool& depth)
+	void getDepthMask(bool& depth) const
 	{
 		depth = DepthMask;
 	}
@@ -495,7 +496,7 @@ public:
 		}
 	}
 
-    void getDepthTest(bool& enable)
+    void getDepthTest(bool& enable) const
     {
         enable = DepthTest;
     }

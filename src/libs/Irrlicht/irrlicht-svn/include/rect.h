@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_RECT_H_INCLUDED__
-#define __IRR_RECT_H_INCLUDED__
+#ifndef IRR_RECT_H_INCLUDED
+#define IRR_RECT_H_INCLUDED
 
 #include "irrTypes.h"
 #include "dimension2d.h"
@@ -135,16 +135,20 @@ namespace core
 			if (other.LowerRightCorner.Y < LowerRightCorner.Y)
 				LowerRightCorner.Y = other.LowerRightCorner.Y;
 
+			if (other.UpperLeftCorner.X > LowerRightCorner.X)
+				LowerRightCorner.X = other.UpperLeftCorner.X;
+			if (other.UpperLeftCorner.Y > LowerRightCorner.Y)
+				LowerRightCorner.Y = other.UpperLeftCorner.Y;
+
+			if (other.LowerRightCorner.X < UpperLeftCorner.X)
+				UpperLeftCorner.X = other.LowerRightCorner.X;
+			if (other.LowerRightCorner.Y < UpperLeftCorner.Y)
+				UpperLeftCorner.Y = other.LowerRightCorner.Y;
+
 			if (other.UpperLeftCorner.X > UpperLeftCorner.X)
 				UpperLeftCorner.X = other.UpperLeftCorner.X;
 			if (other.UpperLeftCorner.Y > UpperLeftCorner.Y)
 				UpperLeftCorner.Y = other.UpperLeftCorner.Y;
-
-			// correct possible invalid rect resulting from clipping
-			if (UpperLeftCorner.Y > LowerRightCorner.Y)
-				UpperLeftCorner.Y = LowerRightCorner.Y;
-			if (UpperLeftCorner.X > LowerRightCorner.X)
-				UpperLeftCorner.X = LowerRightCorner.X;
 		}
 
 		//! Moves this rectangle to fit inside another one.
@@ -281,4 +285,3 @@ namespace core
 } // end namespace irr
 
 #endif
-

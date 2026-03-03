@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GUI_SCROLL_BAR_H_INCLUDED__
-#define __I_GUI_SCROLL_BAR_H_INCLUDED__
+#ifndef IRR_I_GUI_SCROLL_BAR_H_INCLUDED
+#define IRR_I_GUI_SCROLL_BAR_H_INCLUDED
 
 #include "IGUIElement.h"
 
@@ -55,11 +55,23 @@ namespace gui
 
 		//! sets the current position of the scrollbar
 		virtual void setPos(s32 pos) = 0;
-	};
 
+		//! Sets whether to draw a background color (EGDC_SCROLLBAR)
+		/** By default enabled */
+		virtual void setDrawBackground(bool draw) = 0;
+
+		//! Checks if a background is drawn
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const = 0;
+
+		//! Access the up (vertical) or left (horizontal) button
+		virtual IGUIButton* getUpLeftButton() const = 0;
+
+		//! Access the right (vertical) or down (horizontal) button
+		virtual IGUIButton* getDownRightButton() const = 0;
+	};
 
 } // end namespace gui
 } // end namespace irr
 
 #endif
-

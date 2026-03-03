@@ -45,22 +45,8 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  GUIMain* gui,
                                  Sound* sound,
                                  ScenarioData scenarioData,
-                                 OperatingMode::Mode mode,
-                                 irr::f32 viewAngle,
-                                 irr::f32 lookAngle,
-                                 irr::f32 cameraMinDistance,
-                                 irr::f32 cameraMaxDistance,
-                                 irr::u32 disableShaders,
-                                 irr::u32 waterSegments,
-                                 irr::core::vector3di numberOfContactPoints,
-                                 irr::f32 minContactPointSpacing,
-                                 irr::f32 contactStiffnessFactor,
-                                 irr::f32 contactDampingFactor,
-                                 irr::f32 frictionCoefficient,
-                                 irr::f32 tanhFrictionFactor,
-                                 irr::u32 limitTerrainResolution,
-                                 bool debugMode):
-    manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
+                                 ModelParameters modelParameters):
+    manOverboard(irr::core::vector3df(0,0,0),scene,dev,this) //Initialise MOB
     {
         //get reference to scene manager
         device = dev;
@@ -72,18 +58,12 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         moveViewWithPrimary = true;
 
         //Store a serialised form of the scenario loaded, as we may want to send this over the network
-        serialisedScenarioData = scenarioData.serialise();
+        serialisedScenarioData = scenarioData.serialise(false);
 
         scenarioName = scenarioData.scenarioName;
 
-        //store what mode we're in
-        this->mode = mode;
-
-        //Store if we should show debug details
-        this->debugMode = debugMode;
-
-        //store default view angle
-        this->viewAngle = viewAngle;
+        // Store model parameters
+        this->modelParameters = modelParameters;
 
         //Set loop number to zero
         loopNumber = 0;
@@ -105,7 +85,12 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         weather = scenarioData.weather;
         rainIntensity = scenarioData.rainIntensity;
         visibilityRange = scenarioData.visibilityRange;
-        if (visibilityRange <= 0) {visibilityRange = 5*M_IN_NM;} //TODO: Check units
+        if (visibilityRange < 0) {visibilityRange = 5;} //Default value
+
+        windDirection = scenarioData.windDirection;
+        windSpeed = scenarioData.windSpeed;
+
+        //std::cout << "Wind direction: " << windDirection << " Wind speed: " << windSpeed << std::endl;
 
         //Fixme: Think about time zone handling
         //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
@@ -133,20 +118,50 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
             worldPath = userFolder + worldPath;
         }
 
+        // Store world model readme.txt file contents here if available
+        std::string worldReadmePath = worldPath + "/readme.txt";
+        worldModelReadmeText = "";
+        if (Utilities::pathExists(worldReadmePath)) {
+            std::ifstream file(worldReadmePath.c_str());
+            if (file.is_open()) {
+                std::string line;
+                while (std::getline(file, line)) {
+                    worldModelReadmeText.append(line);
+                    worldModelReadmeText.append("\n");
+                }
+            }    
+        }
+        
+
         //Add terrain: Needs to happen first, so the terrain parameters are available
-        terrain.load(worldPath, smgr, device, limitTerrainResolution);
+        terrain.load(worldPath, smgr, device, modelParameters.limitTerrainResolution);
 
         //sky box/dome
         Sky sky (smgr);
 
         //Load own ship model.
-        ownShip.load(scenarioData.ownShipData, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, smgr, this, &terrain, device);
-        if(mode == OperatingMode::Secondary) {
+        // TODO: It would be better to pass in modelParameters directly
+        ownShip.load(scenarioData.ownShipData, 
+                     modelParameters.numberOfContactPoints, 
+                     modelParameters.minContactPointSpacing, 
+                     modelParameters.contactStiffnessFactor, 
+                     modelParameters.contactDampingFactor, 
+                     modelParameters.frictionCoefficient, 
+                     modelParameters.tanhFrictionFactor, 
+                     smgr, 
+                     this, 
+                     &terrain, 
+                     device);
+        if(modelParameters.mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
 
         //add water
-        water.load(smgr,ownShip.getSceneNode(),weather,disableShaders,waterSegments);
+        bool waterReflection = true;
+        if (modelParameters.vrMode == true) {
+            waterReflection = false;
+        }
+        water.load(smgr,ownShip.getSceneNode(),weather,modelParameters.disableShaders,waterReflection,modelParameters.waterSegments);
 
         /* To be replaced by getting information and passing into gui load method.
         //Tell gui to hide the second engine scroll bar if we have a single engine
@@ -169,22 +184,23 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         radarCalculation.load(ownShip.getRadarConfigFile(),device);
 
         //set camera zoom to 1
-        zoom = 1.0;
+        currentZoom = 1.0;
+        zoomLevel = 7.0; //Default zoom of 7x
 
         //make a camera, setting parent and offset
         std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         std::vector<bool> isHighView = ownShip.getCameraIsHighView(); //Are these special 'looking down' views
         irr::f32 angleCorrection = ownShip.getAngleCorrection();
-        camera.load(smgr,device->getLogger(),ownShip.getSceneNode(),views, isHighView,irr::core::degToRad(viewAngle),lookAngle,angleCorrection);
-        camera.setNearValue(cameraMinDistance);
-        camera.setFarValue(cameraMaxDistance);
+        camera.load(smgr,device->getLogger(),ownShip.getSceneNode(),views, isHighView,irr::core::degToRad(modelParameters.viewAngle),modelParameters.lookAngle,angleCorrection);
+        camera.setNearValue(modelParameters.cameraMinDistance);
+        camera.setFarValue(modelParameters.cameraMaxDistance);
 
         //make ambient light
         light.load(smgr,sunRise,sunSet, camera.getSceneNode());
 
 
         //Load other ships
-        otherShips.load(scenarioData.otherShipsData,scenarioTime,mode,smgr,this,device);
+        otherShips.load(scenarioData.otherShipsData,scenarioTime,modelParameters.mode,smgr,this,device);
 
         //Load buoys
         buoys.load(worldPath, smgr, this,device);
@@ -196,10 +212,22 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         landLights.load(worldPath, smgr, this, terrain);
 
         //Load tidal information
-        tide.load(worldPath);
+        tide.load(worldPath, scenarioData);
 
         //Load rain
         rain.load(smgr, camera.getSceneNode(), device);
+
+        //Set up 3d engine/wheel controls/visualisation
+        if (isAzimuthDrive()) {
+            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2); // 2=schottel base
+            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2);
+            portAzimuthThrottleVisual.load(smgr, portEngineVisual.getSceneNode(), irr::core::vector3df(0,0,0), 1.0, 0, 3); // 3 = schottel lever
+            stbdAzimuthThrottleVisual.load(smgr, stbdEngineVisual.getSceneNode(), irr::core::vector3df(0,0,0), 1.0, 0, 3);
+        } else {
+            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
+            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0);
+            wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
+        }
 
         //make a radar screen, setting parent and offset from own ship
         radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
@@ -217,11 +245,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
         radarImageLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
         radarImageOverlaidLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
-        //fill with bg colour
-        radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
-        radarImageOverlaid->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
-        radarImageLarge->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
-        radarImageOverlaidLarge->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
+        //Images will be filled with background colour in RadarCalculation
 
         //make radar camera
         std::vector<irr::core::vector3df> radarViews; //Get the initial camera offset from the radar screen
@@ -276,11 +300,6 @@ SimulationModel::~SimulationModel()
          ownShip.setSpeed(spd);
     }
 
-    irr::f32 SimulationModel::getSpeed() const
-    {
-        return(ownShip.getSpeed());
-    }
-
     irr::f32 SimulationModel::getLat()  const{
         return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z);
     }
@@ -317,8 +336,16 @@ SimulationModel::~SimulationModel()
         return water.getLocalNormals(relPosX,relPosZ);
     }
 
-    irr::core::vector2df SimulationModel::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t absoluteTime) const {
-        return tide.getTidalStream(longitude,latitude,absoluteTime);
+    irr::core::vector2df SimulationModel::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const {
+        
+        if (streamOverride) {
+            irr::core::vector2df overrideStream;
+            overrideStream.X = sin(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
+            overrideStream.Y = cos(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
+            return overrideStream;
+        } else {
+            return tide.getTidalStream(longitude,latitude,requestTime);
+        }
     }
 
    // void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{
@@ -741,26 +768,26 @@ SimulationModel::~SimulationModel()
 
     // Thrust levers
 
-    void SimulationModel::setPortThrustLever(irr::f32 portThrustLever)
+    void SimulationModel::setPortAzimuthThrustLever(irr::f32 portThrustLever)
     {
-        ownShip.setPortThrustLever(portThrustLever);
+        ownShip.setPortAzimuthThrustLever(portThrustLever);
 //        ownShip.setPortThrustLever(irr::f32 portThrustLever);
     }
 
-    void SimulationModel::setStbdThrustLever(irr::f32 stbdThrustLever)
+    void SimulationModel::setStbdAzimuthThrustLever(irr::f32 stbdThrustLever)
     {
 //        ownShip.setStbdThrustLever(irr::f32 stbdThrustLever);
-        ownShip.setStbdThrustLever(stbdThrustLever);
+        ownShip.setStbdAzimuthThrustLever(stbdThrustLever);
     }
 
-    irr::f32 SimulationModel::getPortThrustLever()
+    irr::f32 SimulationModel::getPortAzimuthThrustLever()
     {
-        return ownShip.getPortThrustLever();
+        return ownShip.getPortAzimuthThrustLever();
     }
 
-    irr::f32 SimulationModel::getStbdThrustLever()
+    irr::f32 SimulationModel::getStbdAzimuthThrustLever()
     {
-        return ownShip.getStbdThrustLever();
+        return ownShip.getStbdAzimuthThrustLever();
     }
 
 
@@ -998,6 +1025,56 @@ SimulationModel::~SimulationModel()
         return visibilityRange;
     }
 
+    void SimulationModel::setWindDirection(irr::f32 windDirection) //Range 0-360.
+    {
+        this->windDirection = windDirection;
+    }
+
+    irr::f32 SimulationModel::getWindDirection() const
+    {
+        return windDirection;
+    }
+
+    void SimulationModel::setWindSpeed(irr::f32 windSpeed) //Nm/h
+    {
+        this->windSpeed = windSpeed;
+    }
+
+    irr::f32 SimulationModel::getWindSpeed() const
+    {
+        return windSpeed;
+    }
+
+    void SimulationModel::setStreamOverrideDirection(irr::f32 streamDirection) //Range 0-360.
+    {
+        this->streamOverrideDirection = streamDirection;
+    }
+
+    irr::f32 SimulationModel::getStreamOverrideDirection() const
+    {
+        return streamOverrideDirection;
+    }
+
+    void SimulationModel::setStreamOverrideSpeed(irr::f32 streamSpeed) //Nm/h
+    {
+        this->streamOverrideSpeed = streamSpeed;
+    } 
+
+    irr::f32 SimulationModel::getStreamOverrideSpeed() const
+    {
+        return streamOverrideSpeed;
+    }
+
+    void SimulationModel::setStreamOverride(bool streamOverride)
+    {
+        this->streamOverride = streamOverride;
+    }
+
+    bool SimulationModel::getStreamOverride() const
+    {
+        return streamOverride;
+    }
+
     void SimulationModel::setWaterVisible(bool visible)
     {
         water.setVisible(visible);
@@ -1097,6 +1174,16 @@ SimulationModel::~SimulationModel()
         return camera.getView();
     }
 
+    irr::core::vector3df SimulationModel::getCameraBasePosition() const
+    {
+        return camera.getBasePosition();
+    }
+
+    irr::core::matrix4 SimulationModel::getCameraBaseRotation() const
+    {
+        return camera.getBaseRotation();
+    }
+
     void SimulationModel::setFrozenCamera(bool frozen)
     {
         camera.setFrozen(frozen);
@@ -1126,6 +1213,11 @@ SimulationModel::~SimulationModel()
         return radarCalculation.isRadarOn();
     }
 
+    irr::video::SColor SimulationModel::getRadarSurroundColour() const
+    {
+        return radarCalculation.getRadarSurroundColour();
+    }
+
     void SimulationModel::increaseRadarRange()
     {
         radarCalculation.increaseRange();
@@ -1151,6 +1243,36 @@ SimulationModel::~SimulationModel()
         radarCalculation.setRainClutter(value);
     }
 
+    void SimulationModel::increaseRadarGain(irr::f32 value)
+    {
+        radarCalculation.increaseGain(value);
+    }
+
+    void SimulationModel::decreaseRadarGain(irr::f32 value)
+    {
+        radarCalculation.decreaseGain(value);
+    }
+
+    void SimulationModel::increaseRadarClutter(irr::f32 value)
+    {
+        radarCalculation.increaseClutter(value);
+    }
+
+    void SimulationModel::decreaseRadarClutter(irr::f32 value)
+    {
+        radarCalculation.decreaseClutter(value);
+    }
+
+    void SimulationModel::increaseRadarRain(irr::f32 value)
+    {
+        radarCalculation.increaseRainClutter(value);
+    }
+
+    void SimulationModel::decreaseRadarRain(irr::f32 value)
+    {
+        radarCalculation.decreaseRainClutter(value);
+    }
+    
     void SimulationModel::setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange)
     {
         radarCalculation.setPIData(PIid, PIbearing, PIrange);
@@ -1170,6 +1292,11 @@ SimulationModel::~SimulationModel()
     void SimulationModel::decreaseRadarEBLRange() {radarCalculation.decreaseEBLRange();}
     void SimulationModel::increaseRadarEBLBrg() {radarCalculation.increaseEBLBrg();}
     void SimulationModel::decreaseRadarEBLBrg() {radarCalculation.decreaseEBLBrg();}
+
+    void SimulationModel::increaseRadarXCursor() {radarCalculation.increaseCursorRangeXNm();}
+    void SimulationModel::decreaseRadarXCursor() {radarCalculation.decreaseCursorRangeXNm();}
+    void SimulationModel::increaseRadarYCursor() {radarCalculation.increaseCursorRangeYNm();}
+    void SimulationModel::decreaseRadarYCursor() {radarCalculation.decreaseCursorRangeYNm();}
 
     void SimulationModel::setRadarNorthUp()
     {
@@ -1191,9 +1318,19 @@ SimulationModel::~SimulationModel()
         radarCalculation.changeRadarColourChoice();
     }
 
-    void SimulationModel::setArpaOn(bool on)
+    int SimulationModel::getArpaMode() const
     {
-        radarCalculation.setArpaOn(on);
+        return radarCalculation.getArpaMode();
+    }
+
+    void SimulationModel::setArpaMode(int mode)
+    {
+        radarCalculation.setArpaMode(mode);
+    }
+
+    void SimulationModel::setArpaListSelection(irr::s32 selection)
+    {
+        radarCalculation.setArpaListSelection(selection);
     }
 
     void SimulationModel::setRadarARPARel()
@@ -1217,14 +1354,34 @@ SimulationModel::~SimulationModel()
         radarScreen.setRadarDisplayRadius(radiusPx);
     }
 
-    irr::u32 SimulationModel::getARPATracks() const
+    void SimulationModel::addManualPoint(bool newContact)
     {
-        return radarCalculation.getARPATracks();
+        radarCalculation.addManualPoint(newContact, offsetPosition, ownShip, absoluteTime);
     }
 
-    ARPAContact SimulationModel::getARPATrack(irr::u32 index) const
+    void SimulationModel::clearManualPoints()
     {
-        return radarCalculation.getARPATrack(index);
+        radarCalculation.clearManualPoints();
+    }
+
+    void SimulationModel::trackTargetFromCursor()
+    {
+        radarCalculation.trackTargetFromCursor();
+    }
+
+    void SimulationModel::clearTargetFromCursor()
+    {
+        radarCalculation.clearTargetFromCursor();
+    }
+
+    irr::u32 SimulationModel::getARPATracksSize() const
+    {
+        return radarCalculation.getARPATracksSize();
+    }
+
+    ARPAContact SimulationModel::getARPAContactFromTrackIndex(irr::u32 index) const
+    {
+        return radarCalculation.getARPAContactFromTrackIndex(index);
     }
 
     void SimulationModel::setMainCameraActive()
@@ -1237,14 +1394,26 @@ SimulationModel::~SimulationModel()
         radarCamera.setActive();
     }
 
-    void SimulationModel::setZoom(bool zoomOn)
-    {
+    void SimulationModel::setZoom(bool zoomOn) {
         if (zoomOn) {
-            zoom = 7.0; //Binoculars magnification
-        } else {
-            zoom = 1.0;
+            currentZoom = zoomLevel;
         }
-        camera.setHFOV(irr::core::degToRad(viewAngle)/zoom);
+        else {
+            currentZoom = 1;
+        }
+        camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / currentZoom);
+    }
+    
+    void SimulationModel::setZoom(bool zoomOn, irr::f32 zoomLevel)
+    {
+       this->zoomLevel = zoomLevel;
+       setZoom(zoomOn);
+    }
+
+    void SimulationModel::setViewAngle(irr::f32 viewAngle)
+    {
+        modelParameters.viewAngle = viewAngle;
+        camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / currentZoom);
     }
 
     void SimulationModel::setMouseDown(bool isMouseDown)
@@ -1277,6 +1446,11 @@ SimulationModel::~SimulationModel()
         return worldName;
     }
 
+    std::string SimulationModel::getWorldReadme() const
+    {
+        return worldModelReadmeText;
+    }
+
     void SimulationModel::releaseManOverboard()
     {
         //Only release/update if not already released
@@ -1287,12 +1461,12 @@ SimulationModel::~SimulationModel()
             relativePosition.Y = 0;
             //Put randomly on port or starboard side of the ship
             if (rand() > RAND_MAX/2) {
-                relativePosition.X = ownShip.getWidth() *  0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
-                relativePosition.Z = ownShip.getWidth() * -0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.X = ownShip.getBreadth() *  0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.Z = ownShip.getBreadth() * -0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
                 //PositionEntity(mob,EntityX( ship_parent )+(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )-(OwnShipWidth#*0.6)*Sin(angle#), True)
             } else {
-                relativePosition.X = ownShip.getWidth() * -0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
-                relativePosition.Z = ownShip.getWidth() *  0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.X = ownShip.getBreadth() * -0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.Z = ownShip.getBreadth() *  0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
                 //PositionEntity(mob,EntityX( ship_parent )-(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )+(OwnShipWidth#*0.6)*Sin(angle#), True)
             }
             manOverboard.setPosition(ownShipPos + relativePosition);
@@ -1348,6 +1522,63 @@ SimulationModel::~SimulationModel()
         return ownShip.isAzimuthDrive();
     }
 
+    bool SimulationModel::isAzimuthAsternAllowed() const
+    {
+        return ownShip.isAzimuthAsternAllowed();
+    }
+
+    irr::f32 SimulationModel::inputToAzimuthEngineMapping(irr::f32 inputAngle) const
+    {
+        irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
+
+        if (isAzimuthAsternAllowed()) {
+            if ((inputAngle >= 0) && (inputAngle < 135)) {
+                tempEngLevel = (inputAngle / 135.0); // Gives range 0->1 for inputs between 0->135deg
+            } else if ((inputAngle >= 135) && (inputAngle < 180)) {
+                tempEngLevel = 1; // Gives 1 for inputs between 135 and 180
+            } else if ((inputAngle >= 180) && (inputAngle < 225)) {
+                tempEngLevel = -1; // Gives -1 for inputs between 180 and 225
+            } else if ((inputAngle >= 225) && (inputAngle < 360)) {
+                tempEngLevel = -1 + ((inputAngle-225.0) / 135.0); // Gives range -1->0 for inputs between 225 and 360
+            }
+        } else {
+            if ((inputAngle >= 0) && (inputAngle < 135))
+            {
+                tempEngLevel = (0.5 + inputAngle / 270); // Gives range 0.5->1 for inputs between 0->135deg
+            }
+            if ((inputAngle >= 135) && (inputAngle < 180)) // Gives 1 for inputs between 135 and 180
+            {
+                tempEngLevel = 1;
+            }
+            if ((inputAngle >= 225) && (inputAngle < 360)) // Gives range 0->0.5 for inputs between 225->360
+            {
+                tempEngLevel = ((inputAngle - 225) / 270);
+            }
+            // DEE_Boxing_Day_2022 I am sure there is a far more elegant solution than the above
+
+            // limit the output to 0..1 only leaving this in for future elegant solution
+            if (tempEngLevel < 0)
+            {
+                tempEngLevel = 0;
+            }
+            if (tempEngLevel > 1)
+            {
+                tempEngLevel = 1;
+            }
+
+        }
+        return tempEngLevel;
+    }
+
+    irr::f32 SimulationModel::azimuthToInputEngineMapping(irr::f32 inputEngine) const
+    {
+        if (isAzimuthAsternAllowed()) {
+            return (inputEngine*135);
+        } else {
+            return (inputEngine*270)-135;
+        }
+    }
+
     bool SimulationModel::hasDepthSounder() const
     {
         return ownShip.hasDepthSounder();
@@ -1370,12 +1601,22 @@ SimulationModel::~SimulationModel()
 
     bool SimulationModel::debugModeOn() const
     {
-        return debugMode;
+        return modelParameters.debugMode;
     }
 
     irr::f32 SimulationModel::getOwnShipMass() const
     {
         return ownShip.getShipMass();
+    }
+
+    irr::f32 SimulationModel::getOwnShipMassEstimate() const
+    {
+        return ownShip.getEstimatedDisplacement();
+    }
+
+    irr::f32 SimulationModel::getOtherShipMassEstimate(int number) const
+    {
+        return otherShips.getEstimatedDisplacement(number);
     }
 
     irr::f32 SimulationModel::getMaxSounderDepth() const
@@ -1399,8 +1640,56 @@ SimulationModel::~SimulationModel()
         moveViewWithPrimary = moveView;
     }
 
+    SimulationModel::ModelParameters SimulationModel::getModelParameters() const {
+        return modelParameters;
+    }
+
+    bool SimulationModel::getIsSecondaryControlWheel() const {
+        return modelParameters.secondaryControlWheel;
+    }
+
+    bool SimulationModel::getIsSecondaryControlPortEngine() const {
+        return modelParameters.secondaryControlPortEngine;
+    }
+
+    bool SimulationModel::getIsSecondaryControlStbdEngine() const {
+        return modelParameters.secondaryControlStbdEngine;
+    }
+
+    bool SimulationModel::getIsSecondaryControlPortSchottel() const {
+        return modelParameters.secondaryControlPortSchottel;
+    }
+
+    bool SimulationModel::getIsSecondaryControlStbdSchottel() const {
+        return modelParameters.secondaryControlStbdSchottel;
+    }
+
+    bool SimulationModel::getIsSecondaryControlPortThrustLever() const {
+        return modelParameters.secondaryControlPortThrustLever;
+    }
+
+    bool SimulationModel::getIsSecondaryControlStbdThrustLever() const {
+        return modelParameters.secondaryControlStbdThrustLever;
+    }
+
+    bool SimulationModel::getIsSecondaryControlBowThruster() const {
+        return modelParameters.secondaryControlBowThruster;
+    }
+
+    bool SimulationModel::getIsSecondaryControlSternThruster() const {
+        return modelParameters.secondaryControlSternThruster;
+    }
+
+    irr::f32 SimulationModel::getLineStiffnessFactor() const {
+        return modelParameters.lineStiffnessFactor;
+    }
+
+    irr::f32 SimulationModel::getLineDampingFactor() const {
+        return modelParameters.lineDampingFactor;
+    }
+
     irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {
-        
+
         // Temporarily enable all required triangle selectors
         if (linesMode == 1) {
             // Start - on own ship
@@ -1416,7 +1705,7 @@ SimulationModel::~SimulationModel()
             // Not start or end, return null;
             return 0;
         }
-        
+
         irr::core::vector3df intersection;
         irr::core::triangle3df hitTriangle;
 
@@ -1425,12 +1714,12 @@ SimulationModel::~SimulationModel()
             ray,
             intersection, // This will be the position of the collision
             hitTriangle, // This will be the triangle hit in the collision
-            0, // (bitmask), 0 for all
+            IDFlag_IsPickable, // (bitmask), 0 for all
             0); // Check all nodes
-        
+
         irr::scene::ISceneNode* contactPointNode = 0;
 
-        if (selectedSceneNode && 
+        if (selectedSceneNode &&
             (
                 ((linesMode == 1) && (selectedSceneNode == ownShip.getSceneNode())) || // Valid start node
                 ((linesMode == 2) && (selectedSceneNode != ownShip.getSceneNode()))    // Valid end node
@@ -1446,8 +1735,8 @@ SimulationModel::~SimulationModel()
 
             irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
             if (selectedSceneNode && selectedSceneNode->getScale().X > 0) {
-                sphereScale = irr::core::vector3df(1.0f/selectedSceneNode->getScale().X, 
-                                                   1.0f/selectedSceneNode->getScale().X, 
+                sphereScale = irr::core::vector3df(1.0f/selectedSceneNode->getScale().X,
+                                                   1.0f/selectedSceneNode->getScale().X,
                                                    1.0f/selectedSceneNode->getScale().X);
             }
 
@@ -1455,10 +1744,10 @@ SimulationModel::~SimulationModel()
                                                         localPosition,
                                                         irr::core::vector3df(0, 0, 0),
                                                         sphereScale);
-            
+
             // Set name to match parent for convenience
             contactPointNode->setName(selectedSceneNode->getName());
-        } 
+        }
 
         // Reset triangle selectors
         ownShip.enableTriangleSelector(false); // Own ship should not need triangle selectors at runtime (todo: for future robustness, check previous state and restore to this)
@@ -1487,14 +1776,34 @@ SimulationModel::~SimulationModel()
         return landObjects.getSceneNode(number);
     }
 
+    irr::scene::ISceneNode* SimulationModel::getTerrainSceneNode(int number)
+    {
+        return terrain.getSceneNode(number);
+    }
+
+    Terrain* SimulationModel::getTerrain()
+    {
+        return &terrain;
+    }
+
+    irr::f32 SimulationModel::getTerrainHeight(irr::f32 posX, irr::f32 posZ) const
+    {
+        return terrain.getHeight(posX, posZ);
+    }
+
     void SimulationModel::addLine() // Add a line, which will be undefined
     {
-        lines.addLine();
+        lines.addLine(this);
     }
 
     Lines* SimulationModel::getLines() // Get pointer to lines object
     {
         return &lines;
+    }
+
+    void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
+    {
+        camera.update(0, quat, pos, lensShift, true);
     }
 
     void SimulationModel::update()
@@ -1551,7 +1860,12 @@ SimulationModel::~SimulationModel()
         //update ambient lighting
         light.update(scenarioTime);
         //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
-        driver->setFog(light.getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01*visibilityRange*M_IN_NM, visibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
+        irr::f32 appliedVisibilityRange = visibilityRange;
+        // Lower bound of visibility of 0.01 Nm
+        if (appliedVisibilityRange < 0.01) {
+            appliedVisibilityRange = 0.01;
+        }
+        driver->setFog(light.getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01* appliedVisibilityRange*M_IN_NM, appliedVisibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
         lightLevel = light.getLightLevel();
 
         }{ IPROF("Update rain");
@@ -1574,7 +1888,7 @@ SimulationModel::~SimulationModel()
         } { IPROF("Update lines");
         //update all lines, ready to be used for own ship force
         lines.update(deltaTime);
-        } { IPROF("Update own ship");
+        }{ IPROF("Update own ship");
         //update own ship
         ownShip.update(deltaTime, scenarioTime, tideHeight, weather, lines.getOverallForceLocal(), lines.getOverallTorqueLocal());
 
@@ -1631,7 +1945,17 @@ SimulationModel::~SimulationModel()
 
         //update the camera position
         camera.update(deltaTime);
-
+        }{ IPROF("Update controls visualisation");
+            if (isAzimuthDrive()) {
+                portEngineVisual.update(ownShip.getPortSchottel());
+                stbdEngineVisual.update(ownShip.getStbdSchottel());
+                portAzimuthThrottleVisual.update(45 * getPortAzimuthThrustLever());
+                stbdAzimuthThrottleVisual.update(45 * getStbdAzimuthThrustLever());
+            } else {
+                portEngineVisual.update(45.0 * ownShip.getPortEngine());
+                stbdEngineVisual.update(45.0 * ownShip.getStbdEngine());
+                wheelVisual.update(-6.0 * ownShip.getWheel());
+            }
         }
         if (radarCalculation.isRadarOn()) {
             { IPROF("Update radar cursor position");
@@ -1659,19 +1983,15 @@ SimulationModel::~SimulationModel()
         //check if paused
         paused = device->getTimer()->getSpeed()==0.0;
 
-        }{ IPROF("Calc elevation etc ");
-        //calculate current angular elevation due to pitch and roll in the view direction
-        irr::f32 lookRadians = irr::core::degToRad(camera.getLook());
-        elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
-
         }{ IPROF("Get radar ARPA data for GUI");
 
         //get radar ARPA data to show
-        irr::u32 numberOfARPATracks = radarCalculation.getARPATracks();
+        irr::u32 numberOfARPATracks = radarCalculation.getARPATracksSize();
         guiData->arpaContactStates.clear();
         for(unsigned int i = 0; i<numberOfARPATracks; i++) {
-			guiData->arpaContactStates.push_back(radarCalculation.getARPATrack(i).estimate);
+			guiData->arpaContactStates.push_back(radarCalculation.getARPAContactFromTrackIndex(i).estimate);
         }
+        guiData->arpaListSelection = radarCalculation.getArpaListSelection();
 
         }{ IPROF("Collate GUI data ");
 
@@ -1679,9 +1999,12 @@ SimulationModel::~SimulationModel()
         guiData->lat = getLat();
         guiData->longitude = getLong();
         guiData->hdg = ownShip.getHeading();
-        guiData->viewAngle = camera.getLook();
-        guiData->viewElevationAngle = elevAngle;
-        guiData->spd = ownShip.getSpeed();
+        
+        irr::core::vector3df cameraForwardVector = camera.getForwardVector(); 
+        guiData->viewAngle = atan2(cameraForwardVector.X, cameraForwardVector.Z) * irr::core::RADTODEG;
+        guiData->viewElevationAngle = asin(cameraForwardVector.Y) * irr::core::RADTODEG;
+
+        guiData->spd = ownShip.getSpeedThroughWater();
         guiData->portEng = ownShip.getPortEngine();
         guiData->stbdEng = ownShip.getStbdEngine();
         guiData->rudder = ownShip.getRudder();  // inner workings of this will be modified in model DEE
@@ -1696,6 +2019,11 @@ SimulationModel::~SimulationModel()
         guiData->weather = weather;
         guiData->rain = rainIntensity;
         guiData->visibility = visibilityRange;
+        guiData->windDirection = windDirection;
+        guiData->windSpeed = windSpeed;
+        guiData->streamDirection = streamOverrideDirection;
+        guiData->streamSpeed = streamOverrideSpeed;
+        guiData->streamOverride = streamOverride;
         guiData->radarRangeNm = radarCalculation.getRangeNm();
         guiData->radarGain = radarCalculation.getGain();
         guiData->radarClutter = radarCalculation.getClutter();
@@ -1717,13 +2045,11 @@ SimulationModel::~SimulationModel()
 	guiData->schottelPort = ownShip.getPortSchottel();
 	guiData->schottelStbd = ownShip.getStbdSchottel();
 
-	guiData->enginePort = (ownShip.getPortEngine()*270)-135; //TODO: change gui control mapping so we don't need scaling here
-	guiData->engineStbd = (ownShip.getStbdEngine()*270)-135; //TODO: change gui control mapping so we don't need scaling here
+	guiData->azimuthEnginePort = azimuthToInputEngineMapping(ownShip.getPortEngine());
+	guiData->azimuthEngineStbd = azimuthToInputEngineMapping(ownShip.getStbdEngine());
 
-
-
-	guiData->clutchPort = ownShip.getPortClutch();
-	guiData->clutchStbd = ownShip.getStbdClutch();
+	guiData->azimuthClutchPort = ownShip.getPortClutch();
+	guiData->azimuthClutchStbd = ownShip.getStbdClutch();
 
 	guiData->emergencySteering = !(ownShip.getFollowUpRudderWorking());
 

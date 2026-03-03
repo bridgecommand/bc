@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_D3D9_SHADER_MATERIAL_RENDERER_H_INCLUDED__
-#define __C_D3D9_SHADER_MATERIAL_RENDERER_H_INCLUDED__
+#ifndef IRR_C_D3D9_SHADER_MATERIAL_RENDERER_H_INCLUDED
+#define IRR_C_D3D9_SHADER_MATERIAL_RENDERER_H_INCLUDED
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_WINDOWS_
@@ -21,7 +21,7 @@ namespace irr
 namespace video
 {
 
-class IVideoDriver;
+class CD3D9Driver;
 class IShaderConstantSetCallBack;
 class IMaterialRenderer;
 
@@ -31,7 +31,7 @@ class CD3D9ShaderMaterialRenderer : public IMaterialRenderer
 public:
 
 	//! Public constructor
-	CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3ddev, video::IVideoDriver* driver,
+	CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3ddev, video::CD3D9Driver* driver,
 		s32& outMaterialTypeNr, const c8* vertexShaderProgram, const c8* pixelShaderProgram,
 		IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData);
 
@@ -39,17 +39,17 @@ public:
 	~CD3D9ShaderMaterialRenderer();
 
 	virtual void OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
-		bool resetAllRenderstates, video::IMaterialRendererServices* services) _IRR_OVERRIDE_;
+		bool resetAllRenderstates, video::IMaterialRendererServices* services) IRR_OVERRIDE;
 
-	virtual void OnUnsetMaterial() _IRR_OVERRIDE_;
+	virtual void OnUnsetMaterial() IRR_OVERRIDE;
 
-	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_;
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) IRR_OVERRIDE;
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const _IRR_OVERRIDE_;
+	virtual bool isTransparent() const IRR_OVERRIDE;
 
 	//! Access the callback provided by the users when creating shader materials
-	virtual IShaderConstantSetCallBack* getShaderConstantSetCallBack() const _IRR_OVERRIDE_
+	virtual IShaderConstantSetCallBack* getShaderConstantSetCallBack() const IRR_OVERRIDE
 	{ 
 		return CallBack;
 	}
@@ -59,7 +59,7 @@ protected:
 	//! constructor only for use by derived classes who want to
 	//! create a fall back material for example.
 	CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3ddev,
-					video::IVideoDriver* driver,
+					video::CD3D9Driver* driver,
 					IShaderConstantSetCallBack* callback,
 					IMaterialRenderer* baseMaterial,
 					s32 userData=0);
@@ -88,7 +88,7 @@ protected:
 					LPD3DXCONSTANTTABLE* ppConstantTable);
 
 	IDirect3DDevice9* pID3DDevice;
-	video::IVideoDriver* Driver;
+	video::CD3D9Driver* Driver;
 	IShaderConstantSetCallBack* CallBack;
 	IMaterialRenderer* BaseMaterial;
 
@@ -105,4 +105,3 @@ protected:
 #endif
 #endif
 #endif
-

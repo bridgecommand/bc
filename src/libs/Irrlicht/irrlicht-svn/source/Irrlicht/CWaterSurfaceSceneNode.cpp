@@ -30,7 +30,7 @@ CWaterSurfaceSceneNode::CWaterSurfaceSceneNode(f32 waveHeight, f32 waveSpeed, f3
 	setDebugName("CWaterSurfaceSceneNode");
 	#endif
 
-	setMesh(mesh);
+	setMesh(mesh, true);
 }
 
 
@@ -74,9 +74,9 @@ void CWaterSurfaceSceneNode::OnAnimate(u32 timeMs)
 }
 
 
-void CWaterSurfaceSceneNode::setMesh(IMesh* mesh)
+void CWaterSurfaceSceneNode::setMesh(IMesh* mesh, bool copyMeshMaterials)
 {
-	CMeshSceneNode::setMesh(mesh);
+	CMeshSceneNode::setMesh(mesh, copyMeshMaterials);
 	if (!mesh)
 		return;
 	if (OriginalMesh)

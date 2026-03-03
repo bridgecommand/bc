@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_PATH_H_INCLUDED__
-#define __IRR_PATH_H_INCLUDED__
+#ifndef IRR_PATH_H_INCLUDED
+#define IRR_PATH_H_INCLUDED
 
 #include "irrString.h"
 
@@ -13,7 +13,9 @@ namespace io
 {
 
 //! Type used for all file system related strings.
-/** This type will transparently handle different file system encodings. */
+/** This type will transparently handle different file system encodings.
+    NOTE: For historical reasons the tool-functions using io::path are all in coreutil.h
+*/
 typedef core::string<fschar_t> path;
 
 //! Used in places where we identify objects by a filename, but don't actually work with the real filename
@@ -47,7 +49,7 @@ struct SNamedPath
 	const path& getPath() const
 	{
 		return Path;
-	};
+	}
 
 	//! Get the name which is used to identify the file.
 	//! This string is similar to the names and filenames used before Irrlicht 1.7
@@ -85,4 +87,4 @@ private:
 } // io
 } // irr
 
-#endif // __IRR_PATH_H_INCLUDED__
+#endif // IRR_PATH_H_INCLUDED

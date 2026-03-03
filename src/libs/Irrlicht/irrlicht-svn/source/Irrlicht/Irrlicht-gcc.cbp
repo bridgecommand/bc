@@ -27,8 +27,10 @@
 					<Add option="-DIRRLICHT_EXPORTS" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
+					<Add option="-DIRR_COMPILE_WITH_DX9_DEV_PACK" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include" />
 				</Compiler>
 				<Linker>
 					<Add library="kernel32" />
@@ -43,6 +45,10 @@
 					<Add library="uuid" />
 					<Add library="opengl32" />
 					<Add library="winmm" />
+					<Add library="d3dx9" />
+					<Add library="dinput8" />
+					<Add library="dxguid" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86" />
 				</Linker>
 				<ExtraCommands>
 					<Add after="cmd /c del ..\..\bin\Win32-gcc\Irrlicht.dll" />
@@ -68,8 +74,10 @@
 					<Add option="-DIRRLICHT_EXPORTS" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
+					<Add option="-DIRR_COMPILE_WITH_DX9_DEV_PACK" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -85,6 +93,10 @@
 					<Add library="uuid" />
 					<Add library="opengl32" />
 					<Add library="winmm" />
+					<Add library="d3dx9" />
+					<Add library="dinput8" />
+					<Add library="dxguid" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86" />
 				</Linker>
 				<ExtraCommands>
 					<Add after="cmd /c del ..\..\bin\Win32-gcc\Irrlicht.dll" />
@@ -117,6 +129,9 @@
 					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include" />
 				</Compiler>
 				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-static" />
 					<Add library="kernel32" />
 					<Add library="user32" />
 					<Add library="gdi32" />
@@ -133,6 +148,59 @@
 					<Add library="dinput8" />
 					<Add library="dxguid" />
 					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86" />
+				</Linker>
+				<ExtraCommands>
+					<Add after="cmd /c del ..\..\bin\Win32-gcc\Irrlicht.dll" />
+					<Add after="cmd /c move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
+				</ExtraCommands>
+			</Target>
+			<Target title="Win64 - Release - fast math - dll">
+				<Option platforms="Windows;" />
+				<Option output="../../lib/Win64-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/win64-gcc-release-fast-dll" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-Wall" />
+					<Add option="-m64" />
+					<Add option="-W" />
+					<Add option="-ffast-math" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D_USRDLL" />
+					<Add option="-DIRRLICHT_EXPORTS" />
+					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-DIRR_COMPILE_WITH_DX9_DEV_PACK" />
+					<Add directory="../../include" />
+					<Add directory="zlib" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include" />
+				</Compiler>
+				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-static" />
+					<Add option="-m64" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="opengl32" />
+					<Add library="winmm" />
+					<Add library="d3dx9" />
+					<Add library="dinput8" />
+					<Add library="dxguid" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x64" />
 				</Linker>
 				<ExtraCommands>
 					<Add after="cmd /c del ..\..\bin\Win32-gcc\Irrlicht.dll" />
@@ -183,8 +251,10 @@
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
+					<Add option="-DIRR_COMPILE_WITH_DX9_DEV_PACK" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -200,6 +270,10 @@
 					<Add library="uuid" />
 					<Add library="opengl32" />
 					<Add library="winmm" />
+					<Add library="d3dx9" />
+					<Add library="dinput8" />
+					<Add library="dxguid" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86" />
 				</Linker>
 			</Target>
 			<Target title="Win32 - Release - fast math - static">
@@ -223,8 +297,10 @@
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
+					<Add option="-DIRR_COMPILE_WITH_DX9_DEV_PACK" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -240,6 +316,10 @@
 					<Add library="uuid" />
 					<Add library="opengl32" />
 					<Add library="winmm" />
+					<Add library="d3dx9" />
+					<Add library="dinput8" />
+					<Add library="dxguid" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86" />
 				</Linker>
 			</Target>
 			<Target title="Linux - Debug - shared">
@@ -420,12 +500,14 @@
 		<Unit filename="../../include/EHardwareBufferFlags.h" />
 		<Unit filename="../../include/EMaterialFlags.h" />
 		<Unit filename="../../include/EMaterialTypes.h" />
+		<Unit filename="../../include/EMeshBufferTypes.h" />
 		<Unit filename="../../include/EMeshWriterEnums.h" />
 		<Unit filename="../../include/EMessageBoxFlags.h" />
 		<Unit filename="../../include/EPrimitiveTypes.h" />
 		<Unit filename="../../include/EReadFileType.h" />
 		<Unit filename="../../include/ESceneNodeAnimatorTypes.h" />
 		<Unit filename="../../include/ESceneNodeTypes.h" />
+		<Unit filename="../../include/ESceneNodeUpdateAbs.h" />
 		<Unit filename="../../include/EShaderTypes.h" />
 		<Unit filename="../../include/ETerrainElements.h" />
 		<Unit filename="../../include/IAnimatedMesh.h" />
@@ -621,6 +703,7 @@
 		<Unit filename="CBlit.h" />
 		<Unit filename="CBoneSceneNode.cpp" />
 		<Unit filename="CBoneSceneNode.h" />
+		<Unit filename="CBufferRenderNode.h" />
 		<Unit filename="CBurningShader_Raster_Reference.cpp" />
 		<Unit filename="CCSMLoader.cpp" />
 		<Unit filename="CCSMLoader.h" />
@@ -945,11 +1028,11 @@
 		<Unit filename="CTRFlatWire.cpp" />
 		<Unit filename="CTRGouraud.cpp" />
 		<Unit filename="CTRGouraud2.cpp" />
-		<Unit filename="CTRGouraudAlpha2.cpp" />
 		<Unit filename="CTRGouraudAlphaNoZ2.cpp" />
 		<Unit filename="CTRGouraudNoZ2.cpp" />
 		<Unit filename="CTRGouraudWire.cpp" />
 		<Unit filename="CTRNormalMap.cpp" />
+		<Unit filename="CTRParallaxMap.cpp" />
 		<Unit filename="CTRStencilShadow.cpp" />
 		<Unit filename="CTRTextureBlend.cpp" />
 		<Unit filename="CTRTextureDetailMap2.cpp" />
@@ -1017,6 +1100,7 @@
 		<Unit filename="IDepthBuffer.h" />
 		<Unit filename="IImagePresenter.h" />
 		<Unit filename="ITriangleRenderer.h" />
+		<Unit filename="IUserData.h" />
 		<Unit filename="IZBuffer.h" />
 		<Unit filename="Irrlicht.cpp" />
 		<Unit filename="Octree.h" />
@@ -1259,6 +1343,7 @@
 		<Unit filename="libpng/pngset.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="libpng/pngstruct.h" />
 		<Unit filename="libpng/pngtrans.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1321,10 +1406,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="zlib/zutil.h" />
-		<Extensions>
-			<code_completion />
-			<debugger />
-			<envvars />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

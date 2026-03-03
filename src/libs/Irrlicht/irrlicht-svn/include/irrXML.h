@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and/or irrXML.h
 
-#ifndef __IRR_XML_H_INCLUDED__
-#define __IRR_XML_H_INCLUDED__
+#ifndef IRR_XML_H_INCLUDED
+#define IRR_XML_H_INCLUDED
 
 #include <stdio.h>
 #include "IrrCompileConfig.h"
@@ -201,7 +201,7 @@ namespace io
 		//! An xml cdata section like &lt;![CDATA[ this is some CDATA ]]&gt;
 		EXN_CDATA,
 
-		//! Unknown element.
+		//! Unknown element. Also xml headers nodes (which currently also don't read attributes)
 		EXN_UNKNOWN
 	};
 
@@ -436,24 +436,24 @@ namespace io
 	struct xmlChar
 	{
 		T c;
-		xmlChar<T>() {}
-		xmlChar<T>(char in) : c(static_cast<T>(in)) {}
-		xmlChar<T>(wchar_t in) : c(static_cast<T>(in)) {}
+		xmlChar() {}
+		xmlChar(char in) : c(static_cast<T>(in)) {}
+		xmlChar(wchar_t in) : c(static_cast<T>(in)) {}
 #if defined(__BORLANDC__)
 		// Note - removing explicit for Borland was to get it to even compile.
 		// There haven't been any kind of tests for that besides that.
-		xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
-		xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
-		xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
-		xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
+		xmlChar(unsigned char in) : c(static_cast<T>(in)) {}
+		xmlChar(unsigned short in) : c(static_cast<T>(in)) {}
+		xmlChar(unsigned int in) : c(static_cast<T>(in)) {}
+		xmlChar(unsigned long in) : c(static_cast<T>(in)) {}
 #else
-		explicit xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
+		explicit xmlChar(unsigned char in) : c(static_cast<T>(in)) {}
 
 #if !defined(_MSC_VER) || defined(_NATIVE_WCHAR_T_DEFINED)	// VS compiling without native wchar_t can't have it
-		explicit xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
+		explicit xmlChar(unsigned short in) : c(static_cast<T>(in)) {}
 #endif
-		explicit xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
-		explicit xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
+		explicit xmlChar(unsigned int in) : c(static_cast<T>(in)) {}
+		explicit xmlChar(unsigned long in) : c(static_cast<T>(in)) {}
 #endif
 		operator T() const { return c; }
 		void operator=(int t) { c=static_cast<T>(t); }
@@ -641,5 +641,4 @@ namespace io
 } // end namespace io
 } // end namespace irr
 
-#endif // __IRR_XML_H_INCLUDED__
-
+#endif // IRR_XML_H_INCLUDED

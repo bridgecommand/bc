@@ -2,12 +2,11 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_SCENE_MANAGER_H_INCLUDED__
-#define __I_SCENE_MANAGER_H_INCLUDED__
+#ifndef IRR_I_SCENE_MANAGER_H_INCLUDED
+#define IRR_I_SCENE_MANAGER_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "irrArray.h"
-#include "irrString.h"
 #include "path.h"
 #include "vector3d.h"
 #include "dimension2d.h"
@@ -66,7 +65,7 @@ namespace scene
 		//! In this pass, lights are transformed into camera space and added to the driver
 		ESNRP_LIGHT =2,
 
-		//! This is used for sky boxes.
+		//! This is mostly used for sky boxes. Stage between light and solid.
 		ESNRP_SKY_BOX =4,
 
 		//! All normal objects can use this for registering themselves.
@@ -98,7 +97,39 @@ namespace scene
 
 		//! Drawn after transparent effect nodes. For custom gui's. Unsorted (in order nodes registered themselves). 
 		ESNRP_GUI = 128
+	};
 
+	//! Enumeration for sorting transparent nodes
+	/** Sorting used for nodes with ESNRP_TRANSPARENT or ESNRP_AUTOMATIC+transparency.
+	Also used for ESNRP_TRANSPARENT_EFFECT nodes (in an independent array)
+	Transparent nodes are always drawn back to front based on distance to camera.
+	This enum controls which points are used for the distance. */
+	enum E_TRANSPARENT_NODE_SORTING
+	{
+		//! Don't sort, but  draw in the order in which nodes registered themselves for rendering
+		//! By default this is the order in which nodes are in the scenegraph
+		//! Which can be used to do some custom sorting via scene-graph (mainly useful if you only have to that once)
+		ETNS_NONE,
+
+		//! Distance from node origin to camera position
+		ETNS_ORIGIN,
+
+		//! Distance from node center to camera position
+		ETNS_CENTER,
+
+		//! Distance from the nearest of the 2 transformed bounding-box extend corners to camera
+		ETNS_BBOX_EXTENTS,
+
+		//! Distance from node origin to camera plane
+		ETNS_PLANE_ORIGIN,
+
+		//! Distance from node center to camera plane
+		//! With orthographic cameras there's a high chance you might prefer this one
+		ETNS_PLANE_CENTER,
+
+		//! Default sorting Irrlicht uses currently
+		//! This may change in the future
+		ETNS_DEFAULT = ETNS_CENTER
 	};
 
 	class IAnimatedMesh;
@@ -160,7 +191,7 @@ namespace scene
 	{
 	public:
 
-		//! Get pointer to an animateable mesh. Loads the file if not loaded already.
+		//! Get pointer to an animatable mesh. Loads the file if not loaded already.
 		/**
 		 * If you want to remove a loaded mesh from the cache again, use removeMesh().
 		 *  Currently there are the following mesh formats supported:
@@ -393,7 +424,7 @@ namespace scene
 		 **/
 		virtual IAnimatedMesh* getMesh(const io::path& filename, const io::path& alternativeCacheName=io::path("")) = 0;
 
-		//! Get pointer to an animateable mesh. Loads the file if not loaded already.
+		//! Get pointer to an animatable mesh. Loads the file if not loaded already.
 		/** Works just as getMesh(const char* filename). If you want to
 		remove a loaded mesh from the cache again, use removeMesh().
 		\param file File handle of the mesh to load.
@@ -453,13 +484,15 @@ namespace scene
 		where the scene node will be placed.
 		\param rotation: Initial rotation of the scene node.
 		\param scale: Initial scale of the scene node.
+		\param type: Type of cube-mesh to create. Check ECUBE_MESH_TYPE documentation for more info
 		\return Pointer to the created test scene node. This
 		pointer should not be dropped. See IReferenceCounted::drop()
 		for more information. */
 		virtual IMeshSceneNode* addCubeSceneNode(f32 size=10.0f, ISceneNode* parent=0, s32 id=-1,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),
-			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
+			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f),
+			ECUBE_MESH_TYPE type=ECMT_1BUF_12VTX_NA) = 0;
 
 		//! Adds a sphere scene node of the given radius and detail
 		/** \param radius: Radius of the sphere.
@@ -614,7 +647,9 @@ namespace scene
 		virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent=0,
 			f32 rotateSpeed=-1500.f, f32 zoomSpeed=200.f,
 			f32 translationSpeed=1500.f, s32 id=-1, f32 distance=70.f,
-			bool makeActive=true) =0;
+			bool makeActive=true
+			, f32 rotX = 0.f, f32 rotY = 0.f
+		) =0;
 
 		//! Adds a camera scene node with an animator which provides mouse and keyboard control appropriate for first person shooters (FPS).
 		/** This FPS camera is intended to provide a demonstration of a
@@ -750,6 +785,8 @@ namespace scene
 		//! Adds a skydome scene node to the scene graph.
 		/** A skydome is a large (half-) sphere with a panoramic texture
 		on the inside and is drawn around the camera position.
+		Note: If the texture is mirrored you can use a negative scale for 
+		the texture-matrix of the node to still work with it.
 		\param texture: Texture for the dome.
 		\param horiRes: Number of vertices of a horizontal layer of the sphere.
 		\param vertRes: Number of vertices of a vertical layer of the sphere.
@@ -1009,8 +1046,8 @@ namespace scene
 		/** \param name Name of the mesh
 		\param vtxColorCylinder color of the cylinder
 		\param vtxColorCone color of the cone
-		\param tesselationCylinder Number of quads the cylinder side consists of
-		\param tesselationCone Number of triangles the cone's roof consists of
+		\param tessellationCylinder Number of quads the cylinder side consists of
+		\param tessellationCone Number of triangles the cone's roof consists of
 		\param height Total height of the arrow
 		\param cylinderHeight Total height of the cylinder, should be lesser than total height
 		\param widthCylinder Diameter of the cylinder
@@ -1020,7 +1057,7 @@ namespace scene
 		virtual IAnimatedMesh* addArrowMesh(const io::path& name,
 				video::SColor vtxColorCylinder=0xFFFFFFFF,
 				video::SColor vtxColorCone=0xFFFFFFFF,
-				u32 tesselationCylinder=4, u32 tesselationCone=8,
+				u32 tessellationCylinder=4, u32 tessellationCone=8,
 				f32 height=1.f, f32 cylinderHeight=0.6f,
 				f32 widthCylinder=0.05f, f32 widthCone=0.3f) = 0;
 
@@ -1115,6 +1152,11 @@ namespace scene
 		//! Get the current color of shadows.
 		virtual video::SColor getShadowColor() const = 0;
 
+		//! Shadow nodes drawing into the stencil buffer need that shadow to be drawn afterwards
+		//* This is usually used internally by CShadowVolumeSceneNodes. 
+		// Nothing to do for users unless they implement their own shadow nodes */
+		virtual void requestDrawShadowPassStencilShadow() = 0;
+
 		//! Create a shadow volume scene node to be used with custom nodes
 		/** Use this if you implement your own SceneNodes and need shadow volumes in them.
 		Otherwise you should generally use addShadowVolumeSceneNode functions from IMeshSceneNode or IAnimatedMeshSceneNode.*/
@@ -1136,7 +1178,7 @@ namespace scene
 
 		//! Clear all nodes which are currently registered for rendering
 		/** Usually you don't have to care about this as drawAll will clear nodes
-		after rendering them. But sometimes you might have to manully reset this.
+		after rendering them. But sometimes you might have to manually reset this.
 		For example when you deleted nodes between registering and rendering. */
 		virtual void clearAllRegisteredNodesForRendering() = 0;
 
@@ -1261,7 +1303,7 @@ namespace scene
 		See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimator* createFollowSplineAnimator(s32 startTime,
 			const core::array< core::vector3df >& points,
-			f32 speed = 1.0f, f32 tightness = 0.5f, bool loop=true, bool pingpong=false) = 0;
+			f32 speed = 1.0f, f32 tightness = 0.5f, bool loop=true, bool pingpong=false, bool steer=false) = 0;
 
 		//! Creates a simple ITriangleSelector, based on a mesh.
 		/** Triangle selectors
@@ -1370,7 +1412,7 @@ namespace scene
 
 		//! //! Creates a Triangle Selector, optimized by an octree.
 		/** \deprecated Use createOctreeTriangleSelector instead. This method may be removed by Irrlicht 1.9. */
-		_IRR_DEPRECATED_ ITriangleSelector* createOctTreeTriangleSelector(IMesh* mesh,
+		IRR_DEPRECATED ITriangleSelector* createOctTreeTriangleSelector(IMesh* mesh,
 			ISceneNode* node, s32 minimalPolysPerNode=32)
 		{
 			return createOctreeTriangleSelector(mesh, node, minimalPolysPerNode);
@@ -1615,7 +1657,7 @@ namespace scene
 		using ISceneManager::saveScene().
 		\param filename Name of the file to load from.
 		\param userDataSerializer If you want to load user data
-		possibily saved in that file for some scene nodes in the file,
+		saved in that file for some scene nodes in the file,
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
@@ -1671,6 +1713,12 @@ namespace scene
 		//! Set current render pass.
 		virtual void setCurrentRenderPass(E_SCENE_NODE_RENDER_PASS nextPass) =0;
 
+		//! Get current node sorting algorithm used for transparent nodes
+		virtual E_TRANSPARENT_NODE_SORTING getTransparentNodeSorting() const = 0;
+
+		//! Set the node sorting algorithm used for transparent nodes
+		virtual void setTransparentNodeSorting(E_TRANSPARENT_NODE_SORTING sorting) = 0;
+
 		//! Get an instance of a geometry creator.
 		/** The geometry creator provides some helper methods to create various types of
 		basic geometry. This can be useful for custom scene nodes. */
@@ -1693,4 +1741,3 @@ namespace scene
 } // end namespace irr
 
 #endif
-

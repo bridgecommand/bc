@@ -20,7 +20,7 @@
 
 #include "GUI.hpp"
 #include "ControllerModel.hpp"
-#include "GeneralDataStruct.hpp"
+#include "../ScenarioDataStructure.hpp"
 //#include "Network.hpp"
 #include "../Utilities.hpp"
 
@@ -41,7 +41,18 @@
 		{
 			irr::s32 id = event.GUIEvent.Caller->getID();
 
-
+            
+            if (event.GUIEvent.EventType==irr::gui::EGET_EDITBOX_CHANGED) {
+                // If user changes own ship settings, don't require them to click 'update leg'
+                if (id == GUIMain::GUI_ID_COURSE_EDITBOX || 
+                    id == GUIMain::GUI_ID_SPEED_EDITBOX) {
+                    if (gui->getSelectedShip() == 0) {
+                        // Own ship so ship id = 0, and leg and distance not relevant
+                        model->changeLeg(0,0,gui->getEditBoxCourse(),gui->getEditBoxSpeed(),0);    
+                    }
+                }
+            }
+            
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) {
 
                 if (id == GUIMain::GUI_ID_ZOOMIN_BUTTON) {
@@ -123,6 +134,14 @@
 
             }
 
+            if (event.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
+                if (id == GUIMain::GUI_ID_DRIFTING_CHECKBOX) {
+                    if (gui->getSelectedShip() > 0) {
+                        model->setDrifting(gui->getSelectedShip(), ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked());
+                    }
+                }
+            }
+
             if (event.GUIEvent.EventType==irr::gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_CHANGED) {
                 if (id==GUIMain::GUI_ID_SHIP_COMBOBOX) {
                     model->updateSelectedShip( ((irr::gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
@@ -150,20 +169,22 @@
 
             //Check scenario name change, or user clicks on 'save or apply'. If so, apply general data changes to model.
             if ((event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && (id == GUIMain::GUI_ID_APPLY_BUTTON || id == GUIMain::GUI_ID_SAVE_BUTTON)) || (event.GUIEvent.EventType==irr::gui::EGET_EDITBOX_CHANGED && id == GUIMain::GUI_ID_SCENARIONAME_EDITBOX)) {
-                GeneralData tempData;
+                ScenarioData tempData;
                 tempData.startTime = gui->getStartTime();
                 tempData.startDay = gui->getStartDay();
                 tempData.startMonth = gui->getStartMonth();
                 tempData.startYear = gui->getStartYear();
-                tempData.sunRiseTime = gui->getSunRise();
-                tempData.sunSetTime = gui->getSunSet();
+                tempData.sunRise = gui->getSunRise();
+                tempData.sunSet = gui->getSunSet();
                 tempData.weather = gui->getWeather();
-                tempData.rain = gui->getRain();
-                tempData.visibility = gui->getVisibility();
+                tempData.rainIntensity = gui->getRain();
+                tempData.visibilityRange = gui->getVisibility();
+                tempData.windDirection = gui->getWindDirection();
+                tempData.windSpeed = gui->getWindSpeed();
                 tempData.scenarioName = gui->getScenarioName();
                 tempData.description = gui->getDescription();
-
-                model->setScenarioData(tempData);
+                // This only applies the 'general' data, not own ship/other ship data etc
+                model->setGeneralScenarioData(tempData);
             }
 
             //Check for Save button here (ensure 'Apply' gets run first!)

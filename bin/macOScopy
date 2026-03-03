@@ -1,19 +1,19 @@
 #!/bin/sh
 
 cp bridgecommand BridgeCommand.app/Contents/MacOS/BridgeCommand
-cp bridgecommand-bc BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/bc
-cp bridgecommand-mc BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS/mc
-cp bridgecommand-ed BridgeCommand.app/Contents/MacOS/ed.app/Contents/MacOS/ed
-cp bridgecommand-ini BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/ini
-cp bridgecommand-mh BridgeCommand.app/Contents/MacOS/mh.app/Contents/MacOS/mh
-cp bridgecommand-rp BridgeCommand.app/Contents/MacOS/rp.app/Contents/MacOS/rp
+cp bridgecommand-bc BridgeCommand.app/Contents/Helpers/bc.app/Contents/MacOS/bc
+cp bridgecommand-mc BridgeCommand.app/Contents/Helpers/mc.app/Contents/MacOS/mc
+cp bridgecommand-ed BridgeCommand.app/Contents/Helpers/ed.app/Contents/MacOS/ed
+cp bridgecommand-ini BridgeCommand.app/Contents/Helpers/ini.app/Contents/MacOS/ini
+cp bridgecommand-mh BridgeCommand.app/Contents/Helpers/mh.app/Contents/MacOS/mh
+cp bridgecommand-rp BridgeCommand.app/Contents/Helpers/rp.app/Contents/MacOS/rp
 
-rm -f BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/ed.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/mh.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/rp.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/bc.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/mc.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/ed.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/ini.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/mh.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/rp.app/Contents/MacOS/.gitignore
 rm -f BridgeCommand.app/Contents/MacOS/.gitignore
 rm -rf BridgeCommand.app/Contents/Resources/doc
 rm -rf BridgeCommand.app/Contents/Resources/media
@@ -30,6 +30,8 @@ cp -a Sounds BridgeCommand.app/Contents/Resources/Sounds
 mkdir BridgeCommand.app/Contents/Resources/shaders
 cat shaders/Water_ps.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_ps.glsl
 cat shaders/Water_vs.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_vs.glsl
+cat shaders/Water_ps_noReflection.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_ps_noReflection.glsl
+cat shaders/Water_vs_noReflection.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_vs_noReflection.glsl
 cp -a World BridgeCommand.app/Contents/Resources/World
 cp -a bc5.ini BridgeCommand.app/Contents/Resources/bc5.ini
 cp -a map.ini BridgeCommand.app/Contents/Resources/map.ini

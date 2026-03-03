@@ -18,7 +18,7 @@ namespace gui
 
 		//! constructor
 		ScrollDial(core::position2d< s32 > centre, u32 radius, IGUIEnvironment* environment,
-				IGUIElement* parent, s32 id, bool noclip=false);
+				IGUIElement* parent, s32 id, s32 maxAngle=315, bool showValue=false, bool noclip=false);
 
 		//! destructor
 		virtual ~ScrollDial();
@@ -65,6 +65,20 @@ namespace gui
 		//! updates the rectangle
 		virtual void updateAbsolutePosition();
 
+		//! Sets whether to draw a background color (EGDC_SCROLLBAR)
+		/** Ignored */
+		virtual void setDrawBackground(bool draw);
+
+		//! Checks if a background is drawn
+		/** Ignored */
+		virtual bool isDrawBackgroundEnabled() const;
+
+		//! Access the up (vertical) or left (horizontal) button
+		virtual IGUIButton* getUpLeftButton() const;
+
+		//! Access the right (vertical) or down (horizontal) button
+		virtual IGUIButton* getDownRightButton() const;
+
 		//! Writes attributes of the element.
 		//virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
@@ -99,6 +113,11 @@ namespace gui
 		s32 DesiredPos;
 		//u32 LastChange;
 		video::SColor CurrentIconColor;
+
+		s32 maxAngle;
+		s32 thresholdAngle;
+
+		bool showValue;
 
 		f32 range () const { return (f32) ( Max - Min ); }
 	};

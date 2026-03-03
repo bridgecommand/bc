@@ -9,8 +9,6 @@
 #include "CImage.h"
 #include "os.h"
 #include "dimension2d.h"
-#include "IVideoDriver.h"
-#include "IFileSystem.h"
 #include "IReadFile.h"
 #include "irrString.h"
 
@@ -89,7 +87,7 @@ IImage* CImageLoaderLMP::loadImage(irr::io::IReadFile* file) const
 
 	IImage* image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(header.width, header.height));
 
-	CColorConverter::convert8BitTo32Bit(rawtex, (u8*)image->getData(), header.width, header.height, (u8*) colormap_h, 0, false);
+	CColorConverter::convert8BitTo32Bit(rawtex, (u8*)image->getData(), header.width, header.height, (const u8*) colormap_h, 0, false);
 
 	delete [] rawtex;
 
@@ -258,7 +256,7 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 
 	IImage* image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(header.width, header.height));
 
-	CColorConverter::convert8BitTo32Bit(rawtex, (u8*)image->getData(), header.width, header.height, (u8*) colormap_pcx, 0, false);
+	CColorConverter::convert8BitTo32Bit(rawtex, (u8*)image->getData(), header.width, header.height, (const u8*) colormap_pcx, 0, false);
 
 	delete [] rawtex;
 

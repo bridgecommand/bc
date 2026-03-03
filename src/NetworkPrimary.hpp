@@ -34,9 +34,10 @@ public:
 
     void connectToServer(std::string hostnames);
     void getScenarioFromNetwork(std::string& dataString);
-    void setModel(SimulationModel* model);
+    void setModel(SimulationModel* model); 
     void update();
     int getPort();
+    void shutdownAllSecondaries(void);
 
 private:
     SimulationModel* model;
@@ -51,7 +52,7 @@ private:
     std::string generateSendString(); //Prepare the normal data message to send
     std::string generateSendStringShort(); //Prepare the own ship only data message to send
     std::string generateSendStringScn(); //Prepare the 'Scn' message, with scenario information
-    void sendNetwork();
+    void sendNetwork(std::string aManualCmd="");
     void receiveNetwork();
 
 };

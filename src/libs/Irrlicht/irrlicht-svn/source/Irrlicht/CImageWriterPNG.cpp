@@ -6,10 +6,9 @@
 
 #ifdef _IRR_COMPILE_WITH_PNG_WRITER_
 
-#include "CImageLoaderPNG.h"
+#include "IImage.h"
 #include "CColorConverter.h"
 #include "IWriteFile.h"
-#include "irrString.h"
 #include "os.h" // for logging
 
 #ifdef _IRR_COMPILE_WITH_LIBPNG_
@@ -84,15 +83,22 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 		NULL, (png_error_ptr)png_cpexcept_error, (png_error_ptr)png_cpexcept_warning);
 	if (!png_ptr)
 	{
-		os::Printer::log("PNGWriter: Internal PNG create write struct failure\n", file->getFileName(), ELL_ERROR);
+		os::Printer::log("PNGWriter: Internal PNG create write struct failure", file->getFileName(), ELL_ERROR);
 		return false;
 	}
+
+	// Set compression level
+	// Sadly Irrlicht used param=0 as default and an u32 type.
+	// So to avoid breaking downward compatibility we keep 0 as default (which is -1 in zlib) 
+	// and subtract 1 from param to get everything into zlib range.
+	if (param <= 10)	// Z_BEST_COMPRESSION is 9 - values above have so far no meaning
+		png_set_compression_level(png_ptr, (int)param-1);
 
 	// Allocate the png info struct
 	png_infop info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
 	{
-		os::Printer::log("PNGWriter: Internal PNG create info struct failure\n", file->getFileName(), ELL_ERROR);
+		os::Printer::log("PNGWriter: Internal PNG create info struct failure", file->getFileName(), ELL_ERROR);
 		png_destroy_write_struct(&png_ptr, NULL);
 		return false;
 	}
@@ -141,7 +147,7 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 	u8* tmpImage = new u8[image->getDimension().Height*lineWidth];
 	if (!tmpImage)
 	{
-		os::Printer::log("PNGWriter: Internal PNG create image failure\n", file->getFileName(), ELL_ERROR);
+		os::Printer::log("PNGWriter: Internal PNG create image failure", file->getFileName(), ELL_ERROR);
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return false;
 	}
@@ -175,7 +181,7 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 	u8** RowPointers = new png_bytep[image->getDimension().Height];
 	if (!RowPointers)
 	{
-		os::Printer::log("PNGWriter: Internal PNG create row pointers failure\n", file->getFileName(), ELL_ERROR);
+		os::Printer::log("PNGWriter: Internal PNG create row pointers failure", file->getFileName(), ELL_ERROR);
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		delete [] tmpImage;
 		return false;

@@ -3,7 +3,6 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CMemoryFile.h"
-#include "irrString.h"
 
 namespace irr
 {
@@ -37,7 +36,7 @@ size_t CMemoryReadFile::read(void* buffer, size_t sizeToRead)
 	if (amount <= 0)
 		return 0;
 
-	c8* p = (c8*)Buffer;
+	const c8* p = (const c8*)Buffer;
 	memcpy(buffer, p + Pos, amount);
 
 	Pos += amount;
@@ -52,14 +51,14 @@ bool CMemoryReadFile::seek(long finalPos, bool relativeMovement)
 {
 	if (relativeMovement)
 	{
-		if (Pos + finalPos > Len)
+		if (Pos + finalPos < 0 || Pos + finalPos > Len)
 			return false;
 
 		Pos += finalPos;
 	}
 	else
 	{
-		if (finalPos > Len)
+		if (finalPos < 0 || finalPos > Len)
 			return false;
 
 		Pos = finalPos;
@@ -133,14 +132,14 @@ bool CMemoryWriteFile::seek(long finalPos, bool relativeMovement)
 {
 	if (relativeMovement)
 	{
-		if (Pos + finalPos > Len)
+		if (Pos + finalPos < 0 || Pos + finalPos > Len)
 			return false;
 
 		Pos += finalPos;
 	}
 	else
 	{
-		if (finalPos > Len)
+		if (finalPos < 0 || finalPos > Len)
 			return false;
 
 		Pos = finalPos;

@@ -57,14 +57,21 @@ irr::f32 Ship::getLength() const
     return length;
 }
 
-irr::f32 Ship::getWidth() const
+irr::f32 Ship::getBreadth() const
 {
-    return width;
+    return breadth;
 }
 
 irr::f32 Ship::getHeightCorrection() const
 {
     return heightCorrection;
+}
+
+irr::f32 Ship::getEstimatedDisplacement() const
+{
+    irr::f32 seawaterDensity = 1024; // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
+    irr::f32 typicalBlockCoefficient = 0.87; // 0.87 is typical block coefficient
+    return draught * breadth * length * seawaterDensity * typicalBlockCoefficient; 
 }
 
 void Ship::setPosition(irr::f32 xPos, irr::f32 zPos)
@@ -83,7 +90,7 @@ void Ship::setHeading(irr::f32 hdg)
 
 void Ship::setSpeed(irr::f32 spd)
 {
-    this->spd = spd;
+    this->axialSpd = spd;
     controlMode = MODE_AUTO; //Switch to auto mode
 }
 
@@ -94,7 +101,7 @@ irr::f32 Ship::getHeading() const
 
 irr::f32 Ship::getSpeed() const
 {
-    return spd;
+    return axialSpd;
 }
 
 irr::u32 Ship::getMMSI() const

@@ -7,11 +7,11 @@
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
 #include "SAnimatedMesh.h"
+#include "SOverrideMaterial.h"
 #include "CMeshCache.h"
 #include "IXMLWriter.h"
 #include "ISceneUserDataSerializer.h"
 #include "IGUIEnvironment.h"
-#include "IMaterialRenderer.h"
 #include "IReadFile.h"
 #include "IWriteFile.h"
 #include "ISceneLoader.h"
@@ -218,7 +218,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 		gui::IGUIEnvironment* gui)
 : ISceneNode(0, 0), Driver(driver), FileSystem(fs), GUIEnvironment(gui),
 	CursorControl(cursorControl), CollisionManager(0),
-	ActiveCamera(0), ShadowColor(150,0,0,0), AmbientLight(0,0,0,0), Parameters(0),
+	ActiveCamera(0), ShadowPassStencilShadowRequested(false), ShadowColor(150,0,0,0), AmbientLight(0,0,0,0), Parameters(0),
 	MeshCache(cache), CurrentRenderPass(ESNRP_NONE), LightManager(0),
 	IRR_XML_FORMAT_SCENE(L"irr_scene"), IRR_XML_FORMAT_NODE(L"node"), IRR_XML_FORMAT_NODE_ATTR_TYPE(L"type")
 {
@@ -229,6 +229,8 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 
 	// root node's scene manager
 	SceneManager = this;
+
+	setTransparentNodeSorting(ETNS_DEFAULT);
 
 	if (Driver)
 		Driver->grab();
@@ -427,7 +429,7 @@ CSceneManager::~CSceneManager()
 }
 
 
-//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
+//! gets an animatable mesh. loads it if needed. returned pointer must not be dropped.
 IAnimatedMesh* CSceneManager::getMesh(const io::path& filename, const io::path& alternativeCacheName)
 {
 	io::path cacheName = alternativeCacheName.empty() ? filename : alternativeCacheName;
@@ -438,7 +440,7 @@ IAnimatedMesh* CSceneManager::getMesh(const io::path& filename, const io::path& 
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
 	if (!file)
 	{
-		os::Printer::log("Could not load mesh, because file could not be opened: ", filename, ELL_ERROR);
+		os::Printer::log("Could not load mesh, because file could not be opened", filename, ELL_ERROR);
 		return 0;
 	}
 
@@ -450,7 +452,7 @@ IAnimatedMesh* CSceneManager::getMesh(const io::path& filename, const io::path& 
 }
 
 
-//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
+//! gets an animatable mesh. loads it if needed. returned pointer must not be dropped.
 IAnimatedMesh* CSceneManager::getMesh(io::IReadFile* file)
 {
 	if (!file)
@@ -609,13 +611,14 @@ IVolumeLightSceneNode* CSceneManager::addVolumeLightSceneNode(
 //! the returned pointer must not be dropped.
 IMeshSceneNode* CSceneManager::addCubeSceneNode(f32 size, ISceneNode* parent,
 		s32 id, const core::vector3df& position,
-		const core::vector3df& rotation, const core::vector3df& scale)
+		const core::vector3df& rotation, const core::vector3df& scale,
+		ECUBE_MESH_TYPE type)
 {
 #ifdef _IRR_COMPILE_WITH_CUBE_SCENENODE_
 	if (!parent)
 		parent = this;
 
-	IMeshSceneNode* node = new CCubeSceneNode(size, parent, this, id, position, rotation, scale);
+	IMeshSceneNode* node = new CCubeSceneNode(size, parent, this, id, position, rotation, scale, type);
 	node->drop();
 
 	return node;
@@ -735,7 +738,7 @@ IOctreeSceneNode* CSceneManager::addOctreeSceneNode(IMesh* mesh, ISceneNode* par
 
 	if (node)
 	{
-		node->setMesh(mesh);
+		node->setMesh(mesh, true);
 		node->drop();
 	}
 
@@ -774,14 +777,16 @@ ICameraSceneNode* CSceneManager::addCameraSceneNode(ISceneNode* parent,
 //! The returned pointer must not be dropped.
 ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id, f32 distance,
-	bool makeActive)
+	bool makeActive
+	, f32 rotX, f32 rotY)
 {
 	ICameraSceneNode* node = addCameraSceneNode(parent, core::vector3df(),
 			core::vector3df(0,0,100), id, makeActive);
 	if (node)
 	{
 		ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl,
-			rotateSpeed, zoomSpeed, translationSpeed, distance);
+			rotateSpeed, zoomSpeed, translationSpeed, distance
+			,rotX,rotY);
 
 		node->addAnimator(anm);
 		anm->drop();
@@ -1092,14 +1097,14 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const io::path& name,
 //! Adds an arrow mesh to the mesh pool.
 IAnimatedMesh* CSceneManager::addArrowMesh(const io::path& name,
 		video::SColor vtxColor0, video::SColor vtxColor1,
-		u32 tesselationCylinder, u32 tesselationCone, f32 height,
+		u32 tessellationCylinder, u32 tessellationCone, f32 height,
 		f32 cylinderHeight, f32 width0,f32 width1)
 {
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByName(name);
 
-	IMesh* mesh = GeometryCreator->createArrowMesh( tesselationCylinder,
-			tesselationCone, height, cylinderHeight, width0,width1,
+	IMesh* mesh = GeometryCreator->createArrowMesh( tessellationCylinder,
+			tessellationCone, height, cylinderHeight, width0,width1,
 			vtxColor0, vtxColor1);
 	if (!mesh)
 		return 0;
@@ -1224,9 +1229,9 @@ void CSceneManager::render()
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CSceneManager::getBoundingBox() const
 {
-	_IRR_DEBUG_BREAK_IF(true) // Bounding Box of Scene Manager should never be used.
+	IRR_DEBUG_BREAK_IF(true) // Bounding Box of Scene Manager should never be used.
 
-	static const core::aabbox3d<f32> dummy;
+	static const core::aabbox3d<f32> dummy(1,-1);
 	return dummy;
 }
 
@@ -1244,7 +1249,7 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 	// has occlusion query information
 	if (node->getAutomaticCulling() & scene::EAC_OCC_QUERY)
 	{
-		result = (Driver->getOcclusionQueryResult(const_cast<ISceneNode*>(node))==0);
+		result = (Driver->getOcclusionQueryResult(node)==0);
 	}
 
 	// can be seen by a bounding box ?
@@ -1359,14 +1364,14 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 	case ESNRP_TRANSPARENT:
 		if (!isCulled(node))
 		{
-			TransparentNodeList.push_back(TransparentNodeEntry(node, camWorldPos));
+			TransparentNodeList.push_back(TransparentNodeEntry(node, funcTransparentNodeDistance(node, CamWorldPos, CamWorldViewNormalized)));
 			taken = 1;
 		}
 		break;
 	case ESNRP_TRANSPARENT_EFFECT:
 		if (!isCulled(node))
 		{
-			TransparentEffectNodeList.push_back(TransparentNodeEntry(node, camWorldPos));
+			TransparentEffectNodeList.push_back(TransparentNodeEntry(node, funcTransparentNodeDistance(node, CamWorldPos, CamWorldViewNormalized)));
 			taken = 1;
 		}
 		break;
@@ -1381,7 +1386,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 				if (Driver->needsTransparentRenderPass(node->getMaterial(i)))
 				{
 					// register as transparent node
-					TransparentNodeEntry e(node, camWorldPos);
+					TransparentNodeEntry e(node, funcTransparentNodeDistance(node, CamWorldPos, CamWorldViewNormalized));
 					TransparentNodeList.push_back(e);
 					taken = 1;
 					break;
@@ -1417,12 +1422,12 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 
 #ifdef _IRR_SCENEMANAGER_DEBUG
 	s32 index = Parameters->findAttribute("calls");
-	Parameters->setAttribute(index, Parameters->getAttributeAsInt(index)+1);
+	Parameters->setAttribute(index, Parameters->getAttributeAsInt(index, 0)+1);
 
 	if (!taken)
 	{
 		index = Parameters->findAttribute("culled");
-		Parameters->setAttribute(index, Parameters->getAttributeAsInt(index)+1);
+		Parameters->setAttribute(index, Parameters->getAttributeAsInt(index, 0)+1);
 	}
 #endif
 
@@ -1469,7 +1474,8 @@ void CSceneManager::drawAll()
 	for (i=video::ETS_COUNT-1; i>=video::ETS_TEXTURE_0; --i)
 		Driver->setTransform ( (video::E_TRANSFORMATION_STATE)i, core::IdentityMatrix );
 	// TODO: This should not use an attribute here but a real parameter when necessary (too slow!)
-	Driver->setAllowZWriteOnTransparent(Parameters->getAttributeAsBool(ALLOW_ZWRITE_ON_TRANSPARENT));
+	Driver->setAllowZWriteOnTransparent(Parameters->getAttributeAsBool(ALLOW_ZWRITE_ON_TRANSPARENT, false));
+	ShadowPassStencilShadowRequested = false;
 
 	// do animations and other stuff.
 	IRR_PROFILE(getProfiler().start(EPID_SM_ANIMATE));
@@ -1481,11 +1487,17 @@ void CSceneManager::drawAll()
 		consistent Camera is needed for culling
 	*/
 	IRR_PROFILE(getProfiler().start(EPID_SM_RENDER_CAMERAS));
-	camWorldPos.set(0,0,0);
 	if (ActiveCamera)
 	{
 		ActiveCamera->render();
-		camWorldPos = ActiveCamera->getAbsolutePosition();
+		CamWorldPos = ActiveCamera->getAbsolutePosition();
+		CamWorldViewNormalized = ActiveCamera->getTarget() - ActiveCamera->getAbsolutePosition();
+		CamWorldViewNormalized.normalize();
+	}
+	else
+	{
+		CamWorldPos.set(0,0,0);
+		CamWorldViewNormalized.set(0,0,1);
 	}
 	IRR_PROFILE(getProfiler().stop(EPID_SM_RENDER_CAMERAS));
 
@@ -1523,7 +1535,7 @@ void CSceneManager::drawAll()
 		{
 			LightManager->OnRenderPassPreRender(CurrentRenderPass);
 		}
-		else
+		else if ( LightList.size() > 1 )
 		{
 			// Sort the lights by distance from the camera
 			core::vector3df camWorldPos(0, 0, 0);
@@ -1645,9 +1657,11 @@ void CSceneManager::drawAll()
 				ShadowNodeList[i]->render();
 		}
 
-		if (!ShadowNodeList.empty())
+		if (ShadowPassStencilShadowRequested)
+		{
 			Driver->drawStencilShadow(true,ShadowColor, ShadowColor,
 				ShadowColor, ShadowColor);
+		}
 
 		ShadowNodeList.set_used(0);
 
@@ -1661,7 +1675,8 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_TRANSPARENT;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		TransparentNodeList.sort(); // sort by distance from camera
+		if ( TransparentNodeSorting != ETNS_NONE )
+			TransparentNodeList.sort(); // sort by distance from camera
 		if (LightManager)
 		{
 			LightManager->OnRenderPassPreRender(CurrentRenderPass);
@@ -1695,7 +1710,8 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_TRANSPARENT_EFFECT;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		TransparentEffectNodeList.sort(); // sort by distance from camera
+		if ( TransparentNodeSorting != ETNS_NONE )
+			TransparentEffectNodeList.sort(); // sort by distance from camera
 
 		if (LightManager)
 		{
@@ -1718,6 +1734,9 @@ void CSceneManager::drawAll()
 		Parameters->setAttribute("drawn_transparent_effect", (s32) TransparentEffectNodeList.size());
 #endif
 		TransparentEffectNodeList.set_used(0);
+
+		if (LightManager)
+			LightManager->OnRenderPassPostRender(CurrentRenderPass);
 	}
 
 	// render custom gui nodes
@@ -1747,6 +1766,9 @@ void CSceneManager::drawAll()
 		Parameters->setAttribute("drawn_gui_nodes", (s32) GuiNodeList.size());
 #endif
 		GuiNodeList.set_used(0);
+
+		if (LightManager)
+			LightManager->OnRenderPassPostRender(CurrentRenderPass);
 	}
 	
 
@@ -1872,10 +1894,10 @@ ISceneNodeAnimatorCollisionResponse* CSceneManager::createCollisionResponseAnima
 //! Creates a follow spline animator.
 ISceneNodeAnimator* CSceneManager::createFollowSplineAnimator(s32 startTime,
 	const core::array< core::vector3df >& points,
-	f32 speed, f32 tightness, bool loop, bool pingpong)
+	f32 speed, f32 tightness, bool loop, bool pingpong, bool steer)
 {
 	ISceneNodeAnimator* a = new CSceneNodeAnimatorFollowSpline(startTime, points,
-		speed, tightness, loop, pingpong);
+		speed, tightness, loop, pingpong, steer);
 	return a;
 }
 
@@ -2188,6 +2210,91 @@ E_SCENE_NODE_RENDER_PASS CSceneManager::getSceneNodeRenderPass() const
 	return CurrentRenderPass;
 }
 
+// Not sorting this later
+static f32 transparentSortingNone(const ISceneNode*, const core::vector3df&, const core::vector3df&)
+{
+	return 0.f;
+}
+
+// Distance from node origin to camera pos
+static f32 transparentSortingByOrigin(const ISceneNode* node, const core::vector3df& cameraPos, const core::vector3df&)
+{
+	return node->getAbsolutePosition().getDistanceFromSQ(cameraPos);
+}
+
+// Distance from node center to camera pos
+static f32 transparentSortingByCenter(const ISceneNode* node, const core::vector3df& cameraPos, const core::vector3df&)
+{
+	core::vector3df center = node->getBoundingBox().getCenter();
+	const core::matrix4& absMat = node->getAbsoluteTransformation();
+	absMat.rotateVect(center);
+	return (absMat.getTranslation()+center).getDistanceFromSQ(cameraPos);
+}
+
+// Distance from node origin to camera plane
+static f32 transparentSortingByPlaneOrigin(const ISceneNode* node, const core::vector3df& cameraPos, const core::vector3df& cameraViewN)
+{
+	return cameraViewN.dotProduct(node->getAbsolutePosition()-cameraPos);
+}
+
+// Distance from node center to camera plane
+static f32 transparentSortingByPlaneCenter(const ISceneNode* node, const core::vector3df& cameraPos, const core::vector3df& cameraViewN)
+{
+	core::vector3df center = node->getBoundingBox().getCenter();
+	const core::matrix4& absMat = node->getAbsoluteTransformation();
+	absMat.rotateVect(center);
+	return cameraViewN.dotProduct(absMat.getTranslation()+center-cameraPos);
+}
+
+/*
+const core::aabbox3d<f32> box = Node->getTransformedBoundingBox();
+Distance = core::min_(camera.getDistanceFromSQ(box.MinEdge), camera.getDistanceFromSQ(box.MaxEdge));
+*/
+static f32 transparentSortingBBoxExtents(const ISceneNode* node, const core::vector3df& cameraPos, const core::vector3df&)
+{
+	const core::aabbox3d<f32>& box = node->getBoundingBox();
+	const f32* m = node->getAbsoluteTransformation().pointer();
+
+	f32 p[4];
+	p[0] = cameraPos.X - (box.MinEdge.X * m[0] + box.MinEdge.Y * m[4] + box.MinEdge.Z * m[8] + m[12]);
+	p[1] = cameraPos.Y - (box.MinEdge.X * m[1] + box.MinEdge.Y * m[5] + box.MinEdge.Z * m[9] + m[13]);
+	p[2] = cameraPos.Z - (box.MinEdge.X * m[2] + box.MinEdge.Y * m[6] + box.MinEdge.Z * m[10] + m[14]);
+	f32 l0 = (p[0] * p[0]) + (p[1] * p[1]) + (p[2] * p[2]);
+
+	p[0] = cameraPos.X - (box.MaxEdge.X * m[0] + box.MaxEdge.Y * m[4] + box.MaxEdge.Z * m[8] + m[12]);
+	p[1] = cameraPos.Y - (box.MaxEdge.X * m[1] + box.MaxEdge.Y * m[5] + box.MaxEdge.Z * m[9] + m[13]);
+	p[2] = cameraPos.Z - (box.MaxEdge.X * m[2] + box.MaxEdge.Y * m[6] + box.MaxEdge.Z * m[10] + m[14]);
+	f32 l1 = (p[0] * p[0]) + (p[1] * p[1]) + (p[2] * p[2]);
+	return core::min_(l0, l1);
+}
+
+void CSceneManager::setTransparentNodeSorting(E_TRANSPARENT_NODE_SORTING sorting)
+{
+	TransparentNodeSorting = sorting;
+	switch ( TransparentNodeSorting )
+	{
+		case ETNS_NONE:	
+			funcTransparentNodeDistance = transparentSortingNone;
+			break;
+		case ETNS_ORIGIN: 
+			funcTransparentNodeDistance = transparentSortingByOrigin;
+			break;
+		case ETNS_CENTER: 
+			funcTransparentNodeDistance = transparentSortingByCenter;
+			break;
+		case ETNS_BBOX_EXTENTS: 
+			funcTransparentNodeDistance = transparentSortingBBoxExtents;
+			break;
+		case ETNS_PLANE_ORIGIN:
+			funcTransparentNodeDistance = transparentSortingByPlaneOrigin;
+			break;
+		case ETNS_PLANE_CENTER:
+			funcTransparentNodeDistance = transparentSortingByPlaneCenter;
+			break;
+		default:
+			break;
+	}
+}
 
 //! Returns an interface to the mesh cache which is shared between all existing scene managers.
 IMeshCache* CSceneManager::getMeshCache()
@@ -2374,7 +2481,7 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 			ret = SceneLoaderList[i]->loadScene(file, userDataSerializer, rootNode);
 
 	if (!ret)
-		os::Printer::log("Could not load scene file, perhaps the format is unsupported: ", file->getFileName().c_str(), ELL_ERROR);
+		os::Printer::log("Could not load scene file, perhaps the format is unsupported", file->getFileName().c_str(), ELL_ERROR);
 
 	return ret;
 }

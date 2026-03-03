@@ -12,8 +12,7 @@
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
 #include "IGUIFont.h"
-#include "CGUIScrollBar.h"
-#include "os.h"
+#include "IGUIScrollBar.h"
 
 #define ARROW_PAD 15
 
@@ -938,13 +937,13 @@ void CGUITable::draw()
 				// draw item text
 				if ((s32)i == Selected)
 				{
-					font->draw(Rows[i].Items[j].BrokenText.c_str(), textRect, skin->getColor(isEnabled() ? EGDC_HIGH_LIGHT_TEXT : EGDC_GRAY_TEXT), false, true, &clientClip);
+					font->draw(Rows[i].Items[j].BrokenText, textRect, skin->getColor(isEnabled() ? EGDC_HIGH_LIGHT_TEXT : EGDC_GRAY_TEXT), false, true, &clientClip);
 				}
 				else
 				{
 					if ( !Rows[i].Items[j].IsOverrideColor )	// skin-colors can change
 						Rows[i].Items[j].Color = skin->getColor(EGDC_BUTTON_TEXT);
-					font->draw(Rows[i].Items[j].BrokenText.c_str(), textRect, isEnabled() ? Rows[i].Items[j].Color : skin->getColor(EGDC_GRAY_TEXT), false, true, &clientClip);
+					font->draw(Rows[i].Items[j].BrokenText, textRect, isEnabled() ? Rows[i].Items[j].Color : skin->getColor(EGDC_GRAY_TEXT), false, true, &clientClip);
 				}
 
 				pos += Columns[j].Width;
@@ -1217,7 +1216,7 @@ void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 		Column column;
 
 		label = "Column"; label += i; label += "name";
-		column.Name = core::stringw(in->getAttributeAsString(label.c_str()).c_str());
+		column.Name = in->getAttributeAsStringW(label.c_str());
 		label = "Column"; label += i; label += "width";
 		column.Width = in->getAttributeAsInt(label.c_str());
 		label = "Column"; label += i; label += "OrderingMode";
@@ -1252,7 +1251,7 @@ void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 			Cell cell;
 
 			label = "Row"; label += i; label += "cell"; label += c; label += "text";
-			cell.Text = core::stringw(in->getAttributeAsString(label.c_str()).c_str());
+			cell.Text = in->getAttributeAsStringW(label.c_str());
 			breakText( cell.Text, cell.BrokenText, Columns[c].Width );
 			label = "Row"; label += i; label += "cell"; label += c; label += "color";
 			cell.Color = in->getAttributeAsColor(label.c_str());

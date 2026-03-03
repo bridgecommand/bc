@@ -9,12 +9,12 @@
 #include "os.h"
 #include "IXMLReader.h"
 #include "SAnimatedMesh.h"
+#include "SMesh.h"
 #include "fast_atof.h"
 #include "IReadFile.h"
 #include "IAttributes.h"
-#include "IMeshSceneNode.h"
+#include "IVideoDriver.h"
 #include "CDynamicMeshBuffer.h"
-#include "SMeshBufferLightMap.h"
 
 namespace irr
 {
@@ -55,7 +55,7 @@ IAnimatedMesh* CIrrMeshFileLoader::createMesh(io::IReadFile* file)
 
 	// read until mesh section, skip other parts
 
-	const core::stringc meshTagName = "mesh";
+	const core::stringw meshTagName = L"mesh";
 	IAnimatedMesh* mesh = 0;
 
 	while(reader->read())
@@ -87,9 +87,9 @@ IAnimatedMesh* CIrrMeshFileLoader::readMesh(io::IXMLReader* reader)
 	animatedmesh->addMesh(mesh);
 	mesh->drop();
 
-	core::stringc bbSectionName = "boundingBox";
-	core::stringc bufferSectionName = "buffer";
-	core::stringc meshSectionName = "mesh";
+	core::stringw bbSectionName = L"boundingBox";
+	core::stringw bufferSectionName = L"buffer";
+	core::stringw meshSectionName = L"mesh";
 
 	if (!reader->isEmptyElement())
 	while(reader->read())
@@ -141,11 +141,11 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 {
 	CDynamicMeshBuffer* buffer = 0;
 
-	core::stringc verticesSectionName = "vertices";
-	core::stringc bbSectionName = "boundingBox";
-	core::stringc materialSectionName = "material";
-	core::stringc indicesSectionName = "indices";
-	core::stringc bufferSectionName = "buffer";
+	core::stringw verticesSectionName = L"vertices";
+	core::stringw bbSectionName = L"boundingBox";
+	core::stringw materialSectionName = L"material";
+	core::stringw indicesSectionName = L"indices";
+	core::stringw bufferSectionName = L"buffer";
 
 	bool insideVertexSection = false;
 	bool insideIndexSection = false;
@@ -184,9 +184,9 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 			{
 				// vertices section
 
-				const core::stringc vertexTypeName1 = "standard";
-				const core::stringc vertexTypeName2 = "2tcoords";
-				const core::stringc vertexTypeName3 = "tangents";
+				const core::stringw vertexTypeName1 = L"standard";
+				const core::stringw vertexTypeName2 = L"2tcoords";
+				const core::stringw vertexTypeName3 = L"tangents";
 
 				const wchar_t* vertexType = reader->getAttributeValue(L"type");
 				vertexCount = reader->getAttributeValueAsInt(L"vertexCount");
@@ -197,7 +197,6 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 				if (vertexTypeName1 == vertexType)
 				{
 					buffer = new CDynamicMeshBuffer(irr::video::EVT_STANDARD, itype);
-
 				}
 				else
 				if (vertexTypeName2 == vertexType)
@@ -209,8 +208,11 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 				{
 					buffer = new CDynamicMeshBuffer(irr::video::EVT_TANGENTS, itype);
 				}
-				buffer->getVertexBuffer().reallocate(vertexCount);
-				buffer->Material = material;
+				if ( buffer )
+				{
+					buffer->getVertexBuffer().reallocate(vertexCount);
+					buffer->Material = material;
+				}
 			}
 			else
 			if (indicesSectionName == nodeName)
@@ -276,13 +278,13 @@ void CIrrMeshFileLoader::readIndices(io::IXMLReader* reader, int indexCount, IIn
 
 void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount, CDynamicMeshBuffer* sbuffer)
 {
-	core::stringc data = reader->getNodeData();
-	const c8* p = &data[0];
-	scene::IVertexBuffer& Vertices = sbuffer->getVertexBuffer();
-	video::E_VERTEX_TYPE vType = Vertices.getType();
-
 	if (sbuffer)
 	{
+		core::stringc data = reader->getNodeData();
+		const c8* p = &data[0];
+		scene::IVertexBuffer& Vertices = sbuffer->getVertexBuffer();
+		video::E_VERTEX_TYPE vType = Vertices.getType();
+
 		for (int i=0; i<vertexCount && *p; ++i)
 		{
 			switch(vType)
@@ -458,7 +460,7 @@ void CIrrMeshFileLoader::skipSection(io::IXMLReader* reader, bool reportSkipping
 		{
 			#ifdef _DEBUG
 			if (reportSkipping)
-				os::Printer::log("irrMesh unknown element:", core::stringc(reader->getNodeName()).c_str());
+				os::Printer::log("irrMesh unknown element", core::stringc(reader->getNodeName()).c_str());
 			#endif
 
 			++tagCounter;

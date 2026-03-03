@@ -14,8 +14,8 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#include <iostream>
 #include "Lang.hpp"
-
 #include "IniFile.hpp"
 
 //using namespace irr;
@@ -31,10 +31,15 @@ irr::core::stringw Lang::translate(std::string phraseName)
     std::wstring translatedPhrase = IniFile::iniFileToWString(languageFileName, phraseName);
     //Fall back
     if (translatedPhrase==L"") {
-        translatedPhrase = std::wstring(phraseName.begin(), phraseName.end());
-        //FIXME: Temp fix for the degree symbol, while utf-8 isn't properly sorted on all platforms
         if (phraseName == "deg") {
-            translatedPhrase = L"°";
+            //FIXME: Temp fix for the degree symbol, while utf-8 isn't properly sorted on all platforms
+            wchar_t degSymbolChar = 176;
+            irr::core::stringw degSymbolString = L"";
+            degSymbolString.append(degSymbolChar);
+            return degSymbolString;
+        } else {
+            std::cout << "Translation for " << phraseName << " not found in " << languageFileName << std::endl;
+            translatedPhrase = std::wstring(phraseName.begin(), phraseName.end());
         }
     }
 

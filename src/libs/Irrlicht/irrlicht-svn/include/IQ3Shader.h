@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_Q3_LEVEL_SHADER_H_INCLUDED__
-#define __I_Q3_LEVEL_SHADER_H_INCLUDED__
+#ifndef IRR_I_Q3_LEVEL_SHADER_H_INCLUDED
+#define IRR_I_Q3_LEVEL_SHADER_H_INCLUDED
 
 #include "irrArray.h"
 #include "fast_atof.h"
@@ -40,7 +40,7 @@ namespace quake3
 			:defaultLightMapMaterial ( video::EMT_LIGHTMAP_M4 ),
 			defaultModulate ( video::EMFN_MODULATE_4X ),
 			defaultFilter ( video::EMF_BILINEAR_FILTER ),
-			patchTesselation ( 8 ),
+			patchTessellation ( 8 ),
 			verbose ( 0 ),
 			startTime ( 0 ), endTime ( 0 ),
 			mergeShaderBuffer ( 1 ),
@@ -61,7 +61,7 @@ namespace quake3
 		video::E_MATERIAL_TYPE defaultLightMapMaterial;
 		video::E_MODULATE_FUNC defaultModulate;
 		video::E_MATERIAL_FLAG defaultFilter;
-		s32 patchTesselation;
+		s32 patchTessellation;
 		s32 verbose;
 		u32 startTime;
 		u32 endTime;
@@ -184,6 +184,8 @@ namespace quake3
 			case 2:
 				ret = false;
 				break;
+			default:
+				break;
 		}
 		return ret;
 	}
@@ -207,6 +209,8 @@ namespace quake3
 				break;
 			case 1:
 				ret = video::ECFN_EQUAL;
+				break;
+			default:
 				break;
 		}
 		return ret;
@@ -274,6 +278,8 @@ namespace quake3
 						blendfunc.isTransparent = 1;
 						resolved = 1;
 						break;
+					default:
+						break;
 				} break;
 
 			case video::EBF_ONE:
@@ -292,6 +298,8 @@ namespace quake3
 						blendfunc.isTransparent = 1;
 						resolved = 1;
 						break;
+					default:
+						break;
 				} break;
 
 			case video::EBF_SRC_ALPHA:
@@ -303,6 +311,8 @@ namespace quake3
 						blendfunc.param0 = 1.f/255.f;
 						blendfunc.isTransparent = 1;
 						resolved = 1;
+						break;
+					default:
 						break;
 				} break;
 
@@ -340,7 +350,8 @@ namespace quake3
 				blendfunc.isTransparent = 1;
 				resolved = 1;
 				break;
-
+			default:
+				break;
 		}
 
 		// use the generic blender
@@ -543,12 +554,11 @@ namespace quake3
 		core::stringc content;
 
 		SVariable ( const c8 * n, const c8 *c = 0 ) : name ( n ), content (c) {}
-		virtual ~SVariable () {}
 
 		void clear ()
 		{
-			name = "";
-			content = "";
+			name.clear(false);
+			content.clear(false);
 		}
 
 		s32 isValid () const
@@ -573,7 +583,6 @@ namespace quake3
 	struct SVarGroup
 	{
 		SVarGroup () { Variable.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE ); }
-		virtual ~SVarGroup () {}
 
 		u32 isDefined ( const c8 * name, const c8 * content = 0 ) const
 		{
@@ -637,14 +646,6 @@ namespace quake3
 	{
 		IShader ()
 			: ID ( 0 ), VarGroup ( 0 )  {}
-		virtual ~IShader () {}
-
-		void operator = (const IShader &other )
-		{
-			ID = other.ID;
-			VarGroup = other.VarGroup;
-			name = other.name;
-		}
 
 		bool operator == (const IShader &other ) const
 		{
@@ -879,4 +880,3 @@ namespace quake3
 } // end namespace irr
 
 #endif
-

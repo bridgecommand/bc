@@ -29,10 +29,9 @@ static inline core::vector3df getAngleWeight(const core::vector3df& v1,
 	const f32 csqrt = sqrtf(c);
 
 	// use them to find the angle at each vertex
-	return core::vector3df(
-		acosf((b + c - a) / (2.f * bsqrt * csqrt)),
-		acosf((-b + c + a) / (2.f * asqrt * csqrt)),
-		acosf((b - c + a) / (2.f * bsqrt * asqrt)));
+	return core::vector3df(acosf( core::clamp((b + c - a) / (2.f * bsqrt * csqrt), -1.f, 1.f) ),
+	                       acosf( core::clamp((-b + c + a) / (2.f * asqrt * csqrt), -1.f, 1.f) ),
+	                       acosf( core::clamp((b - c + a) / (2.f * bsqrt * asqrt), -1.f, 1.f) ));
 }
 
 
@@ -577,9 +576,8 @@ void CMeshManipulator::makePlanarTextureMapping(scene::IMesh* mesh, f32 resoluti
 }
 
 
-//! Clones a static IMesh into a modifyable SMesh.
-// not yet 32bit
-SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
+//! Clones a static IMesh into a modifiable SMesh.
+SMesh* CMeshManipulator::createMeshCopy(const scene::IMesh* mesh) const
 {
 	if (!mesh)
 		return 0;
@@ -590,66 +588,10 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 
 	for ( u32 b=0; b<meshBufferCount; ++b)
 	{
-		const IMeshBuffer* const mb = mesh->getMeshBuffer(b);
-		switch(mb->getVertexType())
-		{
-		case video::EVT_STANDARD:
-			{
-				SMeshBuffer* buffer = new SMeshBuffer();
-				buffer->Material = mb->getMaterial();
-				const u32 vcount = mb->getVertexCount();
-				buffer->Vertices.reallocate(vcount);
-				video::S3DVertex* vertices = (video::S3DVertex*)mb->getVertices();
-				for (u32 i=0; i < vcount; ++i)
-					buffer->Vertices.push_back(vertices[i]);
-				const u32 icount = mb->getIndexCount();
-				buffer->Indices.reallocate(icount);
-				const u16* indices = mb->getIndices();
-				for (u32 i=0; i < icount; ++i)
-					buffer->Indices.push_back(indices[i]);
-				clone->addMeshBuffer(buffer);
-				buffer->drop();
-			}
-			break;
-		case video::EVT_2TCOORDS:
-			{
-				SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
-				buffer->Material = mb->getMaterial();
-				const u32 vcount = mb->getVertexCount();
-				buffer->Vertices.reallocate(vcount);
-				video::S3DVertex2TCoords* vertices = (video::S3DVertex2TCoords*)mb->getVertices();
-				for (u32 i=0; i < vcount; ++i)
-					buffer->Vertices.push_back(vertices[i]);
-				const u32 icount = mb->getIndexCount();
-				buffer->Indices.reallocate(icount);
-				const u16* indices = mb->getIndices();
-				for (u32 i=0; i < icount; ++i)
-					buffer->Indices.push_back(indices[i]);
-				clone->addMeshBuffer(buffer);
-				buffer->drop();
-			}
-			break;
-		case video::EVT_TANGENTS:
-			{
-				SMeshBufferTangents* buffer = new SMeshBufferTangents();
-				buffer->Material = mb->getMaterial();
-				const u32 vcount = mb->getVertexCount();
-				buffer->Vertices.reallocate(vcount);
-				video::S3DVertexTangents* vertices = (video::S3DVertexTangents*)mb->getVertices();
-				for (u32 i=0; i < vcount; ++i)
-					buffer->Vertices.push_back(vertices[i]);
-				const u32 icount = mb->getIndexCount();
-				buffer->Indices.reallocate(icount);
-				const u16* indices = mb->getIndices();
-				for (u32 i=0; i < icount; ++i)
-					buffer->Indices.push_back(indices[i]);
-				clone->addMeshBuffer(buffer);
-				buffer->drop();
-			}
-			break;
-		}// end switch
-
-	}// end for all mesh buffers
+		IMeshBuffer* bufferClone = mesh->getMeshBuffer(b)->createClone();
+		clone->addMeshBuffer(bufferClone);
+		bufferClone->drop();
+	}
 
 	clone->BoundingBox = mesh->getBoundingBox();
 	return clone;
@@ -658,7 +600,7 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 
 //! Creates a copy of the mesh, which will only consist of unique primitives
 // not yet 32bit
-IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
+IMesh* CMeshManipulator::createMeshUniquePrimitives(const IMesh* mesh) const
 {
 	if (!mesh)
 		return 0;
@@ -680,8 +622,8 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 				SMeshBuffer* buffer = new SMeshBuffer();
 				buffer->Material = mb->getMaterial();
 
-				video::S3DVertex* v =
-					(video::S3DVertex*)mb->getVertices();
+				const video::S3DVertex* v =
+					(const video::S3DVertex*)mb->getVertices();
 
 				buffer->Vertices.reallocate(idxCnt);
 				buffer->Indices.reallocate(idxCnt);
@@ -706,8 +648,8 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 				SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
 				buffer->Material = mb->getMaterial();
 
-				video::S3DVertex2TCoords* v =
-					(video::S3DVertex2TCoords*)mb->getVertices();
+				const video::S3DVertex2TCoords* v =
+					(const video::S3DVertex2TCoords*)mb->getVertices();
 
 				buffer->Vertices.reallocate(idxCnt);
 				buffer->Indices.reallocate(idxCnt);
@@ -731,8 +673,8 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 				SMeshBufferTangents* buffer = new SMeshBufferTangents();
 				buffer->Material = mb->getMaterial();
 
-				video::S3DVertexTangents* v =
-					(video::S3DVertexTangents*)mb->getVertices();
+				const video::S3DVertexTangents* v =
+					(const video::S3DVertexTangents*)mb->getVertices();
 
 				buffer->Vertices.reallocate(idxCnt);
 				buffer->Indices.reallocate(idxCnt);
@@ -763,40 +705,47 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 
 //! Creates a copy of a mesh, which will have identical vertices welded together
 // not yet 32bit
-IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
+IMesh* CMeshManipulator::createMeshWelded(const IMesh *mesh, f32 tolerance) const
 {
-	SMesh* clone = new SMesh();
-	clone->BoundingBox = mesh->getBoundingBox();
+	SMesh* meshClone = new SMesh();
+	meshClone->BoundingBox = mesh->getBoundingBox();
 
 	core::array<u16> redirects;
 
 	for (u32 b=0; b<mesh->getMeshBufferCount(); ++b)
 	{
 		const IMeshBuffer* const mb = mesh->getMeshBuffer(b);
+		const u32 vertexCount = mb->getVertexCount();
 		// reset redirect list
-		redirects.set_used(mb->getVertexCount());
+		redirects.set_used(vertexCount);
 
-		const u16* indices = 0;
-		u32 indexCount = 0;
+		const video::E_INDEX_TYPE indexType = mb->getIndexType();
+		const u16* indices = mb->getIndices();
+		const u32 indexCount = mb->getIndexCount();
 		core::array<u16>* outIdx = 0;
+
+		if ( indexType == video::EIT_32BIT )
+		{
+			IMeshBuffer* buffer = mb->createClone();
+			buffer->setBoundingBox(mb->getBoundingBox());
+			buffer->getMaterial() = mb->getMaterial();
+			meshClone->addMeshBuffer(buffer);
+			buffer->drop();
+			continue;	// TODO: handle 32-bit buffers beside copying them
+		}
 
 		switch(mb->getVertexType())
 		{
 		case video::EVT_STANDARD:
 		{
 			SMeshBuffer* buffer = new SMeshBuffer();
-			buffer->BoundingBox = mb->getBoundingBox();
+			buffer->setBoundingBox(mb->getBoundingBox());
 			buffer->Material = mb->getMaterial();
-			clone->addMeshBuffer(buffer);
+			meshClone->addMeshBuffer(buffer);
 			buffer->drop();
 
-			video::S3DVertex* v =
-					(video::S3DVertex*)mb->getVertices();
+			const video::S3DVertex* v = (const video::S3DVertex*)mb->getVertices();
 
-			u32 vertexCount = mb->getVertexCount();
-
-			indices = mb->getIndices();
-			indexCount = mb->getIndexCount();
 			outIdx = &buffer->Indices;
 
 			buffer->Vertices.reallocate(vertexCount);
@@ -828,18 +777,14 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 		case video::EVT_2TCOORDS:
 		{
 			SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
-			buffer->BoundingBox = mb->getBoundingBox();
+			buffer->setBoundingBox(mb->getBoundingBox());
 			buffer->Material = mb->getMaterial();
-			clone->addMeshBuffer(buffer);
+			meshClone->addMeshBuffer(buffer);
 			buffer->drop();
 
-			video::S3DVertex2TCoords* v =
-					(video::S3DVertex2TCoords*)mb->getVertices();
+			const video::S3DVertex2TCoords* v =
+					(const video::S3DVertex2TCoords*)mb->getVertices();
 
-			u32 vertexCount = mb->getVertexCount();
-
-			indices = mb->getIndices();
-			indexCount = mb->getIndexCount();
 			outIdx = &buffer->Indices;
 
 			buffer->Vertices.reallocate(vertexCount);
@@ -871,18 +816,13 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 		case video::EVT_TANGENTS:
 		{
 			SMeshBufferTangents* buffer = new SMeshBufferTangents();
-			buffer->BoundingBox = mb->getBoundingBox();
+			buffer->setBoundingBox(mb->getBoundingBox());
 			buffer->Material = mb->getMaterial();
-			clone->addMeshBuffer(buffer);
+			meshClone->addMeshBuffer(buffer);
 			buffer->drop();
 
-			video::S3DVertexTangents* v =
-					(video::S3DVertexTangents*)mb->getVertices();
+			const video::S3DVertexTangents* v = (const video::S3DVertexTangents*)mb->getVertices();
 
-			u32 vertexCount = mb->getVertexCount();
-
-			indices = mb->getIndices();
-			indexCount = mb->getIndexCount();
 			outIdx = &buffer->Indices;
 
 			buffer->Vertices.reallocate(vertexCount);
@@ -917,7 +857,7 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 			break;
 		}
 
-		// Clean up any degenerate tris
+		// set indices for new buffer
  		core::array<u16> &Indices = *outIdx;
 		Indices.clear();
 		Indices.reallocate(indexCount);
@@ -930,6 +870,7 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 
 			bool drop = false;
 
+			// Clean up any degenerate tris
 			if (a == b || b == c || a == c)
 				drop = true;
 
@@ -942,14 +883,15 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 				Indices.push_back(c);
 			}
 		}
+		// indexCount-Indices.size() vertices got welded for this meshbuffer
 	}
-	return clone;
+	return meshClone;
 }
 
 
 //! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
 // not yet 32bit
-IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNormals, bool smooth, bool angleWeighted, bool calculateTangents) const
+IMesh* CMeshManipulator::createMeshWithTangents(const IMesh* mesh, bool recalculateNormals, bool smooth, bool angleWeighted, bool calculateTangents) const
 {
 	using namespace video;
 
@@ -1070,7 +1012,7 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 	S3DVertex *vert = (S3DVertex *) mb->getVertices();
 
 	// First an acceleration structure: given this vert, which triangles touch it?
-	// Using this drops two exponents off the algorightm complexity, O(n^4) > O(n^2)
+	// Using this drops two exponents off the algorithm complexity, O(n^4) > O(n^2)
 	// Other optimizations brought it down to O(n).
 	u32 **accel = (u32 **) malloc(verts * sizeof(u32 *));
 	for (u32 i = 0; i < verts; i++)
@@ -1337,7 +1279,7 @@ donehere:
 
 //! Creates a copy of the mesh, which will only consist of S3DVertex2TCoords vertices.
 // not yet 32bit
-IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
+IMesh* CMeshManipulator::createMeshWith2TCoords(const IMesh* mesh) const
 {
 	using namespace video;
 
@@ -1411,7 +1353,7 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 
 //! Creates a copy of the mesh, which will only consist of S3DVertex vertices.
 // not yet 32bit
-IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
+IMesh* CMeshManipulator::createMeshWith1TCoords(const IMesh* mesh) const
 {
 	using namespace video;
 
@@ -1484,7 +1426,7 @@ IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
 
 
 //! Returns amount of polygons in mesh.
-s32 CMeshManipulator::getPolyCount(scene::IMesh* mesh) const
+s32 CMeshManipulator::getPolyCount(const scene::IMesh* mesh) const
 {
 	if (!mesh)
 		return 0;
@@ -1768,7 +1710,7 @@ IMesh* CMeshManipulator::createForsythOptimizedMesh(const IMesh *mesh) const
 		{
 			case video::EVT_STANDARD:
 			{
-				video::S3DVertex *v = (video::S3DVertex *) mb->getVertices();
+				const video::S3DVertex *v = (const video::S3DVertex *) mb->getVertices();
 
 				SMeshBuffer *buf = new SMeshBuffer();
 				buf->Material = mb->getMaterial();
@@ -1880,7 +1822,7 @@ IMesh* CMeshManipulator::createForsythOptimizedMesh(const IMesh *mesh) const
 			break;
 			case video::EVT_2TCOORDS:
 			{
-				video::S3DVertex2TCoords *v = (video::S3DVertex2TCoords *) mb->getVertices();
+				const video::S3DVertex2TCoords *v = (const video::S3DVertex2TCoords *) mb->getVertices();
 
 				SMeshBufferLightMap *buf = new SMeshBufferLightMap();
 				buf->Material = mb->getMaterial();
@@ -1993,7 +1935,7 @@ IMesh* CMeshManipulator::createForsythOptimizedMesh(const IMesh *mesh) const
 			break;
 			case video::EVT_TANGENTS:
 			{
-				video::S3DVertexTangents *v = (video::S3DVertexTangents *) mb->getVertices();
+				const video::S3DVertexTangents *v = (const video::S3DVertexTangents *) mb->getVertices();
 
 				SMeshBufferTangents *buf = new SMeshBufferTangents();
 				buf->Material = mb->getMaterial();

@@ -246,7 +246,7 @@ irr::f32 ControllerModel::latToZ(irr::f32 latitude) const
     return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
 }
 
-void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData)
+void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const irr::f32& windDirection, const irr::f32& windSpeed, const irr::f32& streamDirection, const irr::f32& streamSpeed, const bool& streamOverride)
 {
     //Check if current zoom is valid, if not return.
     if(!(currentZoom<zoomLevels)) {
@@ -279,6 +279,18 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     irr::s32 topLeftZ = ownShipData.Z/metresPerPx.at(currentZoom)    + driver->getScreenSize().Height/2 - scaledMap.at(currentZoom)->getDimension().Height + mapOffsetZ;
 
     scaledMap.at(currentZoom)->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
+
+    // Scale tempImage brightness if needed
+    irr::f32 brightnessScaling = gui->getBrightnessScaling();
+    if (brightnessScaling < 1) {
+        for (int i = 0; i < tempImage->getDimension().Width; i++) {
+            for (int j = 0; j < tempImage->getDimension().Height; j++) {
+                irr::video::SColor pixelColour = tempImage->getPixel(i, j);
+                irr::video::SColor black = irr::video::SColor(255, 0, 0, 0);
+                tempImage->setPixel(i, j, pixelColour.getInterpolated(black, brightnessScaling));
+            }
+        }
+    }
 
     //Drop any previous textures
     for(irr::u32 i = 0; i < driver->getTextureCount(); i++) {
@@ -371,7 +383,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     }
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,aisShips,mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);
+    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,aisShips,mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain, windDirection, windSpeed, streamDirection, streamSpeed, streamOverride);
 }
 
 void ControllerModel::resetOffset()

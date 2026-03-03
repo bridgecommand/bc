@@ -2,11 +2,12 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_SCENE_NODE_H_INCLUDED__
-#define __I_SCENE_NODE_H_INCLUDED__
+#ifndef IRR_I_SCENE_NODE_H_INCLUDED
+#define IRR_I_SCENE_NODE_H_INCLUDED
 
 #include "IAttributeExchangingObject.h"
 #include "ESceneNodeTypes.h"
+#include "ESceneNodeUpdateAbs.h"
 #include "ECullingTypes.h"
 #include "EDebugSceneTypes.h"
 #include "ISceneNodeAnimator.h"
@@ -29,6 +30,7 @@ namespace scene
 	//! Typedef for list of scene node animators
 	typedef core::list<ISceneNodeAnimator*> ISceneNodeAnimatorList;
 
+
 	//! Scene node interface.
 	/** A scene node is a node in the hierarchical scene graph. Every scene
 	node may have children, which are also scene nodes. Children move
@@ -48,7 +50,8 @@ namespace scene
 				const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f))
 			: RelativeTranslation(position), RelativeRotation(rotation), RelativeScale(scale),
 				Parent(0), SceneManager(mgr), TriangleSelector(0), ID(id),
-				AutomaticCullingState(EAC_BOX), DebugDataVisible(EDS_OFF),
+				AbsPosUpdateBehavior(ESNUA_TRANSFORM_MATRIX), AutomaticCullingState(EAC_BOX),
+				DebugDataVisible(EDS_OFF),
 				IsVisible(true), IsDebugObject(false)
 		{
 			if (parent)
@@ -76,7 +79,7 @@ namespace scene
 
 		//! This method is called just before the rendering process of the whole scene.
 		/** Nodes may register themselves in the render pipeline during this call,
-		precalculate the geometry which should be renderered, and prevent their
+		pre-calculate the geometry which should be rendered, and prevent their
 		children from being able to register themselves if they are clipped by simply
 		not calling their OnRegisterSceneNode method.
 		If you are implementing your own scene node, you should overwrite this method
@@ -92,7 +95,7 @@ namespace scene
 		{
 			if (IsVisible)
 			{
-				ISceneNodeList::Iterator it = Children.begin();
+				ISceneNodeList::ConstIterator it = Children.begin();
 				for (; it != Children.end(); ++it)
 					(*it)->OnRegisterSceneNode();
 			}
@@ -111,7 +114,7 @@ namespace scene
 			{
 				// animate this node with all animators
 
-				ISceneNodeAnimatorList::Iterator ait = Animators.begin();
+				ISceneNodeAnimatorList::ConstIterator ait = Animators.begin();
 				while (ait != Animators.end())
 					{
 					// continue to the next node before calling animateNode()
@@ -130,7 +133,7 @@ namespace scene
 
 				// perform the post render process on all children
 
-				ISceneNodeList::Iterator it = Children.begin();
+				ISceneNodeList::ConstIterator it = Children.begin();
 				for (; it != Children.end(); ++it)
 					(*it)->OnAnimate(timeMs);
 			}
@@ -187,17 +190,17 @@ namespace scene
 			return box;
 		}
 
-		//! Get a the 8 corners of the original bounding box transformed and
-		//! animated by the absolute transformation.
+		//! Get a the 8 corners of the original bounding box transformed by the
+		//! absolute transformation.
 		/** Note: The result is _not_ identical to getTransformedBoundingBox().getEdges(),
-		but getting an aabbox3d of these edges would then be identical.
-		\param edges Receives an array with the transformed edges */
-		virtual void getTransformedBoundingBoxEdges(core::array< core::vector3d<f32> >& edges) const
+		but getting an aabbox3d of these corners would then be identical.
+		\param corners Receives an array with the transformed corners */
+		virtual void getTransformedBoundingBoxEdges(core::array< core::vector3d<f32> >& corners) const
 		{
-			edges.set_used(8);
-			getBoundingBox().getEdges( edges.pointer() );
+			corners.set_used(8);
+			getBoundingBox().getEdges( corners.pointer() );
 			for ( u32 i=0; i<8; ++i )
-				AbsoluteTransformation.transformVect( edges[i] );
+				AbsoluteTransformation.transformVect( corners[i] );
 		}
 
 		//! Get the absolute transformation of the node. Is recalculated every OnAnimate()-call.
@@ -540,7 +543,7 @@ namespace scene
 
 
 		//! Set a culling style or disable culling completely.
-		/** Box cullling (EAC_BOX) is set by default. Note that not
+		/** Box culling (EAC_BOX) is set by default. Note that not
 		all SceneNodes support culling and that some nodes always cull
 		their geometry because it is their only reason for existence,
 		for example the OctreeSceneNode.
@@ -556,6 +559,18 @@ namespace scene
 		u32 getAutomaticCulling() const
 		{
 			return AutomaticCullingState;
+		}
+
+		//! Set how updateAbsolutePosition calculates the absolute transformation matrix
+		void setUpdateAbsolutePosBehavior(ESCENE_NODE_UPDATE_ABS behavior)
+		{
+			AbsPosUpdateBehavior = behavior;
+		}
+
+		//! Get how updateAbsolutePosition calculates the absolute transformation matrix
+		ESCENE_NODE_UPDATE_ABS getUpdateAbsolutePosBehavior() const
+		{
+			return AbsPosUpdateBehavior;
 		}
 
 
@@ -659,15 +674,35 @@ namespace scene
 		}
 
 
-		//! Updates the absolute position based on the relative and the parents position
-		/** Note: This does not recursively update the parents absolute positions, so if you have a deeper
+		//! Updates the absolute transformation or position based on the relative and the parents transformation
+		/** It's exact behavior can be controlled by setUpdateAbsolutePosBehavior.
+		Note: This does not recursively update the parents absolute positions, so if you have a deeper
 			hierarchy you might want to update the parents first.*/
 		virtual void updateAbsolutePosition()
 		{
 			if (Parent)
 			{
-				AbsoluteTransformation =
-					Parent->getAbsoluteTransformation() * getRelativeTransformation();
+				switch ( AbsPosUpdateBehavior )
+				{
+				case ESNUA_TRANSFORM_MATRIX:
+				{
+					AbsoluteTransformation =
+						Parent->getAbsoluteTransformation() * getRelativeTransformation();
+				}
+				break;
+				case ESNUA_TRANSFORM_POSITION:
+				{
+					AbsoluteTransformation = getRelativeTransformation();
+					Parent->getAbsoluteTransformation().transformVect(reinterpret_cast<irr::core::vector3df&>(AbsoluteTransformation[12]));
+				}
+				break;
+				case ESNUA_RELATIVE:
+					AbsoluteTransformation = getRelativeTransformation();
+				break;
+				case ESNUA_PARENT_ABSOLUTE_TRANSFORMATION:
+					AbsoluteTransformation = Parent->getAbsoluteTransformation();
+				break;
+				}
 			}
 			else
 				AbsoluteTransformation = getRelativeTransformation();
@@ -697,7 +732,7 @@ namespace scene
 		\param out The attribute container to write into.
 		\param options Additional options which might influence the
 		serialization. */
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const IRR_OVERRIDE
 		{
 			if (!out)
 				return;
@@ -709,6 +744,7 @@ namespace scene
 			out->addVector3d("Scale", getScale() );
 
 			out->addBool("Visible", IsVisible );
+			out->addEnum("AbsPosUpdate", (s32)AbsPosUpdateBehavior, SceneNodeUpdateAbsNames);
 			out->addInt("AutomaticCulling", AutomaticCullingState);
 			out->addInt("DebugDataVisible", DebugDataVisible );
 			out->addBool("IsDebugObject", IsDebugObject );
@@ -722,7 +758,7 @@ namespace scene
 		\param in The attribute container to read from.
 		\param options Additional options which might influence the
 		deserialization. */
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) IRR_OVERRIDE
 		{
 			if (!in)
 				return;
@@ -734,9 +770,13 @@ namespace scene
 			setScale(in->getAttributeAsVector3d("Scale", RelativeScale));
 
 			IsVisible = in->getAttributeAsBool("Visible", IsVisible);
+
+			AbsPosUpdateBehavior = (ESCENE_NODE_UPDATE_ABS)in->getAttributeAsEnumeration("AbsPosUpdate", SceneNodeUpdateAbsNames, (s32)AbsPosUpdateBehavior);
+
 			if (in->existsAttribute("AutomaticCulling"))
 			{
-				s32 tmpState = in->getAttributeAsEnumeration("AutomaticCulling",
+				// compatibility for older version, new one uses int's
+				const s32 tmpState = in->getAttributeAsEnumeration("AutomaticCulling",
 						scene::AutomaticCullingNames);
 				if (tmpState != -1)
 					AutomaticCullingState = (u32)tmpState;
@@ -779,6 +819,7 @@ namespace scene
 			RelativeScale = toCopyFrom->RelativeScale;
 			ID = toCopyFrom->ID;
 			setTriangleSelector(toCopyFrom->TriangleSelector);
+			AbsPosUpdateBehavior = toCopyFrom->AbsPosUpdateBehavior;
 			AutomaticCullingState = toCopyFrom->AutomaticCullingState;
 			DebugDataVisible = toCopyFrom->DebugDataVisible;
 			IsVisible = toCopyFrom->IsVisible;
@@ -791,7 +832,7 @@ namespace scene
 
 			// clone children
 
-			ISceneNodeList::Iterator it = toCopyFrom->Children.begin();
+			ISceneNodeList::ConstIterator it = toCopyFrom->Children.begin();
 			for (; it != toCopyFrom->Children.end(); ++it)
 				(*it)->clone(this, newManager);
 
@@ -853,6 +894,9 @@ namespace scene
 		//! ID of the node.
 		s32 ID;
 
+		//! How updateAbsolutePosition calculates AbsoluteTransformation
+		ESCENE_NODE_UPDATE_ABS AbsPosUpdateBehavior;
+
 		//! Automatic culling state
 		u32 AutomaticCullingState;
 
@@ -871,4 +915,3 @@ namespace scene
 } // end namespace irr
 
 #endif
-

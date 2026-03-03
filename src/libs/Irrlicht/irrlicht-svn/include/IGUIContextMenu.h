@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GUI_CONTEXT_MENU_H_INCLUDED__
-#define __I_GUI_CONTEXT_MENU_H_INCLUDED__
+#ifndef IRR_I_GUI_CONTEXT_MENU_H_INCLUDED
+#define IRR_I_GUI_CONTEXT_MENU_H_INCLUDED
 
 #include "IGUIElement.h"
 
@@ -45,6 +45,13 @@ namespace gui
 
 		//! get current behavior when the menu will be closed
 		virtual ECONTEXT_MENU_CLOSE getCloseHandling() const = 0;
+
+		//! When true menu is closed when the item check changes
+		//! Default is true
+		virtual void setCloseOnCheck(bool doCloseOnCheck) = 0;
+
+		//! Get current setting for behaviour when checking items
+		virtual bool getCloseOnCheck() const = 0;
 
 		//! Get amount of menu items
 		virtual u32 getItemCount() const = 0;
@@ -159,4 +166,3 @@ namespace gui
 } // end namespace irr
 
 #endif
-

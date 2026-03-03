@@ -4,8 +4,10 @@ add_executable(bridgecommand-ed
     ../IniFile.cpp
     ../Lang.cpp
     ../Utilities.cpp
+    ../ScenarioDataStructure.cpp
     ControllerModel.cpp
     EventReceiver.cpp
+    ImportExportGUI.cpp
     GUI.cpp
     StartupEventReceiver.cpp
 )

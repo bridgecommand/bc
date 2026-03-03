@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_ANIMATED_MESH_MD3_H_INCLUDED__
-#define __I_ANIMATED_MESH_MD3_H_INCLUDED__
+#ifndef IRR_I_ANIMATED_MESH_MD3_H_INCLUDED
+#define IRR_I_ANIMATED_MESH_MD3_H_INCLUDED
 
 #include "IAnimatedMesh.h"
 #include "IQ3Shader.h"
@@ -87,7 +87,7 @@ namespace scene
 		s32 numTags;	//number of 'tags' per frame
 		s32 numMeshes;	//number of meshes/skins
 		s32 numMaxSkins;//maximum number of unique skins used in md3 file. artefact md2
-		s32 frameStart;	//starting position of frame-structur
+		s32 frameStart;	//starting position of frame-structure
 		s32 tagStart;	//starting position of tag-structures
 		s32 tagEnd;	//ending position of tag-structures/starting position of mesh-structures
 		s32 fileSize;
@@ -151,17 +151,6 @@ namespace scene
 	/** Basically its an alternate way to describe a transformation. */
 	struct SMD3QuaternionTag
 	{
-		virtual ~SMD3QuaternionTag()
-		{
-			position.X = 0.f;
-		}
-
-		// construct copy constructor
-		SMD3QuaternionTag( const SMD3QuaternionTag & copyMe )
-		{
-			*this = copyMe;
-		}
-
 		// construct for searching
 		SMD3QuaternionTag( const core::stringc& name )
 			: Name ( name ) {}
@@ -181,14 +170,6 @@ namespace scene
 			return Name == other.Name;
 		}
 
-		SMD3QuaternionTag & operator=( const SMD3QuaternionTag & copyMe )
-		{
-			Name = copyMe.Name;
-			position = copyMe.position;
-			rotation = copyMe.rotation;
-			return *this;
-		}
-
 		core::stringc Name;
 		core::vector3df position;
 		core::quaternion rotation;
@@ -202,18 +183,10 @@ namespace scene
 			Container.setAllocStrategy(core::ALLOC_STRATEGY_SAFE);
 		}
 
-		// construct copy constructor
-		SMD3QuaternionTagList(const SMD3QuaternionTagList& copyMe)
-		{
-			*this = copyMe;
-		}
-
-		virtual ~SMD3QuaternionTagList() {}
-
 		SMD3QuaternionTag* get(const core::stringc& name)
 		{
 			SMD3QuaternionTag search ( name );
-			s32 index = Container.linear_search ( search );
+			const s32 index = Container.linear_search ( search );
 			if ( index >= 0 )
 				return &Container[index];
 			return 0;
@@ -226,7 +199,7 @@ namespace scene
 
 		void set_used(u32 new_size)
 		{
-			s32 diff = (s32) new_size - (s32) Container.allocated_size();
+			const s32 diff = (s32) new_size - (s32) Container.allocated_size();
 			if ( diff > 0 )
 			{
 				SMD3QuaternionTag e("");
@@ -248,12 +221,6 @@ namespace scene
 		void push_back(const SMD3QuaternionTag& other)
 		{
 			Container.push_back(other);
-		}
-
-		SMD3QuaternionTagList& operator = (const SMD3QuaternionTagList & copyMe)
-		{
-			Container = copyMe.Container;
-			return *this;
 		}
 
 	private:
@@ -301,4 +268,3 @@ namespace scene
 } // end namespace irr
 
 #endif
-

@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_POINT_3D_H_INCLUDED__
-#define __IRR_POINT_3D_H_INCLUDED__
+#ifndef IRR_POINT_3D_H_INCLUDED
+#define IRR_POINT_3D_H_INCLUDED
 
 #include "irrMath.h"
 
@@ -28,14 +28,10 @@ namespace core
 		vector3d(T nx, T ny, T nz) : X(nx), Y(ny), Z(nz) {}
 		//! Constructor with the same value for all elements
 		explicit vector3d(T n) : X(n), Y(n), Z(n) {}
-		//! Copy constructor
-		vector3d(const vector3d<T>& other) : X(other.X), Y(other.Y), Z(other.Z) {}
 
 		// operators
 
 		vector3d<T> operator-() const { return vector3d<T>(-X, -Y, -Z); }
-
-		vector3d<T>& operator=(const vector3d<T>& other) { X = other.X; Y = other.Y; Z = other.Z; return *this; }
 
 		vector3d<T> operator+(const vector3d<T>& other) const { return vector3d<T>(X + other.X, Y + other.Y, Z + other.Z); }
 		vector3d<T>& operator+=(const vector3d<T>& other) { X+=other.X; Y+=other.Y; Z+=other.Z; return *this; }
@@ -54,19 +50,19 @@ namespace core
 
 		vector3d<T> operator/(const vector3d<T>& other) const { return vector3d<T>(X / other.X, Y / other.Y, Z / other.Z); }
 		vector3d<T>& operator/=(const vector3d<T>& other) { X/=other.X; Y/=other.Y; Z/=other.Z; return *this; }
-		vector3d<T> operator/(const T v) const { T i=(T)1.0/v; return vector3d<T>(X * i, Y * i, Z * i); }
-		vector3d<T>& operator/=(const T v) { T i=(T)1.0/v; X*=i; Y*=i; Z*=i; return *this; }
+		vector3d<T> operator/(const T v) const { return vector3d<T>(X/v, Y/v, Z/v); }
+		vector3d<T>& operator/=(const T v) { X/=v; Y/=v; Z/=v; return *this; }
 
 		T& operator [](u32 index)
 		{
-			_IRR_DEBUG_BREAK_IF(index>2) // access violation
+			IRR_DEBUG_BREAK_IF(index>2) // access violation
 
 			return *(&X+index);
 		}
 
 		const T& operator [](u32 index) const
 		{
-			_IRR_DEBUG_BREAK_IF(index>2) // access violation
+			IRR_DEBUG_BREAK_IF(index>2) // access violation
 
 			return *(&X+index);
 		}
@@ -157,7 +153,7 @@ namespace core
 
 		//! Calculates the cross product with another vector.
 		/** \param p Vector to multiply with.
-		\return Crossproduct of this vector with p. */
+		\return Cross product of this vector with p. */
 		vector3d<T> crossProduct(const vector3d<T>& p) const
 		{
 			return vector3d<T>(Y * p.Z - Z * p.Y, Z * p.X - X * p.Z, X * p.Y - Y * p.X);
@@ -199,6 +195,36 @@ namespace core
 			return (*this *= newlength);
 		}
 
+#if defined(_IRR_COMPILE_WITH_90_DEGREE_CAMERA)
+		vector3d<T>& normalize_camera_direction(const vector3d<T>& def)
+		{
+			f64 l = (f64)X * X + (f64)Y * Y + (f64)Z * Z;
+			if (::fabs(l) < 0.000000001)
+			{
+				X = def.X;
+				Y = def.Y;
+				Z = def.Z;
+			}
+			else
+			{
+				l = 1.0 / ::sqrt(l);
+				f64 v;
+				v = X * l; X = ::fabs(v) < 0.00000001 ? (T)0 : (T)v;
+				v = Y * l; Y = ::fabs(v) < 0.00000001 ? (T)0 : (T)v;
+				v = Z * l; Z = ::fabs(v) < 0.00000001 ? (T)0 : (T)v;
+			}
+			return *this;
+		}
+#define normalize_x() normalize_camera_direction(core::vector3df(1.f, 0.f, 0.f))
+#define normalize_z() normalize_camera_direction(core::vector3df(0.f, 0.f, 1.f))
+#define normalize_y(v) core::vector3df(v).normalize_camera_direction(core::vector3df(0.f, 1.f, 0.f))
+#else
+#define normalize_x() normalize()
+#define normalize_z() normalize()
+#define normalize_y(v) v
+#endif
+
+
 		//! Inverts the vector.
 		vector3d<T>& invert()
 		{
@@ -209,13 +235,16 @@ namespace core
 		}
 
 		//! Rotates the vector by a specified number of degrees around the Y axis and the specified center.
-		/** \param degrees Number of degrees to rotate around the Y axis.
+		/** CAREFUL: For historical reasons rotateXZBy uses a right-handed rotation
+		(maybe to make it more similar to the 2D vector rotations which are counterclockwise).
+		To have this work the same way as rest of Irrlicht (nodes, matrices, other rotateBy functions) pass -1*degrees in here.
+		\param degrees Number of degrees to rotate around the Y axis.
 		\param center The center of the rotation. */
 		void rotateXZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
-			f64 cs = cos(degrees);
-			f64 sn = sin(degrees);
+			const f64 cs = cos(degrees);
+			const f64 sn = sin(degrees);
 			X -= center.X;
 			Z -= center.Z;
 			set((T)(X*cs - Z*sn), Y, (T)(X*sn + Z*cs));
@@ -229,8 +258,8 @@ namespace core
 		void rotateXYBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
-			f64 cs = cos(degrees);
-			f64 sn = sin(degrees);
+			const f64 cs = cos(degrees);
+			const f64 sn = sin(degrees);
 			X -= center.X;
 			Y -= center.Y;
 			set((T)(X*cs - Y*sn), (T)(X*sn + Y*cs), Z);
@@ -244,8 +273,8 @@ namespace core
 		void rotateYZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
-			f64 cs = cos(degrees);
-			f64 sn = sin(degrees);
+			const f64 cs = cos(degrees);
+			const f64 sn = sin(degrees);
 			Z -= center.Z;
 			Y -= center.Y;
 			set(X, (T)(Y*cs - Z*sn), (T)(Y*sn + Z*cs));
@@ -471,4 +500,3 @@ namespace core
 } // end namespace irr
 
 #endif
-

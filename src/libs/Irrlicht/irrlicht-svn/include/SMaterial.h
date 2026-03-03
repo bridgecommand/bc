@@ -2,16 +2,16 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __S_MATERIAL_H_INCLUDED__
-#define __S_MATERIAL_H_INCLUDED__
+#ifndef S_MATERIAL_H_INCLUDED
+#define S_MATERIAL_H_INCLUDED
 
 #include "SColor.h"
 #include "matrix4.h"
-#include "irrArray.h"
 #include "irrMath.h"
 #include "EMaterialTypes.h"
 #include "EMaterialFlags.h"
 #include "SMaterialLayer.h"
+#include "IUserData.h"
 
 namespace irr
 {
@@ -258,7 +258,7 @@ namespace video
 		//! This is also the value which is set when SMaterial::setFlag(EMF_ZWRITE_ENABLE) is enabled.
 		//! Usually zwriting is enabled non-transparent materials - as far as Irrlicht can recognize those.
 		//! Basically Irrlicht tries to handle the zwriting for you and assumes transparent materials don't need it.
-		//! This is addionally affected by IVideoDriver::setAllowZWriteOnTransparent
+		//! This is additionally affected by IVideoDriver::setAllowZWriteOnTransparent
 		EZW_AUTO,
 
 		//! zwrite always enabled for this material
@@ -289,9 +289,8 @@ namespace video
 
 		We (mostly) avoid dynamic memory in SMaterial, so the extra memory
 		will still be allocated. But by lowering MATERIAL_MAX_TEXTURES_USED the
-		material comparisons and assignments can be faster. Also several other
-		places in the engine can be faster when reducing this value to the limit
-		you need.
+		material comparisons can be faster. Also several other places in the 
+		engine can be faster when reducing this value to the limit you need.
 
 		NOTE: This should only be changed once and before any call to createDevice.
 		NOTE: Do not set it below 1 or above the value of _IRR_MATERIAL_MAX_TEXTURES_.
@@ -300,7 +299,7 @@ namespace video
 	IRRLICHT_API extern u32 MATERIAL_MAX_TEXTURES_USED;
 
 	//! Struct for holding parameters for a material renderer
-	// Note for implementors: Serialization is in CNullDriver
+	// Note for implementers: Serialization is in CNullDriver
 	class SMaterial
 	{
 	public:
@@ -309,71 +308,16 @@ namespace video
 		: MaterialType(EMT_SOLID), AmbientColor(255,255,255,255), DiffuseColor(255,255,255,255),
 			EmissiveColor(0,0,0,0), SpecularColor(255,255,255,255),
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
-			ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE), ColorMask(ECP_ALL),
-			ColorMaterial(ECM_DIFFUSE), BlendOperation(EBO_NONE), BlendFactor(0.0f),
-			PolygonOffsetFactor(0), PolygonOffsetDirection(EPO_FRONT),
+			AntiAliasing(EAAM_SIMPLE), ZBuffer(ECFN_LESSEQUAL), ZWriteEnable(EZW_AUTO),
+			ColorMask(ECP_ALL),	ColorMaterial(ECM_DIFFUSE), 
 			PolygonOffsetDepthBias(0.f), PolygonOffsetSlopeScale(0.f),
+			PolygonOffsetFactor(0), PolygonOffsetDirection(EPO_FRONT),
+			BlendOperation(EBO_NONE), BlendFactor(0.0f),
 			Wireframe(false), PointCloud(false), GouraudShading(true),
-			Lighting(true), ZWriteEnable(EZW_AUTO), BackfaceCulling(true), FrontfaceCulling(false),
-			FogEnable(false), NormalizeNormals(false), UseMipMaps(true)
+			Lighting(true), BackfaceCulling(true), FrontfaceCulling(false),
+			FogEnable(false), NormalizeNormals(false), UseMipMaps(true),
+			UserData(0)
 		{ }
-
-		//! Copy constructor
-		/** \param other Material to copy from. */
-		SMaterial(const SMaterial& other)
-		{
-			// These pointers are checked during assignment
-			for (u32 i=0; i<MATERIAL_MAX_TEXTURES_USED; ++i)
-				TextureLayer[i].TextureMatrix = 0;
-			*this = other;
-		}
-
-		//! Assignment operator
-		/** \param other Material to copy from. */
-		SMaterial& operator=(const SMaterial& other)
-		{
-			// Check for self-assignment!
-			if (this == &other)
-				return *this;
-
-			MaterialType = other.MaterialType;
-
-			AmbientColor = other.AmbientColor;
-			DiffuseColor = other.DiffuseColor;
-			EmissiveColor = other.EmissiveColor;
-			SpecularColor = other.SpecularColor;
-			Shininess = other.Shininess;
-			MaterialTypeParam = other.MaterialTypeParam;
-			MaterialTypeParam2 = other.MaterialTypeParam2;
-			Thickness = other.Thickness;
-			for (u32 i=0; i<MATERIAL_MAX_TEXTURES_USED; ++i)
-			{
-				TextureLayer[i] = other.TextureLayer[i];
-			}
-
-			Wireframe = other.Wireframe;
-			PointCloud = other.PointCloud;
-			GouraudShading = other.GouraudShading;
-			Lighting = other.Lighting;
-			ZWriteEnable = other.ZWriteEnable;
-			BackfaceCulling = other.BackfaceCulling;
-			FrontfaceCulling = other.FrontfaceCulling;
-			FogEnable = other.FogEnable;
-			NormalizeNormals = other.NormalizeNormals;
-			ZBuffer = other.ZBuffer;
-			AntiAliasing = other.AntiAliasing;
-			ColorMask = other.ColorMask;
-			ColorMaterial = other.ColorMaterial;
-			BlendOperation = other.BlendOperation;
-			BlendFactor = other.BlendFactor;
-			PolygonOffsetFactor = other.PolygonOffsetFactor;
-			PolygonOffsetDirection = other.PolygonOffsetDirection;
-			PolygonOffsetDepthBias = other.PolygonOffsetDepthBias;
-			PolygonOffsetSlopeScale = other.PolygonOffsetSlopeScale;
-			UseMipMaps = other.UseMipMaps;
-
-			return *this;
-		}
 
 		//! Texture layer array.
 		SMaterialLayer TextureLayer[MATERIAL_MAX_TEXTURES];
@@ -443,16 +387,21 @@ namespace video
 		//! Thickness of non-3dimensional elements such as lines and points.
 		f32 Thickness;
 
+		//! Sets the antialiasing mode
+		/** Values are chosen from E_ANTI_ALIASING_MODE. Default is
+		EAAM_SIMPLE, i.e. simple multi-sample anti-aliasing. */
+		u8 AntiAliasing;
+
 		//! Is the ZBuffer enabled? Default: ECFN_LESSEQUAL
 		/** If you want to disable depth test for this material
 		just set this parameter to ECFN_DISABLED.
 		Values are from E_COMPARISON_FUNC. */
 		u8 ZBuffer;
 
-		//! Sets the antialiasing mode
-		/** Values are chosen from E_ANTI_ALIASING_MODE. Default is
-		EAAM_SIMPLE, i.e. simple multi-sample anti-aliasing. */
-		u8 AntiAliasing;
+		//! Is the zbuffer writable or is it read-only. Default: EZW_AUTO.
+		/** If this parameter is not EZW_OFF, you probably also want to set ZBuffer 
+		to values other than ECFN_DISABLED (which disables the zbuffer completely) */
+		E_ZWRITE ZWriteEnable:3;
 
 		//! Defines the enabled color planes
 		/** Values are defined as or'ed values of the E_COLOR_PLANE enum.
@@ -468,34 +417,6 @@ namespace video
 		diffuse light behavior of each face. The default, ECM_DIFFUSE, will result in
 		a very similar rendering as with lighting turned off, just with light shading. */
 		u8 ColorMaterial:3;
-
-		//! Store the blend operation of choice
-		/** Values to be chosen from E_BLEND_OPERATION. */
-		E_BLEND_OPERATION BlendOperation:4;
-
-		//! Store the blend factors
-		/** textureBlendFunc/textureBlendFuncSeparate functions should be used to write
-		properly blending factors to this parameter. 
-		Due to historical reasons this parameter is not used for material type 
-		EMT_ONETEXTURE_BLEND which uses MaterialTypeParam instead for the blend factor.
-		It's generally used only for materials without any blending otherwise (like EMT_SOLID).
-		It's main use is to allow having shader materials which can enable/disable 
-		blending after they have been created. 
-		When you set this you usually also have to set BlendOperation to a value != EBO_NONE
-		(setting it to EBO_ADD is probably the most common one value). */
-		f32 BlendFactor;
-
-		//! DEPRECATED. Will be removed after Irrlicht 1.9. Please use PolygonOffsetDepthBias instead.
-		/** Factor specifying how far the polygon offset should be made.
-		Specifying 0 disables the polygon offset. The direction is specified separately.
-		The factor can be from 0 to 7.
-		Note: This probably never worked on Direct3D9 (was coded for D3D8 which had different value ranges)	*/
-		u8 PolygonOffsetFactor:3;
-
-		//! DEPRECATED. Will be removed after Irrlicht 1.9.
-		/** Flag defining the direction the polygon offset is applied to.
-		Can be to front or to back, specified by values from E_POLYGON_OFFSET. 	*/
-		E_POLYGON_OFFSET PolygonOffsetDirection:1;
 
 		//! A constant z-buffer offset for a polygon/line/point
 		/** The range of the value is driver specific.
@@ -515,6 +436,34 @@ namespace video
 		and -1.f to pull them towards the camera.  */
 		f32 PolygonOffsetSlopeScale;
 
+		//! DEPRECATED. Will be removed after Irrlicht 1.9. Please use PolygonOffsetDepthBias instead.
+		/** Factor specifying how far the polygon offset should be made.
+		Specifying 0 disables the polygon offset. The direction is specified separately.
+		The factor can be from 0 to 7.
+		Note: This probably never worked on Direct3D9 (was coded for D3D8 which had different value ranges)	*/
+		u8 PolygonOffsetFactor:3;
+
+		//! DEPRECATED. Will be removed after Irrlicht 1.9.
+		/** Flag defining the direction the polygon offset is applied to.
+		Can be to front or to back, specified by values from E_POLYGON_OFFSET. 	*/
+		E_POLYGON_OFFSET PolygonOffsetDirection:2;
+
+		//! Store the blend operation of choice
+		/** Values to be chosen from E_BLEND_OPERATION. */
+		E_BLEND_OPERATION BlendOperation:8;
+
+		//! Store the blend factors
+		/** textureBlendFunc/textureBlendFuncSeparate functions should be used to write
+		properly blending factors to this parameter. 
+		Due to historical reasons this parameter is not used for material type 
+		EMT_ONETEXTURE_BLEND which uses MaterialTypeParam instead for the blend factor.
+		It's generally used only for materials without any blending otherwise (like EMT_SOLID).
+		It's main use is to allow having shader materials which can enable/disable 
+		blending after they have been created. 
+		When you set this you usually also have to set BlendOperation to a value != EBO_NONE
+		(setting it to EBO_ADD is probably the most common one value). */
+		f32 BlendFactor;
+
 		//! Draw as wireframe or filled triangles? Default: false
 		/** The user can access a material flag using
 		\code material.Wireframe=true \endcode
@@ -529,11 +478,6 @@ namespace video
 
 		//! Will this material be lighted? Default: true
 		bool Lighting:1;
-
-		//! Is the zbuffer writable or is it read-only. Default: EZW_AUTO.
-		/** If this parameter is not EZW_OFF, you probably also want to set ZBuffer 
-		to values other than ECFN_DISABLED */
-		E_ZWRITE ZWriteEnable:2;
 
 		//! Is backface culling enabled? Default: true
 		bool BackfaceCulling:1;
@@ -551,6 +495,11 @@ namespace video
 		//! Shall mipmaps be used if available
 		/** Sometimes, disabling mipmap usage can be useful. Default: true */
 		bool UseMipMaps:1;
+
+		//! Allow users to add their own material data
+		//! User is responsible for the memory of this pointer
+		//! You should override IUserData::compare for user custom data, so SMaterial knows when it changes
+		io::IUserData* UserData;
 
 		//! Gets the texture transformation matrix for level i
 		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES
@@ -676,6 +625,7 @@ namespace video
 					PolygonOffsetDirection = EPO_BACK;
 					PolygonOffsetSlopeScale = value?1.f:0.f;
 					PolygonOffsetDepthBias = value?1.f:0.f;
+					break;
 				default:
 					break;
 			}
@@ -767,11 +717,13 @@ namespace video
 				ColorMaterial != b.ColorMaterial ||
 				BlendOperation != b.BlendOperation ||
 				BlendFactor != b.BlendFactor ||
-				PolygonOffsetFactor != b.PolygonOffsetFactor ||
-				PolygonOffsetDirection != b.PolygonOffsetDirection ||
 				PolygonOffsetDepthBias != b.PolygonOffsetDepthBias ||
 				PolygonOffsetSlopeScale != b.PolygonOffsetSlopeScale ||
-				UseMipMaps != b.UseMipMaps
+				PolygonOffsetFactor != b.PolygonOffsetFactor ||
+				PolygonOffsetDirection != b.PolygonOffsetDirection ||
+				UseMipMaps != b.UseMipMaps ||
+				(UserData && !b.UserData) || (!UserData && b.UserData) || // can still equal with different pointers
+				(UserData && b.UserData && *UserData != *b.UserData)
 				;
 			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES_USED) && !different; ++i)
 			{

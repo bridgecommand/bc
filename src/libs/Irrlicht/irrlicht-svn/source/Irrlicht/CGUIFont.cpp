@@ -78,7 +78,7 @@ bool CGUIFont::load(io::IXMLReader* xml, const io::path& directory)
 			if (core::stringw(L"Texture") == xml->getNodeName())
 			{
 				// add a texture
-				core::stringc fn = xml->getAttributeValue(L"filename");
+				io::path fn = xml->getAttributeValue(L"filename");
 				u32 i = (u32)xml->getAttributeValueAsInt(L"index");
 				core::stringw alpha = xml->getAttributeValue(L"hasAlpha");
 
@@ -103,7 +103,7 @@ bool CGUIFont::load(io::IXMLReader* xml, const io::path& directory)
 				else
 				{
 					// colorkey texture rather than alpha channel?
-					if (alpha == core::stringw("false"))
+					if (alpha == core::stringw(L"false"))
 						Driver->makeColorKeyTexture(SpriteBank->getTexture(i), core::position2di(0,0));
 				}
 			}
@@ -203,17 +203,15 @@ void CGUIFont::setMaxHeight()
 		return;
 
 	MaxHeight = 0;
-	s32 t;
 
 	core::array< core::rect<s32> >& p = SpriteBank->getPositions();
 
 	for (u32 i=0; i<p.size(); ++i)
 	{
-		t = p[i].getHeight();
+		const s32 t = p[i].getHeight();
 		if (t>MaxHeight)
 			MaxHeight = t;
 	}
-
 }
 
 void CGUIFont::pushTextureCreationFlags(bool(&flags)[3])
@@ -445,7 +443,7 @@ s32 CGUIFont::getAreaFromCharacter(const wchar_t c) const
 
 void CGUIFont::setInvisibleCharacters( const wchar_t *s )
 {
-	Invisible = s;
+	InvisibleCharacters = s;
 }
 
 
@@ -496,7 +494,7 @@ void CGUIFont::draw(const core::stringw& text, const core::rect<s32>& position,
 					bool hcenter, bool vcenter, const core::rect<s32>* clip
 				)
 {
-	if (!Driver || !SpriteBank)
+	if (!Driver || !SpriteBank || text.empty())
 		return;
 
 	core::dimension2d<s32> textDimension;	// NOTE: don't make this u32 or the >> later on can fail when the dimension width is < position width
@@ -519,8 +517,11 @@ void CGUIFont::draw(const core::stringw& text, const core::rect<s32>& position,
 			return;
 	}
 
-	core::array<u32> indices(text.size());
-	core::array<core::position2di> offsets(text.size());
+	const irr::u32 textSize = text.size();
+	IndicesSB.set_used(0);
+	IndicesSB.reallocate(textSize, false);
+	OffsetsSB.set_used(0);
+	OffsetsSB.reallocate(textSize, false);
 
 	for(u32 i = 0;i < text.size();i++)
 	{
@@ -553,16 +554,25 @@ void CGUIFont::draw(const core::stringw& text, const core::rect<s32>& position,
 		SFontArea& area = Areas[getAreaFromCharacter(c)];
 
 		offset.X += area.underhang;
-		if ( Invisible.findFirst ( c ) < 0 )
+		if ( InvisibleCharacters.findFirst ( c ) < 0 )
 		{
-			indices.push_back(area.spriteno);
-			offsets.push_back(offset);
+			IndicesSB.push_back(area.spriteno);
+			OffsetsSB.push_back(offset);
 		}
 
 		offset.X += area.width + area.overhang + GlobalKerningWidth;
 	}
 
-	SpriteBank->draw2DSpriteBatch(indices, offsets, clip, color);
+	SpriteBank->draw2DSpriteBatch(IndicesSB, OffsetsSB, clip, color);
+
+	// We keep arrays around to avoid constant re-allocations for every drawn text.
+	// But don't want them to block memory forever just because one huge text was written once.
+	const u32 maxBufferSize = 2000;	// large enough for typical strings, but not too expensive
+	if ( textSize > maxBufferSize )
+	{
+		IndicesSB.clear();
+		OffsetsSB.clear();
+	}
 }
 
 

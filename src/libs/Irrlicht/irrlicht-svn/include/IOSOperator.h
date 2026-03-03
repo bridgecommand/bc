@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_OS_OPERATOR_H_INCLUDED__
-#define __I_OS_OPERATOR_H_INCLUDED__
+#ifndef IRR_I_OS_OPERATOR_H_INCLUDED
+#define IRR_I_OS_OPERATOR_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "irrString.h"
@@ -20,7 +20,7 @@ public:
 
 	//! Get the current operation system version as string.
 	/** \deprecated Use getOperatingSystemVersion instead. This method will be removed in Irrlicht 1.9. */
-	_IRR_DEPRECATED_ const wchar_t* getOperationSystemVersion() const
+	IRR_DEPRECATED const wchar_t* getOperationSystemVersion() const
 	{
 		return core::stringw(getOperatingSystemVersion()).c_str();
 	}
@@ -38,8 +38,8 @@ public:
 	virtual bool getProcessorSpeedMHz(u32* MHz) const = 0;
 
 	//! Get the total and available system RAM
-	/** \param totalBytes: will contain the total system memory in bytes
-	\param availableBytes: will contain the available memory in bytes
+	/** \param totalBytes: will contain the total system memory in Kilobytes (1024 B)
+	\param availableBytes: will contain the available memory in Kilobytes (1024 B)
 	\return True if successful, false if not */
 	virtual bool getSystemMemory(u32* totalBytes, u32* availableBytes) const = 0;
 

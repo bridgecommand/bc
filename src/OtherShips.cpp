@@ -57,6 +57,9 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         //Set MMSI
         irr::u32 mmsi = otherShipsData.at(i).mmsi;
 
+        //Set if it's drifting with wind/stream
+        bool drifting = otherShipsData.at(i).drifting;
+
         //Load leg information
         std::vector<Leg> legs;
         irr::f32 legStartTime = scenarioStartTime;
@@ -89,7 +92,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         //Create otherShip and load into vector
         std::string internalName = "OtherShip_";
         internalName.append(std::to_string(i));
-        otherShips.push_back(new OtherShip (otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
+        otherShips.push_back(new OtherShip (otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,drifting,model,smgr, dev));
     }
 
 }
@@ -175,10 +178,10 @@ irr::f32 OtherShips::getLength(int number) const
     }
 }
 
-irr::f32 OtherShips::getWidth(int number) const
+irr::f32 OtherShips::getBreadth(int number) const
 {
     if (number < (int)otherShips.size() && number >= 0) {
-        return otherShips.at(number)->getWidth();
+        return otherShips.at(number)->getBreadth();
     } else {
         return 0.0;
     }
@@ -197,6 +200,15 @@ irr::f32 OtherShips::getSpeed(int number) const
 {
     if (number < (int)otherShips.size() && number >= 0) {
         return otherShips.at(number)->getSpeed();
+    } else {
+        return 0;
+    }
+}
+
+irr::f32 OtherShips::getEstimatedDisplacement(int number) const
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        return otherShips.at(number)->getEstimatedDisplacement();
     } else {
         return 0;
     }

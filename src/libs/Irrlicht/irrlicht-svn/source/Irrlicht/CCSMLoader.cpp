@@ -18,7 +18,7 @@
 #include "SMesh.h"
 #include "IVideoDriver.h"
 #include "SAnimatedMesh.h"
-#include "SMeshBufferLightMap.h"
+#include "CMeshBuffer.h"
 
 #ifdef _DEBUG
 #define _IRR_DEBUG_CSM_LOADER_
@@ -102,7 +102,6 @@ namespace scene
 	public:
 
 		Group(){ clear(); }
-		~Group(){ clear(); }
 
 		void clear();
 		void load(BinaryFileReader* pReader);
@@ -129,7 +128,7 @@ namespace scene
 	public:
 
 		VisGroup(){ clear(); }
-		~VisGroup(){ clear(); }
+
 		void clear();
 		void load(BinaryFileReader* pReader);
 
@@ -184,7 +183,7 @@ namespace scene
 	public:
 
 		Vertex(){ clear(); }
-		~Vertex(){ clear(); }
+
 		void clear();
 		void load(BinaryFileReader* pReader);
 
@@ -209,7 +208,6 @@ namespace scene
 	public:
 
 		Surface() { clear(); }
-		~Surface(){ clear(); }
 
 		void clear();
 		void load(BinaryFileReader *pReader);
@@ -276,7 +274,6 @@ namespace scene
 	public:
 
 		Entity() { clear(); }
-		~Entity() { clear(); }
 
 		void clear();
 		void load(BinaryFileReader* pReader);
@@ -299,7 +296,6 @@ namespace scene
 	public:
 
 		CameraData(){ clear(); }
-		~CameraData(){ clear(); }
 
 		void clear();
 		void load(BinaryFileReader* pReader);

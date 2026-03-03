@@ -38,6 +38,7 @@ namespace scene
 		//! constructor
 		MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, ISceneNode* ownShip,	s32 id,
 			irr::u32 disableShaders,
+			bool withReflection,
 			irr::u32 segments = 32,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0)
@@ -70,6 +71,7 @@ namespace scene
 		virtual void render();
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 		virtual IMesh* getMesh(void);
+		virtual void setMesh(IMesh* mesh, bool copyMeshMaterials = true);
 		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh=0, s32 id=-1, bool zfailmethod=true, f32 infinity=1000.0f);
 		virtual void setReadOnlyMaterials(bool readonly);
 		virtual bool isReadOnlyMaterials() const;
@@ -95,6 +97,7 @@ namespace scene
         bool firstRun;
         bool IsOpenGL;//Our constants set callback isn't limited to D3D9
 		irr::u32 disableShaders;
+		bool withReflection;
         irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
 
         irr::scene::ICameraSceneNode* _camera; //Local camera for reflections

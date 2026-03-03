@@ -24,6 +24,11 @@
 #include <mach-o/dyld.h>
 #endif
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // For GetSystemMetrics
+#endif // _WIN32
+
 #ifdef _MSC_VER
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
@@ -91,19 +96,28 @@ int main (int argc, char ** argv)
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
+    irr::core::dimension2d<irr::u32> deskres;
+    #ifdef _WIN32
+    // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
+    deskres.Width=GetSystemMetrics(SM_CXSCREEN);
+    deskres.Height=GetSystemMetrics(SM_CYSCREEN);
+    #else
+    // For other OSs, use Irrlicht's resolution call
     irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
-	irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
-	nulldevice->drop();
+    deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+    nulldevice->drop();
+    #endif
+
     if (graphicsWidth==0) {
         graphicsWidth = 1200 * fontScale;
-        if (graphicsWidth > deskres.Width*0.9) {
-            graphicsWidth = deskres.Width*0.9;
+        if (graphicsWidth > deskres.Width*0.90) {
+            graphicsWidth = deskres.Width*0.90;
         }
     }
     if (graphicsHeight==0) {
         graphicsHeight = 900 * fontScale;
-        if (graphicsHeight > deskres.Height*0.9) {
-            graphicsHeight = deskres.Height*0.9;
+        if (graphicsHeight > deskres.Height*0.90) {
+            graphicsHeight = deskres.Height*0.90;
         }
     }
 
@@ -214,6 +228,11 @@ int main (int argc, char ** argv)
     irr::f32 weather = 0; //(0-12)
     irr::f32 rain = 0; //(0-10)
     irr::f32 visibility = 10.1; //(0.1-10.1)
+    irr::f32 windDirection = 0;
+    irr::f32 windSpeed = 0;
+    irr::f32 streamDirection = 0;
+    irr::f32 streamSpeed = 0;
+    bool streamOverride = false;
     ShipData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipDisplayData> otherShipsData;
@@ -236,7 +255,7 @@ int main (int argc, char ** argv)
         driver->beginScene();
 
         //Read in data from network
-        network.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData);
+        network.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, windDirection, windSpeed, streamDirection, streamSpeed, streamOverride);
 
         //If listening to AIS Data, get a local copy from the AIS thread that we can pass to the controller
         if (aisPort!=0) {
@@ -247,7 +266,7 @@ int main (int argc, char ** argv)
         }
 
         //Update the internal model, and call the gui
-        controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, localAISData);
+        controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, localAISData, windDirection, windSpeed, streamDirection, streamSpeed, streamOverride);
 
         driver->endScene();
     }

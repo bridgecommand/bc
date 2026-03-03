@@ -18,9 +18,7 @@
 
 #include "IReadFile.h"
 #include "os.h"
-#include "CColorConverter.h"
 #include "CImage.h"
-#include "irrString.h"
 
 // Header flag values
 #define DDSD_CAPS			0x00000001
@@ -72,7 +70,7 @@ s32 DDSGetInfo(ddsHeader* dds, s32* width, s32* height, eDDSPixelFormat* pf)
 		return -1;
 
 	/* test dds header */
-	if( *((s32*) dds->Magic) != *((s32*) "DDS ") )
+	if( *((const s32*) dds->Magic) != *((const s32*) "DDS ") )
 		return -1;
 	if( DDSLittleLong( dds->Size ) != 124 )
 		return -1;
@@ -95,15 +93,15 @@ s32 DDSGetInfo(ddsHeader* dds, s32* width, s32* height, eDDSPixelFormat* pf)
 	/* test it */
 	if( fourCC == 0 )
 		*pf = DDS_PF_ARGB8888;
-	else if( fourCC == *((u32*) "DXT1") )
+	else if( fourCC == *((const u32*) "DXT1") )
 		*pf = DDS_PF_DXT1;
-	else if( fourCC == *((u32*) "DXT2") )
+	else if( fourCC == *((const u32*) "DXT2") )
 		*pf = DDS_PF_DXT2;
-	else if( fourCC == *((u32*) "DXT3") )
+	else if( fourCC == *((const u32*) "DXT3") )
 		*pf = DDS_PF_DXT3;
-	else if( fourCC == *((u32*) "DXT4") )
+	else if( fourCC == *((const u32*) "DXT4") )
 		*pf = DDS_PF_DXT4;
-	else if( fourCC == *((u32*) "DXT5") )
+	else if( fourCC == *((const u32*) "DXT5") )
 		*pf = DDS_PF_DXT5;
 	else
 		*pf = DDS_PF_UNKNOWN;
@@ -693,8 +691,8 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 	s32 width, height;
 	eDDSPixelFormat pixelFormat;
 	ECOLOR_FORMAT format = ECF_UNKNOWN;
-	u32 dataSize = 0;
-	u32 mipMapsDataSize = 0;
+	size_t dataSize = 0;
+	size_t mipMapsDataSize = 0;
 	bool is3D = false;
 	bool useAlpha = false;
 	u32 mipMapCount = 0;
@@ -721,9 +719,8 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 
 		image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 
-		if (DDSDecompress(&header, memFile, (u8*)image->lock()) == -1)
+		if (DDSDecompress(&header, memFile, (u8*)image->getData()) == -1)
 		{
-			image->unlock();
 			image->drop();
 			image = 0;
 		}

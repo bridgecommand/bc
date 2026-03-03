@@ -1,6 +1,7 @@
 name: MSBuild
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     paths: 
@@ -8,25 +9,26 @@ on:
 
 env:
   # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: "src/Visual Studio 2017 solution/Bridge Command.sln"
+  SOLUTION_FILE_PATH: "src/Visual Studio solution/Bridge Command.sln"
 
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
   BUILD_CONFIGURATION: Release
+  BUILD_ARCHITECTURE: x64
 
 permissions:
   contents: read
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v2
 
     #- name: Restore NuGet packages
     #  working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -36,14 +38,14 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m:1 /p:Configuration=${{env.BUILD_CONFIGURATION}} "${{env.SOLUTION_FILE_PATH}}"
+      run: msbuild /m:1 /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{env.BUILD_ARCHITECTURE}} "${{env.SOLUTION_FILE_PATH}}"
 
     - name: Build Installer
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: "makensis.exe /DOUTPUTFILE=../installer_autoBuild.exe bin/installNoSource.nsi"
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: BC_windows
         path: installer_autoBuild.exe

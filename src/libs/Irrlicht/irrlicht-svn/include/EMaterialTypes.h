@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __E_MATERIAL_TYPES_H_INCLUDED__
-#define __E_MATERIAL_TYPES_H_INCLUDED__
+#ifndef IRR_E_MATERIAL_TYPES_H_INCLUDED
+#define IRR_E_MATERIAL_TYPES_H_INCLUDED
 
 namespace irr
 {
@@ -20,8 +20,7 @@ namespace video
 
 		//! Solid material with 2 texture layers.
 		/** The second is blended onto the first using the alpha value
-		of the vertex colors. This material is currently not implemented in OpenGL.
-		*/
+		of the vertex colors. */
 		EMT_SOLID_2_LAYER,
 
 		//! Material type with standard lightmap technique
@@ -73,7 +72,7 @@ namespace video
 		EMT_SPHERE_MAP,
 
 		//! A reflecting material with an optional non reflecting texture layer.
-		/** The reflection map should be set as first texture. */
+		/** The reflection map should be set as second texture. */
 		EMT_REFLECTION_2_LAYER,
 
 		//! A transparent material.
@@ -187,8 +186,8 @@ namespace video
 		EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA,
 
 		//! BlendFunc = source * sourceFactor + dest * destFactor ( E_BLEND_FUNC )
-		/** Using only first texture. Generic blending method. 
-		The blend function is set to SMaterial::MaterialTypeParam with 
+		/** Using only first texture. Generic blending method.
+		The blend function is set to SMaterial::MaterialTypeParam with
 		pack_textureBlendFunc (for 2D) or pack_textureBlendFuncSeparate (for 3D). */
 		EMT_ONETEXTURE_BLEND,
 
@@ -229,6 +228,4 @@ namespace video
 } // end namespace video
 } // end namespace irr
 
-
-#endif // __E_MATERIAL_TYPES_H_INCLUDED__
-
+#endif // IRR_E_MATERIAL_TYPES_H_INCLUDED

@@ -13,7 +13,7 @@ namespace scene
 
 
 //! constructor
-BCTerrainTriangleSelector::BCTerrainTriangleSelector ( ITerrainSceneNode* node, s32 LOD )
+BCTerrainTriangleSelector::BCTerrainTriangleSelector ( BCTerrainSceneNode* node, s32 LOD )
 	: SceneNode(node)
 {
 	#ifdef _DEBUG
@@ -32,7 +32,7 @@ BCTerrainTriangleSelector::~BCTerrainTriangleSelector()
 
 
 //! Clears and sets triangle data
-void BCTerrainTriangleSelector::setTriangleData(ITerrainSceneNode* node, s32 LOD)
+void BCTerrainTriangleSelector::setTriangleData(BCTerrainSceneNode* node, s32 LOD)
 {
 	// Get pointer to the GeoMipMaps vertices
 	const video::S3DVertex2TCoords* vertices = static_cast<const video::S3DVertex2TCoords*>(node->getRenderBuffer()->getVertices());
@@ -111,7 +111,7 @@ void BCTerrainTriangleSelector::getTriangles(core::triangle3df* triangles,
 	{
 		SCollisionTriangleRange triRange;
 		triRange.RangeSize = tIndex;
-		triRange.Selector = const_cast<BCTerrainTriangleSelector*>(this);
+		triRange.Selector = this;
 		triRange.SceneNode = SceneNode;
 		outTriangleInfo->push_back(triRange);
 	}
@@ -159,7 +159,7 @@ void BCTerrainTriangleSelector::getTriangles(core::triangle3df* triangles,
 	{
 		SCollisionTriangleRange triRange;
 		triRange.RangeSize = tIndex;
-		triRange.Selector = const_cast<BCTerrainTriangleSelector*>(this);
+		triRange.Selector = this;
 		triRange.SceneNode = SceneNode;
 		outTriangleInfo->push_back(triRange);
 	}
@@ -205,7 +205,7 @@ void BCTerrainTriangleSelector::getTriangles(core::triangle3df* triangles,
 	{
 		SCollisionTriangleRange triRange;
 		triRange.RangeSize = tIndex;
-		triRange.Selector = const_cast<BCTerrainTriangleSelector*>(this);
+		triRange.Selector = this;
 		triRange.SceneNode = SceneNode;
 		outTriangleInfo->push_back(triRange);
 	}

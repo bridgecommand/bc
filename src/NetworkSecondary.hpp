@@ -37,7 +37,8 @@ public:
     void setModel(SimulationModel* model);
     void update();
     int getPort();
-
+    void shutdownAllSecondaries(void);
+  
 private:
     SimulationModel* model;
     irr::IrrlichtDevice* device;

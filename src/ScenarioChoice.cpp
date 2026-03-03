@@ -47,7 +47,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Make gui elements
     irr::core::stringw titleText(LONGNAME.c_str());
-    titleText.append(L"\nCopyright 2022 James Packer\n\n");
+    titleText.append(L"\nCopyright 2024 James Packer\n\n");
     titleText.append(L"Build: ");
     titleText.append(irr::core::stringw(__DATE__));
     titleText.append(L" ");
@@ -104,8 +104,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     irr::s32 descriptionScenario = -1; //Which scenario we are showing the description text for
 
     while(device->run() && startupReceiver.getScenarioSelected()==-1) {
-        if (device->isWindowActive())
-        {
             //Event receiver will set Scenario Selected, so we just loop here until that happens
             driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
             
@@ -122,7 +120,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
             
             gui->drawAll();
             driver->endScene();
-        }
     }
 
 

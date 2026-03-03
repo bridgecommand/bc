@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_MATH_H_INCLUDED__
-#define __IRR_MATH_H_INCLUDED__
+#ifndef IRR_MATH_H_INCLUDED
+#define IRR_MATH_H_INCLUDED
 
 #include "IrrCompileConfig.h"
 #include "irrTypes.h"
@@ -672,6 +672,12 @@ namespace core
 	inline f32 fract ( f32 x )
 	{
 		return x - floorf ( x );
+	}
+
+	inline bool isPowerOfTwo(irr::u32 n)
+	{
+		// From https://stackoverflow.com/a/600306/8529558, see explanation there
+		return (n != 0) && ((n & (n - 1)) == 0);
 	}
 
 } // end namespace core

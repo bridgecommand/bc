@@ -17,6 +17,7 @@
 #include "GUI.hpp"
 #include "../Constants.hpp"
 #include "../Utilities.hpp"
+#include "../ScrollDial.h"
 
 #include <iostream>
 #include <limits>
@@ -50,9 +51,12 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     guiWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.01*su+36.5*fw,0.01*sh+20*fh),false,0,0,GUI_ID_WINDOW);
     guiWindow->getCloseButton()->setVisible(false);
 
-    guiTabs = guienv->addTabControl(irr::core::rect<irr::s32>(0.5*fw,0.5*fh,36*fw,19.5*fh),guiWindow);
-    mainTab = guiTabs->addTab(language->translate("main").c_str());
-    failureTab = guiTabs->addTab(language->translate("failures").c_str());
+    irr::gui::IGUITabControl* guiTabs = guienv->addTabControl(irr::core::rect<irr::s32>(0.5*fw,0.5*fh,36*fw,19.5*fh),guiWindow);
+    
+    irr::gui::IGUITab* mainTab = guiTabs->addTab(language->translate("main").c_str());
+    irr::gui::IGUITab* failureTab = guiTabs->addTab(language->translate("failures").c_str());
+    irr::gui::IGUITab* weatherTab = guiTabs->addTab(language->translate("weather").c_str());
+    irr::gui::IGUITab* extraTab = guiTabs->addTab(language->translate("extraControls").c_str());
 
     //add data display:
     dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(1*fw,1*fh,24*fw,4*fh), true, true, mainTab, -1, true); //Actual text set later
@@ -93,9 +97,15 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     retrieveMOB = guienv->addButton(irr::core::rect<irr::s32>(29.0*fw,3.25*fh,35*fw,5.5*fh),mainTab,GUI_ID_RETRIEVEMOB_BUTTON,language->translate("retrieveMOB").c_str());
 
     //Scroll bars for weather setting
-    visibilityBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(24.5*fw,1*fh,25.5*fw,5.5*fh),mainTab,GUI_ID_VISIBILITY_SCROLLBAR);
-    rainBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(26.0*fw,1*fh,27.0*fw,5.5*fh),mainTab,GUI_ID_RAIN_SCROLLBAR);
-    weatherBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(27.5*fw,1*fh,28.5*fw,5.5*fh),mainTab,GUI_ID_WEATHER_SCROLLBAR);
+    guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(21*fw,0.5*fh,29*fw,1.5*fh),false,true,weatherTab)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+    visibilityBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(25*fw,5*fh),4*fw,guienv,weatherTab,GUI_ID_VISIBILITY_SCROLLBAR);
+    
+    guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(11*fw,0.5*fh,19*fw,1.5*fh),false,true,weatherTab)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+    rainBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(15*fw,5*fh),4*fw,guienv,weatherTab,GUI_ID_RAIN_SCROLLBAR);
+    
+    guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(1*fw,0.5*fh,9*fw,1.5*fh),false,true,weatherTab)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+    weatherBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,5*fh),4*fw,guienv,weatherTab,GUI_ID_WEATHER_SCROLLBAR);
+        
 
     visibilityBar->setToolTipText(language->translate("visibility").c_str());
     rainBar->setToolTipText(language->translate("rain").c_str());
@@ -113,6 +123,40 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     visibilityBar->setLargeStep(5);
     visibilityBar->setSmallStep(1);
 
+    guienv->addStaticText(language->translate("wind").c_str(),irr::core::rect<irr::s32>(0*fw,7.5*fh,10*fw,8.5*fh),false,true,weatherTab)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+    windDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,10.5*fh),1.5*fh,guienv,weatherTab,GUI_ID_WINDDIRECTION_SCROLL_BAR, 360, true);
+    windDirectionBar->setMax(360);
+    windDirectionBar->setMin(0);
+    windDirectionBar->setLargeStep(45);
+    windDirectionBar->setSmallStep(5);
+    windDirectionBar->setToolTipText(language->translate("windDirection").c_str());
+
+    windSpeedBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,14*fh),1.5*fh,guienv,weatherTab,GUI_ID_WINDSPEED_SCROLL_BAR, 315, true);
+    windSpeedBar->setMax(50);
+    windSpeedBar->setMin(0);
+    windSpeedBar->setLargeStep(5);
+    windSpeedBar->setSmallStep(1);
+    windSpeedBar->setToolTipText(language->translate("windSpeed").c_str());
+
+    guienv->addStaticText(language->translate("stream").c_str(),irr::core::rect<irr::s32>(10*fw,7.5*fh,20*fw,8.5*fh),false,true,weatherTab)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+    streamDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(15*fw,10.5*fh),1.5*fh,guienv,weatherTab,GUI_ID_STREAMDIRECTION_SCROLL_BAR, 360, true);
+    streamDirectionBar->setMax(360);
+    streamDirectionBar->setMin(0);
+    streamDirectionBar->setLargeStep(45);
+    streamDirectionBar->setSmallStep(5);
+    streamDirectionBar->setToolTipText(language->translate("streamDirection").c_str());
+
+    streamSpeedBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(15*fw,14*fh),1.5*fh,guienv,weatherTab,GUI_ID_STREAMSPEED_SCROLL_BAR, 315, true);
+    streamSpeedBar->setMax(10);
+    streamSpeedBar->setMin(0);
+    streamSpeedBar->setLargeStep(5);
+    streamSpeedBar->setSmallStep(1);
+    streamSpeedBar->setToolTipText(language->translate("streamSpeed").c_str());
+
+    guienv->addStaticText(language->translate("streamOverride").c_str(),irr::core::rect<irr::s32>(20*fw,7.5*fh,30*fw,8.5*fh),false,true,weatherTab)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+    streamOverrideBox = guienv->addCheckBox(false, irr::core::rect<irr::s32>(24*fw,8.5*fh,26*fw,12.5*fh),weatherTab,GUI_ID_STREAMOVERRIDE_BOX);
+    streamOverrideBox->setToolTipText(language->translate("streamOverride").c_str());
+
     //Failure parts of GUI
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,1*fh,35*fw,2*fh),failureTab,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,2*fh,35*fw,3*fh),failureTab,GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,language->translate("pump1Failed").c_str());
@@ -122,6 +166,14 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,5.5*fh,35*fw,6.5*fh),failureTab,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,6.5*fh,35*fw,7.5*fh),failureTab,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
     
+    // Display settings
+    guienv->addStaticText(language->translate("brightness").c_str(), irr::core::rect<irr::s32>(1 * fw, 0.5 * fh, 9 * fw, 1.5 * fh), false, true, extraTab)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+    brightnessBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5 * fw, 5 * fh), 4 * fw, guienv, extraTab, GUI_ID_BRIGHTNESS_SCROLLBAR);
+    brightnessBar->setMax(100);
+    brightnessBar->setMin(0);
+    brightnessBar->setLargeStep(5);
+    brightnessBar->setSmallStep(1);
+    brightnessBar->setPos(100);
 
     //This is used to track when the edit boxes need updating, when ship or legs have changed
     editBoxesNeedUpdating = false;
@@ -132,13 +184,25 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
 
 }
 
+GUIMain::~GUIMain() 
+{
+    visibilityBar->drop();
+    rainBar->drop();
+    weatherBar->drop();
+    windDirectionBar->drop();
+    windSpeedBar->drop();
+    streamDirectionBar->drop();
+    streamSpeedBar->drop();
+    brightnessBar->drop();
+}
+
 void GUIMain::updateEditBoxes()
 {
     //Trigger update the edit boxes for course, speed & distance when the selection is changed.
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain)
+void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain, irr::f32 windDirection, irr::f32 windSpeed, irr::f32 streamDirection, irr::f32 streamSpeed, bool streamOverride)
 {
     //Show map texture
     device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
@@ -248,9 +312,15 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     updateDropDowns(otherShips,selectedShip,time);
 
     //Update gui info for weather bars
+    // TODO: Is the 'round' needed here?
     weatherBar->setPos(Utilities::round(weather*10.0));
     visibilityBar->setPos(Utilities::round(visibility*10.0));
     rainBar->setPos(Utilities::round(rain*10.0));
+    windDirectionBar->setPos(Utilities::round(windDirection));
+    windSpeedBar->setPos(Utilities::round(windSpeed));
+    streamDirectionBar->setPos(Utilities::round(streamDirection));
+    streamSpeedBar->setPos(Utilities::round(streamSpeed));
+    streamOverrideBox->setChecked(streamOverride);
 
     guienv->drawAll();
 
@@ -259,13 +329,16 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
 void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, const irr::s32& selectedShip, const irr::s32& selectedLeg, const bool& mobVisible, const irr::f32& mobPosX, const irr::f32& mobPosZ)
 {
 
+    irr::video::SColor black = irr::video::SColor(255, 0, 0, 0);
+
     //draw cross hairs
     irr::s32 width = device->getVideoDriver()->getScreenSize().Width;
     irr::s32 height = device->getVideoDriver()->getScreenSize().Height;
     irr::s32 screenCentreX = width/2;
     irr::s32 screenCentreY = height/2;
-    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(screenCentreX,0),irr::core::position2d<irr::s32>(screenCentreX,height),irr::video::SColor(255, 255, 255, 255));
-    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(0,screenCentreY),irr::core::position2d<irr::s32>(width,screenCentreY),irr::video::SColor(255, 255, 255, 255));
+    irr::video::SColor crossHairColour = irr::video::SColor(255, 255, 255, 255);
+    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(screenCentreX,0),irr::core::position2d<irr::s32>(screenCentreX,height),crossHairColour.getInterpolated(black, getBrightnessScaling()));
+    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(0,screenCentreY),irr::core::position2d<irr::s32>(width,screenCentreY), crossHairColour.getInterpolated(black, getBrightnessScaling()));
 
     //Dimensions for dots
     irr::u32 dotHalfWidth = width/400;
@@ -275,10 +348,11 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     //Draw location of own ship
     irr::s32 ownRelPosX = 0 + mapOffsetX;
     irr::s32 ownRelPosY = 0 - mapOffsetZ;
-    device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 255, 0, 0),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+ownRelPosX,screenCentreY-dotHalfWidth-ownRelPosY,screenCentreX+dotHalfWidth+ownRelPosX,screenCentreY+dotHalfWidth-ownRelPosY));
+    irr::video::SColor ownShipColour = irr::video::SColor(255, 255, 0, 0);
+    device->getVideoDriver()->draw2DRectangle(ownShipColour.getInterpolated(black, getBrightnessScaling()), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + ownRelPosX, screenCentreY - dotHalfWidth - ownRelPosY, screenCentreX + dotHalfWidth + ownRelPosX, screenCentreY + dotHalfWidth - ownRelPosY));
     if (selectedShip == -1) {
         //Own ship selected
-        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+ownRelPosX,screenCentreY-ownRelPosY),dotHalfWidth*4,irr::video::SColor(255, 255, 0, 0),10);
+        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+ownRelPosX,screenCentreY-ownRelPosY),dotHalfWidth*4, ownShipColour.getInterpolated(black, getBrightnessScaling()),10);
     }
 
     //Heading line
@@ -286,33 +360,36 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     irr::s32 hdgLineY = ownRelPosY + width/10*cos(ownShipHeading * RAD_IN_DEG);
     irr::core::position2d<irr::s32> hdgStart (screenCentreX + ownRelPosX, screenCentreY - ownRelPosY);
     irr::core::position2d<irr::s32> hdgEnd   (screenCentreX + hdgLineX  , screenCentreY - hdgLineY  );
-    device->getVideoDriver()->draw2DLine(hdgStart,hdgEnd,irr::video::SColor(255, 255, 0, 0));
+    device->getVideoDriver()->draw2DLine(hdgStart,hdgEnd, ownShipColour.getInterpolated(black, getBrightnessScaling()));
 
     //Draw location of MOB
+    irr::video::SColor mobColour = irr::video::SColor(255, 255, 255, 0);
     if (mobVisible) {
         irr::s32 relPosX = (mobPosX - ownShipPosX)/metresPerPx + mapOffsetX;
         irr::s32 relPosY = (mobPosZ - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*2,irr::video::SColor(255, 255, 255, 0),10);
+        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*2,mobColour.getInterpolated(black, getBrightnessScaling()), 10);
     }
 
     //Draw location of buoys
+    irr::video::SColor buoyColour = irr::video::SColor(255, 255, 255, 255);
     for(std::vector<PositionData>::const_iterator it = buoys.begin(); it != buoys.end(); ++it) {
         irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
         irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 255, 255, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+        device->getVideoDriver()->draw2DRectangle(buoyColour.getInterpolated(black, getBrightnessScaling()), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + relPosX, screenCentreY - dotHalfWidth - relPosY, screenCentreX + dotHalfWidth + relPosX, screenCentreY + dotHalfWidth - relPosY));
     }
 
     //Draw location of ships
+    irr::video::SColor shipColour = irr::video::SColor(255, 0, 0, 255);
     for(std::vector<OtherShipDisplayData>::const_iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
         irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
         irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 0, 0, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+        device->getVideoDriver()->draw2DRectangle(shipColour.getInterpolated(black, getBrightnessScaling()), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + relPosX, screenCentreY - dotHalfWidth - relPosY, screenCentreX + dotHalfWidth + relPosX, screenCentreY + dotHalfWidth - relPosY));
         if (selectedShip == (it - otherShips.begin()) ) {
             //This ship selected
-            device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*4,irr::video::SColor(255, 0, 0, 255),10);
+            device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*4,shipColour.getInterpolated(black, getBrightnessScaling()), 10);
         }
 
         //number
@@ -323,9 +400,10 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             displayNumber.append(irr::core::stringw(it->mmsi));
             displayNumber.append(L")");
         }
-        guienv->getSkin()->getFont()->draw(displayNumber,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(255,0,0,255),true,true);
+        guienv->getSkin()->getFont()->draw(displayNumber,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), shipColour.getInterpolated(black, getBrightnessScaling()), true, true);
 
         //Draw leg information for each ship
+        irr::video::SColor lineColour = irr::video::SColor(255, 255, 255, 255);
         if (it->legs.size() > 0) {
 
             //Find current leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.
@@ -362,7 +440,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         irr::core::position2d<irr::s32> startLine (legStartX, legStartY);
                         irr::core::position2d<irr::s32> endLine (legEndX, legEndY);
 
-                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+                        device->getVideoDriver()->draw2DLine(startLine,endLine,lineColour.getInterpolated(black, getBrightnessScaling()));
                     } //Not infinite
 
                 } //If currentLegTimeRemaining > 0
@@ -385,7 +463,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         irr::core::position2d<irr::s32> startLine (legStartX, legStartY);
                         irr::core::position2d<irr::s32> endLine (legEndX, legEndY);
 
-                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+                        device->getVideoDriver()->draw2DLine(startLine,endLine, lineColour.getInterpolated(black, getBrightnessScaling()));
                     } //Not infinite
                 } //Each leg, except last
             } //If not currently on the last leg
@@ -393,6 +471,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     } //Loop for each ship
 
     //Draw AIS data
+    irr::video::SColor aisColour = irr::video::SColor(255, 0, 255, 0);
     for(std::vector<AISData>::const_iterator it = aisData.begin(); it != aisData.end(); ++it) {
         //Check if MMSI matches an own ship, if so, don't show
         bool showThisAISContact = true;
@@ -406,7 +485,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             
             irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
             irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
-            device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 0, 255, 0),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+            device->getVideoDriver()->draw2DRectangle(aisColour.getInterpolated(black, getBrightnessScaling()), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + relPosX, screenCentreY - dotHalfWidth - relPosY, screenCentreX + dotHalfWidth + relPosX, screenCentreY + dotHalfWidth - relPosY));
         
             //std::cout << "Displaying MMSI " << it->mmsi << " at " << relPosX << " " << relPosY << std::endl;
 
@@ -415,7 +494,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             displayAIS.append(irr::core::stringw(it->mmsi));
             displayAIS.append(L" ");
             displayAIS.append(irr::core::stringw(it->name.c_str()));
-            guienv->getSkin()->getFont()->draw(displayAIS,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(255,0,255,0),true,true);
+            guienv->getSkin()->getFont()->draw(displayAIS,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), aisColour.getInterpolated(black, getBrightnessScaling()), true, true);
 
             //Show cog if known. AIS COG is: 3600 for unknown, otherwise COG is AIS COG/10. SOG: 1023 is unknown, otherwise knots is AIS SOG/10
             if (it->cog != 3600) {
@@ -430,7 +509,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                 //Draw
                 irr::core::position2d<irr::s32> startLine (screenCentreX + relPosX, screenCentreY - relPosY);
                 irr::core::position2d<irr::s32> endLine (screenCentreX + cogLineX, screenCentreY - cogLineY);
-                device->getVideoDriver()->draw2DLine(startLine,endLine,irr::video::SColor(255,0,255,0));
+                device->getVideoDriver()->draw2DLine(startLine,endLine,aisColour.getInterpolated(black,getBrightnessScaling()));
             }
         }
 
@@ -580,6 +659,30 @@ irr::f32 GUIMain::getRain() const {
 
 irr::f32 GUIMain::getVisibility() const {
     return (irr::f32)(visibilityBar->getPos())/10.0;
+}
+
+irr::f32 GUIMain::getWindDirection() const {
+    return (irr::f32)(windDirectionBar->getPos());
+}
+
+irr::f32 GUIMain::getWindSpeed() const {
+    return (irr::f32)(windSpeedBar->getPos());
+}
+
+irr::f32 GUIMain::getStreamDirection() const {
+    return (irr::f32)(streamDirectionBar->getPos());
+}
+
+irr::f32 GUIMain::getStreamSpeed() const {
+    return (irr::f32)(streamSpeedBar->getPos());
+}
+
+bool GUIMain::getStreamOverride() const {
+    return (streamOverrideBox->isChecked());
+}
+
+irr::f32 GUIMain::getBrightnessScaling() const {
+    return ((irr::f32)brightnessBar->getPos() / 100);
 }
 
 std::wstring GUIMain::f32To1dp(irr::f32 value)

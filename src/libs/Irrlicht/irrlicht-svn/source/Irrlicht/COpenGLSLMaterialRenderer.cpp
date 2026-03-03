@@ -14,7 +14,6 @@
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "IGPUProgrammingServices.h"
 #include "IShaderConstantSetCallBack.h"
 #include "IMaterialRendererServices.h"
 #include "IVideoDriver.h"
@@ -22,7 +21,6 @@
 
 #include "COpenGLDriver.h"
 #include "COpenGLCacheHandler.h"
-#include "COpenGLMaterialRenderer.h"
 
 #include "COpenGLCoreFeature.h"
 
@@ -35,14 +33,8 @@ namespace video
 //! Constructor
 COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* driver,
 		s32& outMaterialTypeNr, const c8* vertexShaderProgram,
-		const c8* vertexShaderEntryPointName,
-		E_VERTEX_SHADER_TYPE vsCompileTarget,
 		const c8* pixelShaderProgram,
-		const c8* pixelShaderEntryPointName,
-		E_PIXEL_SHADER_TYPE psCompileTarget,
 		const c8* geometryShaderProgram,
-		const c8* geometryShaderEntryPointName,
-		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
 		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
@@ -83,7 +75,7 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 	if (!Driver->queryFeature(EVDF_ARB_GLSL))
 		return;
 
-	init(outMaterialTypeNr, vertexShaderProgram, pixelShaderProgram, geometryShaderProgram);
+	init(outMaterialTypeNr, vertexShaderProgram, pixelShaderProgram, geometryShaderProgram, inType, outType, verticesOut);
 }
 
 
@@ -206,6 +198,8 @@ void COpenGLSLMaterialRenderer::init(s32& outMaterialTypeNr,
 	}
 #endif
 
+	Driver->testGLError(__LINE__);	// Note: Often will be the outType, as EPT_TRIANGLE_STRIP instead of EPT_TRIANGLES is required there
+
 	if (!linkProgram())
 		return;
 
@@ -230,14 +224,14 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 				bool resetAllRenderstates,
 				video::IMaterialRendererServices* services)
 {
-	if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_ENABLE)
-		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE_TO_DISABLE);
+	if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_FIXED)
+		Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED_TO_SHADER);
 	else
-		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
+		Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER);
 
 	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
 
-	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
+	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)	// each program has it's own type
 	{
 		if (Program2)
 			Driver->irrGlUseProgram(Program2);
@@ -563,13 +557,25 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 	return true;
 }
 
-
-void COpenGLSLMaterialRenderer::setBasicRenderStates(const SMaterial& material,
-						const SMaterial& lastMaterial,
-						bool resetAllRenderstates)
+void COpenGLSLMaterialRenderer::startUseProgram()
 {
-	// forward
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+	if (Program2)
+		Driver->irrGlUseProgram(Program2);
+	else if (Program)
+		Driver->extGlUseProgramObject(Program);
+}
+
+void COpenGLSLMaterialRenderer::stopUseProgram()
+{
+	// Necessary as fixed function pipeline breaks if programs are not reset to 0
+	if (Program)
+		Driver->extGlUseProgramObject(0);
+	if (Program2)
+		Driver->irrGlUseProgram(0);
+
+	// Force reset of material to ensure OnSetMaterial will be called or we can miss 
+	// the next UseProgram call as stopUseProgram can be called from anywhere
+	Driver->DoResetRenderStates();
 }
 
 s32 COpenGLSLMaterialRenderer::getVertexShaderConstantID(const c8* name)

@@ -16,11 +16,6 @@ namespace irr
 namespace video
 {
 
-#ifdef _IRR_COMPILE_WITH_LIBJPEG_
-// Static members
-io::path CImageLoaderJPG::Filename;
-#endif
-
 //! constructor
 CImageLoaderJPG::CImageLoaderJPG()
 {
@@ -56,6 +51,9 @@ bool CImageLoaderJPG::isALoadableFileExtension(const io::path& filename) const
 
         // for longjmp, to return to caller on a fatal error
         jmp_buf setjmp_buffer;
+
+        // for having access to the filename when printing the error messages
+        core::stringc* filename;
     };
 
 void CImageLoaderJPG::init_source (j_decompress_ptr cinfo)
@@ -113,7 +111,9 @@ void CImageLoaderJPG::output_message(j_common_ptr cinfo)
 	c8 temp1[JMSG_LENGTH_MAX];
 	(*cinfo->err->format_message)(cinfo, temp1);
 	core::stringc errMsg("JPEG FATAL ERROR in ");
-	errMsg += core::stringc(Filename);
+
+	irr_jpeg_error_mgr* myerr = (irr_jpeg_error_mgr*)cinfo->err;
+	errMsg += *myerr->filename;
 	os::Printer::log(errMsg.c_str(),temp1, ELL_ERROR);
 }
 #endif // _IRR_COMPILE_WITH_LIBJPEG_
@@ -137,18 +137,21 @@ bool CImageLoaderJPG::isALoadableFileFormat(io::IReadFile* file) const
 IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 {
 	#ifndef _IRR_COMPILE_WITH_LIBJPEG_
-	os::Printer::log("Can't load as not compiled with _IRR_COMPILE_WITH_LIBJPEG_:", file->getFileName(), ELL_DEBUG);
+	os::Printer::log("Can't load as not compiled with _IRR_COMPILE_WITH_LIBJPEG_", file->getFileName(), ELL_DEBUG);
 	return 0;
 	#else
 
 	if (!file)
 		return 0;
 
-	Filename = file->getFileName();
+	core::stringc filename = file->getFileName();
+	long fileSize = file->getSize();
+	if ( fileSize < 3 )
+		return 0;
 
 	u8 **rowPtr=0;
-	u8* input = new u8[file->getSize()];
-	file->read(input, file->getSize());
+	u8* input = new u8[fileSize];
+	file->read(input, fileSize);
 
 	// allocate and initialize JPEG decompression object
 	struct jpeg_decompress_struct cinfo;
@@ -162,6 +165,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 	cinfo.err = jpeg_std_error(&jerr.pub);
 	cinfo.err->error_exit = error_exit;
 	cinfo.err->output_message = output_message;
+	jerr.filename = &filename;
 
 	// compatibility fudge:
 	// we need to use setjmp/longjmp for error handling as gcc-linux
@@ -187,7 +191,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 	jpeg_source_mgr jsrc;
 
 	// Set up data pointer
-	jsrc.bytes_in_buffer = file->getSize();
+	jsrc.bytes_in_buffer = fileSize;
 	jsrc.next_input_byte = (JOCTET*)input;
 	cinfo.src = &jsrc;
 
@@ -206,7 +210,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 	jpeg_read_header(&cinfo, TRUE);
 
 	bool useCMYK=false;
-	if (cinfo.jpeg_color_space==JCS_CMYK)
+	if (cinfo.jpeg_color_space==JCS_CMYK || cinfo.jpeg_color_space==JCS_YCCK)
 	{
 		cinfo.out_color_space=JCS_CMYK;
 		cinfo.out_color_components=4;
@@ -224,9 +228,18 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 	jpeg_start_decompress(&cinfo);
 
 	// Get image data
-	u16 rowspan = cinfo.image_width * cinfo.out_color_components;
+	u32 rowspan = cinfo.image_width * cinfo.out_color_components;
 	u32 width = cinfo.image_width;
 	u32 height = cinfo.image_height;
+
+	if (	width > JPEG_MAX_DIMENSION || height > JPEG_MAX_DIMENSION 
+		|| !IImage::checkDataSizeLimit(IImage::getDataSizeFromFormat(ECF_R8G8B8, width, height))
+		)
+	{
+		os::Printer::log("Image dimensions too large in file", filename, ELL_ERROR);
+		longjmp(jerr.setjmp_buffer, 1);
+	}
+
 
 	// Allocate memory for buffer
 	u8* output = new u8[rowspan * height];
@@ -236,7 +249,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 	// Create array of row pointers for lib
 	rowPtr = new u8* [height];
 
-	for( u32 i = 0; i < height; i++ )
+	for( size_t i = 0; i < height; i++ )
 		rowPtr[i] = &output[ i * rowspan ];
 
 	u32 rowsRead = 0;
@@ -245,6 +258,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 		rowsRead += jpeg_read_scanlines( &cinfo, &rowPtr[rowsRead], cinfo.output_height - rowsRead );
 
 	delete [] rowPtr;
+	rowPtr = 0;
 	// Finish decompression
 
 	jpeg_finish_decompress(&cinfo);

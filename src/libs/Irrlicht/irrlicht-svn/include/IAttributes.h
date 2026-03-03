@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_ATTRIBUTES_H_INCLUDED__
-#define __I_ATTRIBUTES_H_INCLUDED__
+#ifndef IRR_I_ATTRIBUTES_H_INCLUDED
+#define IRR_I_ATTRIBUTES_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "SColor.h"
@@ -92,9 +92,7 @@ public:
 
 
 	/*
-
 		Integer Attribute
-
 	*/
 
 	//! Adds an attribute as integer
@@ -111,15 +109,13 @@ public:
 
 	//! Gets an attribute as integer value
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual s32 getAttributeAsInt(s32 index) const = 0;
+	virtual s32 getAttributeAsInt(s32 index, irr::s32 defaultNotFound=0) const = 0;
 
 	//! Sets an attribute as integer value
 	virtual void setAttribute(s32 index, s32 value) = 0;
 
 	/*
-
 		Float Attribute
-
 	*/
 
 	//! Adds an attribute as float
@@ -136,15 +132,13 @@ public:
 
 	//! Gets an attribute as float value
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual f32 getAttributeAsFloat(s32 index) const = 0;
+	virtual f32 getAttributeAsFloat(s32 index, irr::f32 defaultNotFound=0.f) const = 0;
 
 	//! Sets an attribute as float value
 	virtual void setAttribute(s32 index, f32 value) = 0;
 
 	/*
-
 		String Attribute
-
 	*/
 
 	//! Adds an attribute as string
@@ -169,7 +163,7 @@ public:
 
 	//! Returns attribute value as string by index.
 	//! \param index Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::stringc getAttributeAsString(s32 index) const = 0;
+	virtual core::stringc getAttributeAsString(s32 index, const core::stringc& defaultNotFound=core::stringc()) const = 0;
 
 	//! Sets an attribute value as string.
 	//! \param index Index value, must be between 0 and getAttributeCount()-1.
@@ -200,7 +194,7 @@ public:
 
 	//! Returns attribute value as string by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::stringw getAttributeAsStringW(s32 index) const = 0;
+	virtual core::stringw getAttributeAsStringW(s32 index, const core::stringw& defaultNotFound = core::stringw()) const = 0;
 
 	//! Sets an attribute value as string.
 	//! \param index Index value, must be between 0 and getAttributeCount()-1.
@@ -208,9 +202,7 @@ public:
 	virtual void setAttribute(s32 index, const wchar_t* value) = 0;
 
 	/*
-
 		Binary Data Attribute
-
 	*/
 
 	//! Adds an attribute as binary data
@@ -258,16 +250,14 @@ public:
 
 	//! Returns attribute value as an array of wide strings by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::array<core::stringw> getAttributeAsArray(s32 index) const = 0;
+	virtual core::array<core::stringw> getAttributeAsArray(s32 index, const core::array<core::stringw>& defaultNotFound = core::array<core::stringw>()) const = 0;
 
 	//! Sets an attribute as an array of wide strings
 	virtual void setAttribute(s32 index, const core::array<core::stringw>& value) = 0;
 
 
 	/*
-
 		Bool Attribute
-
 	*/
 
 	//! Adds an attribute as bool
@@ -284,15 +274,13 @@ public:
 
 	//! Gets an attribute as boolean value
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual bool getAttributeAsBool(s32 index) const = 0;
+	virtual bool getAttributeAsBool(s32 index, bool defaultNotFound=false) const = 0;
 
 	//! Sets an attribute as boolean value
 	virtual void setAttribute(s32 index, bool value) = 0;
 
 	/*
-
 		Enumeration Attribute
-
 	*/
 
 	//! Adds an attribute as enum
@@ -350,9 +338,7 @@ public:
 
 
 	/*
-
 		SColor Attribute
-
 	*/
 
 	//! Adds an attribute as color
@@ -370,15 +356,13 @@ public:
 
 	//! Gets an attribute as color
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual video::SColor getAttributeAsColor(s32 index) const = 0;
+	virtual video::SColor getAttributeAsColor(s32 index, const video::SColor& defaultNotFound = video::SColor(0)) const = 0;
 
 	//! Sets an attribute as color
 	virtual void setAttribute(s32 index, video::SColor color) = 0;
 
 	/*
-
 		SColorf Attribute
-
 	*/
 
 	//! Adds an attribute as floating point color
@@ -395,16 +379,14 @@ public:
 
 	//! Gets an attribute as floating point color
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual video::SColorf getAttributeAsColorf(s32 index) const = 0;
+	virtual video::SColorf getAttributeAsColorf(s32 index, const video::SColorf& defaultNotFound = video::SColorf(0)) const = 0;
 
 	//! Sets an attribute as floating point color
 	virtual void setAttribute(s32 index, video::SColorf color) = 0;
 
 
 	/*
-
 		Vector3d Attribute
-
 	*/
 
 	//! Adds an attribute as 3d vector
@@ -421,15 +403,13 @@ public:
 
 	//! Gets an attribute as 3d vector
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::vector3df getAttributeAsVector3d(s32 index) const = 0;
+	virtual core::vector3df getAttributeAsVector3d(s32 index, const core::vector3df& defaultNotFound=core::vector3df(0,0,0)) const = 0;
 
 	//! Sets an attribute as vector
 	virtual void setAttribute(s32 index, const core::vector3df& v) = 0;
 
 	/*
-
 		Vector2d Attribute
-
 	*/
 
 	//! Adds an attribute as 2d vector
@@ -446,15 +426,13 @@ public:
 
 	//! Gets an attribute as position
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::vector2df getAttributeAsVector2d(s32 index) const = 0;
+	virtual core::vector2df getAttributeAsVector2d(s32 index, const core::vector2df& defaultNotFound=core::vector2df(0,0)) const = 0;
 
 	//! Sets an attribute as 2d vector
 	virtual void setAttribute(s32 index, const core::vector2df& v) = 0;
 
 	/*
-
 		Position2d Attribute
-
 	*/
 
 	//! Adds an attribute as 2d position
@@ -471,15 +449,13 @@ public:
 
 	//! Gets an attribute as position
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::position2di getAttributeAsPosition2d(s32 index) const = 0;
+	virtual core::position2di getAttributeAsPosition2d(s32 index, const core::position2di& defaultNotFound=core::position2di(0,0)) const = 0;
 
 	//! Sets an attribute as 2d position
 	virtual void setAttribute(s32 index, const core::position2di& v) = 0;
 
 	/*
-
 		Rectangle Attribute
-
 	*/
 
 	//! Adds an attribute as rectangle
@@ -496,16 +472,14 @@ public:
 
 	//! Gets an attribute as rectangle
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::rect<s32> getAttributeAsRect(s32 index) const = 0;
+	virtual core::rect<s32> getAttributeAsRect(s32 index, const core::rect<s32>& defaultNotFound = core::rect<s32>()) const = 0;
 
 	//! Sets an attribute as rectangle
 	virtual void setAttribute(s32 index, const core::rect<s32>& v) = 0;
 
 
 	/*
-
 		Dimension2d Attribute
-
 	*/
 
 	//! Adds an attribute as dimension2d
@@ -522,7 +496,7 @@ public:
 
 	//! Gets an attribute as dimension2d
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::dimension2d<u32> getAttributeAsDimension2d(s32 index) const = 0;
+	virtual core::dimension2d<u32> getAttributeAsDimension2d(s32 index, const core::dimension2d<u32>& defaultNotFound = core::dimension2d<u32>()) const = 0;
 
 	//! Sets an attribute as dimension2d
 	virtual void setAttribute(s32 index, const core::dimension2d<u32>& v) = 0;
@@ -546,14 +520,13 @@ public:
 
 	//! Gets an attribute as matrix
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::matrix4 getAttributeAsMatrix(s32 index) const = 0;
+	virtual core::matrix4 getAttributeAsMatrix(s32 index, const core::matrix4& defaultNotFound=core::matrix4()) const = 0;
 
 	//! Sets an attribute as matrix
 	virtual void setAttribute(s32 index, const core::matrix4& v) = 0;
 
 	/*
 		quaternion attribute
-
 	*/
 
 	//! Adds an attribute as quaternion
@@ -570,15 +543,13 @@ public:
 
 	//! Gets an attribute as quaternion
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::quaternion getAttributeAsQuaternion(s32 index) const = 0;
+	virtual core::quaternion getAttributeAsQuaternion(s32 index, const core::quaternion& defaultNotFound=core::quaternion(0,1,0, 0)) const = 0;
 
 	//! Sets an attribute as quaternion
 	virtual void setAttribute(s32 index, const core::quaternion& v) = 0;
 
 	/*
-
-		3d bounding box
-
+		3d axis aligned bounding box attribute
 	*/
 
 	//! Adds an attribute as axis aligned bounding box
@@ -595,15 +566,13 @@ public:
 
 	//! Gets an attribute as axis aligned bounding box
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::aabbox3df getAttributeAsBox3d(s32 index) const = 0;
+	virtual core::aabbox3df getAttributeAsBox3d(s32 index, const core::aabbox3df& defaultNotFound=core::aabbox3df(0,0,0, 0,0,0)) const = 0;
 
 	//! Sets an attribute as axis aligned bounding box
 	virtual void setAttribute(s32 index, const core::aabbox3df& v) = 0;
 
 	/*
-
 		plane
-
 	*/
 
 	//! Adds an attribute as 3d plane
@@ -620,42 +589,38 @@ public:
 
 	//! Gets an attribute as 3d plane
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::plane3df getAttributeAsPlane3d(s32 index) const = 0;
+	virtual core::plane3df getAttributeAsPlane3d(s32 index, const core::plane3df& defaultNotFound=core::plane3df(0,0,0, 0,1,0)) const = 0;
 
 	//! Sets an attribute as 3d plane
 	virtual void setAttribute(s32 index, const core::plane3df& v) = 0;
 
 
 	/*
-
 		3d triangle
-
 	*/
 
 	//! Adds an attribute as 3d triangle
 	virtual void addTriangle3d(const c8* attributeName, const core::triangle3df& v) = 0;
 
-	//! Sets an attribute as 3d trianle
+	//! Sets an attribute as 3d triangle
 	virtual void setAttribute(const c8* attributeName, const core::triangle3df& v) = 0;
 
 	//! Gets an attribute as a 3d triangle
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::triangle3df getAttributeAsTriangle3d(const c8* attributeName, const core::triangle3df& defaultNotFound = core::triangle3df(core::vector3df(0,0,0), core::vector3df(0,0,0), core::vector3df(0,0,0))) const = 0;
+	virtual core::triangle3df getAttributeAsTriangle3d(const c8* attributeName, const core::triangle3df& defaultNotFound = core::triangle3df(core::vector3df(), core::vector3df(), core::vector3df())) const = 0;
 
 	//! Gets an attribute as 3d triangle
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::triangle3df getAttributeAsTriangle3d(s32 index) const = 0;
+	virtual core::triangle3df getAttributeAsTriangle3d(s32 index, const core::triangle3df& defaultNotFound = core::triangle3df(core::vector3df(), core::vector3df(), core::vector3df())) const = 0;
 
 	//! Sets an attribute as 3d triangle
 	virtual void setAttribute(s32 index, const core::triangle3df& v) = 0;
 
 
 	/*
-
-		line 2d
-
+		line 2d attribute
 	*/
 
 	//! Adds an attribute as a 2d line
@@ -672,16 +637,14 @@ public:
 
 	//! Gets an attribute as a 2d line
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::line2df getAttributeAsLine2d(s32 index) const = 0;
+	virtual core::line2df getAttributeAsLine2d(s32 index, const core::line2df& defaultNotFound = core::line2df(0,0, 0,0)) const = 0;
 
 	//! Sets an attribute as a 2d line
 	virtual void setAttribute(s32 index, const core::line2df& v) = 0;
 
 
 	/*
-
-		line 3d
-
+		line 3d attribute
 	*/
 
 	//! Adds an attribute as a 3d line
@@ -698,16 +661,14 @@ public:
 
 	//! Gets an attribute as a 3d line
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::line3df getAttributeAsLine3d(s32 index) const = 0;
+	virtual core::line3df getAttributeAsLine3d(s32 index, const core::line3df& defaultNotFound=core::line3df(0,0,0, 0,0,0)) const = 0;
 
 	//! Sets an attribute as a 3d line
 	virtual void setAttribute(s32 index, const core::line3df& v) = 0;
 
 
 	/*
-
 		Texture Attribute
-
 	*/
 
 	//! Adds an attribute as texture reference
@@ -723,16 +684,14 @@ public:
 
 	//! Gets an attribute as texture reference
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual video::ITexture* getAttributeAsTexture(s32 index) const = 0;
+	virtual video::ITexture* getAttributeAsTexture(s32 index, video::ITexture* defaultNotFound=0) const = 0;
 
 	//! Sets an attribute as texture reference
 	virtual void setAttribute(s32 index, video::ITexture* texture, const io::path& filename = "") = 0;
 
 
 	/*
-
 		User Pointer Attribute
-
 	*/
 
 	//! Adds an attribute as user pointer
@@ -748,7 +707,7 @@ public:
 
 	//! Gets an attribute as user pointer
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual void* getAttributeAsUserPointer(s32 index) const = 0;
+	virtual void* getAttributeAsUserPointer(s32 index, void* defaultNotFound = 0) const = 0;
 
 	//! Sets an attribute as user pointer
 	virtual void setAttribute(s32 index, void* userPointer) = 0;
@@ -759,6 +718,3 @@ public:
 } // end namespace irr
 
 #endif
-
-
-

@@ -2,15 +2,13 @@
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and irrXML.h
 
-#ifndef __IRR_STRING_H_INCLUDED__
-#define __IRR_STRING_H_INCLUDED__
+#ifndef IRR_STRING_H_INCLUDED
+#define IRR_STRING_H_INCLUDED
 
 #include "irrTypes.h"
 #include "irrAllocator.h"
 #include "irrMath.h"
-#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
 namespace irr
 {
@@ -374,7 +372,7 @@ public:
 			return *this;
 		}
 
-		if ((void*)c == (void*)array)
+		if ((const void*)c == (const void*)array)
 			return *this;
 
 		u32 len = 0;
@@ -429,7 +427,7 @@ public:
 	//! Direct access operator
 	T& operator [](const u32 index)
 	{
-		_IRR_DEBUG_BREAK_IF(index>=used) // bad index
+		IRR_DEBUG_BREAK_IF(index>=used) // bad index
 		return array[index];
 	}
 
@@ -437,7 +435,7 @@ public:
 	//! Direct access operator
 	const T& operator [](const u32 index) const
 	{
-		_IRR_DEBUG_BREAK_IF(index>=used) // bad index
+		IRR_DEBUG_BREAK_IF(index>=used) // bad index
 		return array[index];
 	}
 
@@ -734,7 +732,7 @@ public:
 	//\param pos Insert the characters before this index
 	//\param s String to insert. Must be at least of size n
 	//\param n Number of characters from string s to use.
-	string<T,TAlloc>& insert(u32 pos, const char* s, u32 n)
+	string<T,TAlloc>& insert(u32 pos, const T* s, u32 n)
 	{
 		if ( pos < used )
 		{
@@ -947,13 +945,13 @@ public:
 	\param make_lower copy only lower case */
 	string<T> subString(u32 begin, s32 length, bool make_lower = false ) const
 	{
+		// clamp length to maximal value
+		if ((length+begin) > size())
+			length = size()-begin;
 		// if start after string
 		// or no proper substring length
 		if ((length <= 0) || (begin>=size()))
 			return string<T>("");
-		// clamp length to maximal value
-		if ((length+begin) > size())
-			length = size()-begin;
 
 		string<T> o;
 		o.reserve(length+1);
@@ -1325,7 +1323,7 @@ public:
 	\param index: Index of element to be erased. */
 	string<T,TAlloc>& erase(u32 index)
 	{
-		_IRR_DEBUG_BREAK_IF(index>=used) // access violation
+		IRR_DEBUG_BREAK_IF(index>=used) // access violation
 
 		for (u32 i=index+1; i<used; ++i)
 			array[i-1] = array[i];

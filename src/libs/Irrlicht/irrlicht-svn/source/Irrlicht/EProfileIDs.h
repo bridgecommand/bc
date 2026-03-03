@@ -5,11 +5,12 @@
 #define E_PROFILE_IDS_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_PROFILING_
 #include "limits.h"
 
 namespace irr
 {
-#ifdef _IRR_COMPILE_WITH_PROFILING_
     enum EPROFILE_ID
     {
 		// We use negative ID's to avoid clashing with user application id's.
@@ -25,13 +26,15 @@ namespace irr
 		EPID_SM_RENDER_SHADOWS,
 		EPID_SM_RENDER_TRANSPARENT,
 		EPID_SM_RENDER_EFFECT,
+		EPID_SM_RENDER_GUI_NODES,
 		EPID_SM_REGISTER,
 
 		//! octrees
 		EPID_OC_RENDER,
 		EPID_OC_CALCPOLYS
     };
-#endif
 } // end namespace irr
+
+#endif
 
 #endif // E_PROFILE_IDS_H_INCLUDED__

@@ -272,14 +272,24 @@ void NetworkPrimary::receiveNetwork()
                                     } else if (thisCommand.substr(0,2).compare("SW") == 0) {
                                         //'SW' Set weather
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                        if (parts.size() == 4) {
-                                            //4 elements in 'Set weather' command: SW,weather,rain,vis
+                                        if (parts.size() == 9) {
+                                            //9 elements in 'Set weather' command: SW,weather,rain,vis,windDirection,windSpeed,streamDirection,streamSpeed,streamOverride
                                             irr::f32 weather    = Utilities::lexical_cast<irr::f32>(parts.at(1));
                                             irr::f32 rain       = Utilities::lexical_cast<irr::f32>(parts.at(2));
                                             irr::f32 visibility = Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                            irr::f32 windDirection = Utilities::lexical_cast<irr::f32>(parts.at(4));
+                                            irr::f32 windSpeed = Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                            irr::f32 streamDirection = Utilities::lexical_cast<irr::f32>(parts.at(6));
+                                            irr::f32 streamSpeed = Utilities::lexical_cast<irr::f32>(parts.at(7));
+                                            int streamOverrideInt = Utilities::lexical_cast<irr::f32>(parts.at(8));
                                             if (weather >= 0) {model->setWeather(weather);}
                                             if (rain >=0) {model->setRain(rain);}
-                                            if (visibility>0) {model->setVisibility(visibility);}
+                                            if (visibility>=0) {model->setVisibility(visibility);}
+                                            if (windSpeed>=0) {model->setWindSpeed(windSpeed);}
+                                            model->setWindDirection(windDirection);
+                                            if (streamSpeed>=0) {model->setStreamOverrideSpeed(streamSpeed);}
+                                            model->setStreamOverrideDirection(streamDirection);
+                                            model->setStreamOverride(streamOverrideInt>0);
                                         }
 
 
@@ -343,6 +353,35 @@ void NetworkPrimary::receiveNetwork()
                                                 model->setFollowUpRudderWorking(false);
                                             }
                                         }
+                                    } else if (thisCommand.substr(0,2).compare("CO") == 0) {
+                                        //'CO', controls override
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size()==3) {
+                                            irr::u32 overrideMode = Utilities::lexical_cast<irr::u32>(parts.at(1)); // 0 for wheel, 1 for port engine, 2 for starboard engine
+                                            irr::f32 overrideData = Utilities::lexical_cast<irr::f32>(parts.at(2)); // angle for wheel, -1->+1 for engines
+                                            if (overrideMode == 0) {
+                                                // Wheel
+                                                model->setWheel(overrideData); 
+                                            } else if (overrideMode == 1) {
+                                                // Port engine
+                                                model->setPortEngine(overrideData);
+                                            } else if (overrideMode == 2) {
+                                                // Starboard engine
+                                                model->setStbdEngine(overrideData);
+                                            } else if (overrideMode == 3) {
+                                                model->setPortSchottel(overrideData);
+                                            } else if (overrideMode == 4) {
+                                                model->setStbdSchottel(overrideData);
+                                            } else if (overrideMode == 5) {
+                                                model->setPortAzimuthThrustLever(overrideData);
+                                            } else if (overrideMode == 6) {
+                                                model->setStbdAzimuthThrustLever(overrideData);
+                                            } else if (overrideMode == 7) {
+                                                model->setBowThruster(overrideData);
+                                            } else if (overrideMode == 8) {
+                                                model->setSternThruster(overrideData);
+                                            }
+                                        }
                                     }
 
 
@@ -364,42 +403,55 @@ void NetworkPrimary::receiveNetwork()
     }
 }
 
-void NetworkPrimary::sendNetwork()
+void NetworkPrimary::shutdownAllSecondaries(void)
 {
-    if (!networkRequested) {
-        return;
-    }
+  sendNetwork("SD"); //SD to Shutdown
+}
 
-    std::string stringToSend;
-    bool scenarioPacket = false;
-    if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
+void NetworkPrimary::sendNetwork(std::string aManualCmd)
+{
+  std::string stringToSend;
+  bool scenarioPacket = false;
+  
+  if (!networkRequested) {
+    return;
+  }
+
+  if(!aManualCmd.empty())
+    { 
+      stringToSend = aManualCmd;
+    }
+  else
+    {
+      if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
         scenarioPacket = true;
         stringToSend = generateSendStringScn();
-    } else if ( model->getLoopNumber() % 10 == 0 ){ //every 10th loop, send the main BC message
+      } else if ( model->getLoopNumber() % 10 == 0 ){ //every 10th loop, send the main BC message
         stringToSend = generateSendString();
-    } else {
+      } else {
         stringToSend = generateSendStringShort();
+      }
     }
 
-    if (stringToSend.length() > 0) {
+  if (stringToSend.length() > 0) {
 
-        // Type of packet - reliable for scenario data as we want to make sure some gets through!
-        enet_uint32 packetFlag = 0;
-        if (scenarioPacket) {
-            packetFlag = ENET_PACKET_FLAG_RELIABLE;
-        }
-
-        /* Create a packet */
-        ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
-        strlen (stringToSend.c_str()) + 1,
-        packetFlag);
-
-        /* Send the packet to all connected peers over channel id 0. */
-        enet_host_broadcast(client, 0, packet);
-
-        /* One could just use enet_host_service() instead. */
-        enet_host_flush (client);
+    // Type of packet - reliable for scenario data as we want to make sure some gets through!
+    enet_uint32 packetFlag = 0;
+    if (scenarioPacket) {
+      packetFlag = ENET_PACKET_FLAG_RELIABLE;
     }
+
+    /* Create a packet */
+    ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
+					      strlen (stringToSend.c_str()) + 1,
+					      packetFlag);
+
+    /* Send the packet to all connected peers over channel id 0. */
+    enet_host_broadcast(client, 0, packet);
+
+    /* One could just use enet_host_service() instead. */
+    enet_host_flush (client);
+  }
 }
 
 std::string NetworkPrimary::generateSendStringShort()
@@ -530,16 +582,26 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getLoopNumber()));
     stringToSend.append("#");
 
-    //7 Weather: Weather, Fog range, wind dirn, rain, light level #
+    //7 Weather: Weather, Fog range, wind dirn, rain, wind speed, stream direction, stream speed, stream override #
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getWeather()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getVisibility()));
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Wind dirn
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getWindDirection()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getRain()));
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Light level
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getWindSpeed()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStreamOverrideDirection()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStreamOverrideSpeed()));
+    stringToSend.append(",");
+    if (model->getStreamOverride()) {
+        stringToSend.append("1");
+    } else {
+        stringToSend.append("0");
+    }
     stringToSend.append("#");
 
     //8 EBL Brg, height, show (or 0,0,0) #
@@ -555,6 +617,28 @@ std::string NetworkPrimary::generateSendString()
 
     //11 Lines (mooring/towing)
     stringToSend.append(makeNetworkLinesString(model));
+    stringToSend.append("#");
+    
+    //12 Controls state (wheel, rudder, port/stbd engine, port/stbd schottel, port/stbd thrust lever, bow/stern thruster)
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getWheel()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getRudder()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortEngine()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdEngine()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortSchottel()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdSchottel()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortAzimuthThrustLever()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdAzimuthThrustLever()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getBowThruster()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getSternThruster()));
 
     return stringToSend;
 }

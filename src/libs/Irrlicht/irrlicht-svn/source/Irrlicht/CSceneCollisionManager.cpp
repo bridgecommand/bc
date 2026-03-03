@@ -8,7 +8,6 @@
 #include "ITriangleSelector.h"
 #include "SViewFrustum.h"
 
-#include "os.h"
 #include "irrMath.h"
 
 namespace irr
@@ -356,46 +355,37 @@ bool CSceneCollisionManager::getCollisionPoint(SCollisionHit& hitResult, const c
 
 	const core::vector3df linevect = ray.getVector().normalize();
 	core::vector3df intersection;
-	f32 nearest = FLT_MAX;
 	irr::s32 foundIndex = -1;
-	const f32 raylength = ray.getLengthSQ();
+	const f32 rayLengthSQ = ray.getLengthSQ();
+	f32 nearestSQ = rayLengthSQ;
 
-	const f32 minX = core::min_(ray.start.X, ray.end.X);
-	const f32 maxX = core::max_(ray.start.X, ray.end.X);
-	const f32 minY = core::min_(ray.start.Y, ray.end.Y);
-	const f32 maxY = core::max_(ray.start.Y, ray.end.Y);
-	const f32 minZ = core::min_(ray.start.Z, ray.end.Z);
-	const f32 maxZ = core::max_(ray.start.Z, ray.end.Z);
+	irr::core::aabbox3df bbox(ray.start);
+	bbox.addInternalPoint(ray.end);
 
 	for (s32 i=0; i<cnt; ++i)
 	{
 		const core::triangle3df & triangle = Triangles[i];
 
-		if(minX > triangle.pointA.X && minX > triangle.pointB.X && minX > triangle.pointC.X)
-			continue;
-		if(maxX < triangle.pointA.X && maxX < triangle.pointB.X && maxX < triangle.pointC.X)
-			continue;
-		if(minY > triangle.pointA.Y && minY > triangle.pointB.Y && minY > triangle.pointC.Y)
-			continue;
-		if(maxY < triangle.pointA.Y && maxY < triangle.pointB.Y && maxY < triangle.pointC.Y)
-			continue;
-		if(minZ > triangle.pointA.Z && minZ > triangle.pointB.Z && minZ > triangle.pointC.Z)
-			continue;
-		if(maxZ < triangle.pointA.Z && maxZ < triangle.pointB.Z && maxZ < triangle.pointC.Z)
+		if ( triangle.isTotalOutsideBox(bbox) )
 			continue;
 
 		if (triangle.getIntersectionWithLine(ray.start, linevect, intersection))
 		{
 			const f32 tmp = intersection.getDistanceFromSQ(ray.start);
-			const f32 tmp2 = intersection.getDistanceFromSQ(ray.end);
-
-			if (tmp < raylength && tmp2 < raylength && tmp < nearest)
+			if ( tmp < nearestSQ )
 			{
-				nearest = tmp;
+				const f32 tmp2 = intersection.getDistanceFromSQ(ray.end);
+				if (tmp2 < rayLengthSQ) // prevent collision before ray.start
+				{
+					nearestSQ = tmp;
 
-				hitResult.Triangle = triangle;
-				hitResult.Intersection = intersection;
-				foundIndex = i;
+					hitResult.Triangle = triangle;
+					hitResult.Intersection = intersection;
+					foundIndex = i;
+
+					bbox.reset(ray.start);
+					bbox.addInternalPoint(hitResult.Intersection);
+				}
 			}
 		}
 	}

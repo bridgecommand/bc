@@ -40,7 +40,7 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided)
+void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode)
     {
         this->device = device;
         this->model = model;
@@ -238,18 +238,18 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
 	    // DEE_NOV22 the engine rpm indicators (0..1) the top most pair
 
-            enginePort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_PORT); // DEE_NOV22 visual representation of the port engine rpm as a proportion of max revs so 0..1, there is no reverse engine
-	    enginePort->setToolTipText(language->translate("Engine Port").c_str());
-            enginePort->setMax(360); // DEE_NOV22 sets maximum value port engine indicator
+            azimuthEnginePort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_ENGINE_PORT); // DEE_NOV22 visual representation of the port engine rpm as a proportion of max revs so 0..1, there is no reverse engine
+	        azimuthEnginePort->setToolTipText(language->translate("Engine Port").c_str());
+            azimuthEnginePort->setMax(360); // DEE_NOV22 sets maximum value port engine indicator
 
-            engineStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_STBD); // DEE_NOV22 visual representation of the starboard engine rpm as a proportion of max revs so 0..1, there is no reverse engine
-	    engineStbd->setToolTipText(language->translate("Engine Starboard").c_str());
-            engineStbd->setMax(360); // DEE_NOV22 sets maximum value stbd engine indicator
+            azimuthEngineStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_ENGINE_STBD); // DEE_NOV22 visual representation of the starboard engine rpm as a proportion of max revs so 0..1, there is no reverse engine
+	        azimuthEngineStbd->setToolTipText(language->translate("Engine Starboard").c_str());
+            azimuthEngineStbd->setMax(360); // DEE_NOV22 sets maximum value stbd engine indicator
 
-            clutchPort = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.70*sh,0.045*su,0.72*sh),0,GUI_ID_CLUTCH_PORT);
-            clutchStbd = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.70*sh,0.975*su,0.72*sh),0,GUI_ID_CLUTCH_STBD);
-            clutchPort->setToolTipText(language->translate("Port Clutch").c_str());
-            clutchStbd->setToolTipText(language->translate("Starboard Clutch").c_str());
+            azimuthClutchPort = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.70*sh,0.045*su,0.72*sh),0,GUI_ID_AZIMUTH_CLUTCH_PORT);
+            azimuthClutchStbd = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.70*sh,0.975*su,0.72*sh),0,GUI_ID_AZIMUTH_CLUTCH_STBD);
+            azimuthClutchPort->setToolTipText(language->translate("Port Clutch").c_str());
+            azimuthClutchStbd->setToolTipText(language->translate("Starboard Clutch").c_str());
 
 
 
@@ -263,10 +263,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 	    // DEE_NOV22 vvvv hide the azimuth drive controls
 	    schottelPort = 0; 
 	    schottelStbd = 0;
-	    clutchPort = 0; // DEE_NOV22 not sure about this, I think perhaps clutch should be on some non azi engines like CPP vessels
-	    clutchStbd = 0; // DEE_NOV22 as above
-	    enginePort = 0; 
-	    engineStbd = 0;
+	    azimuthClutchPort = 0; // DEE_NOV22 not sure about this, I think perhaps clutch should be on some non azi engines like CPP vessels
+	    azimuthClutchStbd = 0; // DEE_NOV22 as above
+	    azimuthEnginePort = 0; 
+	    azimuthEngineStbd = 0;
 	    emergencySteering = 0; // though perhaps this would be useful for conventional ships too
             // DEE_NOV22 ^^^^
 
@@ -375,21 +375,33 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addButton(extraControlsWindow->getCloseButton()->getRelativePosition(),extraControlsWindow,GUI_ID_HIDE_EXTRA_CONTROLS_BUTTON,L"X");
         extraControlsWindow->setVisible(false);
 
+        // Add tab control for extra settings like weather and machinery failure
+        irr::core::rect<irr::s32> extraControlsTabPosition = irr::core::rect<irr::s32>(
+            0.01 * su,
+            0.05 * sh,
+            stdDataDisplayPos.getWidth() - 0.02 * su,
+            stdDataDisplayPos.getHeight() - 0.01 * sh
+        );
+        irr::gui::IGUITabControl* extraControlsTabControl = guienv->addTabControl(extraControlsTabPosition, extraControlsWindow);
+        extraControlsTabControl->setTabHeight(0.03*sh);
+        
+        // Weather tab
+        irr::gui::IGUITab* extraControlsTabWeather = extraControlsTabControl->addTab(language->translate("weather").c_str());
+
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
-        guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.005*su,0.03*sh,0.055*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.03*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
+        guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.005*su,0.02*sh,0.085*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.045*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_WEATHER_SCROLL_BAR);
         //weatherScrollbar = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.03*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);
         weatherScrollbar->setToolTipText(language->translate("weather").c_str());
 
-
         //Add rain scroll bar
         //rainScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
-        guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.055*su,0.03*sh,0.105*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.08*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_RAIN_SCROLL_BAR);
+        guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.085*su,0.02*sh,0.165*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.125*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_RAIN_SCROLL_BAR);
         rainScrollbar->setMax(100);
         rainScrollbar->setMin(0);
         rainScrollbar->setLargeStep(5);
@@ -398,53 +410,120 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add visibility scroll bar: Will be divided by 10 to get visibility in Nm
         //visibilityScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
-        guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.105*su,0.03*sh,0.155*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.13*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_VISIBILITY_SCROLL_BAR);
-        visibilityScrollbar->setMax(101);
-        visibilityScrollbar->setMin(1);
+        guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.165*su,0.02*sh,0.245*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.205*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_VISIBILITY_SCROLL_BAR);
+        visibilityScrollbar->setMax(100);
+        visibilityScrollbar->setMin(0);
         visibilityScrollbar->setLargeStep(5);
         visibilityScrollbar->setSmallStep(1);
         visibilityScrollbar->setToolTipText(language->translate("visibility").c_str());
 
-        //Add buttons to control rudder failures etc.
-        //Failure parts of GUI
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.03*sh,0.32*su,0.06*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.06*sh,0.32*su,0.09*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,language->translate("pump1Failed").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.09*sh,0.32*su,0.12*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_2_WORKING_BUTTON,language->translate("pump2Working").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.12*sh,0.32*su,0.15*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_2_FAILED_BUTTON,language->translate("pump2Failed").c_str());
+        // Wind direction and speed    
+        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.26*su,0.06*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR, 360, true);
+        windDirectionScrollbar->setMax(360);
+        windDirectionScrollbar->setMin(0);
+        windDirectionScrollbar->setLargeStep(45);
+        windDirectionScrollbar->setSmallStep(5);
+        windDirectionScrollbar->setToolTipText(language->translate("windDirection").c_str());
 
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.15*sh,0.32*su,0.18*sh),extraControlsWindow,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.18*sh,0.32*su,0.21*sh),extraControlsWindow,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
+        windSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.26*su,0.12*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_WINDSPEED_SCROLL_BAR,315, true);
+        windSpeedScrollbar->setMax(50);
+        windSpeedScrollbar->setMin(0);
+        windSpeedScrollbar->setLargeStep(5);
+        windSpeedScrollbar->setSmallStep(1);
+        windSpeedScrollbar->setToolTipText(language->translate("windSpeed").c_str());
+
+        // Tidal stream override
+        streamDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.06*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_STREAMDIRECTION_SCROLL_BAR, 360, true);
+        streamDirectionScrollbar->setMax(360);
+        streamDirectionScrollbar->setMin(0);
+        streamDirectionScrollbar->setLargeStep(45);
+        streamDirectionScrollbar->setSmallStep(5);
+        streamDirectionScrollbar->setToolTipText(language->translate("streamDirection").c_str());
+
+        streamSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.12*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_STREAMSPEED_SCROLL_BAR, 315, true);
+        streamSpeedScrollbar->setMax(10);
+        streamSpeedScrollbar->setMin(0);
+        streamSpeedScrollbar->setLargeStep(5);
+        streamSpeedScrollbar->setSmallStep(1);
+        streamSpeedScrollbar->setToolTipText(language->translate("streamSpeed").c_str());
+
+        streamOverride = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.29*su,0.01*sh,0.31*su,0.03*sh),extraControlsTabWeather,GUI_ID_STREAMOVERRIDE_BOX);
+        streamOverride->setToolTipText(language->translate("streamOverride").c_str());
+
+        //Add buttons to control rudder failures etc.
+        irr::gui::IGUITab* extraControlsTabRudder = extraControlsTabControl->addTab(language->translate("rudderFailure").c_str());
+
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.01*sh,0.16*su,0.04*sh),extraControlsTabRudder,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.04*sh,0.16*su,0.07*sh),extraControlsTabRudder,GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,language->translate("pump1Failed").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.08*sh,0.16*su,0.11*sh),extraControlsTabRudder,GUI_ID_RUDDERPUMP_2_WORKING_BUTTON,language->translate("pump2Working").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.11*sh,0.16*su,0.14*sh),extraControlsTabRudder,GUI_ID_RUDDERPUMP_2_FAILED_BUTTON,language->translate("pump2Failed").c_str());
+
+        guienv->addButton(irr::core::rect<irr::s32>(0.165*su,0.01*sh,0.325*su,0.04*sh),extraControlsTabRudder,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.165*su,0.04*sh,0.325*su,0.07*sh),extraControlsTabRudder,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
+
+        //Add extra controls for view (zoom etc)
+        irr::gui::IGUITab* extraControlsTabView = extraControlsTabControl->addTab(language->translate("view").c_str());
+        
+        guienv->addStaticText(language->translate("3dView").c_str(), irr::core::rect<irr::s32>(0.005 * su, 0.02 * sh, 0.085 * su, 0.05 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        show3d = guienv->addCheckBox(true, irr::core::rect<irr::s32>(0.038 * su, 0.080 * sh, 0.052 * su, 0.100 * sh), extraControlsTabView);
+        
+        guienv->addStaticText(language->translate("magnification").c_str(), irr::core::rect<irr::s32>(0.085 * su, 0.02 * sh, 0.165 * su, 0.05 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        magnificationScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.125 * su, 0.09 * sh), 0.03 * su, guienv, extraControlsTabView, GUI_ID_MAGNIFICATION_SCROLL_BAR);
+        magnificationScrollbar->setMax(200); //Divide by 10 to get magnification
+        magnificationScrollbar->setMin(10);
+        magnificationScrollbar->setSmallStep(5);
+        magnificationScrollbar->setPos(1.0 * 10); // Initialise as 1x zoom
 
         //Add an additional window for lines (will normally be hidden)
-        linesControlsWindow=guienv->addWindow(irr::core::rect<irr::s32>(
-            stdDataDisplayPos.UpperLeftCorner, 
-            stdDataDisplayPos.LowerRightCorner - irr::core::position2d<irr::s32>(0,0.03*sh)
-        ));
+        irr::core::rect<irr::s32> linesWindowPos = stdDataDisplayPos;
+        linesWindowPos.LowerRightCorner -= irr::core::position2d<irr::s32>(0,0.03*sh);
+        // Scale lines window to make smaller if possible
+        irr::core::dimension2d<irr::u32> sampleDimension = guienv->getSkin()->getFont()->getDimension(L"Example");
+        irr::u32 targetHeight = sampleDimension.Height * 8;
+        irr::u32 targetWidth = sampleDimension.Width * 6;
+        if (linesWindowPos.getHeight() > targetHeight) {
+            linesWindowPos.LowerRightCorner.Y = linesWindowPos.UpperLeftCorner.Y + targetHeight;
+        }
+        if (linesWindowPos.getWidth() > targetWidth) {
+            linesWindowPos.LowerRightCorner.X = linesWindowPos.UpperLeftCorner.X + targetWidth;
+        }
+        linesControlsWindow=guienv->addWindow(linesWindowPos);
         linesControlsWindow->getCloseButton()->setVisible(false);
         linesControlsWindow->setText(language->translate("lines").c_str());
         guienv->addButton(linesControlsWindow->getCloseButton()->getRelativePosition(),linesControlsWindow,GUI_ID_HIDE_LINES_CONTROLS_BUTTON,L"X");
         linesControlsWindow->setVisible(false);
 
         //Lines controls interface
-        addLine = guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.030*sh,0.121*su,0.080*sh),linesControlsWindow,GUI_ID_ADD_LINE_BUTTON,language->translate("addLine").c_str());
-        linesList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.200*sh),linesControlsWindow,GUI_ID_LINES_LIST);
+        irr::core::rect<irr::s32> lineControlsWindowSize = linesControlsWindow->getRelativePosition();
+        //irr::s32 lwVO = guienv->getSkin()->getSize(irr::gui::EGDS_WINDOW_BUTTON_WIDTH) + 2 + guienv->getSkin()->getSize(irr::gui::EGDS_MESSAGE_BOX_GAP_SPACE); // Vertical offset
+        irr::s32 lwVO = guienv->getSkin() ? guienv->getSkin()->getSize(irr::gui::EGDS_WINDOW_BUTTON_WIDTH) + 5 : 20; // Vertical offset
+        irr::s32 lwSu = lineControlsWindowSize.getWidth();
+        irr::s32 lwSh = lineControlsWindowSize.getHeight() - lwVO;
         
-        removeLine = guienv->addButton(irr::core::rect<irr::s32>(0.122*su,0.090*sh,0.300*su,0.120*sh),linesControlsWindow,GUI_ID_REMOVE_LINE_BUTTON,language->translate("removeLine").c_str());
+        addLine = guienv->addButton(irr::core::rect<irr::s32>(0.01*lwSu, 0.01*lwSh + lwVO, 0.3*lwSu, 0.250*lwSh + lwVO),linesControlsWindow,GUI_ID_ADD_LINE_BUTTON,language->translate("addLine").c_str());
+        linesList = guienv->addListBox(irr::core::rect<irr::s32>(0.01*lwSu, 0.275*lwSh + lwVO, 0.3*lwSu, 0.95*lwSh + lwVO),linesControlsWindow,GUI_ID_LINES_LIST);
         
-        keepLineSlack = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.280*su,0.130*sh,0.300*su,0.160*sh),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_CHECKBOX);
-        irr::gui::IGUIStaticText* keepLineSlackText = guienv->addStaticText(language->translate("keepLineSlack").c_str(),irr::core::rect<irr::s32>(0.122*su,0.130*sh,0.275*su,0.160*sh),true,true,linesControlsWindow);
+        removeLine = guienv->addButton(irr::core::rect<irr::s32>(0.325*lwSu, 0.450*lwSh + lwVO, 0.95*lwSu,0.600*lwSh + lwVO),linesControlsWindow,GUI_ID_REMOVE_LINE_BUTTON,language->translate("removeLine").c_str());
+        
+        keepLineSlack = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.650*lwSu, 0.625*lwSh + lwVO, 0.725*lwSu,0.775*lwSh + lwVO),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* keepLineSlackText = guienv->addStaticText(language->translate("keepLineSlack").c_str(),irr::core::rect<irr::s32>(0.325*lwSu, 0.625*lwSh + lwVO, 0.650*lwSu,0.775*lwSh + lwVO),true,true,linesControlsWindow);
         keepLineSlackText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
         
-        heaveLineIn = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.280*su,0.170*sh,0.300*su,0.200*sh),linesControlsWindow,GUI_ID_HAUL_IN_LINE_CHECKBOX);
-        irr::gui::IGUIStaticText* haulLineInText = guienv->addStaticText(language->translate("haulLineIn").c_str(),irr::core::rect<irr::s32>(0.122*su,0.170*sh,0.275*su,0.200*sh),true,true,linesControlsWindow);
+        heaveLineIn = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.650*lwSu, 0.800*lwSh + lwVO, 0.725*lwSu,0.950*lwSh + lwVO),linesControlsWindow,GUI_ID_HAUL_IN_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* haulLineInText = guienv->addStaticText(language->translate("haulLineIn").c_str(),irr::core::rect<irr::s32>(0.325*lwSu, 0.800*lwSh + lwVO, 0.650*lwSu,0.950*lwSh + lwVO),true,true,linesControlsWindow);
         haulLineInText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
 
-        linesText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.122*su,0.030*sh,0.300*su,0.080*sh),true,true,linesControlsWindow);
+        anchorLine = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.875 * lwSu, 0.625 * lwSh + lwVO, 0.950 * lwSu, 0.775 * lwSh + lwVO), linesControlsWindow, GUI_ID_ANCHOR_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* anchorLineText = guienv->addStaticText(language->translate("anchorLine").c_str(), irr::core::rect<irr::s32>(0.725 * lwSu, 0.625 * lwSh + lwVO, 0.875 * lwSu, 0.775 * lwSh + lwVO), true, true, linesControlsWindow);
+        anchorLineText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
+
+        linesText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.325*lwSu, 0.01*lwSh + lwVO, 0.95*lwSu, 0.425*lwSh + lwVO),true,true,linesControlsWindow);
  
         //add radar buttons
         //add tab control for radar
         radarTabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.455*su+azimuthGUIOffsetR,0.695*sh,0.697*su+azimuthGUIOffsetR,0.990*sh),0,true);
+        radarTabControl->setTabHeight(0.03*sh);
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
         //irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
         irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
@@ -468,6 +547,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         smallRadarButton = guienv->addButton(irr::core::rect<irr::s32>(smallRadarButtonLeft,smallRadarButtonTop,smallRadarButtonLeft+0.020*su,smallRadarButtonTop+0.030*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
         bigRadarButton->setToolTipText(language->translate("fullScreenRadar").c_str());
         smallRadarButton->setToolTipText(language->translate("minimiseRadar").c_str());
+
+        // Radar cursor buttons
+        radarCursorLeftButton = guienv->addButton(irr::core::rect<irr::s32>(0.700*su+azimuthGUIOffsetR,0.950*sh,0.715*su+azimuthGUIOffsetR,0.970*sh),0,GUI_ID_RADAR_DECREASE_X_BUTTON,L"<");
+        radarCursorRightButton = guienv->addButton(irr::core::rect<irr::s32>(0.730*su+azimuthGUIOffsetR,0.950*sh,0.745*su+azimuthGUIOffsetR,0.970*sh),0,GUI_ID_RADAR_INCREASE_X_BUTTON,L">");
+        radarCursorUpButton = guienv->addButton(irr::core::rect<irr::s32>(0.715*su+azimuthGUIOffsetR,0.930*sh,0.730*su+azimuthGUIOffsetR,0.950*sh),0,GUI_ID_RADAR_INCREASE_Y_BUTTON,L"^");
+        radarCursorDownButton = guienv->addButton(irr::core::rect<irr::s32>(0.715*su+azimuthGUIOffsetR,0.970*sh,0.730*su+azimuthGUIOffsetR,0.990*sh),0,GUI_ID_RADAR_DECREASE_Y_BUTTON,L"v");
 
         guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.045*sh,0.055*su,0.085*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.085*sh,0.055*su,0.125*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
@@ -523,6 +608,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         radarColourButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.245*radarSu,0.135*radarSu,0.275*radarSu),largeRadarControls,GUI_ID_RADAR_COLOUR_BUTTON,language->translate("radarColour").c_str());
 
+        // Radar cursor buttons
+        radarCursorLeftButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.670*radarSu,radarTL.Y+0.640*radarSu,radarTL.X+0.700*radarSu,radarTL.Y+0.670*radarSu),0,GUI_ID_RADAR_DECREASE_X_BUTTON,L"<");
+        radarCursorRightButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.730*radarSu,radarTL.Y+0.640*radarSu,radarTL.X+0.760*radarSu,radarTL.Y+0.670*radarSu),0,GUI_ID_RADAR_INCREASE_X_BUTTON,L">");
+        radarCursorUpButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.700*radarSu,radarTL.Y+0.610*radarSu,radarTL.X+0.730*radarSu,radarTL.Y+0.640*radarSu),0,GUI_ID_RADAR_INCREASE_Y_BUTTON,L"^");
+        radarCursorDownButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.700*radarSu,radarTL.Y+0.670*radarSu,radarTL.X+0.730*radarSu,radarTL.Y+0.700*radarSu),0,GUI_ID_RADAR_DECREASE_Y_BUTTON,L"v");
+
         radarText2 = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.010*radarSu,0.310*radarSu,0.200*radarSu,0.400*radarSu),true,true,largeRadarControls,-1,true);
 
         //Radar PI tab
@@ -566,55 +657,79 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addEditBox(L"0",irr::core::rect<irr::s32>(0.080*radarSu,0.080*radarSu,0.125*radarSu,0.105*radarSu),true,largeRadarPIControls,GUI_ID_BIG_PI_BEARING_BOX);
 
         //Radar ARPA tab
-        guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.005*su,0.010*sh,0.025*su,0.030*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);
-        (guienv->addStaticText(language->translate("ARPAon").c_str(),irr::core::rect<irr::s32>(0.030*su,0.010*sh,0.140*su,0.030*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        irr::gui::IGUIComboBox* arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.040*sh,0.150*su,0.080*sh),radarARPATab,GUI_ID_ARPA_TRUE_REL_BOX);
+        irr::gui::IGUIComboBox* arpaMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.005*sh,0.150*su,0.035*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);
+        arpaMode->addItem(language->translate("arpaManual").c_str());
+        arpaMode->addItem(language->translate("marpaOn").c_str());
+        arpaMode->addItem(language->translate("arpaOn").c_str());
+        irr::gui::IGUIComboBox* arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.040*sh,0.150*su,0.070*sh),radarARPATab,GUI_ID_ARPA_TRUE_REL_BOX);
         arpaVectorMode->addItem(language->translate("trueArpa").c_str());
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
-        guienv->addEditBox(L"6",irr::core::rect<irr::s32>(0.155*su,0.040*sh,0.195*su,0.080*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
-        (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.200*su,0.040*sh,0.237*su,0.080*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.230*sh),radarARPATab);
-        arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.090*sh,0.237*su,0.230*sh),radarARPATab);
+        guienv->addEditBox(L"6",irr::core::rect<irr::s32>(0.155*su,0.040*sh,0.195*su,0.070*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
+        (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.200*su,0.040*sh,0.237*su,0.070*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.075*sh,0.121*su,0.190*sh),radarARPATab,GUI_ID_ARPA_LIST);
+        arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.075*sh,0.237*su,0.190*sh),radarARPATab);
+        // Manual/MARPA buttons
+        (guienv->addStaticText(language->translate("manualOrMarpa").c_str(), irr::core::rect<irr::s32>(0.005*su,0.190*sh,0.237*su,0.215*sh), false, true, radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.215*sh,0.082*su,0.240*sh),radarARPATab,GUI_ID_MANUAL_NEW_BUTTON,language->translate("new").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.082*su,0.215*sh,0.159*su,0.240*sh),radarARPATab,GUI_ID_MANUAL_SCAN_BUTTON,language->translate("manualLog").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.159*su,0.215*sh,0.237*su,0.240*sh),radarARPATab,GUI_ID_MANUAL_CLEAR_BUTTON,language->translate("clear").c_str());
 
         //Radar ARPA on big radar screen
-        guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.010*radarSu,0.410*radarSu,0.030*radarSu,0.430*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
-        (guienv->addStaticText(language->translate("ARPAon").c_str(),irr::core::rect<irr::s32>(0.040*radarSu,0.410*radarSu,0.160*radarSu,0.430*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        arpaMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*radarSu,0.405*radarSu,0.200*radarSu,0.435*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
+        arpaMode->addItem(language->translate("arpaManual").c_str());
+        arpaMode->addItem(language->translate("marpaOn").c_str());
+        arpaMode->addItem(language->translate("arpaOn").c_str());
         arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*radarSu,0.440*radarSu,0.200*radarSu,0.470*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_TRUE_REL_BOX);
         arpaVectorMode->addItem(language->translate("trueArpa").c_str());
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
         guienv->addEditBox(L"6",irr::core::rect<irr::s32>(0.010*radarSu,0.480*radarSu,0.050*radarSu,0.510*radarSu),true,largeRadarControls,GUI_ID_BIG_ARPA_VECTOR_TIME_BOX);
         (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.060*radarSu,0.480*radarSu,0.105*radarSu,0.510*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        arpaList2 = guienv->addListBox(irr::core::rect<irr::s32>(0.010*radarSu,0.520*radarSu,0.105*radarSu,0.700*radarSu),largeRadarControls);
-        arpaText2 = guienv->addListBox(irr::core::rect<irr::s32>(0.105*radarSu,0.520*radarSu,0.200*radarSu,0.700*radarSu),largeRadarControls);
+        arpaList2 = guienv->addListBox(irr::core::rect<irr::s32>(0.010*radarSu,0.515*radarSu,0.105*radarSu,0.655*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_LIST);
+        arpaText2 = guienv->addListBox(irr::core::rect<irr::s32>(0.105*radarSu,0.515*radarSu,0.200*radarSu,0.655*radarSu),largeRadarControls);
+        // Manual/MARPA buttons
+        (guienv->addStaticText(language->translate("manualOrMarpa").c_str(), irr::core::rect<irr::s32>(0.010*radarSu,0.655*radarSu,0.200*radarSu,0.675*radarSu), false, true, largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        guienv->addButton(irr::core::rect<irr::s32>(0.010*radarSu,0.675*radarSu,0.073*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MANUAL_NEW_BUTTON,language->translate("new").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.073*radarSu,0.675*radarSu,0.136*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MANUAL_SCAN_BUTTON,language->translate("manualLog").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.136*radarSu,0.675*radarSu,0.200*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MANUAL_CLEAR_BUTTON,language->translate("clear").c_str());
+
 
         //Add paused button
-        pausedButton = guienv->addButton(irr::core::rect<irr::s32>(0.2*su,0.1*sh,0.8*su,0.9*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
+        irr::core::stringw pausedButtonMessage = language->translate("pausedbutton");
+        if (vr3dMode) {
+            pausedButtonMessage = pausedButtonMessage + language->translate("vrpausedbutton");
+        } else {
+            pausedButtonMessage = pausedButtonMessage + language->translate("normalpausedbutton");
+        }
+        pausedButton = guienv->addButton(irr::core::rect<irr::s32>(0.2*su,0.1*sh,0.8*su,0.9*sh),0,GUI_ID_START_BUTTON, pausedButtonMessage.c_str());
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
-        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.13*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
-        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.13*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.125*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.125*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
         showInterfaceButton->setVisible(false);
 
         //binoculars button
-        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.13*su+azimuthGUIOffsetL,0.92*sh,0.17*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
+        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.125*su+azimuthGUIOffsetL,0.92*sh,0.16*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
         binosButton->setIsPushButton(true);
 
         //Take bearing button
-        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.17*su+azimuthGUIOffsetL,0.92*sh,0.21*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
+        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.16*su+azimuthGUIOffsetL,0.92*sh,0.195*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
 
+        // Change view button
+        changeViewButton = guienv->addButton(irr::core::rect<irr::s32>(0.195*su+azimuthGUIOffsetL,0.92*sh,0.23*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_CHANGE_VIEW_BUTTON,language->translate("changeView").c_str());
+
         //Exit button
-        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su+azimuthGUIOffsetL,0.92*sh,0.25*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
+        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.23*su+azimuthGUIOffsetL,0.92*sh,0.265*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
 
         //Show button to display extra controls window
-        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su+azimuthGUIOffsetL,0.92*sh,0.33*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
+        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.265*su+azimuthGUIOffsetL,0.92*sh,0.34*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
 
         //Show button to display lines control window
-        showLinesControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffsetL,0.92*sh,0.37*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LINES_CONTROLS_BUTTON,language->translate("lines").c_str());
+        showLinesControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.34*su+azimuthGUIOffsetL,0.92*sh,0.375*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LINES_CONTROLS_BUTTON,language->translate("lines").c_str());
 
         //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.37*su+azimuthGUIOffsetL,0.92*sh,0.39*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.375*su+azimuthGUIOffsetL,0.92*sh,0.39*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
         
         //Set initial visibility
         updateVisibility();
@@ -640,13 +755,17 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 	// DEE_NOV22 vvvv
 	if (schottelPort) {schottelPort->drop();}
 	if (schottelStbd) {schottelStbd->drop();}
-	if (enginePort) {enginePort->drop();}
-	if (engineStbd) {engineStbd->drop();}
+	if (azimuthEnginePort) {azimuthEnginePort->drop();}
+	if (azimuthEngineStbd) {azimuthEngineStbd->drop();}
 	// DEE_NOV22 ^^^^
 
         weatherScrollbar->drop();
         visibilityScrollbar->drop();
         rainScrollbar->drop();
+        windDirectionScrollbar->drop();
+        windSpeedScrollbar->drop();
+        streamDirectionScrollbar->drop();
+        streamSpeedScrollbar->drop();
 
         radarGainScrollbar->drop();
         radarClutterScrollbar->drop();
@@ -662,6 +781,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         spdScrollbar->drop();
 
         headingIndicator->drop();
+
+        magnificationScrollbar->drop();
     }
 
     bool GUIMain::getShowInterface() const
@@ -669,10 +790,23 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return showInterface;
     }
 
+    // Roll round between normal view, full view with limited gui, and full view with no GUI
     void GUIMain::toggleShow2dInterface()
     {
-        showInterface = !showInterface;
-        updateVisibility();
+        if (!getLargeRadar()) {
+            if (!showInterface) {
+                if (guienv->getRootGUIElement()->isVisible()) {
+                    guienv->getRootGUIElement()->setVisible(false);
+                } else {
+                    showInterface = true;
+                    guienv->getRootGUIElement()->setVisible(true);
+                }
+
+            } else {
+                showInterface = false;
+            }
+            updateVisibility();
+        }
     }
 
     void GUIMain::show2dInterface()
@@ -685,6 +819,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     {
         showInterface = false;
         updateVisibility();
+    }
+
+    bool GUIMain::getShow3d() const
+    {
+        return show3d->isChecked();
     }
 
     void GUIMain::showBearings()
@@ -723,16 +862,33 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return radarLarge;
     }
 
-    void GUIMain::setARPACheckboxes(bool arpaState)
+    bool GUIMain::getAnchorLine() const
+    {
+        return anchorLine->isChecked();
+    }
+
+    void GUIMain::setARPAComboboxes(irr::s32 arpaState)
     {
         //Set both linked inputs - brute force
         irr::gui::IGUIElement* arpaCheckbox = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_ARPA_ON_BOX,true);
         if(arpaCheckbox!=0) {
-            ((irr::gui::IGUICheckBox*)arpaCheckbox)->setChecked(arpaState);
+            ((irr::gui::IGUIComboBox*)arpaCheckbox)->setSelected(arpaState);
         }
         arpaCheckbox = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_ARPA_ON_BOX,true);
         if(arpaCheckbox!=0) {
-            ((irr::gui::IGUICheckBox*)arpaCheckbox)->setChecked(arpaState);
+            ((irr::gui::IGUIComboBox*)arpaCheckbox)->setSelected(arpaState);
+        }
+    }
+
+    void GUIMain::setARPAList(int arpaSelected)
+    {
+        //Set both linked inputs - brute force
+        if(arpaList!=0) {
+            arpaList->setSelected(arpaSelected);
+        }
+        
+        if(arpaList2!=0) {
+            arpaList2->setSelected(arpaSelected);
         }
     }
 
@@ -782,10 +938,20 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     }
 
     void GUIMain::updateVisibility()
-    {
+    {   
         //Items to show if we're showing interface
         radarTabControl->setVisible(showInterface);
         radarText->setVisible(showInterface);
+
+        radarCursorLeftButton->setVisible(showInterface && !radarLarge);
+        radarCursorRightButton->setVisible(showInterface && !radarLarge);
+        radarCursorUpButton->setVisible(showInterface && !radarLarge);
+        radarCursorDownButton->setVisible(showInterface && !radarLarge);
+
+        radarCursorLeftButton2->setVisible(radarLarge);
+        radarCursorRightButton2->setVisible(radarLarge);
+        radarCursorUpButton2->setVisible(radarLarge);
+        radarCursorDownButton2->setVisible(radarLarge);
 
         //weatherScrollbar->setVisible(showInterface);
         //rainScrollbar->setVisible(showInterface);
@@ -807,10 +973,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //dataDisplay->setVisible(!radarLarge);
         binosButton->setVisible(!radarLarge);
         bearingButton->setVisible(!radarLarge);
-		rateofturnScrollbar->setVisible(!radarLarge && hasRateOfTurnIndicator);
+		changeViewButton->setVisible(!radarLarge);
+        rateofturnScrollbar->setVisible(!radarLarge && hasRateOfTurnIndicator);
         hideInterfaceButton->setVisible(showInterface && !radarLarge);
         showInterfaceButton->setVisible(!showInterface && !radarLarge);
-
+        
         bigRadarButton->setVisible(showInterface && !radarLarge);
 
         smallRadarButton->setVisible(radarLarge);
@@ -858,12 +1025,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (showExtraControlsButton) {showExtraControlsButton->setVisible(false);}
 
 	// DEE_NOV22 vvvv hide these in secondary displays
-        if (enginePort) {enginePort->setVisible(false);}
-        if (engineStbd) {engineStbd->setVisible(false);}
+        if (azimuthEnginePort) {azimuthEnginePort->setVisible(false);}
+        if (azimuthEngineStbd) {azimuthEngineStbd->setVisible(false);}
         if (schottelPort) {schottelPort->setVisible(false);}
         if (schottelStbd) {schottelStbd->setVisible(false);}
-        if (clutchPort) {clutchPort->setVisible(false);}
-        if (clutchStbd) {clutchStbd->setVisible(false);}
+        if (azimuthClutchPort) {azimuthClutchPort->setVisible(false);}
+        if (azimuthClutchStbd) {azimuthClutchStbd->setVisible(false);}
         if (emergencySteering) {emergencySteering->setVisible(false);}
 
 	// DEE_NOV22 ^^^^
@@ -967,29 +1134,29 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 		schottelStbd->setPos(Utilities::round(guiData->schottelStbd));
 	} // end if schottelStbd
 
-	if (enginePort)
+	if (azimuthEnginePort)
 	{ // refers to the GUI object that represents the engine rpm
-		enginePort->setMag(Utilities::round(90)); // fixed length needle
-		enginePort->setPos(Utilities::round(guiData->enginePort));  // i think this has already been adjusted to be
+		azimuthEnginePort->setMag(Utilities::round(90)); // fixed length needle
+		azimuthEnginePort->setPos(Utilities::round(guiData->azimuthEnginePort));  // i think this has already been adjusted to be
 									   // * 360, the engine proportion 0..1 
 	}
 
-	if (engineStbd)
+	if (azimuthEngineStbd)
 	{ // refers to the GUI object that represents the engine rpm
-		engineStbd->setMag(Utilities::round(90)); // fixed length needle
-		engineStbd->setPos(Utilities::round(guiData->engineStbd));  // i think this has already been adjusted to be
+		azimuthEngineStbd->setMag(Utilities::round(90)); // fixed length needle
+		azimuthEngineStbd->setPos(Utilities::round(guiData->azimuthEngineStbd));  // i think this has already been adjusted to be
 									   // * 360, the engine proportion 0..1 
 	}
 
 
-	if(clutchPort) 
+	if(azimuthClutchPort) 
 	{
-		clutchPort->setChecked(guiData->clutchPort);
+		azimuthClutchPort->setChecked(guiData->azimuthClutchPort);
 	}
 
-	if(clutchStbd) 
+	if(azimuthClutchStbd) 
 	{
-		clutchStbd->setChecked(guiData->clutchStbd);
+		azimuthClutchStbd->setChecked(guiData->azimuthClutchStbd);
 	}
 
 	// DEE_NOV22 ^^^^
@@ -1014,6 +1181,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (bowThrusterScrollbar) {bowThrusterScrollbar->setPos(Utilities::round(guiData->bowThruster * 100));}
         if (sternThrusterScrollbar) {sternThrusterScrollbar->setPos(Utilities::round(guiData->sternThruster * 100));}
 
+        // TODO: is the 'round' needed here?
         radarGainScrollbar->setPos(Utilities::round(guiData->radarGain));
         radarClutterScrollbar->setPos(Utilities::round(guiData->radarClutter));
         radarRainScrollbar->setPos(Utilities::round(guiData->radarRain));
@@ -1024,7 +1192,14 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         weatherScrollbar->setPos(Utilities::round(guiData->weather*10.0)); //(Weather scroll bar is 0-120, weather is 0-12)
         rainScrollbar->setPos(Utilities::round(guiData->rain*10.0)); //(Rain scroll bar is 0-100, rain is 0-10)
-        visibilityScrollbar->setPos(Utilities::round(guiData->visibility*10.0)); //Visibility scroll bar is 1-101, visibility is 0.1 to 10.1 Nm
+        visibilityScrollbar->setPos(Utilities::round(guiData->visibility*10.0)); //Visibility scroll bar is 0-100, visibility is near 0 to 10 Nm
+
+        windDirectionScrollbar->setPos(Utilities::round(guiData->windDirection));
+        windSpeedScrollbar->setPos(Utilities::round(guiData->windSpeed));
+
+        streamDirectionScrollbar->setPos(Utilities::round(guiData->streamDirection));
+        streamSpeedScrollbar->setPos(Utilities::round(guiData->streamSpeed));
+        streamOverride->setChecked(guiData->streamOverride);
 
 
 // DEE vvvvv  this should display the rate of turn data on the screen
@@ -1037,7 +1212,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guiLong = guiData->longitude;
         guiHeading = guiData->hdg; //Heading in degrees
         headingIndicator->setHeading(guiHeading);
-        viewHdg = guiData->viewAngle+guiData->hdg;
+        viewHdg = guiData->viewAngle;
         viewElev = guiData->viewElevationAngle;
         while (viewHdg>=360) {viewHdg-=360;}
         while (viewHdg<0) {viewHdg+=360;}
@@ -1070,6 +1245,7 @@ guiTideHeight = guiData->tideHeight;
 
         //Update ARPA data
         arpaContactStates = guiData->arpaContactStates;
+        setARPAList(guiData->arpaListSelection);
 
         //Update rudder pump indicators
         if (guiData->pump1On == true) {
@@ -1143,7 +1319,20 @@ guiTideHeight = guiData->tideHeight;
         displayText.append(language->translate("kts"));
         displayText.append(L" ");
 
-        if (showInterface) { //Only show speed in minimal 2d interface
+        if (!showInterface) {
+            if (hasDepthSounder) {
+                displayText.append(language->translate("depth"));
+                if (guiDepth <= maxSounderDepth) {
+                    displayText.append(f32To1dp(guiDepth).c_str());
+                }
+                else {
+                    displayText.append(L"-");
+                }
+                displayText.append(L" m");
+            }
+        }
+
+        if (showInterface) { // Add additional data on multiple lines in main interface (only speed and depth, on one line in minimal interface)
             displayText.append(L"\n");
             if (hasDepthSounder) {
                 displayText.append(language->translate("depth"));
@@ -1253,7 +1442,13 @@ guiTideHeight = guiData->tideHeight;
             //Convert TCPA from decimal minutes into minutes and seconds.
             //TODO: Filter list based on risk?
 
-
+            // If stationary, show placeholder only
+            if (arpaContactStates.at(i).stationary) {
+                displayText = language->translate("untracked");
+                arpaList->addItem(displayText.c_str());
+                arpaList2->addItem(displayText.c_str());
+                continue;
+            }
 
             displayText = L"";
 
@@ -1279,7 +1474,11 @@ guiTideHeight = guiData->tideHeight;
                 tcpaDisplaySecs = zeroPadded;
             }
 
-            displayText.append(language->translate("arpaContact"));
+            if (arpaContactStates.at(i).contactType == CONTACT_MANUAL) {
+                displayText.append(language->translate("manualContact"));
+            } else {
+                displayText.append(language->translate("arpaContact"));
+            }
             displayText.append(L" ");
             displayText.append(irr::core::stringw(i+1)); //Contact ID (1,2,...)
             displayText.append(L":");
@@ -1290,64 +1489,76 @@ guiTideHeight = guiData->tideHeight;
             if ( i==selectedItem || i==selectedItem2 ) {
                 //Show arpa details
 
-                //CPA
-                displayText = L"";
-                displayText.append(language->translate("cpa"));
-                displayText.append(L":");
-                displayText.append(f32To2dp(cpa).c_str());
-                displayText.append(language->translate("nm"));
-                //Add to the correct box
-                if (i==selectedItem) {
-                    arpaText->addItem(displayText.c_str());
-                }
-                if (i==selectedItem2) {
-                    arpaText2->addItem(displayText.c_str());
-                }
-
-                //TCPA
-                displayText = L"";
-                displayText.append(language->translate("tcpa"));
-                displayText.append(L":");
-                if (tcpa >= 0) {
-                    displayText.append(tcpaDisplayMins);
-                    displayText.append(L":");
-                    displayText.append(tcpaDisplaySecs);
+                if (arpaContactStates.at(i).range == 0) {
+                    // Exactly 0 means untracked
+                    displayText = language->translate("untracked");
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
                 } else {
-                    displayText.append(L" ");
-                    displayText.append(language->translate("past"));
-                }
-                //Add to the correct box
-                if (i==selectedItem) {
-                    arpaText->addItem(displayText.c_str());
-                }
-                if (i==selectedItem2) {
-                    arpaText2->addItem(displayText.c_str());
-                }
+                    //CPA
+                    displayText = L"";
+                    displayText.append(language->translate("cpa"));
+                    displayText.append(L":");
+                    displayText.append(f32To2dp(cpa).c_str());
+                    displayText.append(language->translate("nm"));
+                    //Add to the correct box
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
 
-                //Heading and speed
-                //Pad heading to three decimals
-                irr::core::stringw headingText = irr::core::stringw(arpahdg);
-                if (headingText.size() == 1) {
-                    irr::core::stringw zeroPadded = L"00";
-                    zeroPadded.append(headingText);
-                    headingText = zeroPadded;
-                }
-                else if (headingText.size() == 2) {
-                    irr::core::stringw zeroPadded = L"0";
-                    zeroPadded.append(headingText);
-                    headingText = zeroPadded;
-                }
-                displayText = L"";
-                displayText.append(headingText);
-                displayText.append(L"° ");
-                displayText.append(irr::core::stringw(arpaspd));
-                displayText.append(L" kts");
-                //Add to the correct box
-                if (i==selectedItem) {
-                    arpaText->addItem(displayText.c_str());
-                }
-                if (i==selectedItem2) {
-                    arpaText2->addItem(displayText.c_str());
+                    //TCPA
+                    displayText = L"";
+                    displayText.append(language->translate("tcpa"));
+                    displayText.append(L":");
+                    if (tcpa >= 0) {
+                        displayText.append(tcpaDisplayMins);
+                        displayText.append(L":");
+                        displayText.append(tcpaDisplaySecs);
+                    } else {
+                        displayText.append(L" ");
+                        displayText.append(language->translate("past"));
+                    }
+                    //Add to the correct box
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
+
+                    //Heading and speed
+                    //Pad heading to three decimals
+                    irr::core::stringw headingText = irr::core::stringw(arpahdg);
+                    if (headingText.size() == 1) {
+                        irr::core::stringw zeroPadded = L"00";
+                        zeroPadded.append(headingText);
+                        headingText = zeroPadded;
+                    }
+                    else if (headingText.size() == 2) {
+                        irr::core::stringw zeroPadded = L"0";
+                        zeroPadded.append(headingText);
+                        headingText = zeroPadded;
+                    }
+                    displayText = L"";
+                    displayText.append(headingText);
+                    displayText.append(language->translate("deg"));
+                    displayText.append(L" ");
+                    displayText.append(irr::core::stringw(arpaspd));
+                    displayText.append(L" kts");
+                    //Add to the correct box
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
                 }
 
             }
@@ -1384,6 +1595,16 @@ guiTideHeight = guiData->tideHeight;
         if (eblLeftButton2->isPressed()) {manuallyTriggerClick(eblLeftButton2);}
         if (eblRightButton2->isPressed()) {manuallyTriggerClick(eblRightButton2);}
 
+        if (radarCursorLeftButton->isPressed()) {manuallyTriggerClick(radarCursorLeftButton);}
+        if (radarCursorRightButton->isPressed()) {manuallyTriggerClick(radarCursorRightButton);}
+        if (radarCursorUpButton->isPressed()) {manuallyTriggerClick(radarCursorUpButton);}
+        if (radarCursorDownButton->isPressed()) {manuallyTriggerClick(radarCursorDownButton);}
+
+        if (radarCursorLeftButton2->isPressed()) {manuallyTriggerClick(radarCursorLeftButton2);}
+        if (radarCursorRightButton2->isPressed()) {manuallyTriggerClick(radarCursorRightButton2);}
+        if (radarCursorUpButton2->isPressed()) {manuallyTriggerClick(radarCursorUpButton2);}
+        if (radarCursorDownButton2->isPressed()) {manuallyTriggerClick(radarCursorDownButton2);}
+
         if (nonFollowUpPortButton && wheelScrollbar ) {
             //Handle port NFU rudder button
             if (nonFollowUpPortButton->isPressed() && !nfuPortDown) {
@@ -1415,16 +1636,21 @@ guiTideHeight = guiData->tideHeight;
         // Update lines display
         if (model && model->getLines()) {
             std::vector<std::string> linesNames = model->getLines()->getLineNames();
-            
-            irr::s32 previousSelection = linesList->getSelected();
-            linesList->clear();
 
-            for (unsigned int i = 0; i < linesNames.size(); i++) {
-                linesList->addItem(irr::core::stringw(linesNames.at(i).c_str()).c_str());
+            // remove excess lines if required
+            while (linesList->getItemCount() > linesNames.size()) {
+                linesList->removeItem(linesList->getItemCount() - 1);
+                linesList->setSelected(-1);
             }
 
-            if (linesList->getItemCount() > previousSelection) {
-                linesList->setSelected(previousSelection);
+            // Update text for existing lines
+            for (unsigned int i = 0; i < linesList->getItemCount(); i++) {
+                linesList->setItem(i, irr::core::stringw(linesNames.at(i).c_str()).c_str(), -1);
+            }
+            
+            // Add additional lines if required
+            for (unsigned int i = linesList->getItemCount(); i < linesNames.size(); i++) {
+                linesList->addItem(irr::core::stringw(linesNames.at(i).c_str()).c_str());
             }
 
             // Get 'keepSlack' & 'heaveIn' status of current line

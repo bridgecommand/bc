@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GUI_SKIN_H_INCLUDED__
-#define __I_GUI_SKIN_H_INCLUDED__
+#ifndef IRR_I_GUI_SKIN_H_INCLUDED
+#define IRR_I_GUI_SKIN_H_INCLUDED
 
 #include "IAttributeExchangingObject.h"
 #include "EGUIAlignment.h"
@@ -52,9 +52,8 @@ namespace gui
 		"windowsMetallic",
 		"burning",
 		"unknown",
-		0,
+		0
 	};
-
 
 	//! Enumeration for skin colors
 	enum EGUI_DEFAULT_COLOR
@@ -143,7 +142,7 @@ namespace gui
 		"Editable",
 		"GrayEditable",
 		"FocusedEditable",
-		0,
+		0
 	};
 
 	//! Enumeration for default sizes.
@@ -577,4 +576,3 @@ namespace gui
 } // end namespace irr
 
 #endif
-

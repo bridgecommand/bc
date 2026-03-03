@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GUI_SPIN_BOX_H_INCLUDED__
-#define __I_GUI_SPIN_BOX_H_INCLUDED__
+#ifndef IRR_I_GUI_SPIN_BOX_H_INCLUDED
+#define IRR_I_GUI_SPIN_BOX_H_INCLUDED
 
 #include "IGUIElement.h"
 
@@ -51,6 +51,12 @@ namespace gui
 		//! Get the current value of the spinbox
 		virtual f32 getValue() const = 0;
 
+		//! Get the value the spinbox would have for the given text
+		/**	Note: There is no rounding for decimal places going on here
+		The reason is that so far spinbox doesn't restrict entering longer
+		numbers (or any other text) (TODO)*/
+		virtual f32 getValueFor(const wchar_t* text) const = 0;
+
 		//! set the range of values which can be used in the spinbox
 		/** \param min: minimum value
 		\param max: maximum value */
@@ -68,7 +74,8 @@ namespace gui
 		virtual void setStepSize(f32 step=1.f) = 0;
 
 		//! Sets the number of decimal places to display.
-		//! Note that this also rounds the range to the same number of decimal places.
+		//! Note: This also rounds the range to the same number of decimal places.
+		//! Note: This is only used for the buttons so far, text-input ignores it (TODO)
 		/** \param places: The number of decimal places to display, use -1 to reset */
 		virtual void setDecimalPlaces(s32 places) = 0;
 
@@ -82,11 +89,16 @@ namespace gui
 		//! Gets when the spinbox has to validate entered text.
 		/** \return A combination of EGUI_SPINBOX_VALIDATION bit flags */
 		virtual u32 getValidateOn() const = 0;
+
+		//! Gets previous value in EGET_SPINBOX_CHANGED events
+		/** Note: That value changes as soon as a new value is set (to the new value).
+		So it's only useful to check for last value in the event and has no use otherwise. 
+		Also it's possible to mess it up by setting text via the editbox sub-element directly. */
+		virtual f32 getOldValue() const = 0;
 	};
 
 
 } // end namespace gui
 } // end namespace irr
 
-#endif // __I_GUI_SPIN_BOX_H_INCLUDED__
-
+#endif // IRR_I_GUI_SPIN_BOX_H_INCLUDED

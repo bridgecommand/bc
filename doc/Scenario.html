@@ -13,15 +13,15 @@
 
 <div style="text-align: center;">
 <h1>Bridge Command 5</h1>
+</div>
+
+<h2>Navigation</h2>
+<p>Return to <a href="index.html">Documentation Home</a> or <a href="https://www.bridgecommand.co.uk">Bridge Command</a> homepage.</p>
 
 <h2>Scenarios</h2>
 
-<div style="text-align: left;">
 <h3>Contents</h3>
 
-</div>
-
-<div style="text-align: left;">
 <ul id="mozToc">
 
   <li>Introduction</li>
@@ -148,10 +148,10 @@ zero.</li>-->
 
   <li>Weather: How rough the sea is, from 0 (best) to 12 (worst). If the map controller is used, the weather set by the map controller will override this. The weather also determines how windy it is.</li>
 
-<!--  <li>WindDirection: The bearing the wind is blowing from at the start of the scenario. If the map controller is used, the wind direction set by the map controller will override this.</li>-->
+  <li>WindDirection: The bearing the wind is blowing from at the start of the scenario.<!-- If the map controller is used, the wind direction set by the map controller will override this.--></li>
+  <li>WindSpeed: The wind speed at the start of the scenario.</li>
 
   <li>Rain: The rain intensity, between 0 for no rain and 10 for maximum rain.</li>
-
 </ul>
 
 <h3><a class="mozTocH3" name="mozTocId653103"></a>Othership.ini</h3>
@@ -199,6 +199,8 @@ corresponds to 33&deg; 23.1' North.</li>
   <!--<li>(Optional) InitLongUncertaintyNm and InitLatUncertaintyNm: If these are included, these change the initial position randomly, centred on the InitialLong and InitialLat. These set the maximum distance in the East/West and North/South directions from the nominal start point in nautical miles.</li>-->
 
 <!--<li>(Optional). SART: Set this to 1 to enable a SART (Search And Rescue Transponder) on the vessel.</li>-->
+
+  <li>(Optional) Drifting: If this is set to 1, the vessel will be moved by wind and tidal stream, in addition to any defined legs (see below). This can be used to model something like a life raft moving.</li>
 
   <li>Legs: The number of legs making up the vessel's route (See
 below)</li>
@@ -337,9 +339,6 @@ targetMinDistance(2)=20
 
 If you have any questions, please ask the author - <a href="mail.php" onmouseover="this.href='mai' + 'lto:' + 'help' + '@' + 'bridgecommand.co.uk'">send
 me an email.</a><br><br>
-</div>
-
-</div>
 
 </body>
 </html>

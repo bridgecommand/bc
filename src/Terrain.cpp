@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 //using namespace irr;
 
@@ -333,6 +334,13 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             terrain->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
         }
 
+        //Create terrain name
+        std::string internalName = "Terrain_";
+        internalName.append(std::to_string(i - 1));
+        terrain->setName(internalName.c_str());
+        
+        //terrain->setDebugDataVisible(35);
+        //terrain->getMesh()->getMeshBuffer(0)->getMaterial().setFlag(irr::video::EMF_WIREFRAME, true);
         terrains.push_back(terrain);
 
     }
@@ -422,7 +430,12 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IRe
                 const size_t bytesPerPixel = 4; //Hard coded for 32 bit (4 byte)
                 irr::f32 val;
                 if (heightMapFile->read(&val, bytesPerPixel) == bytesPerPixel) {
-                    heightMapLine.push_back(val); //We use this as an unscaled height in metres
+                    if (std::isnormal(val)) {
+                        heightMapLine.push_back(val); //We use this as an unscaled height in metres
+                    }
+                    else {
+                        heightMapLine.push_back(-1e3); // If nan or inf, if so, set to -1e3, to indicate missing data
+                    }
                 } else {
                     heightMapLine.push_back(-1e3); //Fallback, we shouldn't get here?
                 }
@@ -478,6 +491,16 @@ void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heigh
     terrain->setVisible(false);
 
     terrains.push_back(terrain);
+}
+
+irr::scene::ISceneNode* Terrain::getSceneNode(int number)
+{
+    if (number < (int)terrains.size() && number >= 0) {
+        return terrains.at(number);
+    }
+    else {
+        return 0;
+    }
 }
 
 std::vector<std::vector<irr::f32>> Terrain::transposeHeightMapVector(std::vector<std::vector<irr::f32>> inVector){

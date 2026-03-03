@@ -117,12 +117,12 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			vertexSize = sizeof(video::S3DVertexTangents);
 			break;
 		}
-		u8 *vertices  = (u8*)mb->getVertices() ;
+		const u8 *vertices  = (const u8*)mb->getVertices() ;
 
 		for (u32 j=0; j < mb->getVertexCount(); ++j)
 		{
-        	u8 *buf = vertices + j * vertexSize;
-			const video::S3DVertex* vertex = ( (video::S3DVertex*)buf );
+        	const u8 *buf = vertices + j * vertexSize;
+			const video::S3DVertex* vertex = ( (const video::S3DVertex*)buf );
 			const core::vector3df& pos    = vertex->Pos;
 			const core::vector3df& n      = vertex->Normal;
 			const core::vector2df& uv     = vertex->TCoords;

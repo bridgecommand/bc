@@ -9,7 +9,6 @@
 #include "ICursorControl.h"
 #include "ICameraSceneNode.h"
 #include "ISceneNodeAnimatorCollisionResponse.h"
-#include "os.h"
 
 namespace irr
 {
@@ -20,11 +19,21 @@ namespace scene
 CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl,
 		f32 rotateSpeed, f32 moveSpeed, f32 jumpSpeed,
 		SKeyMap* keyMapArray, u32 keyMapSize, bool noVerticalMovement, bool invertY, float rotateSpeedKeyboard)
-: CursorControl(cursorControl), MaxVerticalAngle(88.0f), NoVerticalMovement(noVerticalMovement),
-	MoveSpeed(moveSpeed), RotateSpeedKeyboard(rotateSpeedKeyboard), RotateSpeed(rotateSpeed),
+: CursorControl(cursorControl),
+// On X11 we get events even when mouse is not inside the Irrlicht window, on Windows we don't.
+// It might be possible to add grabbing on Windows as well in which case this has to be somewhat changed.
+// TODO: I don't know about OSX, but in theory it should be like old Irrlicht 1.8 behavior whatever that was there.
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
+	GrabMouse(false),
+#else
+	GrabMouse(true),
+#endif
+	MaxVerticalAngle(88.0f), NoVerticalMovement(noVerticalMovement),
+	MoveSpeed(moveSpeed),
+	RotateSpeedKeyboard(rotateSpeedKeyboard), RotateSpeed(rotateSpeed),
 	JumpSpeed(jumpSpeed),
 	MouseYDirection(invertY ? -1.0f : 1.0f),
-	LastAnimationTime(0), firstUpdate(true), firstInput(true)
+	LastAnimationTime(0), HadMouseEvent(false), firstUpdate(true), firstInput(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CCameraSceneNodeAnimatorFPS");
@@ -80,6 +89,9 @@ bool CSceneNodeAnimatorCameraFPS::OnEvent(const SEvent& evt)
 			}
 		}
 		break;
+	case EET_MOUSE_INPUT_EVENT:
+		HadMouseEvent = true;
+		return true;
 
 	default:
 		break;
@@ -94,13 +106,10 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 	if (!node || node->getType() != ESNT_CAMERA)
 		return;
 
-	timeMs = os::Timer::getRealTime(); // User input is always in real-time
-
 	ICameraSceneNode* camera = static_cast<ICameraSceneNode*>(node);
 
 	if (firstUpdate)
 	{
-		camera->updateAbsolutePosition();
 		if (CursorControl )
 		{
 			CursorControl->setPosition(0.5f, 0.5f);
@@ -129,20 +138,21 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 	if(smgr && smgr->getActiveCamera() != camera)
 		return;
 
-	if ( CursorControl )
-		CursorPos = CursorControl->getRelativePosition();
-
 	// get time
 	f32 timeDiff = (f32) ( timeMs - LastAnimationTime );
 	LastAnimationTime = timeMs;
 
 	// Update rotation
+	camera->updateAbsolutePosition();
 	core::vector3df target = (camera->getTarget() - camera->getAbsolutePosition());
 	core::vector3df relativeRotation = target.getHorizontalAngle();
 
 	if (CursorControl)
 	{
 		bool reset = false;
+
+		if ( HadMouseEvent || GrabMouse)
+			CursorPos = CursorControl->getRelativePosition();
 
 		if (CursorPos != CenterCursor)
 		{
@@ -152,12 +162,8 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 			reset = true;
 		}
 
-		if ( !reset )
+		if ( GrabMouse && !reset)
 		{
-			// TODO: not sure if this case is still needed. Might be it was only something
-			// that was necessary when someone tried to use mouse-events in the past.
-			// But not too expensive, test on all platforms before removing.
-
 			// Special case, mouse is whipped outside of window before it can update.
 			video::IVideoDriver* driver = smgr->getVideoDriver();
 			core::vector2d<u32> mousepos(u32(CursorPos.X), u32(CursorPos.Y));
@@ -174,6 +180,7 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 			CursorPos = CenterCursor;
  		}
 	}
+	HadMouseEvent = false;
 
 	// keyboard rotation
 	if (CursorKeys[EKA_ROTATE_LEFT])

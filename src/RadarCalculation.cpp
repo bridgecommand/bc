@@ -32,6 +32,12 @@
 #include <cstdlib> //For rand()
 #include <algorithm> //For sort()
 
+#ifdef WITH_PROFILING
+#include "iprof.hpp"
+#else
+#define IPROF(a) //intentionally empty placeholder
+#endif
+
 ////using namespace irr;
 
 RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(360)
@@ -49,8 +55,10 @@ RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(3
 
     CursorRangeNm = 0;
     CursorBrg = 0;
+    cursorRangeXNm = 0;
+    cursorRangeYNm = 0;
 
-    EBLLastUpdated = clock();
+    radarCursorsLastUpdated = clock();
 
     radarOn = true;
 
@@ -59,7 +67,10 @@ RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(3
     stabilised = false;
     trueVectors = true;
     vectorLengthMinutes = 6;
-    arpaOn = false;
+    arpaMode = 0;
+
+    // What's selected in the GUI arpa list
+    arpaListSelection = -1;
 
     //Hard coded in GUI and here for 10 parallel index lines
     for(irr::u32 i=0; i<10; i++) {
@@ -117,10 +128,9 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 
         rangeSensitivity = 20;
 
-        marpaContacts = 10;
-
         irr::video::SColor radarBackgroundColour;
         irr::video::SColor radarForegroundColour;
+        irr::video::SColor radarSurroundColour;
 
         radarBackgroundColour.setAlpha(255);
         radarBackgroundColour.setRed(0);
@@ -131,6 +141,12 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         radarForegroundColour.setRed(255);
         radarForegroundColour.setGreen(220);
         radarForegroundColour.setBlue(0);
+
+        radarSurroundColour.setAlpha(255);
+        radarSurroundColour.setRed(128);
+        radarSurroundColour.setGreen(128);
+        radarSurroundColour.setBlue(128);
+
         
         radarBackgroundColours.push_back(radarBackgroundColour);
         radarForegroundColours.push_back(radarForegroundColour);
@@ -172,14 +188,13 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         if (radarSeaClutter < 0) {radarSeaClutter = 0.000000001;}
         if (radarRainClutter< 0) {radarRainClutter= 0.00001;}
         if (rangeSensitivity< 0) {rangeSensitivity=20;}
-        
-        marpaContacts = IniFile::iniFileTou32(radarConfigFile,"MARPAContacts");
 
         irr::u32 numberOfRadarColourSets = IniFile::iniFileTof32(radarConfigFile,"NumberOfRadarColourSets");
         if (numberOfRadarColourSets == 0) {
             //legacy loading
             irr::video::SColor radarBackgroundColour;
             irr::video::SColor radarForegroundColour;
+            irr::video::SColor radarSurroundColour;
 
             radarBackgroundColour.setAlpha(255);
             radarBackgroundColour.setRed(IniFile::iniFileTou32(radarConfigFile,"radar_bg_red"));
@@ -191,12 +206,19 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
             radarForegroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile,"radar1_green"));
             radarForegroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile,"radar1_blue"));
 
+            radarSurroundColour.setAlpha(255);
+            radarSurroundColour.setRed(IniFile::iniFileTou32(radarConfigFile, "radar_surround_red", 128));
+            radarSurroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile, "radar1_green", 128));
+            radarSurroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile, "radar1_blue", 128));
+
             radarBackgroundColours.push_back(radarBackgroundColour);
             radarForegroundColours.push_back(radarForegroundColour);
+            radarSurroundColours.push_back(radarSurroundColour);
         } else {
             for (unsigned int i = 1; i <= numberOfRadarColourSets; i++) {
                 irr::video::SColor radarBackgroundColour;
                 irr::video::SColor radarForegroundColour;
+                irr::video::SColor radarSurroundColour;
 
                 radarBackgroundColour.setAlpha(255);
                 radarBackgroundColour.setRed(IniFile::iniFileTou32(radarConfigFile,IniFile::enumerate1("radar_bg_red",i)));
@@ -208,8 +230,14 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
                 radarForegroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile,IniFile::enumerate1("radar1_green",i)));
                 radarForegroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile,IniFile::enumerate1("radar1_blue",i)));
 
+                radarSurroundColour.setAlpha(255);
+                radarSurroundColour.setRed(IniFile::iniFileTou32(radarConfigFile, IniFile::enumerate1("radar_surround_red", i), 128));
+                radarSurroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile, IniFile::enumerate1("radar_surround_green", i), 128));
+                radarSurroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile, IniFile::enumerate1("radar_surround_blue", i), 128));
+
                 radarBackgroundColours.push_back(radarBackgroundColour);
                 radarForegroundColours.push_back(radarForegroundColour);    
+                radarSurroundColours.push_back(radarSurroundColour);
             }
         }
 
@@ -300,6 +328,54 @@ irr::f32 RadarCalculation::getRainClutter() const
     return radarRainClutterReduction;
 }
 
+void RadarCalculation::increaseClutter(irr::f32 value)
+{
+    radarSeaClutterReduction += value;
+    if (radarSeaClutterReduction > 100) {
+        radarSeaClutterReduction = 100;
+    }
+}
+
+void RadarCalculation::decreaseClutter(irr::f32 value)
+{
+    radarSeaClutterReduction -= value;
+    if (radarSeaClutterReduction < 0) {
+        radarSeaClutterReduction = 0;
+    }
+}
+
+void RadarCalculation::increaseRainClutter(irr::f32 value)
+{
+    radarRainClutterReduction += value;
+    if (radarRainClutterReduction > 100) {
+        radarRainClutterReduction = 100;
+    }
+}
+
+void RadarCalculation::decreaseRainClutter(irr::f32 value)
+{
+    radarRainClutterReduction -= value;
+    if (radarRainClutterReduction < 0) {
+        radarRainClutterReduction = 0;
+    }
+}
+
+void RadarCalculation::increaseGain(irr::f32 value)
+{
+    radarGain += value;
+    if (radarGain > 100) {
+        radarGain = 100;
+    }
+}
+
+void RadarCalculation::decreaseGain(irr::f32 value)
+{
+    radarGain -= value;
+    if (radarGain < 0) {
+        radarGain = 0;
+    }
+}
+
 irr::f32 RadarCalculation::getEBLRangeNm() const
 {
     return EBLRangeNm;
@@ -346,13 +422,90 @@ irr::f32 RadarCalculation::getPIrange(irr::s32 PIid) const
     }
 }
 
+void RadarCalculation::increaseCursorRangeXNm()
+{
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        radarCursorsLastUpdated = clockNow;
+        irr::f32 oldCursorRangeXNm = cursorRangeXNm;
+        cursorRangeXNm += getRangeNm()/100;
+
+        // Limit: 
+        irr::f32 testCursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
+        if (testCursorRangeNm > getRangeNm()) {
+            irr::f32 testCursorBrgRad = std::atan2(oldCursorRangeXNm,cursorRangeYNm);
+            cursorRangeXNm = getRangeNm() * sin(testCursorBrgRad);
+            cursorRangeYNm = getRangeNm() * cos(testCursorBrgRad);
+        }
+    }
+}
+
+void RadarCalculation::decreaseCursorRangeXNm()
+{
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        radarCursorsLastUpdated = clockNow;
+        irr::f32 oldCursorRangeXNm = cursorRangeXNm;
+        cursorRangeXNm -= getRangeNm()/100;
+        // Limit: 
+        irr::f32 testCursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
+        if (testCursorRangeNm > getRangeNm()) {
+            irr::f32 testCursorBrgRad = std::atan2(oldCursorRangeXNm,cursorRangeYNm);
+            cursorRangeXNm = getRangeNm() * sin(testCursorBrgRad);
+            cursorRangeYNm = getRangeNm() * cos(testCursorBrgRad);
+        }
+    }
+}
+
+void RadarCalculation::increaseCursorRangeYNm()
+{
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        radarCursorsLastUpdated = clockNow;
+        irr::f32 oldCursorRangeYNm = cursorRangeYNm;
+        cursorRangeYNm += getRangeNm()/100;
+        // Limit: 
+        irr::f32 testCursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
+        if (testCursorRangeNm > getRangeNm()) {
+            irr::f32 testCursorBrgRad = std::atan2(cursorRangeXNm,oldCursorRangeYNm);
+            cursorRangeXNm = getRangeNm() * sin(testCursorBrgRad);
+            cursorRangeYNm = getRangeNm() * cos(testCursorBrgRad);
+        }
+    }
+}
+
+void RadarCalculation::decreaseCursorRangeYNm()
+{
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        radarCursorsLastUpdated = clockNow;
+        irr::f32 oldCursorRangeYNm = cursorRangeYNm;
+        cursorRangeYNm -= getRangeNm()/100;
+        // Limit: 
+        irr::f32 testCursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
+        if (testCursorRangeNm > getRangeNm()) {
+            irr::f32 testCursorBrgRad = std::atan2(cursorRangeXNm,oldCursorRangeYNm);
+            cursorRangeXNm = getRangeNm() * sin(testCursorBrgRad);
+            cursorRangeYNm = getRangeNm() * cos(testCursorBrgRad);
+        }
+    }
+}
+
 void RadarCalculation::increaseEBLRange()
 {
     //Only trigger this if there's been enough time since the last update.
     clock_t clockNow = clock();
-    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
     if (elapsed > 0.03) {
-        EBLLastUpdated = clockNow;
+        radarCursorsLastUpdated = clockNow;
 
         EBLRangeNm += getRangeNm()/100;
 
@@ -363,9 +516,9 @@ void RadarCalculation::decreaseEBLRange()
 {
     //Only trigger this if there's been enough time since the last update.
     clock_t clockNow = clock();
-    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
     if (elapsed > 0.03) {
-        EBLLastUpdated = clockNow;
+        radarCursorsLastUpdated = clockNow;
 
         EBLRangeNm -= getRangeNm()/100;
         if (EBLRangeNm<0) {
@@ -378,9 +531,9 @@ void RadarCalculation::increaseEBLBrg()
 {
     //Only trigger this if there's been enough time since the last update.
     clock_t clockNow = clock();
-    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
     if (elapsed > 0.03) {
-        EBLLastUpdated = clockNow;
+        radarCursorsLastUpdated = clockNow;
 
         EBLBrg++;
         while (EBLBrg >= 360) {
@@ -393,9 +546,9 @@ void RadarCalculation::decreaseEBLBrg()
 {
     //Only trigger this if there's been enough time since the last update.
     clock_t clockNow = clock();
-    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
     if (elapsed > 0.03) {
-        EBLLastUpdated = clockNow;
+        radarCursorsLastUpdated = clockNow;
 
         EBLBrg--;
         while (EBLBrg < 0) {
@@ -453,13 +606,28 @@ bool RadarCalculation::isRadarOn() const
     return radarOn;
 }
 
-void RadarCalculation::setArpaOn(bool on)
+int RadarCalculation::getArpaMode() const
 {
-    arpaOn = on;
-    if (!arpaOn) {
-        //Clear arpa scans
-        arpaContacts.clear(); //TODO: Clear ones that aren't MARPA?
-        arpaTracks.clear(); //TODO: Clear ones that aren't MARPA?
+    return arpaMode;
+}
+
+void RadarCalculation::setArpaMode(int mode)
+{
+    // 0: Off/Manual, 1: MARPA, 2: ARPA
+    arpaMode = mode;
+    if (arpaMode < 1) {
+        // Clear arpa scans:
+        // Remove all ARPA (not manual) contacts from arpaContacts. Clear arpaTracks, but reset estimate.displayID to 0 for manual contacts, so it is regenerated 
+        for (int i = arpaContacts.size() - 1; i >= 0; i--) {
+            // Iterate from end to start, as we may be removing items
+            if (arpaContacts.at(i).contactType == CONTACT_MANUAL) {
+                arpaContacts.at(i).estimate.displayID = 0;
+            } else {
+                // Remove it
+                arpaContacts.erase(arpaContacts.begin() + i);
+            }
+        }
+        arpaTracks.clear(); // This will be regenerated as we have set display ID to 0
     }
 }
 
@@ -471,6 +639,16 @@ void RadarCalculation::setRadarARPARel()
 void RadarCalculation::setRadarARPATrue()
 {
     trueVectors = true;
+}
+
+void RadarCalculation::setArpaListSelection(irr::s32 selection) 
+{
+    arpaListSelection = selection;
+}
+
+irr::s32 RadarCalculation::getArpaListSelection() const
+{
+    return arpaListSelection;
 }
 
 void RadarCalculation::setRadarARPAVectors(irr::f32 vectorMinutes)
@@ -486,14 +664,32 @@ void RadarCalculation::setRadarDisplayRadius(irr::u32 radiusPx)
     }
 }
 
-irr::u32 RadarCalculation::getARPATracks() const
+irr::u32 RadarCalculation::getARPATracksSize() const
 {
     return arpaTracks.size();
 }
 
-ARPAContact RadarCalculation::getARPATrack(irr::u32 index) const
+int RadarCalculation::getARPAContactIDFromTrackIndex(irr::u32 trackIndex) const
 {
-    return arpaContacts.at(arpaTracks.at(index));
+    if (trackIndex >= 0 && trackIndex < arpaTracks.size()) {
+        return arpaTracks.at(trackIndex);
+    } else {
+        // Not found
+        return -1;
+    }
+}
+
+ARPAContact RadarCalculation::getARPAContactFromTrackIndex(irr::u32 trackIndex) const
+{
+    
+    int contactID = getARPAContactIDFromTrackIndex(trackIndex);
+
+    if(contactID >=0 && contactID < arpaContacts.size()){
+        return arpaContacts.at(contactID);
+    } else {
+        ARPAContact emptyContact;
+        return emptyContact;
+    }
 }
 
 void RadarCalculation::changeRadarColourChoice() 
@@ -510,11 +706,15 @@ void RadarCalculation::changeRadarColourChoice()
 void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
 {
 
-    //IPROF_FUNC;
+    #ifdef WITH_PROFILING
+    IPROF_FUNC;
+    #endif
+
+    { IPROF("Set up");
 
     //Reset screen if needed
     if(radarScreenStale) {
-        radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
+        radarImage->fill(getRadarSurroundColour());
         //Reset 'previous' array so it will all get re-drawn
         for(irr::u32 i = 0; i<angularResolution; i++) {
             toReplot[i] = true;
@@ -525,30 +725,38 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         radarScreenStale = false;
     }
 
-    //Find position of mouse cursor
+    } { IPROF("Mouse cursor");
+
+    //Find position of mouse cursor for radar cursor
     if (isMouseDown) {
         irr::f32 mouseCursorRangeXNm = (irr::f32)mouseRelPosition.X/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
         irr::f32 mouseCursorRangeYNm = -1.0*(irr::f32)mouseRelPosition.Y/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
         irr::f32 mouseCursorRange = pow(pow(mouseCursorRangeXNm,2)+pow(mouseCursorRangeYNm,2),0.5);
-        irr::f32 mouseCursorBearing = irr::core::RADTODEG*std::atan2(mouseCursorRangeXNm,mouseCursorRangeYNm);
+        
         //Check if in range
         if (mouseCursorRange <= radarRangeNm.at(radarRangeIndex) ) {
-            
-            //Adjust angle if needed
-            if (headUp) {
-                mouseCursorBearing += ownShip.getHeading();
-            }
-            mouseCursorBearing = Angles::normaliseAngle(mouseCursorBearing);
-            
-            // Set the radar cursor
-            CursorRangeNm = mouseCursorRange;
-            CursorBrg = mouseCursorBearing;
+            // Store
+            cursorRangeXNm = mouseCursorRangeXNm;
+            cursorRangeYNm = mouseCursorRangeYNm;
         }
     }
 
+    // Always update the CursorRangeNm and CursorBrg from the current cursorRangeXNm and cursorRangeYNm 
+    CursorBrg = irr::core::RADTODEG*std::atan2(cursorRangeXNm,cursorRangeYNm);
+    if (headUp) {
+        // Adjust angle if needed
+        CursorBrg += ownShip.getHeading();
+    }
+    CursorBrg = Angles::normaliseAngle(CursorBrg);
+    CursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
+
+    } { IPROF("Scan");
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+    } { IPROF("Update ARPA");
 	updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
-	render(radarImage, radarImageOverlaid, ownShip.getHeading(), ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+	} { IPROF("Render");
+	render(radarImage, radarImageOverlaid, ownShip.getCOG(), ownShip.getSOG()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+	}
 
 }
 
@@ -684,7 +892,8 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                 scanArray[currentScanLine][currentStep] += radarEchoStrength;
 
                                 //Start ARPA section
-                                if (arpaOn && radarEchoStrength*2 > localNoise) {
+                                // ARPA mode - 0: Off/Manual, 1: MARPA, 2: ARPA
+                                if (arpaMode > 0 && radarEchoStrength*2 > localNoise) {
                                     //Contact is detectable in noise
 
                                     //Iterate through arpaContacts array, checking if this contact is in the list (by checking the if the 'contact' pointer is to the same underlying ship/buoy)
@@ -736,8 +945,9 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                         newScan.z = absolutePosition.Z + newScan.rangeNm*M_IN_NM * cos(newScan.bearingDeg*RAD_IN_DEG);;
                                         //newScan.estimatedRCS = 100;//Todo: Implement
 
-                                        //Keep track of estimated total movement
-                                        if (scansSize > 0 && arpaOn) {
+                                        //Keep track of estimated total movement if in full ARPA
+                                        // 0: Off/Manual, 1: MARPA, 2: ARPA
+                                        if (scansSize > 0 && arpaMode == 2) {
                                             arpaContacts.at(existingArpaContact).totalXMovementEst += arpaContacts.at(existingArpaContact).scans.at(scansSize-1).x - newScan.x;
                                             arpaContacts.at(existingArpaContact).totalZMovementEst += arpaContacts.at(existingArpaContact).scans.at(scansSize-1).z - newScan.z;
                                         } else {
@@ -745,6 +955,11 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                             arpaContacts.at(existingArpaContact).totalZMovementEst = 0;
                                         }
 
+                                        if (arpaContacts.at(existingArpaContact).estimate.stationary) {
+                                            // If stationary, don't keep previous scans (we are about to add the most recent)
+                                            arpaContacts.at(existingArpaContact).scans.clear();
+                                        }
+                                            
                                         arpaContacts.at(existingArpaContact).scans.push_back(newScan);
                                         //std::cout << "ARPA update on " << existingArpaContact << std::endl;
                                         //Todo: should we limit the size of this, so it doesn't continue accumulating?
@@ -918,6 +1133,159 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
 }
 
+void RadarCalculation::addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
+{
+    // Assumes that CursorRangeNm and CursorBrg reflect the current cursor point
+    
+    int existingArpaContact=-1;
+    
+    if (newContact) {
+        ARPAContact newContact;
+        newContact.contact = 0; // This is a pointer used for ARPA types, not relevant for manual
+        newContact.contactType=CONTACT_MANUAL;
+        //newContact.displayID = 0; //Initially not displayed
+        newContact.totalXMovementEst = 0; // These are also not used for manual
+        newContact.totalZMovementEst = 0; // These are also not used for manual
+
+        //Zeros for estimated state
+        newContact.estimate.displayID = 0;
+        newContact.estimate.stationary = true;
+        newContact.estimate.lost = false;
+        newContact.estimate.absVectorX = 0;
+        newContact.estimate.absVectorZ = 0;
+        newContact.estimate.absHeading = 0;
+        newContact.estimate.bearing = 0;
+        newContact.estimate.range = 0;
+        newContact.estimate.speed = 0;
+        newContact.estimate.contactType = newContact.contactType; //Redundant here, but useful to pass to the GUI later
+
+        arpaContacts.push_back(newContact);
+        existingArpaContact = arpaContacts.size()-1;
+
+        //std::cout << "Created new contact, existingArpaContact now = " << existingArpaContact << std::endl;
+    } else {
+        // Update existing selected manual Contact:
+
+        // Find if a manual contact is selected
+        if (getARPAContactFromTrackIndex(arpaListSelection).contactType == CONTACT_MANUAL) {
+            existingArpaContact = getARPAContactIDFromTrackIndex(arpaListSelection); 
+        }
+        if (existingArpaContact < 0) {
+            // No contact found, don't do anything
+            return;
+        }
+    }
+
+    // Set up
+    irr::core::vector3df position = ownShip.getPosition();
+    // Get absolute position relative to SW corner of world model
+    irr::core::vector3d<int64_t> absolutePosition = offsetPosition;
+    absolutePosition.X += position.X;
+    absolutePosition.Y += position.Y;
+    absolutePosition.Z += position.Z;
+
+    //Add this 'scan' (Actually a MARPA Update) 
+    ARPAScan newScan;
+    newScan.timeStamp = absoluteTime;
+
+    //Don't add noise/uncertainty
+    newScan.bearingDeg = CursorBrg;
+    newScan.rangeNm = CursorRangeNm;
+
+    newScan.x = absolutePosition.X + newScan.rangeNm*M_IN_NM * sin(newScan.bearingDeg*RAD_IN_DEG);
+    newScan.z = absolutePosition.Z + newScan.rangeNm*M_IN_NM * cos(newScan.bearingDeg*RAD_IN_DEG);;
+    //newScan.estimatedRCS = 100;//Todo: Implement
+
+    //Don't need to keep track of totalXMovementEst and totalZMovementEst for manual
+    
+    arpaContacts.at(existingArpaContact).scans.push_back(newScan);
+    //Todo: should we limit the size of this, so it doesn't continue accumulating?
+}
+
+void RadarCalculation::clearManualPoints()
+{
+    int existingArpaContact=-1;
+    if (getARPAContactFromTrackIndex(arpaListSelection).contactType == CONTACT_MANUAL) {
+        existingArpaContact = getARPAContactIDFromTrackIndex(arpaListSelection); 
+    }
+
+    if (existingArpaContact >= 0) {
+        // Found the contact, remove all scans. Estimate will be regenerated later.
+        arpaContacts.at(existingArpaContact).scans.clear();
+    }
+
+}
+
+void RadarCalculation::clearTargetFromCursor()
+{
+    // Assumes that CursorRangeNm and CursorBrg reflect the current cursor point
+    
+    irr::f32 cursorRelX = CursorRangeNm*M_IN_NM * sin(CursorBrg*RAD_IN_DEG);
+    irr::f32 cursorRelZ = CursorRangeNm*M_IN_NM * cos(CursorBrg*RAD_IN_DEG);
+    
+    // Iterate through ARPA contacts and find closest. 
+    // If none within 1/10th of radar rang, don't do anything
+    irr::f32 closestDistance = getRangeNm()*M_IN_NM / 10.0;
+    int closeContact = -1;
+    for (int i = 0; i < arpaContacts.size(); i++) {
+        irr::f32 targetRelX = arpaContacts.at(i).estimate.range*M_IN_NM * sin(arpaContacts.at(i).estimate.bearing*RAD_IN_DEG);
+        irr::f32 targetRelZ = arpaContacts.at(i).estimate.range*M_IN_NM * cos(arpaContacts.at(i).estimate.bearing*RAD_IN_DEG);
+
+        irr::f32 targetRelXDiff = targetRelX - cursorRelX;
+        irr::f32 targetRelZDiff = targetRelZ - cursorRelZ;
+        
+        // Only check if tracked (i.e. if not marked as 'stationary')
+        if (arpaContacts.at(i).estimate.stationary == false) {
+            irr::f32 targetRelDistance = std::sqrt(pow(targetRelXDiff,2)+pow(targetRelZDiff,2));
+            if (targetRelDistance < closestDistance) {
+                closeContact = i;
+                closestDistance = targetRelDistance;    
+            }
+        }
+    }
+
+    if (closeContact >= 0 && closeContact < arpaContacts.size()) {
+        // Clear pointer to underlying contact, and mark as stationary
+        arpaContacts.at(closeContact).estimate.stationary = true;
+        arpaContacts.at(closeContact).contact = 0;
+    }
+
+}
+
+void RadarCalculation::trackTargetFromCursor()
+{
+    // Assumes that CursorRangeNm and CursorBrg reflect the current cursor point
+    
+    irr::f32 cursorRelX = CursorRangeNm*M_IN_NM * sin(CursorBrg*RAD_IN_DEG);
+    irr::f32 cursorRelZ = CursorRangeNm*M_IN_NM * cos(CursorBrg*RAD_IN_DEG);
+    
+    // Iterate through ARPA contacts and find closest. 
+    // If none within 1/10th of radar rang, don't do anything
+    irr::f32 closestDistance = getRangeNm()*M_IN_NM / 10.0;
+    int closeContact = -1;
+    for (int i = 0; i < arpaContacts.size(); i++) {
+        irr::f32 targetRelX = arpaContacts.at(i).estimate.range*M_IN_NM * sin(arpaContacts.at(i).estimate.bearing*RAD_IN_DEG);
+        irr::f32 targetRelZ = arpaContacts.at(i).estimate.range*M_IN_NM * cos(arpaContacts.at(i).estimate.bearing*RAD_IN_DEG);
+
+        irr::f32 targetRelXDiff = targetRelX - cursorRelX;
+        irr::f32 targetRelZDiff = targetRelZ - cursorRelZ;
+        
+        // Only check if not already tracked (i.e. if marked as 'stationary')
+        if (arpaContacts.at(i).estimate.stationary == true) {
+            irr::f32 targetRelDistance = std::sqrt(pow(targetRelXDiff,2)+pow(targetRelZDiff,2));
+            if (targetRelDistance < closestDistance) {
+                closeContact = i;
+                closestDistance = targetRelDistance;    
+            }
+        }
+    }
+
+    if (closeContact >= 0 && closeContact < arpaContacts.size()) {
+        arpaContacts.at(closeContact).estimate.stationary = false;
+    }
+
+}
+
 void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
 {
 
@@ -932,16 +1300,28 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
 
     //Based on scans data in arpaContacts, estimate current speed, heading and position
     for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-        updateArpaEstimate(arpaContacts.at(i), i, ownShip, absolutePosition, absoluteTime); //This will update the estimate etc. TODO: Passing in the ID will need to change for MARPA
+        updateArpaEstimate(arpaContacts.at(i), i, ownShip, absolutePosition, absoluteTime); //This will update the estimate etc.
     } //For loop through arpa contacts
 }
 
 void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int contactID, const OwnShip& ownShip, irr::core::vector3d<int64_t> absolutePosition, uint64_t absoluteTime) 
 {
-    if (!arpaOn) {
-        //Set all contacts to zero (untracked) if normal type
-        if (thisArpaContact.contactType == CONTACT_NORMAL) {
-            thisArpaContact.estimate.displayID = 0;
+    if (arpaMode < 1 && thisArpaContact.contactType == CONTACT_NORMAL) {
+        //Set all contacts to zero (untracked) if normal type if ARPA is off
+        thisArpaContact.estimate.displayID = 0;
+        thisArpaContact.estimate.stationary = true;
+        thisArpaContact.estimate.lost = false;
+        thisArpaContact.estimate.absVectorX = 0;
+        thisArpaContact.estimate.absVectorZ = 0;
+        thisArpaContact.estimate.absHeading = 0;
+        thisArpaContact.estimate.bearing = 0;
+        thisArpaContact.estimate.range = 0;
+        thisArpaContact.estimate.speed = 0;
+        thisArpaContact.estimate.contactType = CONTACT_NONE;
+    } else {
+        if (thisArpaContact.scans.size() == 0) {
+            // Reset estimate if there are no scans at all
+            //thisArpaContact.estimate.displayID = 0; // Don't reset display ID, so contact can be re-used
             thisArpaContact.estimate.stationary = true;
             thisArpaContact.estimate.lost = false;
             thisArpaContact.estimate.absVectorX = 0;
@@ -950,11 +1330,11 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
             thisArpaContact.estimate.bearing = 0;
             thisArpaContact.estimate.range = 0;
             thisArpaContact.estimate.speed = 0;
-            thisArpaContact.estimate.contactType = CONTACT_NONE;
-        }
-    } else {
-        //Check there are at least two scans, so we can estimate behaviour
-        if (thisArpaContact.scans.size() > 1) {
+            thisArpaContact.estimate.cpa = 0;
+            thisArpaContact.estimate.tcpa = 0;
+            thisArpaContact.estimate.contactType = thisArpaContact.contactType;
+        } else {
+            // At least one scan
 
             //Record the contact type in the estimate
             thisArpaContact.estimate.contactType = thisArpaContact.contactType;
@@ -968,21 +1348,31 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                 }
                 irr::f32 weightedMotionX = fabs(thisArpaContact.totalXMovementEst/latestRangeNm);
                 irr::f32 weightedMotionZ = fabs(thisArpaContact.totalZMovementEst/latestRangeNm);
-                if (weightedMotionX >= 100 || weightedMotionZ >= 100) {
+                if (thisArpaContact.estimate.contactType == CONTACT_MANUAL || 
+                    (weightedMotionX >= 100 || 
+                    weightedMotionZ >= 100) ) {
+                    // Always show for manually acquired targets, or if movement has been detected
                     thisArpaContact.estimate.stationary = false;
                 }
             }
 
-            //Check if contact lost, if last scanned more than 60 seconds ago
-            if ( absoluteTime - thisArpaContact.scans.back().timeStamp > 60) {
+            // Check if contact lost, if last scanned more than 60 seconds ago 
+            // (exception for manual, don't detect as lost)
+            if ( absoluteTime - thisArpaContact.scans.back().timeStamp > 60 && 
+                 thisArpaContact.estimate.contactType == CONTACT_NORMAL) {
                 thisArpaContact.estimate.lost=true;
                 //std::cout << "Contact " << i << " lost" << std::endl;
-            } else if (!thisArpaContact.estimate.stationary) {
-                //If ID is 0 (unassigned), set id and increment
-                if (thisArpaContact.estimate.displayID==0) {
-                    arpaTracks.push_back(contactID);
-                    thisArpaContact.estimate.displayID = getARPATracks(); // The display ID is the current size of thr arpaTracks list. TODO: Will need update for MARPA
-
+            } else {
+                if (!thisArpaContact.estimate.stationary) {
+                    //If ID is 0 (unassigned), set id and increment
+                    if (thisArpaContact.estimate.displayID==0) {
+                        arpaTracks.push_back(contactID);
+                        thisArpaContact.estimate.displayID = getARPATracksSize(); // The display ID is the current size of the arpaTracks list.
+                        // If a manual contact, make it the selected one
+                        if (thisArpaContact.contactType == CONTACT_MANUAL) {
+                            setArpaListSelection(thisArpaContact.estimate.displayID - 1); // Zero indexed list
+                        } 
+                    }
                 }
 
                 irr::s32 stepsBack = 60; //Default time for tracking (time = stepsBack * SECONDS_BETWEEN_SCANS)
@@ -1028,7 +1418,16 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
 
                 //Find difference in time, position x, position z
                 irr::f32 deltaTime = currentScanData.timeStamp - referenceScanData.timeStamp;
-                if (deltaTime>0) {
+                if (deltaTime<=0) {
+                    // Special case to just show estimated position if nothing else can be calculated
+                    irr::f32 relXEst = currentScanData.x - absolutePosition.X;
+                    irr::f32 relZEst = currentScanData.z - absolutePosition.Z;
+                    thisArpaContact.estimate.bearing = std::atan2(relXEst,relZEst)/RAD_IN_DEG;
+                    while (thisArpaContact.estimate.bearing < 0 ) {
+                        thisArpaContact.estimate.bearing += 360;
+                    }
+                    thisArpaContact.estimate.range =  std::sqrt(pow(relXEst,2)+pow(relZEst,2))/M_IN_NM; //Nm
+                } else {
                     irr::f32 deltaX = currentScanData.x - referenceScanData.x;
                     irr::f32 deltaZ = currentScanData.z - referenceScanData.z;
 
@@ -1040,8 +1439,8 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                         thisArpaContact.estimate.absHeading += 360;
                     }
                     //Relative vector:
-                    thisArpaContact.estimate.relVectorX = thisArpaContact.estimate.absVectorX - ownShip.getSpeed() * sin((ownShip.getHeading())*irr::core::DEGTORAD);
-                    thisArpaContact.estimate.relVectorZ = thisArpaContact.estimate.absVectorZ - ownShip.getSpeed() * cos((ownShip.getHeading())*irr::core::DEGTORAD); //ownShipSpeed in m/s
+                    thisArpaContact.estimate.relVectorX = thisArpaContact.estimate.absVectorX - ownShip.getSOG() * sin((ownShip.getCOG())*irr::core::DEGTORAD);
+                    thisArpaContact.estimate.relVectorZ = thisArpaContact.estimate.absVectorZ - ownShip.getSOG() * cos((ownShip.getCOG())*irr::core::DEGTORAD); //ownShipSpeed in m/s
                     thisArpaContact.estimate.relHeading = std::atan2(thisArpaContact.estimate.relVectorX,thisArpaContact.estimate.relVectorZ)/RAD_IN_DEG;
                     while (thisArpaContact.estimate.relHeading < 0 ) {
                         thisArpaContact.estimate.relHeading += 360;
@@ -1069,7 +1468,7 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                     //std::cout << "Contact " << thisArpaContact.estimate.displayID << " CPA: " <<  thisArpaContact.estimate.cpa << " nm in " << thisArpaContact.estimate.tcpa << " minutes" << std::endl;
 
 
-                } //If time between scans > 0
+                } //If time between scans > 0 
             } //Contact not lost
         } //If at least 2 scans
     } //If ARPA is on
@@ -1129,22 +1528,20 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                     if (pixelColour>1.0) {pixelColour = 1.0;}
                     if (pixelColour<0)   {pixelColour =   0;}
 
-                    if (currentRadarColourChoice < radarForegroundColours.size() && currentRadarColourChoice < radarBackgroundColours.size()) {
-                        //Interpolate colour between foreground and background
-                        irr::video::SColor thisColour = radarForegroundColours.at(currentRadarColourChoice).getInterpolated(radarBackgroundColours.at(currentRadarColourChoice), pixelColour);
-                        drawSector(radarImage,
-                                centrePixel,
-                                centrePixel,
-                                cellMinRange[currentStep],
-                                cellMaxRange[currentStep],
-                                cellMinAngle,
-                                cellMaxAngle,
-                                thisColour.getAlpha(),
-                                thisColour.getRed(),
-                                thisColour.getGreen(),
-                                thisColour.getBlue(),
-                                ownShipHeading);
-                    }
+                    //Interpolate colour between foreground and background
+                    irr::video::SColor thisColour = getRadarForegroundColour().getInterpolated(getRadarBackgroundColour(), pixelColour);
+                    drawSector(radarImage,
+                            centrePixel,
+                            centrePixel,
+                            cellMinRange[currentStep],
+                            cellMaxRange[currentStep],
+                            cellMinAngle,
+                            cellMaxAngle,
+                            thisColour.getAlpha(),
+                            thisColour.getRed(),
+                            thisColour.getGreen(),
+                            thisColour.getBlue(),
+                            ownShipHeading);
 
                     scanArrayToPlotPrevious[scanLine][currentStep] = scanArrayToPlot[scanLine][currentStep]; //Record what we have plotted
                 }
@@ -1516,5 +1913,36 @@ bool RadarCalculation::isPointInEllipse(irr::f32 pointX, irr::f32 pointZ, irr::f
         return true;
     } else {
         return false;
+    }
+
+}
+
+irr::video::SColor RadarCalculation::getRadarForegroundColour() const
+{
+    if (currentRadarColourChoice < radarForegroundColours.size()) {
+        return radarForegroundColours.at(currentRadarColourChoice);
+    }
+    else {
+        return irr::video::SColor(255, 255, 220, 0);
+    }
+}
+
+irr::video::SColor RadarCalculation::getRadarBackgroundColour() const
+{
+    if (currentRadarColourChoice < radarBackgroundColours.size()) {
+        return radarBackgroundColours.at(currentRadarColourChoice);
+    }
+    else {
+        return irr::video::SColor(255, 0, 0, 200);
+    }
+}
+
+irr::video::SColor RadarCalculation::getRadarSurroundColour() const
+{
+    if (currentRadarColourChoice < radarSurroundColours.size()) {
+        return radarSurroundColours.at(currentRadarColourChoice);
+    }
+    else {
+        return irr::video::SColor(255, 128, 128, 128);
     }
 }

@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_COMPILE_CONFIG_H_INCLUDED__
-#define __IRR_COMPILE_CONFIG_H_INCLUDED__
+#ifndef IRR_COMPILE_CONFIG_H_INCLUDED
+#define IRR_COMPILE_CONFIG_H_INCLUDED
 
 //! Irrlicht SDK Version
 #define IRRLICHT_VERSION_MAJOR 1
@@ -22,7 +22,7 @@
 //! _IRR_LINUX_PLATFORM_ for Linux (it is defined here if no other os is defined)
 //! _IRR_SOLARIS_PLATFORM_ for Solaris
 //! _IRR_OSX_PLATFORM_ for Apple systems running OSX
-//! _IRR_POSIX_API_ for Posix compatible systems
+//! _IRR_POSIX_API_ for POSIX compatible systems
 //! Note: PLATFORM defines the OS specific layer, API can group several platforms
 
 //! DEVICE is the windowing system used, several PLATFORMs support more than one DEVICE
@@ -34,9 +34,9 @@
 //! _IRR_COMPILE_WITH_CONSOLE_DEVICE_ for no windowing system, used as a fallback
 //! _IRR_COMPILE_WITH_FB_DEVICE_ for framebuffer systems
 
-//! Passing defines to the compiler which have NO in front of the _IRR definename is an alternative
-//! way which can be used to disable defines (instead of outcommenting them in this header).
-//! So defines can be controlled from Makefiles or Projectfiles which allows building
+//! Passing defines to the compiler which have NO in front of the _IRR define name is an alternative
+//! way which can be used to disable defines (instead of commenting them out in this header).
+//! So defines can be controlled from Makefiles or project files which allows building
 //! different library versions without having to change the sources.
 //! Example: NO_IRR_COMPILE_WITH_X11_ would disable X11
 
@@ -112,7 +112,7 @@
 //! Maximum number of texture an SMaterial can have, up to 8 are supported by Irrlicht.
 #define _IRR_MATERIAL_MAX_TEXTURES_ 8
 
-//! Whether to support XML and XML-based formats (irrmesh, collada...)
+//! Whether to support XML and XML-based formats (irrmesh, Collada, ...)
 #define _IRR_COMPILE_WITH_XML_
 #ifdef NO_IRR_COMPILE_WITH_XML_
 #undef _IRR_COMPILE_WITH_XML_
@@ -135,7 +135,7 @@ while it runs and enabling it will slow down the engine. */
 #endif
 
 //! Define _IRR_COMPILE_WITH_DIRECT3D_9_ to compile the Irrlicht engine with DIRECT3D9.
-/** If you only want to use the software device or opengl you can disable those defines.
+/** If you only want to use the software device or OpenGL you can disable those defines.
 This switch is mostly disabled because people do not get the g++ compiler compile
 directX header files, and directX is only available on Windows platforms. If you
 are using Dev-Cpp, and want to compile this using a DX dev pack, you can define
@@ -152,7 +152,7 @@ If not defined, Windows Multimedia library is used, which offers also broad supp
 #ifdef NO_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #endif
-// can't get this to compile currently under borland, can be removed if someone has a better solution
+// can't get this to compile currently under Borland, can be removed if someone has a better solution
 #if defined(__BORLANDC__)
 #undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #endif
@@ -202,7 +202,7 @@ comment this define out */
 
 //! Define _IRR_COMPILE_WITH_BURNINGSVIDEO_ to compile the Irrlicht engine with Burning's video driver
 /** If you do not need this software driver, you can comment this define out. */
-//#define _IRR_COMPILE_WITH_BURNINGSVIDEO_
+//#define _IRR_COMPILE_WITH_BURNINGSVIDEO_ //JAMES: Remove option for this software driver
 //#ifdef NO_IRR_COMPILE_WITH_BURNINGSVIDEO_
 #undef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 //#endif
@@ -216,17 +216,21 @@ define out. */
 #undef _IRR_COMPILE_WITH_X11_
 #endif
 
-//! On some Linux systems the XF86 vidmode extension or X11 RandR are missing. Use these flags
-//! to remove the dependencies such that Irrlicht will compile on those systems, too.
-//! If you don't need colored cursors you can also disable the Xcursor extension
+//! On some Linux systems the XF86 vidmode extension, X11 RandR, or XInput2 are missing.
+//! Use these defines to add/remove support for those dependencies as needed.
+//! XInput2 (library called Xi) is currently only used to support touch-input.
 #if defined(_IRR_LINUX_PLATFORM_) && defined(_IRR_COMPILE_WITH_X11_)
 #define _IRR_LINUX_X11_VIDMODE_
 //#define _IRR_LINUX_X11_RANDR_
+//#define _IRR_LINUX_X11_XINPUT2_
 #ifdef NO_IRR_LINUX_X11_VIDMODE_
 #undef _IRR_LINUX_X11_VIDMODE_
 #endif
 #ifdef NO_IRR_LINUX_X11_RANDR_
 #undef _IRR_LINUX_X11_RANDR_
+#endif
+#ifdef NO_IRR_LINUX_X11_XINPUT2_
+#undef _IRR_LINUX_X11_XINPUT2_
 #endif
 
 //! X11 has by default only monochrome cursors, but using the Xcursor library we can also get color cursor support.
@@ -247,7 +251,7 @@ you will not be able to use anything provided by the GUI Environment, including 
 #undef _IRR_COMPILE_WITH_GUI_
 #endif
 
-//! Define _IRR_COMPILE_WITH_PARTICLES to compile the engine the withe build-in particle system
+//! Define _IRR_COMPILE_WITH_PARTICLES to compile the engine the with the build-in particle system
 /** You can disable this if you don't need particles or use an external particle system. */
 #define _IRR_COMPILE_WITH_PARTICLES_
 #ifdef NO_IRR_COMPILE_WITH_PARTICLES_
@@ -256,7 +260,7 @@ you will not be able to use anything provided by the GUI Environment, including 
 
 //! Define _IRR_WCHAR_FILESYSTEM to enable unicode filesystem support for the engine.
 /** This enables the engine to read/write from unicode filesystem. If you
-disable this feature, the engine behave as before (ansi). This is currently only supported
+disable this feature, the engine behave as before (ANSI). This is currently only supported
 for Windows based systems. You also have to set #define UNICODE for this to compile.
 */
 //#define _IRR_WCHAR_FILESYSTEM
@@ -264,7 +268,7 @@ for Windows based systems. You also have to set #define UNICODE for this to comp
 #undef _IRR_WCHAR_FILESYSTEM
 #endif
 
-//! Define _IRR_COMPILE_WITH_JPEGLIB_ to enable compiling the engine using libjpeg.
+//! Define _IRR_COMPILE_WITH_LIBJPEG_ to enable compiling the engine using libjpeg.
 /** This enables the engine to read jpeg images. If you comment this out,
 the engine will no longer read .jpeg images. */
 #define _IRR_COMPILE_WITH_LIBJPEG_
@@ -447,7 +451,7 @@ B3D, MS3D or X meshes */
 #ifdef NO_IRR_COMPILE_WITH_IRR_MESH_LOADER_
 #undef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
 #endif
-//! Define _IRR_COMPILE_WITH_HALFLIFE_LOADER_ if you want to load Halflife animated files
+//! Define _IRR_COMPILE_WITH_HALFLIFE_LOADER_ if you want to load Half-life animated files
 #define _IRR_COMPILE_WITH_HALFLIFE_LOADER_
 #ifdef NO_IRR_COMPILE_WITH_HALFLIFE_LOADER_
 #undef _IRR_COMPILE_WITH_HALFLIFE_LOADER_
@@ -493,7 +497,11 @@ B3D, MS3D or X meshes */
 #undef _IRR_COMPILE_WITH_LMTS_LOADER_
 #endif
 //! Define _IRR_COMPILE_WITH_MY3D_LOADER_ if you want to load MY3D files
-#define _IRR_COMPILE_WITH_MY3D_LOADER_
+//! Note: As My3DTools can't be found on the web anymore and there hasn't been 
+//! any update about it since around 2005 the loader is deprecated with 
+//! Irrlicht 1.9 and will be removed in Irrlicht 1.10 unless there are any
+//! news about the tool.
+//#define _IRR_COMPILE_WITH_MY3D_LOADER_
 #ifdef NO_IRR_COMPILE_WITH_MY3D_LOADER_
 #undef _IRR_COMPILE_WITH_MY3D_LOADER_
 #endif
@@ -603,7 +611,7 @@ B3D, MS3D or X meshes */
 #endif
 //! Define _IRR_COMPILE_WITH_DDS_DECODER_LOADER_ if you want to load .dds files
 //! loader will decompress these files and will send to the memory as uncompressed files.
-// Outcommented because
+// Commented out because
 // a) it doesn't compile on 64-bit currently
 // b) anyone enabling it should be aware that S3TC compression algorithm which might be used in that loader
 // is patented in the US by S3 and they do collect license fees when it's used in applications.
@@ -858,5 +866,11 @@ precision will be lower but speed higher. currently X86 only
 	#endif
 #endif
 
-#endif // __IRR_COMPILE_CONFIG_H_INCLUDED__
+//! Solve Camera errors - Debug Feature
+/* - Allow Camera 90 degree up, Target==Position,buildCameraLookAtMatrixLH
+   - pre v1.9 CCameraSceneNode moved the up non-particular in the positive x-Direction. not compatible
+   - Enabled is not compatible with Irrlicht Collision and Response. 
+*/
+//#define _IRR_COMPILE_WITH_90_DEGREE_CAMERA
 
+#endif // IRR_COMPILE_CONFIG_H_INCLUDED

@@ -38,7 +38,7 @@ struct GUIData {
     irr::f32 hdg;
     irr::f32 viewAngle;
     irr::f32 viewElevationAngle;
-    irr::f32 spd;
+    irr::f32 spd; // Show speed through water
     irr::f32 portEng;
     irr::f32 stbdEng;
     irr::f32 rudder;
@@ -54,6 +54,11 @@ struct GUIData {
     irr::f32 weather;
     irr::f32 rain;
     irr::f32 visibility;
+    irr::f32 windDirection;
+    irr::f32 windSpeed;
+    irr::f32 streamDirection;
+    irr::f32 streamSpeed;
+    bool streamOverride;
     bool radarOn;
     irr::f32 radarRangeNm;
     irr::f32 radarGain;
@@ -63,6 +68,7 @@ struct GUIData {
     irr::f32 guiRadarEBLRangeNm;
     irr::f32 guiRadarCursorBrg;
     irr::f32 guiRadarCursorRangeNm;
+    irr::s32 arpaListSelection;
     std::vector<ARPAEstimatedState> arpaContactStates;
 	std::string currentTime;
     bool paused;
@@ -75,11 +81,11 @@ struct GUIData {
     irr::f32 schottelStbd;
     irr::f32 thrustLeverPort; // thrust levers (0..1) leave this in here for future graphical lever
     irr::f32 thrustLeverStbd;
-    irr::f32 enginePort;
-    irr::f32 engineStbd;
+    irr::f32 azimuthEnginePort;
+    irr::f32 azimuthEngineStbd;
     irr::f32 emergencySteering;
-    bool clutchPort;  // Clutches true for engaged false for disengaged
-    bool clutchStbd;
+    bool azimuthClutchPort;  // Clutches true for engaged false for disengaged
+    bool azimuthClutchStbd;
 
     // the angle of each azimuth drive and each engine level is defined elsewhere
     // DEE_NOV22 some indication and or switch from normal steering to non follow up emergency steering
@@ -92,7 +98,7 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain();
     ~GUIMain();
-    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided);
+    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -107,10 +113,10 @@ public:
 // DEE_NOV22 vvvv
 	GUI_ID_SCHOTTEL_PORT,
 	GUI_ID_SCHOTTEL_STBD,
-	GUI_ID_ENGINE_PORT,
-	GUI_ID_ENGINE_STBD,
-	GUI_ID_CLUTCH_PORT,
-	GUI_ID_CLUTCH_STBD,
+	GUI_ID_AZIMUTH_ENGINE_PORT,
+	GUI_ID_AZIMUTH_ENGINE_STBD,
+	GUI_ID_AZIMUTH_CLUTCH_PORT,
+	GUI_ID_AZIMUTH_CLUTCH_STBD,
 	GUI_ID_EMERGENCY_STEERING,
 // DEE_NOV22 ^^^^
         GUI_ID_RUDDER_SCROLL_BAR,
@@ -134,6 +140,10 @@ public:
         GUI_ID_RADAR_EBL_RIGHT_BUTTON,
         GUI_ID_RADAR_EBL_UP_BUTTON,
         GUI_ID_RADAR_EBL_DOWN_BUTTON,
+        GUI_ID_RADAR_INCREASE_X_BUTTON,
+        GUI_ID_RADAR_DECREASE_X_BUTTON,
+        GUI_ID_RADAR_INCREASE_Y_BUTTON,
+        GUI_ID_RADAR_DECREASE_Y_BUTTON,
         GUI_ID_RADAR_NORTH_BUTTON,
         GUI_ID_RADAR_COURSE_BUTTON,
         GUI_ID_RADAR_HEAD_BUTTON,
@@ -152,9 +162,20 @@ public:
         GUI_ID_ARPA_VECTOR_TIME_BOX,
         GUI_ID_BIG_ARPA_TRUE_REL_BOX,
         GUI_ID_BIG_ARPA_VECTOR_TIME_BOX,
+        GUI_ID_ARPA_LIST,
+        GUI_ID_MANUAL_SCAN_BUTTON,
+        GUI_ID_MANUAL_NEW_BUTTON,
+        GUI_ID_MANUAL_CLEAR_BUTTON,
+        GUI_ID_BIG_ARPA_LIST,
         GUI_ID_WEATHER_SCROLL_BAR,
         GUI_ID_RAIN_SCROLL_BAR,
         GUI_ID_VISIBILITY_SCROLL_BAR,
+        GUI_ID_WINDDIRECTION_SCROLL_BAR,
+        GUI_ID_WINDSPEED_SCROLL_BAR,
+        GUI_ID_STREAMDIRECTION_SCROLL_BAR,
+        GUI_ID_STREAMSPEED_SCROLL_BAR,
+        GUI_ID_STREAMOVERRIDE_BOX,
+        GUI_ID_MAGNIFICATION_SCROLL_BAR,
         GUI_ID_SHOW_INTERFACE_BUTTON,
         GUI_ID_HIDE_INTERFACE_BUTTON,
         GUI_ID_BINOS_INTERFACE_BUTTON,
@@ -175,7 +196,9 @@ public:
         GUI_ID_REMOVE_LINE_BUTTON,
         GUI_ID_KEEP_SLACK_LINE_CHECKBOX,
         GUI_ID_HAUL_IN_LINE_CHECKBOX,
+        GUI_ID_ANCHOR_LINE_CHECKBOX,
         GUI_ID_LINES_LIST,
+        GUI_ID_CHANGE_VIEW_BUTTON,
         GUI_ID_EXIT_BUTTON,
         GUI_ID_CLOSE_BOX
     };
@@ -184,6 +207,7 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
+    bool getShow3d() const;
     void zoomOn();
     void zoomOff();
     void toggleBearings();
@@ -191,7 +215,8 @@ public:
     void hideBearings();
     void setLargeRadar(bool radarState);
     bool getLargeRadar() const;
-    void setARPACheckboxes(bool arpaState);
+    void setARPAComboboxes(irr::s32 arpaState);
+    void setARPAList(int arpaSelected);
     irr::u32 getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
     irr::core::rect<irr::s32> getSmallRadarRect() const;
@@ -206,6 +231,7 @@ public:
     void setExtraControlsWindowVisible(bool windowVisible);
     void setLinesControlsWindowVisible(bool windowVisible);
     void setLinesControlsText(std::string textToShow);
+    bool getAnchorLine() const;
 
 private:
 
@@ -232,12 +258,12 @@ private:
     irr::gui::IGUICheckBox* azimuth2Master;
 
     // DEE_NOV22 vvvv
-    irr::gui::AzimuthDial* enginePort;
-    irr::gui::AzimuthDial* engineStbd;
+    irr::gui::AzimuthDial* azimuthEnginePort;
+    irr::gui::AzimuthDial* azimuthEngineStbd;
     irr::gui::AzimuthDial* schottelPort;
     irr::gui::AzimuthDial* schottelStbd;
-    irr::gui::IGUICheckBox* clutchPort;
-    irr::gui::IGUICheckBox* clutchStbd;
+    irr::gui::IGUICheckBox* azimuthClutchPort;
+    irr::gui::IGUICheckBox* azimuthClutchStbd;
     irr::gui::IGUICheckBox* emergencySteering;
 
 
@@ -253,10 +279,19 @@ private:
     irr::gui::IGUIButton* eblRightButton;
     irr::gui::IGUIButton* eblUpButton;
     irr::gui::IGUIButton* eblDownButton;
+    irr::gui::IGUIButton* radarCursorLeftButton;
+    irr::gui::IGUIButton* radarCursorRightButton;
+    irr::gui::IGUIButton* radarCursorUpButton;
+    irr::gui::IGUIButton* radarCursorDownButton;
+    irr::gui::IGUIButton* radarCursorLeftButton2;
+    irr::gui::IGUIButton* radarCursorRightButton2;
+    irr::gui::IGUIButton* radarCursorUpButton2;
+    irr::gui::IGUIButton* radarCursorDownButton2;
     irr::gui::IGUIButton* radarColourButton;
     irr::gui::IGUIButton* radarColourButton2;
     irr::gui::IGUIButton* nonFollowUpPortButton;
     irr::gui::IGUIButton* nonFollowUpStbdButton;
+    irr::gui::IGUIButton* changeViewButton;
 
     irr::gui::IGUITabControl* radarTabControl;
     irr::gui::IGUIScrollBar* radarGainScrollbar;
@@ -279,7 +314,15 @@ private:
     irr::gui::IGUIScrollBar* visibilityScrollbar;
     irr::gui::IGUIScrollBar* weatherScrollbar;
     irr::gui::IGUIScrollBar* rainScrollbar;
+    irr::gui::IGUIScrollBar* windDirectionScrollbar;
+    irr::gui::IGUIScrollBar* windSpeedScrollbar;
+    irr::gui::IGUIScrollBar* streamDirectionScrollbar;
+    irr::gui::IGUIScrollBar* streamSpeedScrollbar;
+    irr::gui::IGUICheckBox* streamOverride;
     irr::gui::HeadingIndicator* headingIndicator;
+
+    irr::gui::IGUIScrollBar* magnificationScrollbar;
+    irr::gui::IGUICheckBox* show3d;
 
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;
@@ -294,6 +337,7 @@ private:
     irr::gui::IGUIButton* removeLine;
     irr::gui::IGUICheckBox* keepLineSlack;
     irr::gui::IGUICheckBox* heaveLineIn;
+    irr::gui::IGUICheckBox* anchorLine;
     irr::gui::IGUIListBox* linesList;
     irr::gui::IGUIStaticText* linesText;
 

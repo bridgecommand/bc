@@ -10,6 +10,7 @@ add_executable(bridgecommand-mh
     ScenarioChoice.cpp
     ShipPositions.cpp
     StartupEventReceiver.cpp
+    EventReceiver.cpp
 )
 
 target_link_libraries(bridgecommand-mh

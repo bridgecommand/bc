@@ -10,9 +10,7 @@
 #include "os.h"
 #include "IMesh.h"
 #include "IMeshBuffer.h"
-#include "IAttributes.h"
 #include "ISceneManager.h"
-#include "IMeshCache.h"
 #include "IWriteFile.h"
 #include "IFileSystem.h"
 #include "ITexture.h"
@@ -127,11 +125,26 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			file->write(num.c_str(), num.size());
 			file->write("\n",1);
 
+			unsigned int idx2=0, idx1=0, idx0 = 0;
 			const u32 indexCount = buffer->getIndexCount();
 			for (j=0; j<indexCount; j+=3)
 			{
+				switch(buffer->getIndexType())
+				{
+					case video::EIT_16BIT:
+						idx2 = buffer->getIndices()[j+2]+allVertexCount;
+						idx1 = buffer->getIndices()[j+1]+allVertexCount;
+						idx0 = buffer->getIndices()[j+0]+allVertexCount;
+						break;
+					case video::EIT_32BIT:
+						idx2 = ((u32*)buffer->getIndices())[j+2]+allVertexCount;
+						idx1 = ((u32*)buffer->getIndices())[j+1]+allVertexCount;
+						idx0 = ((u32*)buffer->getIndices())[j+0]+allVertexCount;
+						break;
+				}
+
 				file->write("f ",2);
-				num = core::stringc(buffer->getIndices()[j+2]+allVertexCount);
+				num = core::stringc(idx2);
 				file->write(num.c_str(), num.size());
 				file->write("/",1);
 				file->write(num.c_str(), num.size());
@@ -139,7 +152,7 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 				file->write(num.c_str(), num.size());
 				file->write(" ",1);
 
-				num = core::stringc(buffer->getIndices()[j+1]+allVertexCount);
+				num = core::stringc(idx1);
 				file->write(num.c_str(), num.size());
 				file->write("/",1);
 				file->write(num.c_str(), num.size());
@@ -147,7 +160,7 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 				file->write(num.c_str(), num.size());
 				file->write(" ",1);
 
-				num = core::stringc(buffer->getIndices()[j+0]+allVertexCount);
+				num = core::stringc(idx0);
 				file->write(num.c_str(), num.size());
 				file->write("/",1);
 				file->write(num.c_str(), num.size());
@@ -244,34 +257,25 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 
 void COBJMeshWriter::getVectorAsStringLine(const core::vector3df& v, core::stringc& s) const
 {
-	s = core::stringc(-v.X);
-	s += " ";
-	s += core::stringc(v.Y);
-	s += " ";
-	s += core::stringc(v.Z);
-	s += "\n";
+	c8 tmpbuf[255];
+	snprintf_irr(tmpbuf, 255, "%f %f %f\n", -v.X, v.Y, v.Z);
+	s = tmpbuf;
 }
 
 
 void COBJMeshWriter::getVectorAsStringLine(const core::vector2df& v, core::stringc& s) const
 {
-	s = core::stringc(v.X);
-	s += " ";
-	s += core::stringc(1-v.Y);
-	s += "\n";
+	c8 tmpbuf[255];
+	snprintf_irr(tmpbuf, 255, "%f %f\n", v.X, 1.f-v.Y);
+	s = tmpbuf;
 }
 
 
 void COBJMeshWriter::getColorAsStringLine(const video::SColor& color, const c8* const prefix, core::stringc& s) const
 {
-	s = prefix;
-	s += " ";
-	s += core::stringc((double)(color.getRed()/255.f));
-	s += " ";
-	s += core::stringc((double)(color.getGreen()/255.f));
-	s += " ";
-	s += core::stringc((double)(color.getBlue()/255.f));
-	s += "\n";
+	c8 tmpbuf[255];
+	snprintf_irr(tmpbuf, 255, "%s %f %f %f\n", prefix, (float)(color.getRed()/255.f), (float)(color.getGreen()/255.f), (float)(color.getBlue()/255.f));
+	s = tmpbuf;
 }
 
 

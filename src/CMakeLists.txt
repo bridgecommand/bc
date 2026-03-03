@@ -9,8 +9,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 if (APPLE)
-    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7")
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7")
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.13")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13")
+    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 endif (APPLE)
 
 add_subdirectory(libs/asio)
@@ -20,6 +21,7 @@ add_subdirectory(libs/serial)
 
 include_directories("libs/enet-1.3.14/include")
 add_definitions(-DWITH_SOUND)
+# add_definitions(-DWITH_PROFILING)
 if (NOT APPLE)
     #add_definitions(-DFOR_DEB)
 endif (NOT APPLE)
@@ -34,6 +36,9 @@ add_subdirectory(repeater)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
+if (NOT APPLE)
+find_package(OpenXR REQUIRED)
+endif(NOT APPLE)
 
 set(BC_SOURCES
     iprof.cpp
@@ -45,6 +50,7 @@ set(BC_SOURCES
     Buoy.cpp
     Buoys.cpp
     Camera.cpp
+    ControlVisualiser.cpp
     DefaultEventReceiver.cpp
     FFTWave.cpp
     GUIMain.cpp
@@ -85,6 +91,7 @@ set(BC_SOURCES
     Terrain.cpp
     Tide.cpp
     Utilities.cpp
+    VRInterface.cpp
 	ExitMessage.cpp
     Water.cpp
     BCTerrainSceneNode.cpp
@@ -130,5 +137,7 @@ else (APPLE)
         sndfile
         portaudio
         asound
+        GL
+        OpenXR::openxr_loader
     )
 endif (APPLE)

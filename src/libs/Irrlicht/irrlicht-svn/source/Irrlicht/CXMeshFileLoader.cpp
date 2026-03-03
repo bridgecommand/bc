@@ -408,7 +408,8 @@ bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 		return false;
 	}
 
-	Buffer = new c8[size];
+	Buffer = new c8[size+1];
+	Buffer[size] = 0x0; // null-terminate (thx @ sfan5)
 
 	//! read all into memory
 	if (file->read(Buffer, size) != static_cast<size_t>(size))
@@ -491,7 +492,7 @@ bool CXMeshFileLoader::parseDataObject()
 
 	// parse specific object
 #ifdef _XREADER_DEBUG
-	os::Printer::log("debug DataObject:", objectName.c_str(), ELL_DEBUG);
+	os::Printer::log("debug DataObject", objectName.c_str(), ELL_DEBUG);
 #endif
 
 	if (objectName == "template")
@@ -760,10 +761,12 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 
 	// read vertices
 	mesh.Vertices.set_used(nVertices);
+	irr::video::S3DVertex vertex;	// set_used doesn't call constructor, so we initalize it explicit here
+	vertex.Color = 0xFFFFFFFF;
 	for (u32 n=0; n<nVertices; ++n)
 	{
-		readVector3(mesh.Vertices[n].Pos);
-		mesh.Vertices[n].Color=0xFFFFFFFF;
+		readVector3(vertex.Pos);
+		mesh.Vertices[n] = vertex;
 	}
 
 	if (!checkForTwoFollowingSemicolons())
@@ -846,7 +849,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		}
 
 #ifdef _XREADER_DEBUG
-		os::Printer::log("debug DataObject in mesh:", objectName.c_str(), ELL_DEBUG);
+		os::Printer::log("debug DataObject in mesh", objectName.c_str(), ELL_DEBUG);
 #endif
 
 		if (objectName == "MeshNormals")
@@ -1116,7 +1119,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 
 	if (!getNextTokenAsString(TransformNodeName))
 	{
-		os::Printer::log("Unknown syntax while reading transfrom node name string in .x file", ELL_WARNING);
+		os::Printer::log("Unknown syntax while reading transform node name string in .x file", ELL_WARNING);
 		os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
 		return false;
 	}
@@ -2306,9 +2309,9 @@ u16 CXMeshFileLoader::readBinWord()
 	if (P>=End)
 		return 0;
 #ifdef __BIG_ENDIAN__
-	const u16 tmp = os::Byteswap::byteswap(*(u16 *)P);
+	const u16 tmp = os::Byteswap::byteswap(*(const u16 *)P);
 #else
-	const u16 tmp = *(u16 *)P;
+	const u16 tmp = *(const u16 *)P;
 #endif
 	P += 2;
 	return tmp;
@@ -2320,9 +2323,9 @@ u32 CXMeshFileLoader::readBinDWord()
 	if (P>=End)
 		return 0;
 #ifdef __BIG_ENDIAN__
-	const u32 tmp = os::Byteswap::byteswap(*(u32 *)P);
+	const u32 tmp = os::Byteswap::byteswap(*(const u32 *)P);
 #else
-	const u32 tmp = *(u32 *)P;
+	const u32 tmp = *(const u32 *)P;
 #endif
 	P += 4;
 	return tmp;
@@ -2370,11 +2373,11 @@ f32 CXMeshFileLoader::readFloat()
 #ifdef __BIG_ENDIAN__
 			//TODO: Check if data is properly converted here
 			f32 ctmp[2];
-			ctmp[1] = os::Byteswap::byteswap(*(f32*)P);
-			ctmp[0] = os::Byteswap::byteswap(*(f32*)P+4);
+			ctmp[1] = os::Byteswap::byteswap(*(const f32*)P);
+			ctmp[0] = os::Byteswap::byteswap(*(const f32*)P+4);
 			const f32 tmp = (f32)(*(f64*)(void*)ctmp);
 #else
-			const f32 tmp = (f32)(*(f64 *)P);
+			const f32 tmp = (f32)(*(const f64 *)P);
 #endif
 			P += 8;
 			return tmp;
@@ -2382,9 +2385,9 @@ f32 CXMeshFileLoader::readFloat()
 		else
 		{
 #ifdef __BIG_ENDIAN__
-			const f32 tmp = os::Byteswap::byteswap(*(f32 *)P);
+			const f32 tmp = os::Byteswap::byteswap(*(const f32 *)P);
 #else
-			const f32 tmp = *(f32 *)P;
+			const f32 tmp = *(const f32 *)P;
 #endif
 			P += 4;
 			return tmp;

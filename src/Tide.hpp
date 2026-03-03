@@ -23,6 +23,9 @@
 #include <string>
 #include <stdint.h> //for uint64_t
 
+//Forward declarations
+class ScenarioData;
+
 class Tide {
 
 struct tidalHarmonic {
@@ -56,10 +59,10 @@ struct tidalDiamond {
 public:
     Tide();
     virtual ~Tide();
-    void load(const std::string& worldName);
+    void load(const std::string& worldName, const ScenarioData& scenarioData);
     void update(uint64_t absoluteTime);
     irr::f32 getTideHeight() const; //To be called after update(time)
-    irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t absoluteTime) const; //Does not need update() to be called before this
+    irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const; //Does not need update() to be called before this
 
 private:
     uint64_t highTideTime(uint64_t startSearchTime, int searchDirection=0) const; //Find previous or next high tide time. Search direction of 0 gives the nearest one (by gradient climb), positive gives next, and negative gives previous

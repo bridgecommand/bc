@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_QUATERNION_H_INCLUDED__
-#define __IRR_QUATERNION_H_INCLUDED__
+#ifndef IRR_QUATERNION_H_INCLUDED
+#define IRR_QUATERNION_H_INCLUDED
 
 #include "irrTypes.h"
 #include "irrMath.h"
@@ -54,9 +54,6 @@ class quaternion
 
 		//! inequality operator
 		bool operator!=(const quaternion& other) const;
-
-		//! Assignment operator
-		inline quaternion& operator=(const quaternion& other);
 
 #ifndef IRR_TEST_BROKEN_QUATERNION_USE
 		//! Matrix assignment operator
@@ -133,7 +130,10 @@ class quaternion
 		*/
 		void getMatrixCenter( matrix4 &dest, const core::vector3df &center, const core::vector3df &translation ) const;
 
-		//! Creates a matrix from this quaternion
+		//! Faster method to create a transposed matrix, you should normalize the quaternion before!
+		inline void getMatrixFast_transposed(matrix4 &dest) const;
+
+		//! Creates a transposed matrix from this quaternion
 		inline void getMatrix_transposed( matrix4 &dest ) const;
 
 		//! Inverts this quaternion
@@ -240,15 +240,6 @@ inline bool quaternion::operator!=(const quaternion& other) const
 	return !(*this == other);
 }
 
-// assignment operator
-inline quaternion& quaternion::operator=(const quaternion& other)
-{
-	X = other.X;
-	Y = other.Y;
-	Z = other.Z;
-	W = other.W;
-	return *this;
-}
 
 #ifndef IRR_TEST_BROKEN_QUATERNION_USE
 // matrix assignment operator
@@ -404,32 +395,11 @@ inline void quaternion::getMatrix(matrix4 &dest,
 
 	quaternion q( *this);
 	q.normalize();
-	f32 X = q.X;
-	f32 Y = q.Y;
-	f32 Z = q.Z;
-	f32 W = q.W;
-
-	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
-	dest[1] = 2.0f*X*Y + 2.0f*Z*W;
-	dest[2] = 2.0f*X*Z - 2.0f*Y*W;
-	dest[3] = 0.0f;
-
-	dest[4] = 2.0f*X*Y - 2.0f*Z*W;
-	dest[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
-	dest[6] = 2.0f*Z*Y + 2.0f*X*W;
-	dest[7] = 0.0f;
-
-	dest[8] = 2.0f*X*Z + 2.0f*Y*W;
-	dest[9] = 2.0f*Z*Y - 2.0f*X*W;
-	dest[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
-	dest[11] = 0.0f;
+	q.getMatrixFast(dest);
 
 	dest[12] = center.X;
 	dest[13] = center.Y;
 	dest[14] = center.Z;
-	dest[15] = 1.f;
-
-	dest.setDefinitelyIdentityMatrix ( false );
 }
 
 
@@ -451,39 +421,14 @@ inline void quaternion::getMatrixCenter(matrix4 &dest,
 {
 	quaternion q(*this);
 	q.normalize();
-	f32 X = q.X;
-	f32 Y = q.Y;
-	f32 Z = q.Z;
-	f32 W = q.W;
-
-	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
-	dest[1] = 2.0f*X*Y + 2.0f*Z*W;
-	dest[2] = 2.0f*X*Z - 2.0f*Y*W;
-	dest[3] = 0.0f;
-
-	dest[4] = 2.0f*X*Y - 2.0f*Z*W;
-	dest[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
-	dest[6] = 2.0f*Z*Y + 2.0f*X*W;
-	dest[7] = 0.0f;
-
-	dest[8] = 2.0f*X*Z + 2.0f*Y*W;
-	dest[9] = 2.0f*Z*Y - 2.0f*X*W;
-	dest[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
-	dest[11] = 0.0f;
+	q.getMatrixFast(dest);
 
 	dest.setRotationCenter ( center, translation );
 }
 
-// Creates a matrix from this quaternion
-inline void quaternion::getMatrix_transposed(matrix4 &dest) const
+//! Faster method to create a transposed matrix, you should normalize the quaternion before!
+inline void quaternion::getMatrixFast_transposed(matrix4 &dest) const
 {
-	quaternion q(*this);
-	q.normalize();
-	f32 X = q.X;
-	f32 Y = q.Y;
-	f32 Z = q.Z;
-	f32 W = q.W;
-
 	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
 	dest[4] = 2.0f*X*Y + 2.0f*Z*W;
 	dest[8] = 2.0f*X*Z - 2.0f*Y*W;
@@ -505,6 +450,14 @@ inline void quaternion::getMatrix_transposed(matrix4 &dest) const
 	dest[15] = 1.f;
 
 	dest.setDefinitelyIdentityMatrix(false);
+}
+
+// Creates a matrix from this quaternion
+inline void quaternion::getMatrix_transposed(matrix4 &dest) const
+{
+	quaternion q(*this);
+	q.normalize();
+	q.getMatrixFast_transposed(dest);
 }
 
 
@@ -583,9 +536,10 @@ inline bool quaternion::equals(const quaternion& other, const f32 tolerance) con
 // normalizes the quaternion
 inline quaternion& quaternion::normalize()
 {
-	// removed conditional branch since it may slow down and anyway the condition was
-	// false even after normalization in some cases.
-	return (*this *= (f32)reciprocal_squareroot ( (f64)(X*X + Y*Y + Z*Z + W*W) ));
+	const f64 n = X*X + Y*Y + Z*Z + W*W;
+	if ( n > 0 )
+		*this *= (f32)reciprocal_squareroot(n);
+	return *this;
 }
 
 // Set this quaternion to the result of the linear interpolation between two quaternions
@@ -733,6 +687,8 @@ inline core::quaternion& quaternion::makeIdentity()
 inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const vector3df& to)
 {
 	// Based on Stan Melax's article in Game Programming Gems
+	// Optimized by Robert Eisele: https://raw.org/proof/quaternion-from-two-vectors
+
 	// Copy, since cannot modify local
 	vector3df v0 = from;
 	vector3df v1 = to;
@@ -757,10 +713,8 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 		return set(axis.X, axis.Y, axis.Z, 0).normalize();
 	}
 
-	const f32 s = sqrtf( (1+d)*2 ); // optimize inv_sqrt
-	const f32 invs = 1.f / s;
-	const vector3df c = v0.crossProduct(v1)*invs;
-	return set(c.X, c.Y, c.Z, s * 0.5f).normalize();
+	const vector3df c = v0.crossProduct(v1);
+	return set(c.X, c.Y, c.Z, 1 + d).normalize();
 }
 
 
@@ -768,4 +722,3 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 } // end namespace irr
 
 #endif
-

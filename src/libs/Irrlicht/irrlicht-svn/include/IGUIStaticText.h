@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GUI_STATIC_TEXT_H_INCLUDED__
-#define __I_GUI_STATIC_TEXT_H_INCLUDED__
+#ifndef IRR_I_GUI_STATIC_TEXT_H_INCLUDED
+#define IRR_I_GUI_STATIC_TEXT_H_INCLUDED
 
 #include "IGUIElement.h"
 #include "SColor.h"
@@ -51,6 +51,10 @@ namespace gui
 		/** \return: The override color */
 		virtual video::SColor getOverrideColor(void) const = 0;
 
+		//! Gets the currently used text color
+		/** Either a skin-color for the current state or the override color */
+		virtual video::SColor getActiveColor() const = 0;
+
 		//! Sets if the static text should use the override color or the color in the gui skin.
 		/** \param enable: If set to true, the override color, which can be set
 		with IGUIStaticText::setOverrideColor is used, otherwise the
@@ -84,9 +88,9 @@ namespace gui
 
 		//! Sets text justification mode
 		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default),
-		EGUIA_LOWEERRIGHT for right justified, or EGUIA_CENTER for centered text.
-		\param vertical: EGUIA_UPPERLEFT to align with top edge,
-		EGUIA_LOWEERRIGHT for bottom edge, or EGUIA_CENTER for centered text (default). */
+		EGUIA_LOWERRIGHT for right justified, or EGUIA_CENTER for centered text.
+		\param vertical: EGUIA_UPPERLEFT to align with top edge (default),
+		EGUIA_LOWERRIGHT for bottom edge, or EGUIA_CENTER for centered text. */
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical) = 0;
 
 		//! Enables or disables word wrap for using the static text as multiline text control.
@@ -132,4 +136,3 @@ namespace gui
 } // end namespace irr
 
 #endif
-

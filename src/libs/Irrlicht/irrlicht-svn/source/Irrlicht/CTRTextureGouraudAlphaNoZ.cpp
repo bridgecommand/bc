@@ -75,12 +75,7 @@
 #endif
 
 
-
-namespace irr
-{
-
-namespace video
-{
+burning_namespace_start
 
 class CTRTextureGouraudAlphaNoZ : public IBurningShader
 {
@@ -90,29 +85,15 @@ public:
 	CTRTextureGouraudAlphaNoZ(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
-	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) _IRR_OVERRIDE_;
-	virtual void OnSetMaterial(const SBurningShaderMaterial& material) _IRR_OVERRIDE_;
-
-#if defined(PATCH_SUPERTUX_8_0_1)
-	SBurningShaderMaterial Material;
-
-	virtual void setMaterial(const SBurningShaderMaterial &material)
-	{
-		Material = material;
-	}
-
-	virtual void setParam(u32 index, f32 value)
-	{
-		OnSetMaterial(Material);
-}
-#endif
+	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
+	virtual void OnSetMaterialBurning(const SBurningShaderMaterial& material) IRR_OVERRIDE;
 
 private:
 
 	// fragment shader
 	typedef void (CTRTextureGouraudAlphaNoZ::*tFragmentShader) ();
 	void fragment_linear();
-	void fragment_linear_test();
+	void fragment_linear_alpharef();
 	void fragment_point_noz();
 
 	tFragmentShader fragmentShader;
@@ -122,7 +103,7 @@ private:
 
 //! constructor
 CTRTextureGouraudAlphaNoZ::CTRTextureGouraudAlphaNoZ(CBurningVideoDriver* driver)
-: IBurningShader(driver)
+: IBurningShader(driver, EMT_TRANSPARENT_ALPHA_CHANNEL)
 {
 	#ifdef _DEBUG
 	setDebugName("CTRTextureGouraudAlphaNoZ");
@@ -134,18 +115,18 @@ CTRTextureGouraudAlphaNoZ::CTRTextureGouraudAlphaNoZ(CBurningVideoDriver* driver
 
 /*!
 */
-void CTRTextureGouraudAlphaNoZ::OnSetMaterial(const SBurningShaderMaterial& material)
+void CTRTextureGouraudAlphaNoZ::OnSetMaterialBurning(const SBurningShaderMaterial& material)
 {
 #if defined(BURNINGVIDEO_RENDERER_FAST) && COLOR_MAX==0xff
 	AlphaRef = core::floor32(material.org.MaterialTypeParam * 256.f);
 #else
-	AlphaRef = tofix(material.org.MaterialTypeParam, FIXPOINT_COLOR_MAX);
+	AlphaRef = tofix(material.org.MaterialTypeParam, FIX_POINT_COLOR_MAX);
 #endif
 
 	//check triangle on w = 1.f instead..
 #ifdef	SOFTWARE_DRIVER_2_BILINEAR
-	if (material.Fallback_MaterialType == EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
-		fragmentShader = &CTRTextureGouraudAlphaNoZ::fragment_linear_test;
+	if (material.org.MaterialType == EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
+		fragmentShader = &CTRTextureGouraudAlphaNoZ::fragment_linear_alpharef;
 	else
 	if ( material.org.TextureLayer[0].BilinearFilter )
 		fragmentShader = &CTRTextureGouraudAlphaNoZ::fragment_linear;
@@ -198,7 +179,7 @@ void CTRTextureGouraudAlphaNoZ::fragment_linear()
 		return;
 
 	// slopes
-	const f32 invDeltaX = reciprocal_zero2( line.x[1] - line.x[0] );
+	const f32 invDeltaX = fill_step_x( line.x[1] - line.x[0] );
 
 #ifdef IPOL_Z
 	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
@@ -268,7 +249,7 @@ void CTRTextureGouraudAlphaNoZ::fragment_linear()
 	tFixPoint a3,r3, g3, b3;
 #endif
 
-	for ( s32 i = 0; i <= dx; ++i )
+	for ( s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
 	{
 #ifdef CMP_Z
 		if ( line.z[0] < z[i] )
@@ -276,7 +257,7 @@ void CTRTextureGouraudAlphaNoZ::fragment_linear()
 #ifdef CMP_W
 		if ( line.w[0] >= z[i] )
 #endif
-
+		if_scissor_test_x
 		{
 
 #if defined(BURNINGVIDEO_RENDERER_FAST) && COLOR_MAX==0xff
@@ -340,7 +321,7 @@ void CTRTextureGouraudAlphaNoZ::fragment_linear()
 			r2 = r1 + imulFix ( a0, r0 - r1 );
 			g2 = g1 + imulFix ( a0, g0 - g1 );
 			b2 = b1 + imulFix ( a0, b0 - b1 );
-			dst[i] = fix4_to_sample( a0, r2, g2, b2 );
+			dst[i] = fix_to_sample( r2, g2, b2 );
 
 #else
 			dst[i] = PixelBlend32 ( dst[i],
@@ -378,7 +359,7 @@ void CTRTextureGouraudAlphaNoZ::fragment_linear()
 
 /*!
 */
-void CTRTextureGouraudAlphaNoZ::fragment_linear_test()
+void CTRTextureGouraudAlphaNoZ::fragment_linear_alpharef()
 {
 	tVideoSample *dst;
 
@@ -418,7 +399,7 @@ void CTRTextureGouraudAlphaNoZ::fragment_linear_test()
 		return;
 
 	// slopes
-	const f32 invDeltaX = reciprocal_zero2(line.x[1] - line.x[0]);
+	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
 
 #ifdef IPOL_Z
 	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
@@ -488,91 +469,91 @@ void CTRTextureGouraudAlphaNoZ::fragment_linear_test()
 	tFixPoint a3, r3, g3, b3;
 #endif
 
-	for (s32 i = 0; i <= dx; ++i)
+	for (s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
 	{
 #ifdef CMP_Z
 		if (line.z[0] < z[i])
 #endif
 #ifdef CMP_W
-			if (line.w[0] >= z[i])
+		if (line.w[0] >= z[i])
 #endif
-
-			{
+		if_scissor_test_x
+		{
 
 #if defined(BURNINGVIDEO_RENDERER_FAST) && COLOR_MAX==0xff
 
-				const tFixPointu d = dithermask[dIndex | (i) & 3];
+			const tFixPointu d = dithermask[dIndex | (i) & 3];
 
 #ifdef INVERSE_W
-				inversew = fix_inverse32(line.w[0]);
+			inversew = fix_inverse32(line.w[0]);
 #endif
-				u32 argb = getTexel_plain(&IT[0], d + tofix(line.t[0][0].x, inversew),
-					d + tofix(line.t[0][0].y, inversew)
-				);
+			u32 argb = getTexel_plain(&IT[0], d + tofix(line.t[0][0].x, inversew),
+				d + tofix(line.t[0][0].y, inversew)
+			);
 
-				const tFixPoint alpha = (argb >> 24);
-				if (alpha > AlphaRef)
-				{
+			const tFixPoint alpha = (argb >> 24);
+			if (alpha > AlphaRef)
+			{
 #ifdef WRITE_Z
-					z[i] = line.z[0];
+				z[i] = line.z[0];
 #endif
 #ifdef WRITE_W
-					z[i] = line.w[0];
+				z[i] = line.w[0];
 #endif
 
-					dst[i] = PixelBlend32(dst[i], argb, alpha);
-				}
+				dst[i] = PixelBlend32(dst[i], argb, alpha);
+			}
 
 
 #else
 
 #ifdef INVERSE_W
-				inversew = fix_inverse32(line.w[0]);
+			inversew = fix_inverse32(line.w[0]);
 #endif
-				getSample_texture(a0, r0, g0, b0,
-					&IT[0],
-					tofix(line.t[0][0].x, inversew),
-					tofix(line.t[0][0].y, inversew)
-				);
+			getSample_texture(a0, r0, g0, b0,
+				&IT[0],
+				tofix(line.t[0][0].x, inversew),
+				tofix(line.t[0][0].y, inversew)
+			);
 
-				if (a0 > AlphaRef)
-				{
+			if (a0 > AlphaRef)
+			{
 #ifdef WRITE_Z
-					z[i] = line.z[0];
+				z[i] = line.z[0];
 #endif
 #ifdef WRITE_W
-					z[i] = line.w[0];
+				z[i] = line.w[0];
 #endif
 
 #ifdef IPOL_C0
 
-					vec4_to_fix(a2, r2, g2, b2, line.c[0][0], inversew);
+				vec4_to_fix(a2, r2, g2, b2, line.c[0][0], inversew);
 
-					a0 = imulFix(a0, a2); //2D uses vertexalpha*texelalpha
-					r0 = imulFix(r0, r2);
-					g0 = imulFix(g0, g2);
-					b0 = imulFix(b0, b2);
+				a0 = imulFix(a0, a2); //2D uses vertexalpha*texelalpha
+				r0 = imulFix(r0, r2);
+				g0 = imulFix(g0, g2);
+				b0 = imulFix(b0, b2);
 
-					color_to_fix(r1, g1, b1, dst[i]);
+				color_to_fix(r1, g1, b1, dst[i]);
 
-					fix_color_norm(a0);
+				fix_color_norm(a0);
 
-					r2 = r1 + imulFix(a0, r0 - r1);
-					g2 = g1 + imulFix(a0, g0 - g1);
-					b2 = b1 + imulFix(a0, b0 - b1);
-					dst[i] = fix4_to_sample(a0, r2, g2, b2);
+				r2 = r1 + imulFix(a0, r0 - r1);
+				g2 = g1 + imulFix(a0, g0 - g1);
+				b2 = b1 + imulFix(a0, b0 - b1);
+				dst[i] = fix_to_sample(r2, g2, b2);
 
 #else
-					dst[i] = PixelBlend32(dst[i],
-						fix_to_sample(r0, g0, b0),
-						fixPointu_to_u32(a0)
-					);
-#endif
-
-				}
+				dst[i] = PixelBlend32(dst[i],
+					fix_to_sample(r0, g0, b0),
+					fixPointu_to_u32(a0)
+				);
 #endif
 
 			}
+#endif
+
+		}
 
 #ifdef IPOL_Z
 		line.z[0] += slopeZ;
@@ -639,7 +620,7 @@ void CTRTextureGouraudAlphaNoZ::fragment_point_noz()
 		return;
 
 	// slopes
-	const f32 invDeltaX = reciprocal_zero2(line.x[1] - line.x[0]);
+	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
 
 #ifdef IPOL_Z
 	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
@@ -708,15 +689,15 @@ void CTRTextureGouraudAlphaNoZ::fragment_point_noz()
 #ifdef IPOL_C1
 	tFixPoint a3, r3, g3, b3;
 #endif
-	for (s32 i = 0; i <= dx; ++i)
+	for (s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
 	{
 #ifdef CMP_Z
-		if (line.z[0] < z[i])
+		//if (line.z[0] < z[i])
 #endif
 #ifdef CMP_W
 //			if (line.w[0] >= z[i])
 #endif
-
+			if_scissor_test_x
 			{
 
 #if defined(BURNINGVIDEO_RENDERER_FAST) && COLOR_MAX==0xff
@@ -780,7 +761,7 @@ void CTRTextureGouraudAlphaNoZ::fragment_point_noz()
 					r2 = r1 + imulFix(a0, r0 - r1);
 					g2 = g1 + imulFix(a0, g0 - g1);
 					b2 = b1 + imulFix(a0, b0 - b1);
-					dst[i] = fix4_to_sample(a0, r2, g2, b2);
+					dst[i] = fix_to_sample(r2, g2, b2);
 
 #else
 					dst[i] = PixelBlend32(dst[i],
@@ -827,9 +808,9 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle(const s4DVertex* burning_restrict a
 	const f32 ba = b->Pos.y - a->Pos.y;
 	const f32 cb = c->Pos.y - b->Pos.y;
 	// calculate delta y of the edges
-	scan.invDeltaY[0] = reciprocal_zero( ca );
-	scan.invDeltaY[1] = reciprocal_zero( ba );
-	scan.invDeltaY[2] = reciprocal_zero( cb );
+	scan.invDeltaY[0] = fill_step_y( ca );
+	scan.invDeltaY[1] = fill_step_y( ba );
+	scan.invDeltaY[2] = fill_step_y( cb );
 
 	if ( F32_LOWER_EQUAL_0 ( scan.invDeltaY[0] ) )
 		return;
@@ -925,8 +906,8 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle(const s4DVertex* burning_restrict a
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_left( a->Pos.y );
-		yEnd = fill_convention_right( b->Pos.y );
+		yStart = fill_convention_top( a->Pos.y );
+		yEnd = fill_convention_down( b->Pos.y );
 
 #ifdef SUBTEXEL
 		subPixel = ( (f32) yStart ) - a->Pos.y;
@@ -968,7 +949,7 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle(const s4DVertex* burning_restrict a
 #endif
 
 		// rasterize the edge scanlines
-		for( line.y = yStart; line.y <= yEnd; ++line.y)
+		for( line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -1004,6 +985,8 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle(const s4DVertex* burning_restrict a
 #endif
 
 			// render a scanline
+			if_interlace_scanline
+			if_scissor_test_y
 			(this->*fragmentShader) ();
 
 			scan.x[0] += scan.slopeX[0];
@@ -1108,11 +1091,10 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle(const s4DVertex* burning_restrict a
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_left( b->Pos.y );
-		yEnd = fill_convention_right( c->Pos.y );
+		yStart = fill_convention_top( b->Pos.y );
+		yEnd = fill_convention_down( c->Pos.y );
 
 #ifdef SUBTEXEL
-
 		subPixel = ( (f32) yStart ) - b->Pos.y;
 
 		// correct to pixel center
@@ -1152,7 +1134,7 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle(const s4DVertex* burning_restrict a
 #endif
 
 		// rasterize the edge scanlines
-		for( line.y = yStart; line.y <= yEnd; ++line.y)
+		for( line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -1188,6 +1170,8 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle(const s4DVertex* burning_restrict a
 #endif
 
 			// render a scanline
+			if_interlace_scanline
+			if_scissor_test_y
 			(this->*fragmentShader) ();
 
 			scan.x[0] += scan.slopeX[0];
@@ -1230,16 +1214,11 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle(const s4DVertex* burning_restrict a
 }
 
 
-} // end namespace video
-} // end namespace irr
+burning_namespace_end
 
 #endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
-namespace irr
-{
-namespace video
-{
-
+burning_namespace_start
 
 //! creates a flat triangle renderer
 IBurningShader* createTRTextureGouraudAlphaNoZ(CBurningVideoDriver* driver)
@@ -1252,9 +1231,6 @@ IBurningShader* createTRTextureGouraudAlphaNoZ(CBurningVideoDriver* driver)
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
 
-
-
-} // end namespace video
-} // end namespace irr
+burning_namespace_end
 
 

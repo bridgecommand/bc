@@ -5,8 +5,8 @@
 #include "CAnimatedMeshSceneNode.h"
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
-#include "S3DVertex.h"
 #include "os.h"
+#include "IFileSystem.h"
 #ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "CShadowVolumeSceneNode.h"
 #else
@@ -14,9 +14,7 @@
 #endif // _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "IAnimatedMeshMD3.h"
 #include "CSkinnedMesh.h"
-#include "IDummyTransformationSceneNode.h"
 #include "IBoneSceneNode.h"
-#include "IMaterialRenderer.h"
 #include "IMesh.h"
 #include "IMeshCache.h"
 #include "IAnimatedMesh.h"
@@ -47,7 +45,7 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh,
 	setDebugName("CAnimatedMeshSceneNode");
 	#endif
 
-	setMesh(mesh);
+	setMesh(mesh, true);
 }
 
 
@@ -206,7 +204,7 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 		// As multiple scene nodes may be sharing the same skinned mesh, we have to
 		// re-animate it every frame to ensure that this node gets the mesh that it needs.
 
-		CSkinnedMesh* skinnedMesh = reinterpret_cast<CSkinnedMesh*>(Mesh);
+		CSkinnedMesh* skinnedMesh = static_cast<CSkinnedMesh*>(Mesh);
 
 		if (JointMode == EJUOR_CONTROL)//write to mesh
 			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
@@ -315,7 +313,7 @@ void CAnimatedMeshSceneNode::render()
 				if (RenderFromIdentity)
 					driver->setTransform(video::ETS_WORLD, core::IdentityMatrix );
 				else if (Mesh->getMeshType() == EAMT_SKINNED)
-					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((const SSkinMeshBuffer*)mb)->Transformation);
 
 				driver->setMaterial(mat);
 				driver->drawMeshBuffer(mb);
@@ -340,7 +338,7 @@ void CAnimatedMeshSceneNode::render()
 				if (RenderFromIdentity)
 					driver->setTransform(video::ETS_WORLD, core::IdentityMatrix );
 				else if (Mesh->getMeshType() == EAMT_SKINNED)
-					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((const SSkinMeshBuffer*)mb)->Transformation);
 
 				driver->setMaterial(material);
 				driver->drawMeshBuffer(mb);
@@ -371,7 +369,7 @@ void CAnimatedMeshSceneNode::render()
 				if (RenderFromIdentity)
 					driver->setTransform(video::ETS_WORLD, core::IdentityMatrix );
 				else if (Mesh->getMeshType() == EAMT_SKINNED)
-					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((const SSkinMeshBuffer*)mb)->Transformation);
 
 				driver->drawMeshBufferNormals(mb, debugNormalLength, debugNormalColor);
 			}
@@ -392,7 +390,7 @@ void CAnimatedMeshSceneNode::render()
 				const IMeshBuffer* mb = m->getMeshBuffer(g);
 
 				if (Mesh->getMeshType() == EAMT_SKINNED)
-					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((const SSkinMeshBuffer*)mb)->Transformation);
 				driver->draw3DBox(mb->getBoundingBox(), video::SColor(255,190,128,128));
 			}
 		}
@@ -466,7 +464,7 @@ void CAnimatedMeshSceneNode::render()
 				if (RenderFromIdentity)
 					driver->setTransform(video::ETS_WORLD, core::IdentityMatrix );
 				else if (Mesh->getMeshType() == EAMT_SKINNED)
-					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((const SSkinMeshBuffer*)mb)->Transformation);
 				driver->drawMeshBuffer(mb);
 			}
 		}
@@ -807,7 +805,7 @@ void CAnimatedMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAtt
 		IAnimatedMesh* newAnimatedMesh = SceneManager->getMesh(newMeshStr.c_str());
 
 		if (newAnimatedMesh)
-			setMesh(newAnimatedMesh);
+			setMesh(newAnimatedMesh, true);
 	}
 
 	// TODO: read animation names instead of frame begin and ends
@@ -815,7 +813,7 @@ void CAnimatedMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAtt
 
 
 //! Sets a new mesh
-void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh)
+void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh, bool copyMeshMaterials)
 {
 	if (!mesh)
 		return; // won't set null mesh
@@ -835,7 +833,7 @@ void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh)
 	Box = Mesh->getBoundingBox();
 
 	IMesh* m = Mesh->getMesh(0,0);
-	if (m)
+	if (m && copyMeshMaterials)
 	{
 		Materials.clear();
 		Materials.reallocate(m->getMeshBufferCount());
@@ -949,7 +947,7 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 		checkJoints();
 		const f32 frame = getFrameNr(); //old?
 
-		CSkinnedMesh* skinnedMesh=reinterpret_cast<CSkinnedMesh*>(Mesh);
+		CSkinnedMesh* skinnedMesh=static_cast<CSkinnedMesh*>(Mesh);
 
 		skinnedMesh->transferOnlyJointsHintsToMesh( JointChildSceneNodes );
 		skinnedMesh->animateMesh(frame, 1.0f);

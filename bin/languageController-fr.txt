@@ -21,8 +21,19 @@ weather = "Météo"
 rain = "Pluie"
 visibility="Visibilité"
 setDistance = "Distance (Nm)"
+wind = "Vent"
+windDirection = "Direction du vent"
+windSpeed = "Vitesse du vent (kts)"
+stream = "Courant"
+streamDirection = "Direction du courant"
+streamSpeed = "Vitesse du courant (kts)"
+streamOverride = "Contrôler le courant"
+extraControls = "Contrôles Supplémentaires"
+brightness = "Luminosité"
 
 setMMSI = "Paramétrer MMSI"
+
+allowDrifting = "Activer la dérive"
 
 releaseMOB = "Relâcher\nMOB"
 retrieveMOB = "Récupérer\nMOB"
@@ -49,10 +60,18 @@ pump2Failed = "Pompe gouvernail 1 Eteinte"
 followUpWorking = "Gouvernail : Follow up"
 followUpFailed = "Gouvernail : Non follow up"
 
+general="Général"
+ships="Les navires"
+
 editScenario="Editer le scénario"
 newScenario="Nouveau scénario"
 selectScenario="Choisissez un scénario existant à éditer"
 selectWorld="Ou choisissez un modèle de monde pour un nouveau scénario"
+ok="OK"
+importScenario="Importer le scénario"
+exportScenario="Exporter le scénario"
+importDescription="Collez le texte d'exportation du scénario dans la zone ci-dessous."
+exportDescription="Copiez le texte d'exportation du scénario dans la zone ci-dessous et envoyez-le au destinataire, par exemple par email.
 
 startTime = "Heure de début"
 startDate="Date (YYYY-MM-DD)"

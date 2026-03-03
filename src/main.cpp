@@ -47,10 +47,15 @@
 #include <asio.hpp> //To display hostname
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // For GetSystemMetrics
 #include <direct.h> //for windows _mkdir
+#include <shellapi.h>
 #else
 #include <sys/stat.h>
 #endif // _WIN32
+
+#include "VRInterface.hpp"
 
 #include "profile.hpp"
 
@@ -59,9 +64,9 @@
 #include <mach-o/dyld.h>
 #endif
 
-
+// This disables to console window showing, disable for debugging
 #ifdef _MSC_VER
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
 #ifdef _WIN32
@@ -280,6 +285,28 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
     joystickSetup.joystickNoAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_no_ack_alarm");
     joystickSetup.joystickButtonAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_button_ack_alarm")-1;
 
+    // Radar controls by button
+    joystickSetup.joystickNoIncreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_increase_radar_clutter");
+    joystickSetup.joystickNoDecreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_radar_clutter");
+    joystickSetup.joystickButtonIncreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_clutter") - 1;
+    joystickSetup.joystickButtonDecreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_clutter") - 1;
+    
+    joystickSetup.joystickNoIncreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_increase_radar_gain");
+    joystickSetup.joystickNoDecreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_radar_gain");
+    joystickSetup.joystickButtonIncreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_gain") - 1;
+    joystickSetup.joystickButtonDecreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_gain") - 1;
+
+    joystickSetup.joystickNoIncreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_increase_radar_rain");
+    joystickSetup.joystickNoDecreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_radar_rain");
+    joystickSetup.joystickButtonIncreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_rain") - 1;
+    joystickSetup.joystickButtonDecreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_rain") - 1;
+
+    joystickSetup.joystickNoDecreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_radar_range");
+    joystickSetup.joystickNoIncreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_no_increase_radar_range");
+    joystickSetup.joystickButtonDecreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_range") - 1;
+    joystickSetup.joystickButtonIncreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_range") - 1;
+    // End of Radar controls by button
+
     joystickSetup.joystickNoAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth1_master");
     joystickSetup.joystickNoAzimuth2Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth2_master");
     joystickSetup.joystickButtonAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_button_toggle_azimuth1_master")-1;
@@ -326,6 +353,20 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
 // These are all wrapped up in an if isAzimuth earlier in this funciton
 
 // DEE 10JAN22 ^^^^
+
+    // Check if user wants to update all joystick axes when one changes
+    if (IniFile::iniFileTou32(iniFilename, "update_changed_axes_only")==1) {
+        joystickSetup.updateAllAxes = false;
+    } else {
+        joystickSetup.updateAllAxes = true;
+    }
+
+    // Only enable joysticks for macOS if requested
+    if (IniFile::iniFileTou32(iniFilename, "macOS_enable_joystick") == 1) {
+        joystickSetup.enableMacOSJoystick = true;
+    } else {
+        joystickSetup.enableMacOSJoystick = false;
+    }
 
     return joystickSetup;
 }
@@ -398,6 +439,33 @@ int main(int argc, char ** argv)
         std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
     }
 
+    std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");
+    if (!scriptToExe.empty()) {
+        std::string scriptPath;
+        if (Utilities::pathExists(userFolder + scriptToExe)) {
+            scriptPath = userFolder + scriptToExe;
+        } else {
+            #ifdef _WIN32
+	        scriptPath = "Scripts\\win\\" + scriptToExe;
+            #else
+            #ifdef __APPLE__
+	        scriptPath = "./Scripts/macOS/" + scriptToExe;
+            #else
+	        scriptPath = "./Scripts/linux/" + scriptToExe;
+            #endif
+            #endif    
+        }
+    
+        std::cout << "Going to run " << scriptPath << std::endl;
+
+        #ifdef _WIN32
+        ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
+        #else
+	    scriptPath = "\"" + scriptPath + "\"";
+        system(scriptPath.c_str());
+        #endif
+    }
+
     #ifdef __arm__
     if (IniFile::iniFileTou32(iniFilename, "PA_ALSA_PLUGHW") == 1) {
         setenv("PA_ALSA_PLUGHW", "1", true);
@@ -449,6 +517,8 @@ int main(int argc, char ** argv)
 
     irr::f32 contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
     irr::f32 contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
+    irr::f32 lineStiffnessFactor = IniFile::iniFileTof32(iniFilename, "lineStiffness_factor", 1.0); //Line stiffness scaling factor
+    irr::f32 lineDampingFactor = IniFile::iniFileTof32(iniFilename, "lineDamping_factor", 1.0); //Line damping factor (roughly proportion of critical)
     irr::f32 frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
     irr::f32 tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
     if (frictionCoefficient < 0) {frictionCoefficient = 0;}
@@ -496,16 +566,25 @@ int main(int argc, char ** argv)
 
     //Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
-		irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
-		irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
-		nulldevice->drop();
+        irr::core::dimension2d<irr::u32> deskres;
+        #ifdef _WIN32
+        // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
+        deskres.Width=GetSystemMetrics(SM_CXSCREEN);
+        deskres.Height=GetSystemMetrics(SM_CYSCREEN);
+        #else
+        // For other OSs, use Irrlicht's resolution call
+        irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
+        deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+        nulldevice->drop();
+        #endif
+
 		if (graphicsWidth == 0) {
 			if (fullScreen || fakeFullScreen) {
 				graphicsWidth = deskres.Width;
 			} else {
 				graphicsWidth = 1200 * fontScale; // deskres.Width*0.8;
-                if (graphicsWidth > deskres.Width*0.9) {
-                    graphicsWidth = deskres.Width*0.9;
+                if (graphicsWidth > deskres.Width*0.90) {
+                    graphicsWidth = deskres.Width*0.90;
                 }
 			}
 		}
@@ -515,8 +594,8 @@ int main(int argc, char ** argv)
 			}
 			else {
 				graphicsHeight = 900 * fontScale; // deskres.Height*0.8;
-                if (graphicsHeight > deskres.Height*0.9) {
-                    graphicsHeight = deskres.Height*0.9;
+                if (graphicsHeight > deskres.Height*0.90) {
+                    graphicsHeight = deskres.Height*0.90;
                 }
 			}
 		}
@@ -763,6 +842,8 @@ int main(int argc, char ** argv)
         scenarioChoice.chooseScenario(scenarioName, hostname, udpPort, mode, scenarioPath);
     }
 
+    hostname = Utilities::trim(hostname);
+
     //Save hostname in user directory (hostname.txt). Check first that the location exists
     if (!Utilities::pathExists(Utilities::getUserDirBase())) {
         std::string pathToMake = Utilities::getUserDirBase();
@@ -793,7 +874,6 @@ int main(int argc, char ** argv)
     }
 
 	//Show loading message
-
 	irr::u32 creditsStartTime = device->getTimer()->getRealTime();
     irr::core::stringw creditsText = language.translate("loadingmsg");
     creditsText.append(L"\n\n");
@@ -818,7 +898,7 @@ int main(int argc, char ** argv)
 
     // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
     Network* extraNetwork = 0;
-    if (mode == OperatingMode::Multiplayer) {
+    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 )) {
         extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
         extraNetwork->connectToServer(hostname);
         //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
@@ -849,22 +929,150 @@ int main(int argc, char ** argv)
         }
         scenarioData.deserialise(receivedSerialisedScenarioData);
     }
-    std::string serialisedScenarioData = scenarioData.serialise();
-
-    loadingMessage->remove(); loadingMessage = 0;
+    std::string serialisedScenarioData = scenarioData.serialise(false);
 
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
+    
+    // Check VR mode
+    bool vr3dMode = false;
+    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
+        vr3dMode=true;
+    }
 
+    // Set up the VR interface
+    VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
+
+    bool secondaryControlWheel = false;
+    bool secondaryControlPortEngine = false;
+    bool secondaryControlStbdEngine = false;
+    bool secondaryControlPortSchottel = false;
+    bool secondaryControlStbdSchottel = false;
+    bool secondaryControlPortThrustLever = false;
+    bool secondaryControlStbdThrustLever = false;
+    bool secondaryControlBowThruster = false;
+    bool secondaryControlSternThruster = false;
+    if (mode==OperatingMode::Secondary) {
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_wheel") == 1) {
+            secondaryControlWheel = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_engine") == 1) {
+            secondaryControlPortEngine = true;
+        } 
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_engine") == 1) {
+            secondaryControlStbdEngine = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_schottel") == 1) {
+            secondaryControlPortSchottel = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_schottel") == 1) {
+            secondaryControlStbdSchottel = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_thrust") == 1) {
+            secondaryControlPortThrustLever = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_thrust") == 1) {
+            secondaryControlStbdThrustLever = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_bow_thruster") == 1) {
+            secondaryControlBowThruster = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stern_thruster") == 1) {
+            secondaryControlSternThruster = true;
+        }
+
+    }
+
+    SimulationModel::ModelParameters modelParameters;
+    // TODO: most of these intermediate variables can probably be removed.
+    modelParameters.mode = mode; 
+    modelParameters.vrMode = vr3dMode;
+    modelParameters.viewAngle = viewAngle; 
+    modelParameters.lookAngle = lookAngle;
+    modelParameters.cameraMinDistance = cameraMinDistance; 
+    modelParameters.cameraMaxDistance = cameraMaxDistance;
+    modelParameters.disableShaders = disableShaders; 
+    modelParameters.waterSegments = waterSegments; 
+    modelParameters.numberOfContactPoints = numberOfContactPoints; 
+    modelParameters.minContactPointSpacing = minContactPointSpacing; 
+    modelParameters.contactStiffnessFactor = contactStiffnessFactor; 
+    modelParameters.contactDampingFactor = contactDampingFactor; 
+    modelParameters.frictionCoefficient = frictionCoefficient; 
+    modelParameters.tanhFrictionFactor = tanhFrictionFactor;
+    modelParameters.lineStiffnessFactor = lineStiffnessFactor;
+    modelParameters.lineDampingFactor = lineDampingFactor; 
+    modelParameters.limitTerrainResolution = limitTerrainResolution;
+    modelParameters.secondaryControlWheel = secondaryControlWheel;
+    modelParameters.secondaryControlPortEngine = secondaryControlPortEngine;
+    modelParameters.secondaryControlStbdEngine = secondaryControlStbdEngine;
+    modelParameters.secondaryControlPortSchottel = secondaryControlPortSchottel;
+    modelParameters.secondaryControlStbdSchottel = secondaryControlStbdSchottel;
+    modelParameters.secondaryControlPortThrustLever = secondaryControlPortThrustLever;
+    modelParameters.secondaryControlStbdThrustLever = secondaryControlStbdThrustLever;
+    modelParameters.secondaryControlBowThruster = secondaryControlBowThruster;
+    modelParameters.secondaryControlSternThruster = secondaryControlSternThruster;
+    modelParameters.debugMode = debugMode;
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, debugMode);
+    SimulationModel model(device, 
+                          smgr, 
+                          &guiMain, 
+                          &sound, 
+                          scenarioData, 
+                          modelParameters);
+
+    //check enough time has elapsed to show the credits screen (5s)
+    while (device->getTimer()->getRealTime() - creditsStartTime < 5000) {
+        device->run();
+    }
+    
+    // Show world model credits if available
+    std::string worldReadme = model.getWorldReadme();
+    if (worldReadme.size() > 0) {
+        std::wstring wideWorldReadme = std::wstring(worldReadme.begin(), worldReadme.end());
+        loadingMessage->setText(wideWorldReadme.c_str());
+        device->run();
+        driver->beginScene(irr::video::ECBF_COLOR | irr::video::ECBF_DEPTH, irr::video::SColor(0, 200, 200, 200));
+        device->getGUIEnvironment()->drawAll();
+        driver->endScene();
+        
+        //check enough time has elapsed to show the credits screen (10s) in total (5s main, 5s world)
+        while (device->getTimer()->getRealTime() - creditsStartTime < 10000) {
+            device->run();
+        }
+
+    }
+    
+    // Remove loading message, as not needed again
+    loadingMessage->remove(); loadingMessage = 0;
+
+
+    // Load the VR interface, allowing link to model
+    int vrSuccess = -1;
+    if (vr3dMode) {
+        vrSuccess = vrInterface.load(&model);
+        std::cout << "vrSuccess=" << vrSuccess << std::endl;
+    }
 
     //Load the gui
     bool hideEngineAndRudder=false;
+    // Hide engine/wheel inputs if not used (todo: control individually?)
     if (mode==OperatingMode::Secondary) {
-        hideEngineAndRudder=true;
+        if (secondaryControlWheel || 
+            secondaryControlPortEngine || 
+            secondaryControlStbdEngine || 
+            secondaryControlPortSchottel ||
+            secondaryControlStbdSchottel ||
+            secondaryControlPortThrustLever ||
+            secondaryControlStbdThrustLever ||
+            secondaryControlBowThruster ||
+            secondaryControlSternThruster) {
+            hideEngineAndRudder=false;
+        } else {
+            hideEngineAndRudder=true;
+        }
     }
-    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
+
+    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
 
     //Give the network class a pointer to the model
     network->setModel(&model);
@@ -879,7 +1087,7 @@ int main(int argc, char ** argv)
     JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, joystickSetup, &logMessages);
+    MyEventReceiver receiver(device, &model, &guiMain, network, &vrInterface, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
@@ -900,8 +1108,8 @@ int main(int argc, char ** argv)
         guiMain.hide2dInterface();
     }
     if (IniFile::iniFileTou32(iniFilename, "arpa_on")==1) {
-        guiMain.setARPACheckboxes(true);
-        model.setArpaOn(true);
+        guiMain.setARPAComboboxes(2); // 0: Off/Manual, 1: MARPA, 2: ARPA
+        model.setArpaMode(2);
     }
     irr::u32 radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
     if (radarStartupMode==1) {
@@ -910,13 +1118,6 @@ int main(int argc, char ** argv)
     if (radarStartupMode==2) {
         model.setRadarHeadUp();
     }
-
-    //check enough time has elapsed to show the credits screen (5s)
-    while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
-        device->run();
-    }
-    //remove credits here
-    //loadingMessage->remove(); loadingMessage = 0;
 
     //set up timing for NMEA
 
@@ -970,7 +1171,7 @@ int main(int argc, char ** argv)
 //        modelProfile.tic();
         }{ IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
-        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,128,128,128));
+        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, model.getRadarSurroundColour());
 //        renderSetupProfile.toc();
 
 //        renderRadarProfile.tic();
@@ -1000,17 +1201,36 @@ int main(int argc, char ** argv)
 
         //3d view portion
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
+
+        // Normal rendering
         if (!fullScreenRadar) {
             if (guiMain.getShowInterface()) {
-                driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth3d,graphicsHeight3d));
+                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
                 model.updateViewport(aspect3d);
-            } else {
-                driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight));
+            }
+            else {
+                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
                 model.updateViewport(aspect);
             }
-            //drawAll3dProfile.tic();
-            smgr->drawAll();
-            //drawAll3dProfile.toc();
+            
+            if (guiMain.getShow3d()) {
+                smgr->drawAll();
+            }
+        }
+
+        if (vr3dMode && vrSuccess == 0) {
+            
+            // Set aspect ratio
+            irr::f32 aspectRatioVR = vrInterface.getAspectRatio();
+            model.updateViewport(aspectRatioVR);
+
+            // Process events
+            int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?
+            
+            // Render and get inputs from VR
+            if (runtimeEventSuccess == 0) {
+                vrInterface.update();
+             }
         }
 
  //       renderProfile.toc();
@@ -1026,8 +1246,10 @@ int main(int argc, char ** argv)
 //        renderSetupProfile.tic();
         }{ IPROF("GUI");
         //gui
+        driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
+
  //       guiProfile.toc();
         }{ IPROF("End scene");
  //       renderFinishProfile.tic();
@@ -1053,7 +1275,40 @@ int main(int argc, char ** argv)
         delete extraNetwork;
     }
 
+    // Close down OpenXR and clean up
+    if (vr3dMode && vrSuccess == 0) {
+        vrInterface.unload();
+        std::cout << "Unloaded OpenXR" << std::endl;
+    }
+
     device->drop();
+
+    scriptToExe = IniFile::iniFileToString(iniFilename, "script_stop_BC");
+    if (!scriptToExe.empty()) {
+        std::string scriptPath;
+        if (Utilities::pathExists(userFolder + scriptToExe)) {
+            scriptPath = userFolder + scriptToExe;
+        } else {
+            #ifdef _WIN32
+	        scriptPath = "Scripts\\win\\" + scriptToExe;
+            #else
+            #ifdef __APPLE__
+	        scriptPath = "./Scripts/macOS/" + scriptToExe;
+            #else
+	        scriptPath = "./Scripts/linux/" + scriptToExe;
+            #endif
+            #endif    
+        }
+    
+        std::cout << "Going to run " << scriptPath << std::endl;
+
+        #ifdef _WIN32
+        ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
+        #else
+	    scriptPath = "\"" + scriptPath + "\"";
+        system(scriptPath.c_str());
+        #endif
+    }
 
     //Save log messages out
 	//Note that stderr has also been redirected to this file on windows, so it will contain anything from cerr, as well as these log messages
