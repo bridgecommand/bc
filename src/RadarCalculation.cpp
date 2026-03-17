@@ -779,6 +779,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
     //Some tuning constants
     irr::f32 radarFactorLand=2.0;
     irr::f32 radarFactorVessel=0.0001;
+    irr::f32 radarFactorRACON= radarFactorVessel * pow(1852.0/200.0, 2); // for Equivalent RCS of 1m2 at 200m(Fig 8.11, Target detection by marine radar)
 
     //Convert range to cell size
     irr::f32 cellLength = M_IN_NM*radarRangeNm.at(radarRangeIndex)/rangeResolution; ; //Assume that radarRangeIndex is in bounds
@@ -805,11 +806,15 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
         currentScanAngle = ((irr::f32) currentScanLine / (irr::f32) angularResolution) * 360.0f;
 
         irr::f32 scanSlope = -0.5; //Slope at start of scan (in metres/metre) - Make slightly negative so vessel contacts close in get detected
+        
+        // clear this line (before the main scan loop, so we can add things like racon which will appear beyond contact
+        for (irr::u32 currentStep = 1; currentStep < rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
+            scanArray[currentScanLine][currentStep] = 0.0;
+        }
+
+
         for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
-
-            //Clear old value
-            scanArray[currentScanLine][currentStep] = 0.0;
 
             //Get location of area being scanned
             irr::f32 localRange = cellLength*currentStep;
@@ -892,6 +897,17 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
                                 irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * radarData.at(thisContact).rcs;
                                 scanArray[currentScanLine][currentStep] += radarEchoStrength;
+
+                                // Testing for RACON - fill to half range with echo
+                                irr::f32 raconEchoStart = currentStep * cellLength + 50;
+                                irr::f32 raconEchoEnd = rangeResolution * cellLength / 2.0;
+                                irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
+                                for (irr::u32 raconStep = currentStep; raconStep < rangeResolution; raconStep++) {
+                                    
+                                    if ((raconStep * cellLength >= raconEchoStart) && (raconStep * cellLength <= raconEchoEnd)) {
+                                        scanArray[currentScanLine][raconStep] += raconEchoStrength;
+                                    }
+                                }
 
                                 //Start ARPA section
                                 // ARPA mode - 0: Off/Manual, 1: MARPA, 2: ARPA
