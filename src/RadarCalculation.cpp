@@ -898,7 +898,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                 irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * radarData.at(thisContact).rcs;
                                 scanArray[currentScanLine][currentStep] += radarEchoStrength;
 
-                                std::string testRaconCode = "M";
+                                std::string testRaconCode = "SOS";
                                 if (testRaconCode != "") {
                                     irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
                                     addRaconString(raconEchoStrength, cellLength, localRange, testRaconCode);
@@ -1148,9 +1148,161 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
 void RadarCalculation::addRaconString(irr::f32 raconEchoStrength, irr::f32 cellLength, irr::f32 contactRange, std::string raconCode) 
 {
-    // Testing for RACON - fill for 1 Nm
-    irr::f32 raconEchoStart = contactRange + 50;
-    irr::f32 raconEchoEnd = contactRange + 1852;
+    const irr::f32 racon_pulse_length = 750; // 'Short' racon pulse length in metres
+
+    irr::f32 raconEchoStart = contactRange + racon_pulse_length/4; // Start 1/4th of a pulse beyond the target
+    
+    int stringLength = raconCode.length();
+    for (int i = 0; i < stringLength; i++) {
+        switch (raconCode[i]) {
+        case 'A':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'B':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'C':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'D':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'E':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'F':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'G':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'H':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'I':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'J':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'K':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'L':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'M':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'N':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'O':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'P':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'Q':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'R':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'S':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'T':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'U':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'V':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'W':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'X':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'Y':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'Z':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        default:
+            break;
+        }
+
+        // Add space after each character
+        raconEchoStart = raconEchoStart + 3 * racon_pulse_length;
+
+    }    
+
+}
+
+void RadarCalculation::addRaconReturn(irr::f32 raconEchoStrength, irr::f32 cellLength, irr::f32 raconEchoLength, irr::f32 raconSpaceLength, irr::f32& raconEchoStart)
+{
+    irr::f32 raconEchoEnd = raconEchoStart + raconEchoLength;
 
     // As with other radar scans, start sweep at 1 (0 reserved so we can do rain clutter 'graient' calculation)
     for (irr::u32 raconStep = 1; raconStep < rangeResolution; raconStep++) {
@@ -1159,6 +1311,9 @@ void RadarCalculation::addRaconString(irr::f32 raconEchoStrength, irr::f32 cellL
             scanArray[currentScanLine][raconStep] += raconEchoStrength;
         }
     }
+
+    // Update raconEchoStart for the next character
+    raconEchoStart = raconEchoEnd + raconSpaceLength;
 }
 
 void RadarCalculation::addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
