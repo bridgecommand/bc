@@ -898,15 +898,10 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                 irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * radarData.at(thisContact).rcs;
                                 scanArray[currentScanLine][currentStep] += radarEchoStrength;
 
-                                // Testing for RACON - fill to half range with echo
-                                irr::f32 raconEchoStart = currentStep * cellLength + 50;
-                                irr::f32 raconEchoEnd = rangeResolution * cellLength / 2.0;
-                                irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
-                                for (irr::u32 raconStep = currentStep; raconStep < rangeResolution; raconStep++) {
-                                    
-                                    if ((raconStep * cellLength >= raconEchoStart) && (raconStep * cellLength <= raconEchoEnd)) {
-                                        scanArray[currentScanLine][raconStep] += raconEchoStrength;
-                                    }
+                                std::string testRaconCode = "M";
+                                if (testRaconCode != "") {
+                                    irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
+                                    addRaconString(raconEchoStrength, cellLength, localRange, testRaconCode);
                                 }
 
                                 //Start ARPA section
@@ -1149,6 +1144,21 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
 
 
+}
+
+void RadarCalculation::addRaconString(irr::f32 raconEchoStrength, irr::f32 cellLength, irr::f32 contactRange, std::string raconCode) 
+{
+    // Testing for RACON - fill for 1 Nm
+    irr::f32 raconEchoStart = contactRange + 50;
+    irr::f32 raconEchoEnd = contactRange + 1852;
+
+    // As with other radar scans, start sweep at 1 (0 reserved so we can do rain clutter 'graient' calculation)
+    for (irr::u32 raconStep = 1; raconStep < rangeResolution; raconStep++) {
+
+        if ((raconStep * cellLength >= raconEchoStart) && (raconStep * cellLength <= raconEchoEnd)) {
+            scanArray[currentScanLine][raconStep] += raconEchoStrength;
+        }
+    }
 }
 
 void RadarCalculation::addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
