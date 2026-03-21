@@ -193,7 +193,8 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.maxAngle=std::max(relAngle1,relAngle2);
 
     radarData.racon = racon; //Racon code if set
-    radarData.raconOffsetTime = 0.0; // TODO: Setup RACON data for buoys
+    radarData.raconOnTime = 20; //TODO: Setup RACON data for buoys
+    radarData.raconOffsetTime = 0; // TODO: Setup RACON data for buoys
 
     //Initial defaults: Will need changing with full implementation
     radarData.hidden=false;

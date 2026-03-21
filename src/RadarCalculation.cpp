@@ -899,8 +899,11 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                 scanArray[currentScanLine][currentStep] += radarEchoStrength;
 
                                 if (radarData.at(thisContact).racon != "") {
-                                    irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
-                                    addRaconString(raconEchoStrength, cellLength, localRange, radarData.at(thisContact).racon);
+                                    
+                                    if (int(absoluteTime + radarData.at(thisContact).raconOffsetTime) % 60 <= radarData.at(thisContact).raconOnTime) {
+                                        irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
+                                        addRaconString(raconEchoStrength, cellLength, localRange, radarData.at(thisContact).racon);
+                                    }
                                 }
 
                                 //Start ARPA section
