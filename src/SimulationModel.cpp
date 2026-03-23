@@ -1980,7 +1980,7 @@ SimulationModel::~SimulationModel()
                 radarImageChosen = radarImage;
                 radarImageOverlaidChosen = radarImageOverlaid;
             }
-            radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
+            radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,scenarioTime,cursorPositionRadar,isMouseDown);
             }{ IPROF("Update radar screen");
             radarScreen.update(radarImageOverlaidChosen);
             }{ IPROF("Update radar camera");

@@ -705,7 +705,7 @@ void RadarCalculation::changeRadarColourChoice()
     radarScreenStale = true;
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
+void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::f32 scenarioTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
 {
 
     #ifdef WITH_PROFILING
@@ -753,7 +753,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
     CursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
 
     } { IPROF("Scan");
-    scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+    scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime, scenarioTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     } { IPROF("Update ARPA");
 	updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
 	} { IPROF("Render");
@@ -763,7 +763,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
 }
 
 
-void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
+void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::f32 scenarioTime)
 {
 
     //IPROF_FUNC;
@@ -899,8 +899,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                 scanArray[currentScanLine][currentStep] += radarEchoStrength;
 
                                 if (radarData.at(thisContact).racon != "") {
-                                    
-                                    if (int(absoluteTime + radarData.at(thisContact).raconOffsetTime) % 60 <= radarData.at(thisContact).raconOnTime) {
+                                    if (std::fmod(scenarioTime + radarData.at(thisContact).raconOffsetTime, 60.0f) <= radarData.at(thisContact).raconOnTime) {
                                         irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
                                         addRaconString(raconEchoStrength, cellLength, localRange, radarData.at(thisContact).racon);
                                     }

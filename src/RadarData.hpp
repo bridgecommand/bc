@@ -41,8 +41,8 @@ struct RadarData {
 
     bool hidden;
     std::string racon; //Racon code if set
-    irr::u32 raconOnTime; //Duration on per minute, in seconds
-    irr::u32 raconOffsetTime; // Offset in seconds
+    irr::f32 raconOnTime; //Duration on per minute, in seconds
+    irr::f32 raconOffsetTime; // Offset in seconds
     bool SART; //SART enabled?
     //irr::f32 radarHorizon; //Only used for tracking contacts outside current radar visibility range
 
