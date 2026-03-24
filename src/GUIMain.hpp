@@ -75,6 +75,7 @@ struct GUIData {
     bool paused;
     bool collided;
     bool headUp;
+    bool stabilised;
     bool pump1On;
     bool pump2On;
 // DEE_NOV22 Azimuth Drive related gui items
@@ -380,6 +381,7 @@ private:
     irr::f32 guiRadarCursorBrg;
     irr::f32 guiRadarCursorRangeNm;
     bool radarHeadUp;
+    bool radarStabilised;
     bool radarLarge;
     irr::core::rect<irr::s32> radarLargeRect;
     irr::s32 largeRadarScreenCentreX;

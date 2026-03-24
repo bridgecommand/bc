@@ -1239,6 +1239,7 @@ guiTideHeight = guiData->tideHeight;
 
 
         radarHeadUp = guiData->headUp;
+        radarStabilised = guiData->stabilised;
 
         //update EBL Data
         this->guiRadarEBLBrg = guiData->guiRadarEBLBrg;
@@ -1409,7 +1410,18 @@ guiTideHeight = guiData->tideHeight;
         displayText = language->translate("range");
         displayText.append(f32To1dp(guiRadarRangeNm).c_str());
         displayText.append(language->translate("nm"));
-        displayText.append(L"\n");
+
+        displayText.append(" (");
+
+        if (radarHeadUp && radarStabilised) {
+            displayText.append(language->translate("courseUp"));
+        } else if (radarHeadUp) {
+            displayText.append(language->translate("headUp"));
+        } else {
+            displayText.append(language->translate("northUp"));
+        }
+
+        displayText.append(L")\n");
 
         displayText.append(language->translate("vrm"));
         displayText.append(f32To2dp(guiRadarEBLRangeNm).c_str());

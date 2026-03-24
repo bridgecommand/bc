@@ -588,6 +588,11 @@ bool RadarCalculation::getHeadUp() const//Head or course up
     return headUp;
 }
 
+bool RadarCalculation::getStabilised() const
+{
+    return stabilised;
+}
+
 void RadarCalculation::toggleRadarOn()
 {
 	radarOn = !radarOn;
