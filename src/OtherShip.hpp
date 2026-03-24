@@ -49,6 +49,7 @@ class OtherShip : public Ship
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel);
         void enableTriangleSelector(bool selectorEnabled);
         void setRateOfTurn(irr::f32 rateOfTurn); // This could be moved to Ship.hpp
+        void setSARTtimeStamp(uint64_t timeStamp);
 
     protected:
     private:
@@ -65,6 +66,8 @@ class OtherShip : public Ship
         irr::scene::ITriangleSelector* selector;
         bool triangleSelectorEnabled;
         bool drifting;
+        bool SART; // If SART is enabled
+        uint64_t SARTtimeStamp;
 };
 
 #endif

@@ -20,6 +20,7 @@
 #include "OwnShip.hpp"
 #include "Buoys.hpp"
 #include "OtherShips.hpp"
+#include "OtherShip.hpp"
 #include "RadarData.hpp"
 #include "Angles.hpp"
 #include "Constants.hpp"
@@ -784,7 +785,8 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
     //Some tuning constants
     irr::f32 radarFactorLand=2.0;
     irr::f32 radarFactorVessel=0.0001;
-    irr::f32 radarFactorRACON= radarFactorVessel * pow(1852.0/200.0, 2); // for Equivalent RCS of 1m2 at 200m(Fig 8.11, Target detection by marine radar)
+    irr::f32 radarFactorRACON = radarFactorVessel * pow(1852.0/200.0, 2); // for Equivalent RCS of 1m2 at 200m(Fig 8.11, Target detection by marine radar)
+    irr::f32 radarFactorSART = radarFactorRACON; //FIXME: simple version for now
 
     //Convert range to cell size
     irr::f32 cellLength = M_IN_NM*radarRangeNm.at(radarRangeIndex)/rangeResolution; ; //Assume that radarRangeIndex is in bounds
@@ -852,6 +854,21 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
             //Scan other contacts here
             for(unsigned int thisContact = 0; thisContact<radarData.size(); thisContact++) {
+                
+                // Extra check for SART contacts
+                if (radarData.at(thisContact).SART &&
+                    (radarData.at(thisContact).SARTtimeStamp > 0) &&
+                    (absoluteTime - radarData.at(thisContact).SARTtimeStamp <= 4)) 
+                {
+                    irr::f32 sartEchoStrength = radarFactorSART * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
+                    
+                    irr::f32 relativeSARTAngle = currentScanAngle - radarData.at(thisContact).angle;
+                    if (fabs(relativeSARTAngle) < 10) {
+                        scanArray[currentScanLine][currentStep] += sartEchoStrength;
+                    }
+                    
+                }
+
                 irr::f32 contactHeightAboveLine = (radarData.at(thisContact).height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
                 if (contactHeightAboveLine > 0) {
                     //Contact would be visible if in this cell. Check if it is
@@ -899,7 +916,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                         || (rangeAtCellMax >= minCellRange && rangeAtCellMax <= maxCellRange)
                                         || (rangeAtCellMin < minCellRange && rangeAtCellMax > maxCellRange)
                                         || (rangeAtCellMax < minCellRange && rangeAtCellMin > maxCellRange))) {
-
+                                
                                 irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * radarData.at(thisContact).rcs;
                                 scanArray[currentScanLine][currentStep] += radarEchoStrength;
 
@@ -907,6 +924,17 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                     if (std::fmod(scenarioTime + radarData.at(thisContact).raconOffsetTime, 60.0f) <= radarData.at(thisContact).raconOnTime) {
                                         irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
                                         addRaconString(raconEchoStrength, cellLength, localRange, radarData.at(thisContact).racon);
+                                    }
+                                }
+
+                                // If SART on, and contact is detectable in noise
+                                if (radarData.at(thisContact).SART) {
+                                    if (radarEchoStrength*2 > localNoise) { 
+                                        // Check contact type before casting!
+                                        if (radarData.at(thisContact).contactType == otherShipContact) {
+                                            OtherShip* shipContact = static_cast<OtherShip*>(radarData.at(thisContact).contact);
+                                            shipContact->setSARTtimeStamp(absoluteTime);
+                                        }
                                     }
                                 }
 

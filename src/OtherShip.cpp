@@ -43,6 +43,10 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     this->mmsi = mmsi;
     this->drifting = drifting;
 
+    // Set if SART is enabled - TODO, make this configurable
+    SART = true;
+    SARTtimeStamp = 0;
+
     std::string basePath = "Models/Othership/" + name + "/";
     std::string userFolder = Utilities::getUserDir();
     //Read model from user dir if it exists there.
@@ -420,6 +424,11 @@ void OtherShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (only
     this->rateOfTurn = rateOfTurn;
 }
 
+void OtherShip::setSARTtimeStamp(uint64_t timeStamp)
+{
+    SARTtimeStamp = timeStamp;
+}
+
 RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
 //Get data for OtherShip (number) relative to scannerPosition
 //Similar code in Buoy.cpp
@@ -452,10 +461,11 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.minAngle=std::min(relAngle1,relAngle2);
     radarData.maxAngle=std::max(relAngle1,relAngle2);
 
-    //Initial defaults: Fixme: Will need changing with full implementation
     radarData.hidden=false;
-    radarData.SART=false;
+    radarData.SART=SART;
+    radarData.SARTtimeStamp = SARTtimeStamp;
 
+    radarData.contactType = otherShipContact;
     radarData.contact = (void*)this;
 
     return radarData;
