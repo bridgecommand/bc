@@ -27,7 +27,7 @@ struct RadarData;
 class Buoy
 {
     public:
-        Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
+        Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, std::string raconCode, irr::f32 raconOnTime, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         virtual ~Buoy();
         irr::core::vector3df getPosition() const;
         void setPosition(irr::core::vector3df position);
@@ -49,6 +49,9 @@ class Buoy
         irr::f32 height; //For radar calculation
         irr::f32 heightCorrection;
         irr::f32 rcs;
+        std::string racon;
+        irr::f32 raconOnTime;
+        irr::f32 raconOffsetTime;
         bool floating; //Does the buoy move with water (normally true, false for a post etc)
         bool triangleSelectorEnabled; //Keep track of this so we don't keep re-setting the selector
 };

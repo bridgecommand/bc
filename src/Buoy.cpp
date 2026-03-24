@@ -23,10 +23,11 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cstdlib> //For rand()
 
 //using namespace irr;
 
-Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, std::string raconCode, irr::f32 raconOnTime, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/Buoy/" + name + "/";
@@ -99,6 +100,11 @@ Buoy::Buoy(const std::string& name, const std::string& internalName, const std::
     if (rcs == 0.0) {
         rcs = 0.005*std::pow(length,3); //Default RCS if not set, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     }
+
+    racon = raconCode;
+    this->raconOnTime = raconOnTime;
+
+    raconOffsetTime = 60.0f * (irr::f32) rand() / RAND_MAX;
 
     this->floating = floating; //Does the buoy respond to the water
 
@@ -190,10 +196,12 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.minAngle=std::min(relAngle1,relAngle2);
     radarData.maxAngle=std::max(relAngle1,relAngle2);
 
+    radarData.racon = racon; //Racon code if set
+    radarData.raconOnTime = raconOnTime;
+    radarData.raconOffsetTime = raconOffsetTime;
+
     //Initial defaults: Will need changing with full implementation
     radarData.hidden=false;
-    radarData.racon=""; //Racon code if set
-    radarData.raconOffsetTime=0.0;
     radarData.SART=false;
 
     radarData.contact = (void*)this;

@@ -63,6 +63,8 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
 
         //get buoy RCS if set
         irr::f32 rcs = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RCS",currentBuoy));
+        std::string racon = IniFile::iniFileToString(scenarioBuoyFilename, IniFile::enumerate1("RACON", currentBuoy));
+        irr::f32 raconOnTime = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RaconOnTime",currentBuoy), 20.0f);
 
         irr::f32 heightCorrection = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("HeightCorrection",currentBuoy));
 
@@ -75,7 +77,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //Create buoy and load into vector
         std::string internalName = "Buoy_";
         internalName.append(std::to_string(currentBuoy-1)); // -1 as we want index from 0
-        buoys.push_back(Buoy (buoyName.c_str(),internalName,worldName,irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,heightCorrection,smgr,dev));
+        buoys.push_back(Buoy (buoyName.c_str(),internalName,worldName,irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,racon,raconOnTime,floating,heightCorrection,smgr,dev));
 
         //Find scene node
         irr::scene::ISceneNode* buoyNode = buoys.back().getSceneNode();

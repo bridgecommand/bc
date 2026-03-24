@@ -705,7 +705,7 @@ void RadarCalculation::changeRadarColourChoice()
     radarScreenStale = true;
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
+void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::f32 scenarioTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
 {
 
     #ifdef WITH_PROFILING
@@ -753,7 +753,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
     CursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
 
     } { IPROF("Scan");
-    scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+    scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime, scenarioTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     } { IPROF("Update ARPA");
 	updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
 	} { IPROF("Render");
@@ -763,7 +763,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
 }
 
 
-void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
+void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::f32 scenarioTime)
 {
 
     //IPROF_FUNC;
@@ -779,6 +779,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
     //Some tuning constants
     irr::f32 radarFactorLand=2.0;
     irr::f32 radarFactorVessel=0.0001;
+    irr::f32 radarFactorRACON= radarFactorVessel * pow(1852.0/200.0, 2); // for Equivalent RCS of 1m2 at 200m(Fig 8.11, Target detection by marine radar)
 
     //Convert range to cell size
     irr::f32 cellLength = M_IN_NM*radarRangeNm.at(radarRangeIndex)/rangeResolution; ; //Assume that radarRangeIndex is in bounds
@@ -805,11 +806,15 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
         currentScanAngle = ((irr::f32) currentScanLine / (irr::f32) angularResolution) * 360.0f;
 
         irr::f32 scanSlope = -0.5; //Slope at start of scan (in metres/metre) - Make slightly negative so vessel contacts close in get detected
+        
+        // clear this line (before the main scan loop, so we can add things like racon which will appear beyond contact
+        for (irr::u32 currentStep = 1; currentStep < rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
+            scanArray[currentScanLine][currentStep] = 0.0;
+        }
+
+
         for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
-
-            //Clear old value
-            scanArray[currentScanLine][currentStep] = 0.0;
 
             //Get location of area being scanned
             irr::f32 localRange = cellLength*currentStep;
@@ -892,6 +897,13 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
                                 irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * radarData.at(thisContact).rcs;
                                 scanArray[currentScanLine][currentStep] += radarEchoStrength;
+
+                                if (radarData.at(thisContact).racon != "") {
+                                    if (std::fmod(scenarioTime + radarData.at(thisContact).raconOffsetTime, 60.0f) <= radarData.at(thisContact).raconOnTime) {
+                                        irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
+                                        addRaconString(raconEchoStrength, cellLength, localRange, radarData.at(thisContact).racon);
+                                    }
+                                }
 
                                 //Start ARPA section
                                 // ARPA mode - 0: Off/Manual, 1: MARPA, 2: ARPA
@@ -1133,6 +1145,202 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
 
 
+}
+
+void RadarCalculation::addRaconString(irr::f32 raconEchoStrength, irr::f32 cellLength, irr::f32 contactRange, std::string raconCode) 
+{
+    const irr::f32 racon_pulse_length = 750; // 'Short' racon pulse length in metres
+
+    irr::f32 raconEchoStart = contactRange + racon_pulse_length/4; // Start 1/4th of a pulse beyond the target
+    
+    int stringLength = raconCode.length();
+    for (int i = 0; i < stringLength; i++) {
+        switch (raconCode[i]) {
+        case 'A':
+        case 'a':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'B':
+        case 'b':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'C':
+        case 'c':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'D':
+        case 'd':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'E':
+        case 'e':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'F':
+        case 'f':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'G':
+        case 'g':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'H':
+        case 'h':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'I':
+        case 'i':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'J':
+        case 'j':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'K':
+        case 'k':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'L':
+        case 'l':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'M':
+        case 'm':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'N':
+        case 'n':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'O':
+        case 'o':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'P':
+        case 'p':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'Q':
+        case 'q':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'R':
+        case 'r':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'S':
+        case 's':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        case 'T':
+        case 't':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'U':
+        case 'u':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'V':
+        case 'v':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'W':
+        case 'w':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'X':
+        case 'x':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'Y':
+        case 'y':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            break;
+        case 'Z':
+        case 'z':
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 3, racon_pulse_length * 1, raconEchoStart); // Long
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            addRaconReturn(raconEchoStrength, cellLength, racon_pulse_length * 1, racon_pulse_length * 1, raconEchoStart); // Short
+            break;
+        default:
+            break;
+        }
+
+        // Add space after each character
+        raconEchoStart = raconEchoStart + 3 * racon_pulse_length;
+
+    }    
+
+}
+
+void RadarCalculation::addRaconReturn(irr::f32 raconEchoStrength, irr::f32 cellLength, irr::f32 raconEchoLength, irr::f32 raconSpaceLength, irr::f32& raconEchoStart)
+{
+    irr::f32 raconEchoEnd = raconEchoStart + raconEchoLength;
+
+    // As with other radar scans, start sweep at 1 (0 reserved so we can do rain clutter 'graient' calculation)
+    for (irr::u32 raconStep = 1; raconStep < rangeResolution; raconStep++) {
+
+        if ((raconStep * cellLength >= raconEchoStart) && (raconStep * cellLength <= raconEchoEnd)) {
+            scanArray[currentScanLine][raconStep] += raconEchoStrength;
+        }
+    }
+
+    // Update raconEchoStart for the next character
+    raconEchoStart = raconEchoEnd + raconSpaceLength;
 }
 
 void RadarCalculation::addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)

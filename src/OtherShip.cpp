@@ -454,8 +454,6 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
 
     //Initial defaults: Fixme: Will need changing with full implementation
     radarData.hidden=false;
-    radarData.racon=""; //Racon code if set
-    radarData.raconOffsetTime=0.0;
     radarData.SART=false;
 
     radarData.contact = (void*)this;
