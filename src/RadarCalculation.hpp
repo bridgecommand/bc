@@ -148,6 +148,7 @@ class RadarCalculation
         void setCourseUp();
         void setHeadUp();
         bool getHeadUp() const; //Head or course up
+        bool getStabilised() const;
 		void toggleRadarOn();
         bool isRadarOn() const;
 		int getArpaMode() const;

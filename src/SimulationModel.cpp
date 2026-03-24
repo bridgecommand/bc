@@ -2047,6 +2047,7 @@ SimulationModel::~SimulationModel()
         guiData->paused = paused;
         guiData->collided = collided;
         guiData->headUp = radarCalculation.getHeadUp();
+        guiData->stabilised = radarCalculation.getStabilised();
         guiData->radarOn = radarCalculation.isRadarOn();
         guiData->pump1On = ownShip.getRudderPumpState(1);
         guiData->pump2On = ownShip.getRudderPumpState(2);
