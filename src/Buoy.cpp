@@ -23,10 +23,11 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cstdlib> //For rand()
 
 //using namespace irr;
 
-Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, std::string raconCode, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, std::string raconCode, irr::f32 raconOnTime, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/Buoy/" + name + "/";
@@ -101,6 +102,9 @@ Buoy::Buoy(const std::string& name, const std::string& internalName, const std::
     }
 
     racon = raconCode;
+    this->raconOnTime = raconOnTime;
+
+    raconOffsetTime = 60.0f * (irr::f32) rand() / RAND_MAX;
 
     this->floating = floating; //Does the buoy respond to the water
 
@@ -193,8 +197,8 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.maxAngle=std::max(relAngle1,relAngle2);
 
     radarData.racon = racon; //Racon code if set
-    radarData.raconOnTime = 20; //TODO: Setup RACON data for buoys
-    radarData.raconOffsetTime = 0; // TODO: Setup RACON data for buoys
+    radarData.raconOnTime = raconOnTime;
+    radarData.raconOffsetTime = raconOffsetTime;
 
     //Initial defaults: Will need changing with full implementation
     radarData.hidden=false;
