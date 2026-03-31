@@ -1398,21 +1398,38 @@ irr::f32 RadarCalculation::getSARTStrength(irr::f32 radarFactorSART, irr::f32 sa
 
     irr::f32 returnStrength = 0;
     
-    // Main returns:
-    irr::f32 mainReturnStart = 0.3 * M_IN_NM; // Dependent on receiving radar tuning within SART sweep
-    irr::f32 mainReturnSpacing = 0.64 * M_IN_NM; // Set by SART sweep time
+    irr::f32 mainReturnStart = 0.32 * M_IN_NM; // Dependent on receiving radar tuning within SART sweep
+    irr::f32 additionalReturnStart = 100; // Dependent on response time and fast response speed. IMO SN/Circ. 197 says no more than 150m
+    irr::f32 returnSpacing = 0.64 * M_IN_NM; // Set by SART sweep time
     irr::f32 mainReturnLength = 0.1 * M_IN_NM; // Factor to account for how long SART pulse is within bandwidth;
-    int numberOfMainReturns = 12;
-    irr::f32 mainReturnEnd = mainReturnStart + mainReturnSpacing * (numberOfMainReturns - 1);
+    irr::f32 additionalReturnLength = 0.05 * M_IN_NM; // Factor to account for how long SART pulse is within bandwidth;
+    irr::f32 additionalReturnFactor = 0.01; // Scaling factor so additional returns only show when close
+    int numberOfReturns = 12;
+    irr::f32 mainReturnEnd = mainReturnStart + returnSpacing * (numberOfReturns - 1);
+    irr::f32 additionalReturnEnd = additionalReturnStart + returnSpacing * (numberOfReturns - 1);
 
+    // Main returns: 
     if ((relativeSARTRange >= mainReturnStart - 0.5 * mainReturnLength) && (relativeSARTRange <= mainReturnEnd + 0.5 * mainReturnLength)) {
-        for (int i = 0; i < numberOfMainReturns; i++) {
-            irr::f32 thisReturnDist = mainReturnStart + i * mainReturnSpacing;
+        for (int i = 0; i < numberOfReturns; i++) {
+            irr::f32 thisReturnDist = mainReturnStart + i * returnSpacing;
             irr::f32 thisReturnDistMin = thisReturnDist - mainReturnLength / 2;
             irr::f32 thisReturnDistMax = thisReturnDistMin + mainReturnLength;
 
             if ((relativeSARTRange >= thisReturnDistMin) && (relativeSARTRange <= thisReturnDistMax)) {
                 returnStrength += angleFactor * sartEchoStrength;
+            }
+        }
+    }
+
+    // Additional returns: 
+    if ((relativeSARTRange >= additionalReturnStart - 0.5 * additionalReturnLength) && (relativeSARTRange <= additionalReturnEnd + 0.5 * additionalReturnLength)) {
+        for (int i = 0; i < numberOfReturns; i++) {
+            irr::f32 thisReturnDist = additionalReturnStart + i * returnSpacing;
+            irr::f32 thisReturnDistMin = thisReturnDist - additionalReturnLength / 2;
+            irr::f32 thisReturnDistMax = thisReturnDistMin + additionalReturnLength;
+
+            if ((relativeSARTRange >= thisReturnDistMin) && (relativeSARTRange <= thisReturnDistMax)) {
+                returnStrength += angleFactor * sartEchoStrength * additionalReturnFactor;
             }
         }
     }
