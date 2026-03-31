@@ -858,15 +858,18 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                 // Extra check for SART contacts
                 if (radarData.at(thisContact).SART &&
                     (radarData.at(thisContact).SARTtimeStamp > 0) &&
-                    (absoluteTime - radarData.at(thisContact).SARTtimeStamp <= 4)) 
+                    (absoluteTime - radarData.at(thisContact).SARTtimeStamp <= 4)) // TODO: Document or configure hardcoding here
                 {
-                    irr::f32 sartEchoStrength = radarFactorSART * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
-                    
+                    // Relative angle in range -180 to 180 degrees
                     irr::f32 relativeSARTAngle = currentScanAngle - radarData.at(thisContact).angle;
-                    if (fabs(relativeSARTAngle) < 10) {
-                        scanArray[currentScanLine][currentStep] += sartEchoStrength;
+                    if (relativeSARTAngle > 180) {
+                        relativeSARTAngle -= 360;
                     }
-                    
+                    if (relativeSARTAngle < -180) {
+                        relativeSARTAngle += 360;
+                    }
+
+                    scanArray[currentScanLine][currentStep] += getSARTStrength(radarFactorSART, radarData.at(thisContact).range, localRange, relativeSARTAngle);
                 }
 
                 irr::f32 contactHeightAboveLine = (radarData.at(thisContact).height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
@@ -1374,6 +1377,47 @@ void RadarCalculation::addRaconReturn(irr::f32 raconEchoStrength, irr::f32 cellL
 
     // Update raconEchoStart for the next character
     raconEchoStart = raconEchoEnd + raconSpaceLength;
+}
+
+irr::f32 RadarCalculation::getSARTStrength(irr::f32 radarFactorSART, irr::f32 sartRange, irr::f32 localRange, irr::f32 relativeSARTAngle) const
+{
+    irr::f32 relativeSARTRange = localRange - sartRange;
+    irr::f32 sartEchoStrength = radarFactorSART * std::pow(M_IN_NM / sartRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
+    
+    irr::f32 angleFactor;
+    irr::f32 minAngularWidth = fmax(scanAngleStep, 3.0f); // Ensure SART return beam isn't too narrow to see
+
+    if (fabs(relativeSARTAngle) <= minAngularWidth / 2.0) {
+        // In main beam
+        angleFactor = 1;
+    }
+    else {
+        // Sidelobe region. Initial simple version for testing
+        angleFactor = 0.001 * (180.0 - fabs(relativeSARTAngle)) / 180.0;
+    }
+
+    irr::f32 returnStrength = 0;
+    
+    // Main returns:
+    irr::f32 mainReturnStart = 0.3 * M_IN_NM; // Dependent on receiving radar tuning within SART sweep
+    irr::f32 mainReturnSpacing = 0.64 * M_IN_NM; // Set by SART sweep time
+    irr::f32 mainReturnLength = 0.1 * M_IN_NM; // Factor to account for how long SART pulse is within bandwidth;
+    int numberOfMainReturns = 12;
+    irr::f32 mainReturnEnd = mainReturnStart + mainReturnSpacing * (numberOfMainReturns - 1);
+
+    if ((relativeSARTRange >= mainReturnStart - 0.5 * mainReturnLength) && (relativeSARTRange <= mainReturnEnd + 0.5 * mainReturnLength)) {
+        for (int i = 0; i < numberOfMainReturns; i++) {
+            irr::f32 thisReturnDist = mainReturnStart + i * mainReturnSpacing;
+            irr::f32 thisReturnDistMin = thisReturnDist - mainReturnLength / 2;
+            irr::f32 thisReturnDistMax = thisReturnDistMin + mainReturnLength;
+
+            if ((relativeSARTRange >= thisReturnDistMin) && (relativeSARTRange <= thisReturnDistMax)) {
+                returnStrength += angleFactor * sartEchoStrength;
+            }
+        }
+    }
+    
+    return returnStrength;
 }
 
 void RadarCalculation::addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
