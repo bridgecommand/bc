@@ -317,7 +317,15 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
             otherShipsData.at(i).X=Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
             otherShipsData.at(i).Z=Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
             otherShipsData.at(i).mmsi =Utilities::lexical_cast<irr::u32>(thisShipData.at(6));
-            //Todo: use SART etc
+            
+            // SART
+            if (thisShipData.at(5) == "1") {
+                otherShipsData.at(i).SART = true;
+            } else {
+                otherShipsData.at(i).SART = false;
+            }
+
+            // Leg data
             irr::u32 numberOfLegs = Utilities::lexical_cast<irr::u32>(thisShipData.at(7));
             std::vector<std::string> legsDataString = Utilities::split(thisShipData.at(8),'/');
             if (numberOfLegs == legsDataString.size()) {

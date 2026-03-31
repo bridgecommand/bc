@@ -27,6 +27,7 @@ struct OtherShipDisplayData : public ShipData //To hold information about a ship
 {
     std::vector<Leg> legs;
     irr::u32 mmsi;
+    bool SART;
 };
 
 #endif // __OWNSHIPDATASTRUCT_HPP_INCLUDED__

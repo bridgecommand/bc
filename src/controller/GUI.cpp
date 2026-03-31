@@ -395,6 +395,11 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
         //number
         int thisShipNumber = 1 + it - otherShips.begin();
         irr::core::stringw displayNumber = irr::core::stringw(thisShipNumber);
+        
+        if (it->SART) {
+            displayNumber.append(L" SART ");
+        }
+        
         if (it->mmsi != 0) {
             displayNumber.append(L" (MMSI:");
             displayNumber.append(irr::core::stringw(it->mmsi));
