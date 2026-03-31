@@ -192,6 +192,8 @@ public:
     irr::f32 getOtherShipHeading(int number) const;
     irr::f32 getOtherShipSpeed(int number) const; //Speed in m/s
     irr::u32 getOtherShipMMSI(int number) const;
+    bool getOtherShipSARTOn(int number) const;
+    void setOtherShipSARTOn(int number, bool sartState);
     void setOtherShipHeading(int number, irr::f32 hdg);
     void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
     void setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn);

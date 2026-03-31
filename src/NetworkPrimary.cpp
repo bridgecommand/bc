@@ -526,7 +526,7 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getNumberOfLines()));
     stringToSend.append("#");
 
-    //3 Each 'Other' (Pos X (abs), Pos Z, angle, rate of turn, SART, MMSI |) #
+    //3 Each 'Other' (Pos X (abs), Pos Z, angle, speed, rate of turn, SART, MMSI |) #
     for(int number = 0; number < (int)model->getNumberOfOtherShips(); number++ ) {
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipPosX(number)));
         stringToSend.append(",");
@@ -538,7 +538,14 @@ std::string NetworkPrimary::generateSendString()
         stringToSend.append(",");
         stringToSend.append("0"); // Rate of turn: This is not currently used in normal mode
         stringToSend.append(",");
-        stringToSend.append("0"); //Fixme: Sart enabled
+        
+        if (model->getOtherShipSARTOn(number)) {
+            stringToSend.append("1"); // Sart enabled
+        }
+        else {
+            stringToSend.append("0"); // Sart disabled
+        }
+        
         stringToSend.append(",");
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipMMSI(number)));
         stringToSend.append(",");

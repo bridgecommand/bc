@@ -47,6 +47,8 @@ class OtherShips
         irr::f32 getSpeed(int number) const; //Speed in m/s
         irr::u32 getMMSI(int number) const;
         irr::f32 getEstimatedDisplacement(int number) const;
+        bool getSARTOn(int number) const;
+        void setSARTOn(int number, bool sartState);
         void setSpeed(int number, irr::f32 speed); //Speed in m/s
         void setMMSI(int number, irr::u32 mmsi);
         void setPos(int number, irr::f32 positionX, irr::f32 positionZ);

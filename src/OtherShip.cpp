@@ -44,7 +44,11 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     this->drifting = drifting;
 
     // Set if SART is enabled - TODO, make this configurable
-    SART = true;
+    if (name == "Timbercarrier") {
+        SART = true;
+    } else {
+        SART = false;
+    }
     SARTtimeStamp = 0;
 
     std::string basePath = "Models/Othership/" + name + "/";
@@ -427,6 +431,16 @@ void OtherShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (only
 void OtherShip::setSARTtimeStamp(uint64_t timeStamp)
 {
     SARTtimeStamp = timeStamp;
+}
+
+bool OtherShip::getSARTOn() const
+{
+    return SART;
+}
+
+void OtherShip::setSARTOn(bool sartState)
+{
+    SART = sartState;
 }
 
 RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const

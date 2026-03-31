@@ -50,6 +50,8 @@ class OtherShip : public Ship
         void enableTriangleSelector(bool selectorEnabled);
         void setRateOfTurn(irr::f32 rateOfTurn); // This could be moved to Ship.hpp
         void setSARTtimeStamp(uint64_t timeStamp);
+        bool getSARTOn() const;
+        void setSARTOn(bool sartState);
 
     protected:
     private:

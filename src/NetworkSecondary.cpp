@@ -244,8 +244,15 @@ void NetworkSecondary::receiveMessage()
                                 irr::f32 receivedPosX = Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
                                 irr::f32 receivedPosZ = Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
                                 model->setOtherShipPos(i,receivedPosX,receivedPosZ);
+
+                                // SART status
+                                if (thisShipData.at(5) == "1") {
+                                    model->setOtherShipSARTOn(i,true);
+                                } else {
+                                    model->setOtherShipSARTOn(i,false);
+                                }
                                 //Todo: Think about using timeError to extrapolate position to get more accurately.
-                                //Todo: use SART etc
+                                
                             }
                         }
                     }

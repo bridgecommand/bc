@@ -412,6 +412,16 @@ SimulationModel::~SimulationModel()
         return otherShips.getMMSI(number);
     }
 
+    bool SimulationModel::getOtherShipSARTOn(int number) const
+    {
+        return otherShips.getSARTOn(number);
+    }
+
+    void SimulationModel::setOtherShipSARTOn(int number, bool sartState)
+    {
+        otherShips.setSARTOn(number, sartState);
+    }
+
     void SimulationModel::setOtherShipMMSI(int number, irr::u32 mmsi) {
         otherShips.setMMSI(number,mmsi);
     }

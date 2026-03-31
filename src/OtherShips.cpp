@@ -214,6 +214,23 @@ irr::f32 OtherShips::getEstimatedDisplacement(int number) const
     }
 }
 
+bool OtherShips::getSARTOn(int number) const
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        return otherShips.at(number)->getSARTOn();
+    }
+    else {
+        return false;
+    }
+}
+
+void OtherShips::setSARTOn(int number, bool sartState)
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        otherShips.at(number)->setSARTOn(sartState);
+    }
+}
+
 void OtherShips::setSpeed(int number, irr::f32 speed)
 {
     if (number < (int)otherShips.size() && number >= 0) {
