@@ -254,6 +254,26 @@
                     network->setStringToSend(messageToSend);
                 }
             }
+
+            if (event.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
+                if (id == GUIMain::GUI_ID_SART_CHECKBOX) {
+                    int ship = gui->getSelectedShip();
+                    if (ship > 0) {
+                        // Other ship
+                        std::string messageToSend = "MCSR,";
+                        messageToSend.append(Utilities::lexical_cast<std::string>(ship));
+                        messageToSend.append(",");
+                        if (((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked()) {
+                            messageToSend.append("1");
+                        } else {
+                            messageToSend.append("0");
+                        }
+                        messageToSend.append("#");
+                        network->setStringToSend(messageToSend);
+                    }
+                }
+            }
+            
             /*
             if (event.GUIEvent.EventType==irr::gui::EGDT_WINDOW_CLOSE) {
                 if (id==GUIMain::GUI_ID_WINDOW) {

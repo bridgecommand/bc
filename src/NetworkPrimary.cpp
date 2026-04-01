@@ -382,6 +382,20 @@ void NetworkPrimary::receiveNetwork()
                                                 model->setSternThruster(overrideData);
                                             }
                                         }
+                                    } else if (thisCommand.substr(0, 2).compare("SR") == 0) {
+                                        //'SR', Set SART status
+                                        std::vector<std::string> parts = Utilities::split(thisCommand, ','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 3) {
+                                            int shipNo = Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            bool sartStatus;
+                                            if (parts.at(2) == "1") {
+                                                sartStatus = true;
+                                            }
+                                            else {
+                                                sartStatus = false;
+                                            }
+                                            model->setOtherShipSARTOn(shipNo, sartStatus);
+                                        }
                                     }
 
 

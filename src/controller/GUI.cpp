@@ -70,6 +70,9 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     mmsiEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(1*fw,7.5*fh,12*fw,8.5*fh),false,mainTab,GUI_ID_MMSI_EDITBOX);
     setMMSI = guienv->addButton(irr::core::rect<irr::s32>(1*fw,8.5*fh,12*fw,9.5*fh),mainTab,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
 
+    //Add SART setting
+    sartEnable = guienv->addCheckBox(false, irr::core::rect<irr::s32>(25 * fw, 7.5 * fh, 28 * fw, 8.5 * fh), mainTab, GUI_ID_SART_CHECKBOX);
+
     //Add leg selector drop down
     legSelector  = guienv->addListBox(irr::core::rect<irr::s32>(12.5*fw,6*fh,24*fw,9.5*fh),mainTab,GUI_ID_LEG_LISTBOX);
     legSelectorTitle = guienv->addStaticText(language->translate("selectLeg").c_str(),irr::core::rect<irr::s32>(12.5*fw,4.5*fh,24*fw,5.5*fh),false,false,mainTab);
@@ -285,6 +288,11 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     if (editBoxesNeedUpdating) {
         if (selectedShip >= 0 && selectedShip < otherShips.size()) {
             mmsiEdit->setText(irr::core::stringw(otherShips.at(selectedShip).mmsi).c_str());
+            sartEnable->setEnabled(true);
+            sartEnable->setChecked(otherShips.at(selectedShip).SART);
+        } else {
+            sartEnable->setChecked(false);
+            sartEnable->setEnabled(false);
         }
         if (selectedShip >= 0 && selectedShip < otherShips.size() && selectedLeg >= 0 && selectedLeg < otherShips.at(selectedShip).legs.size()) {
             legCourseEdit  ->setText(irr::core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).bearing).c_str());
