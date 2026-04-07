@@ -786,7 +786,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
     irr::f32 radarFactorLand=2.0;
     irr::f32 radarFactorVessel=0.0001;
     irr::f32 radarFactorRACON = radarFactorVessel * pow(1852.0/200.0, 2); // for Equivalent RCS of 1m2 at 200m(Fig 8.11, Target detection by marine radar)
-    irr::f32 radarFactorSART = radarFactorRACON; //FIXME: simple version for now
+    irr::f32 radarFactorSART = radarFactorRACON * 0.1; // Like RACON, but lower strength;
 
     //Convert range to cell size
     irr::f32 cellLength = M_IN_NM*radarRangeNm.at(radarRangeIndex)/rangeResolution; ; //Assume that radarRangeIndex is in bounds
@@ -1387,13 +1387,16 @@ irr::f32 RadarCalculation::getSARTStrength(irr::f32 radarFactorSART, irr::f32 sa
     irr::f32 angleFactor;
     irr::f32 minAngularWidth = fmax(scanAngleStep, 3.0f); // Ensure SART return beam isn't too narrow to see
 
-    if (fabs(relativeSARTAngle) <= minAngularWidth / 2.0) {
-        // In main beam
+    // radar sidelobes, following 'Target detection by marine radar', section 2.8.1
+    irr::f32 widthFactor = 3.0;
+    irr::f32 waveLength = 0.1;
+    irr::f32 relativeAngleRadians = relativeSARTAngle * irr::core::DEGTORAD;
+
+    irr::f32 intermediateCalculation = widthFactor * relativeAngleRadians / waveLength;
+    if (intermediateCalculation != 0) {
+        angleFactor = pow(sin(intermediateCalculation) / intermediateCalculation, 2);
+    } else {
         angleFactor = 1;
-    }
-    else {
-        // Sidelobe region. Initial simple version for testing
-        angleFactor = 0.001 * (180.0 - fabs(relativeSARTAngle)) / 180.0;
     }
 
     irr::f32 returnStrength = 0;
