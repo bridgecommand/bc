@@ -20,6 +20,7 @@
 #include "irrlicht.h"
 
 #include <string>
+#include <cstdint> //for uint64_t
 
 enum ContactType {buoyContact, otherShipContact, unknownContact};
 
