@@ -855,10 +855,14 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             //Scan other contacts here
             for(unsigned int thisContact = 0; thisContact<radarData.size(); thisContact++) {
                 
+                // By default, 3s, but may need to be longer with high time acceleration)
+                // 30 here is max number of scans per loop
+                uint64_t maxTimeForSARTDetected = std::max(3, int(2 * deltaTime * 360 / (30 * scanAngleStep)));
+                
                 // Extra check for SART contacts
                 if (radarData.at(thisContact).SART &&
                     (radarData.at(thisContact).SARTtimeStamp > 0) &&
-                    (absoluteTime - radarData.at(thisContact).SARTtimeStamp <= 4)) // TODO: Document or configure hardcoding here
+                    (absoluteTime - radarData.at(thisContact).SARTtimeStamp <= maxTimeForSARTDetected)) 
                 {
                     // Relative angle in range -180 to 180 degrees
                     irr::f32 relativeSARTAngle = currentScanAngle - radarData.at(thisContact).angle;
