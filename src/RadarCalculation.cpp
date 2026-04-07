@@ -924,7 +924,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                         || (rangeAtCellMax >= minCellRange && rangeAtCellMax <= maxCellRange)
                                         || (rangeAtCellMin < minCellRange && rangeAtCellMax > maxCellRange)
                                         || (rangeAtCellMax < minCellRange && rangeAtCellMin > maxCellRange))) {
-                                
+
                                 irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * radarData.at(thisContact).rcs;
                                 scanArray[currentScanLine][currentStep] += radarEchoStrength;
 
@@ -1389,15 +1389,13 @@ irr::f32 RadarCalculation::getSARTStrength(irr::f32 radarFactorSART, irr::f32 sa
     irr::f32 relativeSARTRange = localRange - sartRange;
     irr::f32 sartEchoStrength = radarFactorSART * std::pow(M_IN_NM / sartRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
     
-    irr::f32 angleFactor;
-    irr::f32 minAngularWidth = fmax(scanAngleStep, 3.0f); // Ensure SART return beam isn't too narrow to see
-
     // radar sidelobes, following 'Target detection by marine radar', section 2.8.1
     irr::f32 widthFactor = 3.0;
     irr::f32 waveLength = 0.1;
     irr::f32 relativeAngleRadians = relativeSARTAngle * irr::core::DEGTORAD;
 
     irr::f32 intermediateCalculation = widthFactor * relativeAngleRadians / waveLength;
+    irr::f32 angleFactor;
     if (intermediateCalculation != 0) {
         angleFactor = pow(sin(intermediateCalculation) / intermediateCalculation, 2);
     } else {
