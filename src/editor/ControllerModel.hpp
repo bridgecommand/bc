@@ -55,6 +55,7 @@ public:
     void addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance);
     void setMMSI(irr::s32 ship, int mmsi);
     void setDrifting(irr::s32 ship, bool drifting);
+    void setSARTOn(irr::s32 ship, bool SART);
     void addShip(std::string name, irr::core::vector2df position);
 	void deleteShip(irr::s32 ship);
     void recalculateLegTimes();

@@ -204,6 +204,7 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.hidden=false;
     radarData.SART=false;
 
+    radarData.contactType = buoyContact;
     radarData.contact = (void*)this;
 
     return radarData;

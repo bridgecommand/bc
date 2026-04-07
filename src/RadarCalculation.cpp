@@ -20,6 +20,7 @@
 #include "OwnShip.hpp"
 #include "Buoys.hpp"
 #include "OtherShips.hpp"
+#include "OtherShip.hpp"
 #include "RadarData.hpp"
 #include "Angles.hpp"
 #include "Constants.hpp"
@@ -784,7 +785,8 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
     //Some tuning constants
     irr::f32 radarFactorLand=2.0;
     irr::f32 radarFactorVessel=0.0001;
-    irr::f32 radarFactorRACON= radarFactorVessel * pow(1852.0/200.0, 2); // for Equivalent RCS of 1m2 at 200m(Fig 8.11, Target detection by marine radar)
+    irr::f32 radarFactorRACON = radarFactorVessel * pow(1852.0/200.0, 2); // for Equivalent RCS of 1m2 at 200m(Fig 8.11, Target detection by marine radar)
+    irr::f32 radarFactorSART = radarFactorRACON * 0.1; // Like RACON, but lower strength;
 
     //Convert range to cell size
     irr::f32 cellLength = M_IN_NM*radarRangeNm.at(radarRangeIndex)/rangeResolution; ; //Assume that radarRangeIndex is in bounds
@@ -805,6 +807,11 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
     irr::u32 scansPerLoop = RADAR_RPM * RPMtoDEGPERSECOND * deltaTime / (irr::f32) scanAngleStep + (irr::f32) rand() / RAND_MAX ; //Add random value (0-1, mean 0.5), so with rounding, we get the correct radar speed, even though we can only do an integer number of scans
 
     if (scansPerLoop > 30) {scansPerLoop = 30;} //Limit to reasonable bounds
+
+    // By default show SART returns if scanned within 3s, but may need to be longer with high time acceleration)
+    // 30 here is max number of scans per loop
+    uint64_t maxTimeForSARTDetected = std::max(3, int(2 * deltaTime * 360 / (30 * scanAngleStep)));
+
     for(irr::u32 i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
 
         // the actual angle we want to work with has to be determined here
@@ -852,6 +859,24 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
             //Scan other contacts here
             for(unsigned int thisContact = 0; thisContact<radarData.size(); thisContact++) {
+                
+                // Extra check for SART contacts
+                if (radarData.at(thisContact).SART &&
+                    (radarData.at(thisContact).SARTtimeStamp > 0) &&
+                    (absoluteTime - radarData.at(thisContact).SARTtimeStamp <= maxTimeForSARTDetected)) 
+                {
+                    // Relative angle in range -180 to 180 degrees
+                    irr::f32 relativeSARTAngle = currentScanAngle - radarData.at(thisContact).angle;
+                    if (relativeSARTAngle > 180) {
+                        relativeSARTAngle -= 360;
+                    }
+                    if (relativeSARTAngle < -180) {
+                        relativeSARTAngle += 360;
+                    }
+
+                    scanArray[currentScanLine][currentStep] += getSARTStrength(radarFactorSART, radarData.at(thisContact).range, localRange, relativeSARTAngle);
+                }
+
                 irr::f32 contactHeightAboveLine = (radarData.at(thisContact).height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
                 if (contactHeightAboveLine > 0) {
                     //Contact would be visible if in this cell. Check if it is
@@ -907,6 +932,17 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                     if (std::fmod(scenarioTime + radarData.at(thisContact).raconOffsetTime, 60.0f) <= radarData.at(thisContact).raconOnTime) {
                                         irr::f32 raconEchoStrength = radarFactorRACON * std::pow(M_IN_NM / localRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
                                         addRaconString(raconEchoStrength, cellLength, localRange, radarData.at(thisContact).racon);
+                                    }
+                                }
+
+                                // If SART on, and contact is detectable in noise
+                                if (radarData.at(thisContact).SART) {
+                                    if (radarEchoStrength*2 > localNoise) { 
+                                        // Check contact type before casting!
+                                        if (radarData.at(thisContact).contactType == otherShipContact) {
+                                            OtherShip* shipContact = static_cast<OtherShip*>(radarData.at(thisContact).contact);
+                                            shipContact->setSARTtimeStamp(absoluteTime);
+                                        }
                                     }
                                 }
 
@@ -1346,6 +1382,65 @@ void RadarCalculation::addRaconReturn(irr::f32 raconEchoStrength, irr::f32 cellL
 
     // Update raconEchoStart for the next character
     raconEchoStart = raconEchoEnd + raconSpaceLength;
+}
+
+irr::f32 RadarCalculation::getSARTStrength(irr::f32 radarFactorSART, irr::f32 sartRange, irr::f32 localRange, irr::f32 relativeSARTAngle) const
+{
+    irr::f32 relativeSARTRange = localRange - sartRange;
+    irr::f32 sartEchoStrength = radarFactorSART * std::pow(M_IN_NM / sartRange, 2); //RACON / SART goes with inverse square law as we are receiving the direct signal, not echo
+    
+    // radar sidelobes, following 'Target detection by marine radar', section 2.8.1
+    irr::f32 widthFactor = 3.0;
+    irr::f32 waveLength = 0.1;
+    irr::f32 relativeAngleRadians = relativeSARTAngle * irr::core::DEGTORAD;
+
+    irr::f32 intermediateCalculation = widthFactor * relativeAngleRadians / waveLength;
+    irr::f32 angleFactor;
+    if (intermediateCalculation != 0) {
+        angleFactor = pow(sin(intermediateCalculation) / intermediateCalculation, 2);
+    } else {
+        angleFactor = 1;
+    }
+
+    irr::f32 returnStrength = 0;
+    
+    irr::f32 mainReturnStart = 0.32 * M_IN_NM; // Dependent on receiving radar tuning within SART sweep
+    irr::f32 additionalReturnStart = 100; // Dependent on response time and fast response speed. IMO SN/Circ. 197 says no more than 150m
+    irr::f32 returnSpacing = 0.64 * M_IN_NM; // Set by SART sweep time
+    irr::f32 mainReturnLength = 0.1 * M_IN_NM; // Factor to account for how long SART pulse is within bandwidth;
+    irr::f32 additionalReturnLength = 0.05 * M_IN_NM; // Factor to account for how long SART pulse is within bandwidth;
+    irr::f32 additionalReturnFactor = 0.01; // Scaling factor so additional returns only show when close
+    int numberOfReturns = 12;
+    irr::f32 mainReturnEnd = mainReturnStart + returnSpacing * (numberOfReturns - 1);
+    irr::f32 additionalReturnEnd = additionalReturnStart + returnSpacing * (numberOfReturns - 1);
+
+    // Main returns: 
+    if ((relativeSARTRange >= mainReturnStart - 0.5 * mainReturnLength) && (relativeSARTRange <= mainReturnEnd + 0.5 * mainReturnLength)) {
+        for (int i = 0; i < numberOfReturns; i++) {
+            irr::f32 thisReturnDist = mainReturnStart + i * returnSpacing;
+            irr::f32 thisReturnDistMin = thisReturnDist - mainReturnLength / 2;
+            irr::f32 thisReturnDistMax = thisReturnDistMin + mainReturnLength;
+
+            if ((relativeSARTRange >= thisReturnDistMin) && (relativeSARTRange <= thisReturnDistMax)) {
+                returnStrength += angleFactor * sartEchoStrength;
+            }
+        }
+    }
+
+    // Additional returns: 
+    if ((relativeSARTRange >= additionalReturnStart - 0.5 * additionalReturnLength) && (relativeSARTRange <= additionalReturnEnd + 0.5 * additionalReturnLength)) {
+        for (int i = 0; i < numberOfReturns; i++) {
+            irr::f32 thisReturnDist = additionalReturnStart + i * returnSpacing;
+            irr::f32 thisReturnDistMin = thisReturnDist - additionalReturnLength / 2;
+            irr::f32 thisReturnDistMax = thisReturnDistMin + additionalReturnLength;
+
+            if ((relativeSARTRange >= thisReturnDistMin) && (relativeSARTRange <= thisReturnDistMax)) {
+                returnStrength += angleFactor * sartEchoStrength * additionalReturnFactor;
+            }
+        }
+    }
+    
+    return returnStrength;
 }
 
 void RadarCalculation::addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)

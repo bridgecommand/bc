@@ -20,6 +20,9 @@
 #include "irrlicht.h"
 
 #include <string>
+#include <cstdint> //for uint64_t
+
+enum ContactType {buoyContact, otherShipContact, unknownContact};
 
 struct RadarData {
 
@@ -38,12 +41,14 @@ struct RadarData {
     irr::f32 rcs;
     irr::f32 solidHeight;
     void* contact;
+    ContactType contactType;
 
     bool hidden;
     std::string racon; //Racon code if set
     irr::f32 raconOnTime; //Duration on per minute, in seconds
     irr::f32 raconOffsetTime; // Offset in seconds
     bool SART; //SART enabled?
+    uint64_t SARTtimeStamp; // SART last detected at this time
     //irr::f32 radarHorizon; //Only used for tracking contacts outside current radar visibility range
 
     //Default constructor - initialise to zero
@@ -67,7 +72,9 @@ struct RadarData {
         racon(""),
         raconOffsetTime(0),
         raconOnTime(0),
-        SART(false)
+        SART(false),
+        SARTtimeStamp(0),
+        contactType(unknownContact)
         {}
 
 };

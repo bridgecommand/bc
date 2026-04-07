@@ -484,6 +484,17 @@ void ControllerModel::setDrifting(irr::s32 ship, bool drifting)
     }
 }
 
+void ControllerModel::setSARTOn(irr::s32 ship, bool SART)
+{
+    //If other ship:
+    if (ship > 0) {
+        int otherShipIndex = ship - 1;
+        if (otherShipIndex < scenarioData->otherShipsData.size()) {
+            scenarioData->otherShipsData.at(otherShipIndex).SART = SART;
+        }
+    }
+}
+
 void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)
 {
     //If other ship:
@@ -656,6 +667,9 @@ void ControllerModel::save()
         otherFile << "mmsi(" << i << ")=" << scenarioData->otherShipsData.at(i-1).mmsi << std::endl;
         if (scenarioData->otherShipsData.at(i - 1).drifting) {
             otherFile << "Drifting(" << i << ")=1" << std::endl;
+        }
+        if (scenarioData->otherShipsData.at(i - 1).SART) {
+            otherFile << "SART(" << i << ")=1" << std::endl;
         }
         //Don't save last leg, as this is an automatically added 'stop' leg.
         otherFile << "Legs(" << i << ")=" << scenarioData->otherShipsData.at(i-1).legs.size() - 1 << std::endl;

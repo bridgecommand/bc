@@ -26,6 +26,7 @@
 
 #include <cmath>
 #include <vector>
+#include <cstdint> // for uint64_t
 
 // Forward declarations
 class SimulationModel;
@@ -34,7 +35,7 @@ struct RadarData;
 class OtherShip : public Ship
 {
     public:
-        OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
+        OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, bool SART, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         ~OtherShip();
 
         irr::f32 getHeight() const;
@@ -49,6 +50,9 @@ class OtherShip : public Ship
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel);
         void enableTriangleSelector(bool selectorEnabled);
         void setRateOfTurn(irr::f32 rateOfTurn); // This could be moved to Ship.hpp
+        void setSARTtimeStamp(uint64_t timeStamp);
+        bool getSARTOn() const;
+        void setSARTOn(bool sartState);
 
     protected:
     private:
@@ -65,6 +69,8 @@ class OtherShip : public Ship
         irr::scene::ITriangleSelector* selector;
         bool triangleSelectorEnabled;
         bool drifting;
+        bool SART; // If SART is enabled
+        uint64_t SARTtimeStamp;
 };
 
 #endif

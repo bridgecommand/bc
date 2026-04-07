@@ -40,6 +40,7 @@ public:
         GUI_ID_SHIP_COMBOBOX,
         GUI_ID_LEG_LISTBOX,
         GUI_ID_MMSI_EDITBOX,
+        GUI_ID_SART_CHECKBOX,
         GUI_ID_COURSE_EDITBOX,
         GUI_ID_SPEED_EDITBOX,
         GUI_ID_DISTANCE_EDITBOX,
@@ -110,6 +111,7 @@ private:
     irr::gui::IGUIEditBox* legSpeedEdit;
     irr::gui::IGUIEditBox* legDistanceEdit;
     irr::gui::IGUIEditBox* mmsiEdit;
+    irr::gui::IGUICheckBox* sartEnable;
     irr::gui::IGUIButton* changeLeg;
     irr::gui::IGUIButton* changeLegCourseSpeed;
     irr::gui::IGUIButton* addLeg;

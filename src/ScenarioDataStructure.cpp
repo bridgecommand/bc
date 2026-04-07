@@ -74,6 +74,8 @@ std::string OtherShipData::serialise(bool withSpaces)
     }
     serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(drifting));
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(SART));
     return serialised;
 }
 
@@ -94,9 +96,13 @@ void OtherShipData::deserialise(std::string data)
             legs.push_back(tempLeg);
         }
     }
-    if (splitData.size() == 6) {
-        // Additional drifting entry (SCN4 only)
+    if (splitData.size() > 5) {
+        // Additional drifting entry (SCN4 & SCN5 only)
         drifting = Utilities::lexical_cast<bool>(splitData.at(5));
+    }
+    if (splitData.size() > 6) {
+        // Additional drifting entry (SCN5 only)
+        SART = Utilities::lexical_cast<bool>(splitData.at(6));
     }
 
 }
@@ -141,7 +147,8 @@ std::string ScenarioData::serialise(bool withSpaces)
     // SCN2 is the same as SCN1, but allows whitespace around the delimiters
     // SCN3 adds wind and tidal override information
     // SCN4 adds other ship drifting flag
-    std::string serialised = "SCN4"; //Scenario data, serialised format 3
+    // SCN5 adds other ship SART flag
+    std::string serialised = "SCN5"; //Scenario data, serialised format
     serialised.append(separator);
     serialised.append(scenarioName);
     serialised.append(separator);
@@ -215,9 +222,10 @@ void ScenarioData::deserialise(std::string data)
             dataPopulated = true; // Currently only used in scenario editor
         }
     } else if (splitData.size() == 16) {
-        if ((splitData.at(0) == "SCN3") || (splitData.at(0) == "SCN4")) {
+        if ((splitData.at(0) == "SCN3") || (splitData.at(0) == "SCN4") || (splitData.at(0) == "SCN5")) {
             // SCN3 allows for tidal information to be overridden from scenario
             // SCN4 adds drifting flag in other ship data
+            // SCN5 adds SART flag in other ship data
             scenarioName = splitData.at(1);
             worldName = splitData.at(2);
             startTime = Utilities::lexical_cast<irr::f32>(splitData.at(3));

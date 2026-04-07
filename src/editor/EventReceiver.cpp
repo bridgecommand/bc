@@ -140,6 +140,11 @@
                         model->setDrifting(gui->getSelectedShip(), ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked());
                     }
                 }
+                if (id == GUIMain::GUI_ID_SART_CHECKBOX) {
+                    if (gui->getSelectedShip() > 0) {
+                        model->setSARTOn(gui->getSelectedShip(), ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked());
+                    }
+                }
             }
 
             if (event.GUIEvent.EventType==irr::gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_CHANGED) {

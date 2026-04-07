@@ -393,7 +393,7 @@ int main()
 
             //3: Info on each other ship
             //For each Other, terminated with '#' at end of list
-            //    PosX,PosZ,Heading,speed (kts),0(SART), 0 (Number of legs, 0 as we don't need leg info in multiplayer)|
+            //    PosX,PosZ,Heading,speed (kts),rate of turn,0(SART, assumed off), 0 (Number of legs, 0 as we don't need leg info in multiplayer)|
             std::string otherShipsString;
             for(unsigned int i = 0; i < (numberOfOtherShips+1); i++) {
                 if (i!=thisPeer) {
@@ -470,7 +470,7 @@ int main()
             (2) Number other, number buoys, number MOB (0)#
 
             (3) For each Other, terminated with '#' at end of list
-                PosX,PosZ,Heading,speed (kts),0(SART), 0 (Number of legs, 0 as we don't need leg info in multiplayer)|
+                PosX,PosZ,Heading,speed (kts),rate of turn,0(SART), 0 (Number of legs, 0 as we don't need leg info in multiplayer)|
 
             Records 4 to 10 not used (separate with '#')
 

@@ -54,8 +54,9 @@ class OtherShipData {
     irr::f32 initialX, initialZ; // initialX and initialZ only used for scenario editor
     std::vector<LegData> legs;
     bool drifting; // If ship should move with wind and tidal stream
+    bool SART;
 
-    OtherShipData():initialLong(0), initialLat(0), initialX(0), initialZ(0), drifting(false){}
+    OtherShipData(): mmsi(0), initialLong(0), initialLat(0), initialX(0), initialZ(0), drifting(false), SART(false){}
 
     std::string serialise(bool withSpaces);
     void deserialise(std::string data);

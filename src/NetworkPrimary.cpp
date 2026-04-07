@@ -382,6 +382,20 @@ void NetworkPrimary::receiveNetwork()
                                                 model->setSternThruster(overrideData);
                                             }
                                         }
+                                    } else if (thisCommand.substr(0, 2).compare("SR") == 0) {
+                                        //'SR', Set SART status
+                                        std::vector<std::string> parts = Utilities::split(thisCommand, ','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 3) {
+                                            int shipNo = Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            bool sartStatus;
+                                            if (parts.at(2) == "1") {
+                                                sartStatus = true;
+                                            }
+                                            else {
+                                                sartStatus = false;
+                                            }
+                                            model->setOtherShipSARTOn(shipNo, sartStatus);
+                                        }
                                     }
 
 
@@ -526,7 +540,7 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getNumberOfLines()));
     stringToSend.append("#");
 
-    //3 Each 'Other' (Pos X (abs), Pos Z, angle, rate of turn, SART, MMSI |) #
+    //3 Each 'Other' (Pos X (abs), Pos Z, angle, speed, rate of turn, SART, MMSI |) #
     for(int number = 0; number < (int)model->getNumberOfOtherShips(); number++ ) {
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipPosX(number)));
         stringToSend.append(",");
@@ -538,7 +552,14 @@ std::string NetworkPrimary::generateSendString()
         stringToSend.append(",");
         stringToSend.append("0"); // Rate of turn: This is not currently used in normal mode
         stringToSend.append(",");
-        stringToSend.append("0"); //Fixme: Sart enabled
+        
+        if (model->getOtherShipSARTOn(number)) {
+            stringToSend.append("1"); // Sart enabled
+        }
+        else {
+            stringToSend.append("0"); // Sart disabled
+        }
+        
         stringToSend.append(",");
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipMMSI(number)));
         stringToSend.append(",");

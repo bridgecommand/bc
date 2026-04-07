@@ -584,6 +584,13 @@ int main (int argc, char ** argv)
                 else {
                     thisShip.drifting = false;
                 }
+
+                if (IniFile::iniFileTou32(otherShipIniFilename, IniFile::enumerate1("SART", i)) == 1) {
+                    thisShip.SART = true;
+                }
+                else {
+                    thisShip.SART = false;
+                }
                 
                 int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
 
