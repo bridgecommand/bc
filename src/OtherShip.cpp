@@ -29,7 +29,7 @@
 
 //using namespace irr;
 
-OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, bool SART, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information
@@ -42,13 +42,8 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     this->name = name;
     this->mmsi = mmsi;
     this->drifting = drifting;
+    this->SART = SART;
 
-    // Set if SART is enabled - TODO, make this configurable
-    if (name == "Timbercarrier") {
-        SART = true;
-    } else {
-        SART = false;
-    }
     SARTtimeStamp = 0;
 
     std::string basePath = "Models/Othership/" + name + "/";

@@ -101,7 +101,8 @@ std::string Network::findWorldName()
                 if ((receivedString.substr(0,4) == "SCN1") || 
                     (receivedString.substr(0,4) == "SCN2") || 
                     (receivedString.substr(0,4) == "SCN3") ||
-                    (receivedString.substr(0,4) == "SCN4")) { //Check if it starts with SCN1-SCN4
+                    (receivedString.substr(0,4) == "SCN4") ||
+                    (receivedString.substr(0,4) == "SCN5")) { //Check if it starts with SCN1-SCN5
 
                     //Find world model from this
                     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
