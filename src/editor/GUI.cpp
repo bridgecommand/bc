@@ -84,17 +84,21 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     legSpeedEdit    = guienv->addEditBox(L"S",irr::core::rect<irr::s32>(0.18*su,0.24*sh,0.30*su,0.27*sh),false,shipTab,GUI_ID_SPEED_EDITBOX);
     legDistanceEdit = guienv->addEditBox(L"D",irr::core::rect<irr::s32>(0.35*su,0.24*sh,0.45*su,0.27*sh),false,shipTab,GUI_ID_DISTANCE_EDITBOX);
 
-    guienv->addStaticText(language->translate("setCourse").c_str(),irr::core::rect<irr::s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),false,false,shipTab);
-    guienv->addStaticText(language->translate("setSpeed").c_str(),irr::core::rect<irr::s32>(0.18*su,0.20*sh,0.30*su,0.23*sh),false,false,shipTab);
-    guienv->addStaticText(language->translate("setDistance").c_str(),irr::core::rect<irr::s32>(0.35*su,0.20*sh,0.45*su,0.23*sh),false,false,shipTab);
+    guienv->addStaticText(language->translate("setCourse").c_str(),irr::core::rect<irr::s32>(0.01*su,0.22*sh,0.13*su,0.24*sh),false,false,shipTab);
+    guienv->addStaticText(language->translate("setSpeed").c_str(),irr::core::rect<irr::s32>(0.18*su,0.22*sh,0.30*su,0.24*sh),false,false,shipTab);
+    guienv->addStaticText(language->translate("setDistance").c_str(),irr::core::rect<irr::s32>(0.35*su,0.22*sh,0.45*su,0.24*sh),false,false,shipTab);
 
     //Add MMSI editing
     mmsiEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.18*su,0.09*sh,0.31*su,0.12*sh),false,shipTab,GUI_ID_MMSI_EDITBOX);
-    setMMSI = guienv->addButton(irr::core::rect<irr::s32>(0.18*su,0.13*sh,0.31*su,0.16*sh),shipTab,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
+    setMMSI = guienv->addButton(irr::core::rect<irr::s32>(0.18*su,0.125*sh,0.31*su,0.155*sh),shipTab,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
 
     // Set if the ship can drift with wind and current
-    isDrifting = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.18*su,0.16*sh,0.20*su,0.19*sh), shipTab, GUI_ID_DRIFTING_CHECKBOX);
-    guienv->addStaticText(language->translate("allowDrifting").c_str(), irr::core::rect<irr::s32>(0.20 * su, 0.16 * sh, 0.31 * su, 0.19 * sh),false, false, shipTab);
+    isDrifting = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.18*su,0.155*sh,0.20*su,0.185*sh), shipTab, GUI_ID_DRIFTING_CHECKBOX);
+    guienv->addStaticText(language->translate("allowDrifting").c_str(), irr::core::rect<irr::s32>(0.20 * su, 0.155 * sh, 0.31 * su, 0.185 * sh),false, false, shipTab);
+
+    // Set if ship has SART activated
+    isSARTOn = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.18 * su, 0.19 * sh, 0.20 * su, 0.22 * sh), shipTab, GUI_ID_SART_CHECKBOX);
+    guienv->addStaticText(language->translate("SART").c_str(), irr::core::rect<irr::s32>(0.20 * su, 0.19 * sh, 0.31 * su, 0.22 * sh), false, false, shipTab);
 
     //Add buttons
     changeLeg       = guienv->addButton(irr::core::rect<irr::s32>(0.03*su, 0.28*sh, 0.23*su, 0.31*sh),shipTab,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
@@ -413,10 +417,14 @@ void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr:
             mmsiEdit->setText(irr::core::stringw(scenarioData.otherShipsData.at(selectedShip).mmsi).c_str());
             isDrifting->setEnabled(true);
             isDrifting->setChecked(scenarioData.otherShipsData.at(selectedShip).drifting);
+            isSARTOn->setEnabled(true);
+            isSARTOn->setChecked(scenarioData.otherShipsData.at(selectedShip).SART);
         } else if (selectedShip == -1) {
             mmsiEdit->setText(L"-");
             isDrifting->setEnabled(false);
             isDrifting->setChecked(false);
+            isSARTOn->setEnabled(false);
+            isSARTOn->setChecked(false);
         }
         if (selectedShip >= 0 && selectedShip < scenarioData.otherShipsData.size() && selectedLeg >= 0 && selectedLeg < scenarioData.otherShipsData.at(selectedShip).legs.size()) {
             legCourseEdit  ->setText(irr::core::stringw(scenarioData.otherShipsData.at(selectedShip).legs.at(selectedLeg).bearing).c_str());
