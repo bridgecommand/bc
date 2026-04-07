@@ -807,6 +807,11 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
     irr::u32 scansPerLoop = RADAR_RPM * RPMtoDEGPERSECOND * deltaTime / (irr::f32) scanAngleStep + (irr::f32) rand() / RAND_MAX ; //Add random value (0-1, mean 0.5), so with rounding, we get the correct radar speed, even though we can only do an integer number of scans
 
     if (scansPerLoop > 30) {scansPerLoop = 30;} //Limit to reasonable bounds
+
+    // By default show SART returns if scanned within 3s, but may need to be longer with high time acceleration)
+    // 30 here is max number of scans per loop
+    uint64_t maxTimeForSARTDetected = std::max(3, int(2 * deltaTime * 360 / (30 * scanAngleStep)));
+
     for(irr::u32 i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
 
         // the actual angle we want to work with has to be determined here
@@ -854,10 +859,6 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
             //Scan other contacts here
             for(unsigned int thisContact = 0; thisContact<radarData.size(); thisContact++) {
-                
-                // By default, 3s, but may need to be longer with high time acceleration)
-                // 30 here is max number of scans per loop
-                uint64_t maxTimeForSARTDetected = std::max(3, int(2 * deltaTime * 360 / (30 * scanAngleStep)));
                 
                 // Extra check for SART contacts
                 if (radarData.at(thisContact).SART &&
