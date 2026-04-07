@@ -26,6 +26,7 @@
 
 #include <cmath>
 #include <vector>
+#include <cstdint> // for uint64_t
 
 // Forward declarations
 class SimulationModel;
