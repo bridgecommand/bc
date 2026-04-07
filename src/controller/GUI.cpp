@@ -72,6 +72,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
 
     //Add SART setting
     sartEnable = guienv->addCheckBox(false, irr::core::rect<irr::s32>(25 * fw, 7.5 * fh, 28 * fw, 8.5 * fh), mainTab, GUI_ID_SART_CHECKBOX);
+    guienv->addStaticText(language->translate("SART").c_str(), irr::core::rect<irr::s32>(25 * fw, 6 * fh, 35 * fw, 7 * fh), false, false, mainTab);
 
     //Add leg selector drop down
     legSelector  = guienv->addListBox(irr::core::rect<irr::s32>(12.5*fw,6*fh,24*fw,9.5*fh),mainTab,GUI_ID_LEG_LISTBOX);
