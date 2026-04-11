@@ -885,7 +885,8 @@ int main(int argc, char ** argv)
     driver->endScene();
 
     //seed random number generator
-    std::srand(device->getTimer()->getTime());
+    std::srand(device->getTimer()->getRealTime());
+    // Note that this gets reset to a constant seed in water.load() in SimulationModel constructor.
 
     //create GUI
     GUIMain guiMain;
