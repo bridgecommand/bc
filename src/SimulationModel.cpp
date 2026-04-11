@@ -156,13 +156,6 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
 
-        //add water
-        bool waterReflection = true;
-        if (modelParameters.vrMode == true) {
-            waterReflection = false;
-        }
-        water.load(smgr,ownShip.getSceneNode(),weather,modelParameters.disableShaders,waterReflection,modelParameters.waterSegments);
-
         /* To be replaced by getting information and passing into gui load method.
         //Tell gui to hide the second engine scroll bar if we have a single engine
         if (ownShip.isSingleEngine()) {
@@ -261,6 +254,14 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //Hide the man overboard model
         manOverboard.setVisible(false);
+
+        //add water
+        // Note that water.load resets the srand() seed to a fixed value.
+        bool waterReflection = true;
+        if (modelParameters.vrMode == true) {
+            waterReflection = false;
+        }
+        water.load(smgr,ownShip.getSceneNode(),weather,modelParameters.disableShaders,waterReflection,modelParameters.waterSegments);
 
         //initialise offset
         offsetPosition = irr::core::vector3d<int64_t>(0,0,0);
