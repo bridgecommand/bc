@@ -27,27 +27,42 @@
 <p>Bridge Command can be used in a multiplayer mode, where multiple users can control vessels in the same scenario, and interact. This mode is 
 intended for users on a single network (wired or wireless), but could be used over the internet.</p>
 
-<p>This feature is currently experimental. Please provide feedback and suggestions for developments.</p>
-
 <h2>Starting a multiplayer session</h2>
 
 <p>You will need to run one 'Multiplayer hub' for each session. This can run on a dedicated computer, or on the same computer as one of the 
 Bridge Command sessions.</p>
 
-<p>
-To start a multiplayer session, find out the hostname or IP addresses of all your users' computers, and ask them to start Bridge Command. 
-Instead of selecting a scenario, they should click the multiplayer option and click 'OK'.
-</p>
+<p><b>Important:</b> The Bridge Command sessions for all users must be started first. Each user should start Bridge Command on their computer, 
+and instead of selecting a scenario, the 'Multiplayer' checkbox should be selected.</p>
 
-<p>
-When all users have done this, then you can start the mulitplayer hub, and select a multiplayer scenario. Type in the hostnames or IP addresses 
-of the users' computers, separated by commas. The order you type these in will match the user to the ship in the scenario.
-</p>
+<img src="images/multiplayer_1.png" alt="Multiplayer mode selection in Bridge Command">
+
+<p>The Hostname input can normally be left blank. This is only needed if you are using secondary displays for a single ship in the multiplayer session.</p>
+
+<p>Then click OK, and you should see a screen like this:</p>
+
+<img src="images/multiplayer_2.png" alt="Multiplayer message when waiting to start">
+
+<p>This screen shows the hostname and port for data. By default, the port is 18304. When all users have started Bridge Command, and are on the 'waiting' 
+screen, then you can start the mulitplayer hub, and select a multiplayer scenario. In the hostnames list, type in the hostnames or IP addresses 
+of the users' computers, separated by commas. The order you type these in will match the user to the ship in the scenario. The hostnames are shown in the 'waiting'
+screen in the Bridge Command session. If you are using a non-standard port (the standard port is 18304), you can enter the hostname and port in the format <i>hostname:portNumber</i>.</p>
+
+<img src="images/multiplayer_host.png" alt="Multiplayer Host">
+
+<p>When the scenario is running, each user should see their own Bridge Command session, and the multiplayer hub will start. If required, the simulation can be paused for all users.</p>
+
+<h2>Making a new multiplayer scenario</h2>
 
 <p>
 If you want to make a new multiplayer scenario, you can use the scenario editor to do this, selecting the 'Multiplayer' option and reading the 
 instructions.
 </p>
+
+<p>The main points are that the 'own ship' entry in the simulation is ignored, and that the 'other ships' become the controlled vessels in the multiplayer scenario. The initial speed and heading
+of these ships is set by creating an initial 'leg' with the required speed and heading. If the scenario has more vessels than multiplayer users, the additional vessels will not appear in the scenario.</p>
+
+<p>The multiplayer scenario name must end with '_mp'.</p>
 
 <h2>Technical information</h2>
 
