@@ -233,34 +233,12 @@ void OutlineScrollBar::draw()
 
 	if ( core::isnotzero ( range() ) )
 	{
-		// recalculate slider line
 		core::vector2d<s32> startPoint;
 		core::vector2d<s32> endPoint;
-		if (Horizontal)
-		{
-			//Slider line
-            startPoint.X = AbsoluteRect.UpperLeftCorner.X + DrawPos;
-            endPoint.X = startPoint.X;
-            startPoint.Y = AbsoluteRect.UpperLeftCorner.Y;
-            endPoint.Y = AbsoluteRect.LowerRightCorner.Y;
-		}
-		else
-		{
-			startPoint.Y = AbsoluteRect.UpperLeftCorner.Y + DrawPos;
-            endPoint.Y = startPoint.Y;
-            startPoint.X = AbsoluteRect.UpperLeftCorner.X;
-            endPoint.X = AbsoluteRect.LowerRightCorner.X;
-		}
-
-		Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
-
-
-		if (Secondary) {
+        if (Secondary) {
             //Start secondary line
-            if ( core::isnotzero ( range() ) ) {
+            if (core::isnotzero(range())) {
                 // recalculate slider line
-                core::vector2d<s32> startPoint;
-                core::vector2d<s32> endPoint;
                 if (Horizontal)
                 {
                     //Slider line
@@ -277,10 +255,29 @@ void OutlineScrollBar::draw()
                     endPoint.X = AbsoluteRect.LowerRightCorner.X;
                 }
 
-                Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,64,64,64));
+                Environment->getVideoDriver()->draw2DLine(startPoint, endPoint, video::SColor(skinAlpha, 192, 64, 64));
             }
             //End secondary line
+        }
+        
+		// recalculate slider line
+		if (Horizontal)
+		{
+			//Slider line
+            startPoint.X = AbsoluteRect.UpperLeftCorner.X + DrawPos;
+            endPoint.X = startPoint.X;
+            startPoint.Y = AbsoluteRect.UpperLeftCorner.Y;
+            endPoint.Y = AbsoluteRect.LowerRightCorner.Y;
 		}
+		else
+		{
+			startPoint.Y = AbsoluteRect.UpperLeftCorner.Y + DrawPos;
+            endPoint.Y = startPoint.Y;
+            startPoint.X = AbsoluteRect.UpperLeftCorner.X;
+            endPoint.X = AbsoluteRect.LowerRightCorner.X;
+        }
+
+        Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,192,0,0));
 
 		//draw tic marks
 		for (unsigned int i = 0; i<shortTicMarks.size();i++) {
