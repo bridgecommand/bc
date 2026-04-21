@@ -233,13 +233,12 @@ void OutlineScrollBar::draw()
 
 	if ( core::isnotzero ( range() ) )
 	{
-        
+		core::vector2d<s32> startPoint;
+		core::vector2d<s32> endPoint;
         if (Secondary) {
             //Start secondary line
             if (core::isnotzero(range())) {
                 // recalculate slider line
-                core::vector2d<s32> startPoint;
-                core::vector2d<s32> endPoint;
                 if (Horizontal)
                 {
                     //Slider line
@@ -262,8 +261,6 @@ void OutlineScrollBar::draw()
         }
         
 		// recalculate slider line
-		core::vector2d<s32> startPoint;
-		core::vector2d<s32> endPoint;
 		if (Horizontal)
 		{
 			//Slider line
