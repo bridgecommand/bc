@@ -328,7 +328,28 @@ public:
                         Utilities::copyDir(installScenarioFolder + *it + "/", userScenarioFolder + *it + "/");
                     }
 
-                    // TODO: Update ini settings to include any new settings from the (new) installation
+                    // Update ini settings to include any new settings from the (new) installation. Use the INI editor to do this
+                    #ifdef _WIN32
+                    ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-auto", NULL, SW_SHOW);
+                    ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-M -auto", NULL, SW_SHOW);
+                    ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-H -auto", NULL, SW_SHOW);
+                    ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-R -auto", NULL, SW_SHOW);
+                    #else
+                    #ifdef __APPLE__
+                    //APPLE
+                    execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-auto", NULL);
+                    execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-M -auto", NULL);
+                    execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-H -auto", NULL);
+                    execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-R -auto", NULL);
+                    #else
+                    //Other (assumed posix)
+                    execl("./bridgecommand-ini", "bridgecommand-ini", "-auto", NULL);
+                    execl("./bridgecommand-ini", "bridgecommand-ini", "-M -auto", NULL);
+                    execl("./bridgecommand-ini", "bridgecommand-ini", "-H -auto", NULL);
+                    execl("./bridgecommand-ini", "bridgecommand-ini", "-R -auto", NULL);
+                    #endif
+                    #endif
+
                      
                 }
             }
