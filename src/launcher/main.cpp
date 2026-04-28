@@ -437,6 +437,11 @@ int main (int argc, char ** argv)
     irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_CLASSIC);
     device->getGUIEnvironment()->setSkin(newskin);
 
+    //Set gui skin less transparent
+    irr::video::SColor col = device->getGUIEnvironment()->getSkin()->getColor(irr::gui::EGDC_3D_FACE);
+    col.setAlpha(200);
+    device->getGUIEnvironment()->getSkin()->setColor(irr::gui::EGDC_3D_FACE, col);
+
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
     std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
