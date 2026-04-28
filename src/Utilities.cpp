@@ -225,6 +225,18 @@ namespace Utilities
         return userFolder;
     }
 
+    std::string getPrevUserDir() {
+        std::string userFolder = getUserDirBase();
+
+        if (userFolder.length() > 0) {
+            userFolder.append(PREV_VERSION);
+            userFolder.append("/");
+        }
+
+        return userFolder;
+    }
+
+
     bool pathExists(std::string filePath) {
 
         if (filePath.empty()) {

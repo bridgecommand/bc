@@ -56,8 +56,55 @@ const irr::s32 INI_MH_BUTTON = 9;
 const irr::s32 DOC_BUTTON = 10;
 const irr::s32 USER_BUTTON = 11;
 const irr::s32 EXIT_BUTTON = 12;
+const irr::s32 COPY_USER = 13;
 
 std::string userFolder;
+std::string prevUserFolder;
+
+irr::IrrlichtDevice* device;
+
+// Get list of all scenarios (actually just folders) within a folder
+std::vector<std::string> getScenarioList(std::string scenarioPath) {
+
+    // Start with an empty list
+    std::vector<std::string> scenarioList;
+
+    irr::io::IFileSystem* fileSystem = device->getFileSystem();
+    if (fileSystem == 0) {
+        return scenarioList;
+    }
+    //store current dir
+    irr::io::path cwd = fileSystem->getWorkingDirectory();
+
+    //change to scenario dir
+    if (!fileSystem->changeWorkingDirectoryTo(scenarioPath.c_str())) {
+        return scenarioList;
+    }
+
+    irr::io::IFileList* fileList = fileSystem->createFileList();
+    if (fileList == 0) {
+        return scenarioList;
+    }
+
+    //List here
+    for (irr::u32 i = 0; i < fileList->getFileCount(); i++) {
+        if (fileList->isDirectory(i)) {
+            const irr::io::path& fileName = fileList->getFileName(i);
+            if (fileName.findFirst('.') != 0) { //Check it doesn't start with '.' (., .., or hidden)
+                //Add scenario to the list
+                scenarioList.push_back(fileName.c_str());
+            }
+        }
+    }
+
+    //change back
+    fileSystem->changeWorkingDirectoryTo(cwd);
+
+    // clean up
+    fileList->drop();
+
+    return scenarioList;
+}
 
 //Event receiver: This does the actual launching
 class Receiver : public irr::IEventReceiver
@@ -68,8 +115,8 @@ public:
     virtual bool OnEvent(const irr::SEvent& event)
     {
         if (event.EventType == irr::EET_GUI_EVENT) {
+            irr::s32 id = event.GUIEvent.Caller->getID();
             if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED ) {
-                irr::s32 id = event.GUIEvent.Caller->getID();
 
                 if (id == EXIT_BUTTON) {
                     exit(EXIT_SUCCESS);
@@ -250,6 +297,41 @@ public:
                     #endif
                 }
             }
+            
+            if (event.GUIEvent.EventType == irr::gui::EGET_MESSAGEBOX_OK) {
+                if (id == COPY_USER) {
+                    // Copy folder here
+                    Utilities::copyDir(prevUserFolder, userFolder);
+
+                    // Copy any new scenarios that exist in the (new) installation but not the user folder
+                    std::string userScenarioFolder = userFolder + "Scenarios/";
+                    std::string installScenarioFolder = "Scenarios/"; // Relative to installation folder, which should be current working dir
+                    std::vector<std::string> userScenarios = getScenarioList(userScenarioFolder);
+                    std::vector<std::string> installScenarios = getScenarioList(installScenarioFolder);
+                    // Find scenarios not in user folder that are in the install folder
+                    std::vector<std::string> scenariosToCopy;
+                    for (std::vector<std::string>::iterator itInstall = installScenarios.begin(); itInstall != installScenarios.end(); ++itInstall) {
+                        bool scenarioFound = false;
+                        for (std::vector<std::string>::iterator itUser = userScenarios.begin(); itUser != userScenarios.end(); ++itUser) {
+                            if (*itUser == *itInstall) {
+                                scenarioFound = true;
+                                break;
+                            }
+                        }
+                        if (!scenarioFound) {
+                            scenariosToCopy.push_back(*itInstall);
+                        }
+                    }
+
+                    // Copy these scenarios (from installation to user folder)
+                    for (std::vector<std::string>::iterator it = scenariosToCopy.begin(); it != scenariosToCopy.end(); ++it) {
+                        Utilities::copyDir(installScenarioFolder + *it + "/", userScenarioFolder + *it + "/");
+                    }
+
+                    // TODO: Update ini settings to include any new settings from the (new) installation
+                     
+                }
+            }
         }
         if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
             if (event.KeyInput.Key == irr::KEY_ESCAPE ) {
@@ -294,12 +376,17 @@ int main (int argc, char ** argv)
 
     //User read/write location - look in here first and the exe folder second for files
     userFolder = Utilities::getUserDir();
+    prevUserFolder = Utilities::getPrevUserDir();
 
     //Read basic ini settings
     std::string iniFilename = "bc5.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
+    }
+    else if (Utilities::pathExists(prevUserFolder + iniFilename)) {
+        // Fall back to previous version ini file if it exists (just used for language and font)
+        iniFilename = prevUserFolder + iniFilename;
     }
 
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
@@ -328,7 +415,7 @@ int main (int argc, char ** argv)
     irr::u32 graphicsDepth = 32;
     bool fullScreen = false;
 
-    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     irr::video::ITexture* imgTexture = driver->getTexture("media/logo.png");
@@ -429,6 +516,12 @@ int main (int argc, char ** argv)
     #ifdef FOR_DEB
     chdir("/usr/bin");
     #endif // FOR_DEB
+
+    // Check if previous user dir exists, but current one doesn't (so probably a new installation)
+    if (!Utilities::pathExists(userFolder) && Utilities::pathExists(prevUserFolder)) {
+        // Ask user if we want to copy user folder across
+        device->getGUIEnvironment()->addMessageBox(language.translate("copy").c_str(), language.translate("copyUserFolder").c_str(), true, irr::gui::EMBF_OK | irr::gui::EMBF_CANCEL, 0, COPY_USER);
+    }
 
     while (device->run()) {
         driver->beginScene(irr::video::ECBF_COLOR | irr::video::ECBF_DEPTH, irr::video::SColor(0, 200, 200, 200));
