@@ -216,6 +216,12 @@ int main (int argc, char ** argv)
         iniFilename = "repeater.ini";
     }
 
+    bool autoMode = false;
+    if (((argc > 1) && (strcmp(argv[1], "-auto") == 0)) || 
+        ((argc > 2) && (strcmp(argv[2], "-auto") == 0))) {
+        autoMode = true;
+    }
+
     //Mac OS:
     //Find starting folder
 	#ifdef __APPLE__
@@ -525,10 +531,16 @@ int main (int argc, char ** argv)
     Receiver receiver(device, environment, tabbedPane, iniFilename);
     device->setEventReceiver(&receiver);
 
-    while (device->run()) {
-        driver->beginScene();
-        device->getGUIEnvironment()->drawAll();
-        driver->endScene();
+    if (autoMode) {
+        // Automatically save and close. This mode is used to ensure we have user settings file updated with any new global ini settings
+        saveFile(device, iniFilename, tabbedPane);
+    }
+    else {
+        while (device->run()) {
+            driver->beginScene();
+            device->getGUIEnvironment()->drawAll();
+            driver->endScene();
+        }
     }
     return(0);
 }
