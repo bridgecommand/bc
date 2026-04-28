@@ -335,18 +335,19 @@ public:
                     ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-H -auto", NULL, SW_SHOW);
                     ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-R -auto", NULL, SW_SHOW);
                     #else
+                    int pid;
                     #ifdef __APPLE__
                     //APPLE
-                    int pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-auto", NULL);}
-                    int pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-M -auto", NULL);}
-                    int pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-H -auto", NULL);}
-                    int pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-R -auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-M -auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-H -auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-R -auto", NULL);}
                     #else
                     //Other (assumed posix)
-                    int pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-auto", NULL);}
-                    int pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-M -auto", NULL);}
-                    int pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-H -auto", NULL);}
-                    int pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-R -auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-M -auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-H -auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-R -auto", NULL);}
                     #endif
                     #endif
 
