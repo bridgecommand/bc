@@ -277,6 +277,11 @@ namespace Utilities
 
         return SHFileOperation(&fileOp);
 #else
+        // Try to make dest dir if it doesn't exist. 
+        // Won't help if the parent doesn't exist, but will help in many cases
+        if (!pathExists(dest)) {
+            mkdir(dest.c_str(), 0755);
+        }
 #ifdef __APPLE__
     //Apple version: Requires that dest dir exists
         copyfile_state_t s;

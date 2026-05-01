@@ -339,15 +339,15 @@ public:
                     #ifdef __APPLE__
                     //APPLE
                     pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-auto", NULL);}
-                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-M -auto", NULL);}
-                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-H -auto", NULL);}
-                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-R -auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-M", "-auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-H", "-auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-R", "-auto", NULL);}
                     #else
                     //Other (assumed posix)
                     pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-auto", NULL);}
-                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-M -auto", NULL);}
-                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-H -auto", NULL);}
-                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-R -auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-M", "-auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-H", "-auto", NULL);}
+                    pid = fork(); if (pid == 0) { execl("./bridgecommand-ini", "bridgecommand-ini", "-R", "-auto", NULL);}
                     #endif
                     #endif
 
