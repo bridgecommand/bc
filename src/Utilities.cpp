@@ -261,6 +261,10 @@ namespace Utilities
     int copyDir(std::string source, std::string dest)
     {
 
+        if (source.empty() || dest.empty()) {
+            return -1;
+        }
+        
         //Copy contents of source dir into dest dir
 
 #ifdef _WIN32
@@ -277,6 +281,14 @@ namespace Utilities
 
         return SHFileOperation(&fileOp);
 #else
+        // Strip trailing slash if present
+        if (dest.back() == '/') {
+            dest.pop_back();
+        }
+        if (source.back() == '/') {
+            source.pop_back();
+        }
+        
         // Try to make dest dir if it doesn't exist. 
         // Won't help if the parent doesn't exist, but will help in many cases
         if (!pathExists(dest)) {
@@ -294,20 +306,20 @@ namespace Utilities
     //Other posix
     //Note: Not implemented yet for other posix: need to implement recursive directory copy.
     //Requires that dest dir exists
-    //std::cout << "Copying from:" << source << " to:" << dest << std::endl;
+    std::cout << "Copying dir from:" << source << " to:" << dest << std::endl;
         if (!Utilities::pathExists(dest)) {
             return -1;
         }
 
         //For each folder at root level, create new folder in dest, and call copyDir on this
         DIR* dir = opendir(source.c_str());
-        if (!dir) { return -1; }
+        if (!dir) { return -2; }
         struct dirent* entry = readdir(dir);
         while (entry != NULL) {
             if (entry->d_type == DT_DIR && entry->d_name[0] != '.') {
                 std::string newDir = dest;
 
-                newDir.append(source);
+                //newDir.append(source);
                 newDir.append("/");
                 newDir.append(entry->d_name);
                 //newDir.append("/");
@@ -320,19 +332,17 @@ namespace Utilities
                     fromDir.append("/");
                     fromDir.append(entry->d_name);
 
-                    std::string toDir = dest;
-
-                    copyDir(fromDir, toDir);
+                    copyDir(fromDir, newDir);
                 }
                 else {
-                    return -1;
+                    return -3;
                 }
             }
             else if (entry->d_type == DT_REG) {
                 //Copy file
                 //entry->d_name;
                 std::string newFile = dest;
-                newFile.append(source);
+                //newFile.append(source);
                 newFile.append("/");
                 newFile.append(entry->d_name);
 
@@ -344,6 +354,7 @@ namespace Utilities
 
                 std::ifstream fromStream(fromFile.c_str(), std::ios::binary);
                 std::ofstream destStream(newFile.c_str(), std::ios::binary);
+                std::cout << "Copying from " << fromFile << " to " << newFile << std::endl;
                 if (fromStream && destStream) {
                     destStream << fromStream.rdbuf();
                 }
@@ -359,7 +370,7 @@ namespace Utilities
 #endif // __APPLE__
 #endif // _WIN32
 
-        return -1;
+        return 0;
     }
 
     ScenarioData getScenarioDataFromFile(std::string scenarioPath, std::string scenarioName)  //Read a scenario from ini files

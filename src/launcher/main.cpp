@@ -301,7 +301,8 @@ public:
             if (event.GUIEvent.EventType == irr::gui::EGET_MESSAGEBOX_OK) {
                 if (id == COPY_USER) {
                     // Copy folder here
-                    Utilities::copyDir(prevUserFolder, userFolder);
+                    std::cout << "Copying from:" << prevUserFolder << " to:" << userFolder << std::endl; 
+                    std::cout << Utilities::copyDir(prevUserFolder, userFolder) << std::endl;
 
                     // Copy any new scenarios that exist in the (new) installation but not the user folder
                     std::string userScenarioFolder = userFolder + "Scenarios/";
@@ -351,7 +352,6 @@ public:
                     #endif
                     #endif
 
-                     
                 }
             }
         }
