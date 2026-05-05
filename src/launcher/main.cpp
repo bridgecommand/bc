@@ -298,11 +298,12 @@ public:
                 }
             }
             
-            if (event.GUIEvent.EventType == irr::gui::EGET_MESSAGEBOX_OK) {
+            if (event.GUIEvent.EventType == irr::gui::EGET_MESSAGEBOX_YES) {
                 if (id == COPY_USER) {
                     // Copy folder here
                     std::cout << "Copying from:" << prevUserFolder << " to:" << userFolder << std::endl; 
-                    std::cout << Utilities::copyDir(prevUserFolder, userFolder) << std::endl;
+                    int copyStatus = Utilities::copyDir(prevUserFolder, userFolder);
+                    std::cout << "Copy status value: " << copyStatus << std::endl; 
 
                     // Copy any new scenarios that exist in the (new) installation but not the user folder
                     std::string userScenarioFolder = userFolder + "Scenarios/";
@@ -547,7 +548,7 @@ int main (int argc, char ** argv)
     // Check if previous user dir exists, but current one doesn't (so probably a new installation)
     if (!Utilities::pathExists(userFolder) && Utilities::pathExists(prevUserFolder)) {
         // Ask user if we want to copy user folder across
-        device->getGUIEnvironment()->addMessageBox(language.translate("copy").c_str(), language.translate("copyUserFolder").c_str(), true, irr::gui::EMBF_OK | irr::gui::EMBF_CANCEL, 0, COPY_USER);
+        device->getGUIEnvironment()->addMessageBox(language.translate("copy").c_str(), language.translate("copyUserFolder").c_str(), true, irr::gui::EMBF_YES | irr::gui::EMBF_NO, 0, COPY_USER);
     }
 
     while (device->run()) {
