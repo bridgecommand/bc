@@ -216,6 +216,12 @@ int main (int argc, char ** argv)
         iniFilename = "repeater.ini";
     }
 
+    bool autoMode = false;
+    if (((argc > 1) && (strcmp(argv[1], "-auto") == 0)) || 
+        ((argc > 2) && (strcmp(argv[2], "-auto") == 0))) {
+        autoMode = true;
+    }
+
     //Mac OS:
     //Find starting folder
 	#ifdef __APPLE__
@@ -388,16 +394,25 @@ int main (int argc, char ** argv)
 						}
 					}
 
-					//If not, find the corresponding tab, or fall back to the first tab
+					//If not, find the corresponding tab, or add a new tab and add there
 					if (!found) {
 						//Add to corresponding tab
-                        int whichTab = 0;
+                        int whichTab = -1;
 						for (int i = 0; i < iniFileStructure.size(); i++) {
 							if (currentTabName.compare(iniFileStructure.at(i).tabName) == 0) {
 								whichTab = i;
 							}
 						}
-                        iniFileStructure.at(whichTab).settings.push_back(thisEntry);
+                        if (whichTab < 0) {
+                            // Tab not found, create a new one
+                            IniFileTab newTab;
+                            newTab.tabName = currentTabName;
+                            newTab.settings.push_back(thisEntry);
+                            iniFileStructure.push_back(newTab);
+                        } else {
+                            // Found existing tab, use this
+                            iniFileStructure.at(whichTab).settings.push_back(thisEntry);
+                        }
 					}
 
 				}
@@ -525,10 +540,16 @@ int main (int argc, char ** argv)
     Receiver receiver(device, environment, tabbedPane, iniFilename);
     device->setEventReceiver(&receiver);
 
-    while (device->run()) {
-        driver->beginScene();
-        device->getGUIEnvironment()->drawAll();
-        driver->endScene();
+    if (autoMode) {
+        // Automatically save and close. This mode is used to ensure we have user settings file updated with any new global ini settings
+        saveFile(device, iniFilename, tabbedPane);
+    }
+    else {
+        while (device->run()) {
+            driver->beginScene();
+            device->getGUIEnvironment()->drawAll();
+            driver->endScene();
+        }
     }
     return(0);
 }
