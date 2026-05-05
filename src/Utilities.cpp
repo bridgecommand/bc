@@ -45,14 +45,9 @@
 #include <windows.h>
 #include <Shellapi.h>
 #else // _WIN32
-#ifdef __APPLE__
-#include <copyfile.h>
-#include <sys/stat.h>
-#else
 #include <dirent.h>
 #include <sys/stat.h>
 #include <fstream>
-#endif
 #endif // __APPLE__
 
 namespace Utilities
@@ -294,17 +289,7 @@ namespace Utilities
         if (!pathExists(dest)) {
             mkdir(dest.c_str(), 0755);
         }
-#ifdef __APPLE__
-    //Apple version: Requires that dest dir exists
-        copyfile_state_t s;
-        s = copyfile_state_alloc();
-        //use copyfile here to do recursive copy
-        int returnValue = copyfile(source.c_str(), dest.c_str(), s, COPYFILE_DATA | COPYFILE_RECURSIVE);
-        copyfile_state_free(s);
-        return returnValue;
-#else // __APPLE__
-    //Other posix
-    //Note: Not implemented yet for other posix: need to implement recursive directory copy.
+    
     //Requires that dest dir exists
     std::cout << "Copying dir from:" << source << " to:" << dest << std::endl;
         if (!Utilities::pathExists(dest)) {
@@ -313,7 +298,7 @@ namespace Utilities
 
         //For each folder at root level, create new folder in dest, and call copyDir on this
         DIR* dir = opendir(source.c_str());
-        if (!dir) { return -2; }
+        if (!dir) { return -1; }
         struct dirent* entry = readdir(dir);
         while (entry != NULL) {
             if (entry->d_type == DT_DIR && entry->d_name[0] != '.') {
@@ -335,7 +320,7 @@ namespace Utilities
                     copyDir(fromDir, newDir);
                 }
                 else {
-                    return -3;
+                    return -1;
                 }
             }
             else if (entry->d_type == DT_REG) {
@@ -366,8 +351,6 @@ namespace Utilities
 
         //For each file at root level, create the file and copy contents
 
-
-#endif // __APPLE__
 #endif // _WIN32
 
         return 0;
