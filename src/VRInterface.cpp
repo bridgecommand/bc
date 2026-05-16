@@ -286,33 +286,6 @@ int VRInterface::load(SimulationModel* model) {
 	// that is allocated by the runtime
 	images = NULL;
 
-	// depth swapchain equivalent to the VR color swapchains
-	XrSwapchain* depth_swapchains = NULL;
-	uint32_t* depth_swapchain_lengths = NULL;
-	XrSwapchainImageOpenGLKHR** depth_images = NULL;
-
-	struct
-	{
-		// supporting depth layers is *optional* for runtimes
-		bool supported;
-		XrCompositionLayerDepthInfoKHR* infos;
-	} depth;
-
-	struct
-	{
-		// To render into a texture we need a framebuffer (one per texture to make it easy)
-		GLuint** framebuffers;
-
-		float near_z;
-		float far_z;
-
-		GLuint shader_program_id;
-		GLuint VAO;
-	} gl_rendering;
-	gl_rendering.near_z = 0.01f;
-	gl_rendering.far_z = 100.0f;
-
-
 	// reuse this variable for all our OpenXR return codes
 	result = XR_SUCCESS;
 
@@ -351,10 +324,6 @@ int VRInterface::load(SimulationModel* model) {
 		printf("\t%s v%d\n", ext_props[i].extensionName, ext_props[i].extensionVersion);
 		if (strcmp(XR_KHR_OPENGL_ENABLE_EXTENSION_NAME, ext_props[i].extensionName) == 0) {
 			opengl_supported = true;
-		}
-
-		if (strcmp(XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME, ext_props[i].extensionName) == 0) {
-			depth.supported = true;
 		}
 	}
 	delete[] ext_props;
