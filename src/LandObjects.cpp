@@ -52,7 +52,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         //Get object position
         irr::f32 objectX = model->longToX(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Long",currentObject)));
         irr::f32 objectZ = model->latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Lat",currentObject)));
-        irr::f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));;
+        irr::f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));
         
         //Check if we should 'morph' the model to fit the land (mostly for OSM2World models)
         bool morph = false;
@@ -79,9 +79,41 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
 
         //Create land object and load into vector
         std::string internalName = "LandObject_";
-        internalName.append(std::to_string(currentObject-1)); // -1 as we want index from 0
+        internalName.append(std::to_string(landObjects.size()));
         landObjects.push_back(LandObject (objectName.c_str(),internalName,worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,radarObject,morph,terrain,smgr,dev));
 
+    }
+
+    // Add 'pontoons' here. Initially a simple test implementation with a dummy object for each node
+    std::string scenarioPontoonFilename = worldName;
+    scenarioPontoonFilename.append("/pontoon.ini");
+
+    //Find number of objects
+    irr::u32 numberOfPontoons;
+    numberOfPontoons = IniFile::iniFileTou32(scenarioPontoonFilename, "Number");
+    for (irr::u32 currentPontoon = 1; currentPontoon <= numberOfPontoons; currentPontoon++) {
+        irr::u32 numberOfNodes;
+        numberOfNodes = IniFile::iniFileTou32(scenarioPontoonFilename, IniFile::enumerate1("Nodes", currentPontoon));
+        for (irr::u32 currentNode = 1; currentNode <= numberOfNodes; currentNode++) {
+            //Get object position
+            irr::f32 nodeX = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode)));
+            irr::f32 nodeZ = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode)));
+            irr::f32 nodeY = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode));
+
+            //Create land object and load into vector
+            std::string internalName = "LandObject_";
+            internalName.append(std::to_string(landObjects.size()));
+            
+            // Defaults - TODO: Check/set these
+            std::string objectName = "DUMMY";
+            irr::f32 rotation = 0;
+            bool collisionObject = true;
+            bool radarObject = false;
+            bool morph = false;
+
+            landObjects.push_back(LandObject(objectName.c_str(), internalName, worldName, irr::core::vector3df(nodeX, nodeY, nodeZ), rotation, collisionObject, radarObject, morph, terrain, smgr, dev));
+
+        }
     }
 }
 

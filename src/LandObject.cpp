@@ -61,7 +61,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
         //Failed to load mesh - load with dummy and continue
         dev->getLogger()->log("Failed to load land object model:");
         dev->getLogger()->log(objectFullPath.c_str());
-        landObject = smgr->addCubeSceneNode(0.1, 0, -1, location);
+        landObject = smgr->addCubeSceneNode(1, 0, -1, location);
     } else {
         if (morph) {
             // Remove nearly flat mesh buffers
