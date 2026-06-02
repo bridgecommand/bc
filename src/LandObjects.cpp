@@ -121,7 +121,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
             // Set properties
             std::string objectName = "PONTOON_INTERNAL"; // This name is used to trigger floating behaviour in 'land object'
             bool collisionObject = true;
-            bool radarObject = false; // TODO: Try turning this on?
+            bool radarObject = false; // We could turn this on, but may use a lot of memory!
             bool morph = false;
 
             landObjects.push_back(LandObject(objectName.c_str(), internalName, worldName, irr::core::vector3df(midPointX, midPointY, midPointZ), rotation, collisionObject, radarObject, morph, terrain, smgr, dev, true, sectionLength));

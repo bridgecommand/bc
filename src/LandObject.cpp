@@ -69,7 +69,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
 	//add to scene node
 	if (dummyObject || objectMesh==0) {
         //Failed to load mesh - load with dummy and continue
-        dev->getLogger()->log("Failed to load land object model:");
+        dev->getLogger()->log("Using dummy land object model:");
         dev->getLogger()->log(objectFullPath.c_str());
         landObject = smgr->addCubeSceneNode(1, 0, -1, location);
         objectMesh = landObject->getMesh();
@@ -77,6 +77,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
         // Special case, make the object float
         if (name == "PONTOON_INTERNAL") {
             floating = true;
+            landObject->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/pontoon.png"));
         }
         
 
@@ -124,7 +125,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     }
 
     if (dummyObject) {
-        landObject->setScale(irr::core::vector3df(objectScale, objectScale, objectScale * sectionLength));
+        landObject->setScale(irr::core::vector3df(2.0, 1.0, sectionLength));
     }
     else {
         landObject->setScale(irr::core::vector3df(objectScale, objectScale, objectScale));
