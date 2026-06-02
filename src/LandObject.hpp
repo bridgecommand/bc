@@ -42,6 +42,7 @@ class LandObject
         irr::IrrlichtDevice* device;
         irr::scene::ITriangleSelector* selector; //The triangle selector for the buoy. We will set and unset this depending on the distance from the ownship for speed
         bool triangleSelectorEnabled;
+        bool collisionObject;
         irr::f32 heightCorrection;
         bool floating;
         irr::f32 findContactYFromRay(irr::core::line3d<irr::f32> ray);

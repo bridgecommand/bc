@@ -30,6 +30,8 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     const irr::f32 tallHeightRatio = 5.0;  // Minimum ratio of height to max of width, length for an object to be considered 'tall'
     const irr::f32 nearlyFlatHeight = 1.0; // Max height in model units for a 'flat' object
     
+    this->collisionObject = collisionObject;
+
     device = dev;
     
     std::string basePath = "Models/LandObject/" + name + "/";
@@ -306,7 +308,7 @@ void LandObject::enableTriangleSelector(bool selectorEnabled)
 {
     //Only re-set if we need to change the state
 
-    if (selectorEnabled && !triangleSelectorEnabled) {
+    if (collisionObject && selectorEnabled && !triangleSelectorEnabled) {
         landObject->setTriangleSelector(selector);
         triangleSelectorEnabled = true;
     }
