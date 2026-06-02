@@ -1902,6 +1902,10 @@ SimulationModel::~SimulationModel()
         //update buoys (for lights, floating, and if collision detection is turned on)
         buoys.update(deltaTime,scenarioTime,tideHeight,lightLevel,ownShip.getPosition(),ownShip.getLength());
 
+        }{ IPROF("Update land objects");
+        //update land objects (for floating, and if collision detection is turned on)
+        landObjects.update(tideHeight, ownShip.getPosition(), ownShip.getLength());
+
         }{ IPROF("Update land lights");
         //Update land lights
         landLights.update(deltaTime,scenarioTime,lightLevel);

@@ -128,6 +128,23 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
     }
 }
 
+void LandObjects::update(irr::f32 tideHeight, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
+{
+    // TODO: Implement floating correction here (see buoys)
+
+    for (std::vector<LandObject>::iterator it = landObjects.begin(); it != landObjects.end(); ++it) {
+
+        //Set or clear triangle selector depending on distance from own ship; TODO: Changle logic here to account for land object size
+        if (it->getSceneNode()->getAbsolutePosition().getDistanceFrom(ownShipPosition) < 10 * ownShipLength) {
+            it->enableTriangleSelector(true);
+        }
+        else {
+            it->enableTriangleSelector(false);
+        }
+
+    }
+}
+
 irr::u32 LandObjects::getNumber() const
 {
     return landObjects.size();

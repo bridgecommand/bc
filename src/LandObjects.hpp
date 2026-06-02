@@ -36,6 +36,7 @@ class LandObjects
         irr::u32 getNumber() const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
         irr::scene::ISceneNode* getSceneNode(int number);
+        void update(irr::f32 tideHeight, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength);
 
     private:
         std::vector<LandObject> landObjects;
