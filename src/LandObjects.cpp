@@ -86,7 +86,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
 
     }
 
-    // Add 'pontoons' here. Initially a simple test implementation with a dummy object for each node
+    // Add 'pontoons' here.
     std::string scenarioPontoonFilename = worldName;
     scenarioPontoonFilename.append("/pontoon.ini");
 
