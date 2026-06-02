@@ -33,12 +33,17 @@ class LandObject
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
         irr::scene::ISceneNode* getSceneNode() const;
         void enableTriangleSelector(bool selectorEnabled);
+        bool getFloating() const;
+        irr::f32 getHeightCorrection() const;
+        void setPosition(irr::core::vector3df position);
     protected:
     private:
         irr::scene::IMeshSceneNode* landObject; //The scene node for the object.
         irr::IrrlichtDevice* device;
         irr::scene::ITriangleSelector* selector; //The triangle selector for the buoy. We will set and unset this depending on the distance from the ownship for speed
         bool triangleSelectorEnabled;
+        irr::f32 heightCorrection;
+        bool floating;
         irr::f32 findContactYFromRay(irr::core::line3d<irr::f32> ray);
 };
 

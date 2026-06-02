@@ -54,6 +54,12 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
 
     std::string objectFullPath = basePath + objectFileName;
 
+    // Store the vertical position (used later if object is floating)
+    heightCorrection = location.Y;
+
+    // Normally not floating
+    floating = false;
+
     //Load the mesh
     irr::scene::IMesh* objectMesh = 0;
     if (!dummyObject) {
@@ -67,6 +73,13 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
         dev->getLogger()->log(objectFullPath.c_str());
         landObject = smgr->addCubeSceneNode(1, 0, -1, location);
         objectMesh = landObject->getMesh();
+
+        // Special case, make the object float
+        if (name == "PONTOON_INTERNAL") {
+            floating = true;
+        }
+        
+
     } else {
         if (morph) {
             // Remove nearly flat mesh buffers
@@ -302,4 +315,19 @@ void LandObject::enableTriangleSelector(bool selectorEnabled)
         landObject->setTriangleSelector(0);
         triangleSelectorEnabled = false;
     }
+}
+
+irr::f32 LandObject::getHeightCorrection() const
+{
+    return heightCorrection;
+}
+
+bool LandObject::getFloating() const
+{
+    return floating;
+}
+
+void LandObject::setPosition(irr::core::vector3df position)
+{
+    landObject->setPosition(position);
 }

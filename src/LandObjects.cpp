@@ -38,6 +38,8 @@ LandObjects::~LandObjects()
 
 void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
+    this->model = model;
+    
     //get landObject.ini filename
     std::string scenarioLandObjectFilename = worldName;
     scenarioLandObjectFilename.append("/landobject.ini");
@@ -116,10 +118,10 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
             std::string internalName = "LandObject_";
             internalName.append(std::to_string(landObjects.size()));
             
-            // Defaults - TODO: Check/set these
-            std::string objectName = "DUMMY";
+            // Set properties
+            std::string objectName = "PONTOON_INTERNAL"; // This name is used to trigger floating behaviour in 'land object'
             bool collisionObject = true;
-            bool radarObject = false;
+            bool radarObject = false; // TODO: Try turning this on?
             bool morph = false;
 
             landObjects.push_back(LandObject(objectName.c_str(), internalName, worldName, irr::core::vector3df(midPointX, midPointY, midPointZ), rotation, collisionObject, radarObject, morph, terrain, smgr, dev, true, sectionLength));
@@ -130,12 +132,20 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
 
 void LandObjects::update(irr::f32 tideHeight, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
 {
-    // TODO: Implement floating correction here (see buoys)
-
     for (std::vector<LandObject>::iterator it = landObjects.begin(); it != landObjects.end(); ++it) {
 
-        //Set or clear triangle selector depending on distance from own ship; TODO: Changle logic here to account for land object size
-        if (it->getSceneNode()->getAbsolutePosition().getDistanceFrom(ownShipPosition) < 10 * ownShipLength) {
+        if (it->getFloating()) {
+            irr::f32 xPos, yPos, zPos;
+            irr::core::vector3df pos = it->getPosition();
+            xPos = pos.X;
+            //yPos = tideHeight + model->getWaveHeight(pos.X, pos.Z) + it->getHeightCorrection();
+            yPos = tideHeight + it->getHeightCorrection(); // Don't include wave height for floating pontoons etc.
+            zPos = pos.Z;
+            it->setPosition(irr::core::vector3df(xPos, yPos, zPos));
+        }
+        //Set or clear triangle selector depending on distance from own ship;
+        irr::f32 landObjectMaxLength = it->getSceneNode()->getTransformedBoundingBox().getExtent().getLength(); // Max length between corners of the bounding box
+        if (it->getSceneNode()->getAbsolutePosition().getDistanceFrom(ownShipPosition) < (ownShipLength + landObjectMaxLength)) {
             it->enableTriangleSelector(true);
         }
         else {

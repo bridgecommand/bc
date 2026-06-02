@@ -40,6 +40,7 @@ class LandObjects
 
     private:
         std::vector<LandObject> landObjects;
+        SimulationModel* model; //Store reference to model
 };
 
 #endif
