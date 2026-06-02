@@ -83,8 +83,6 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
             // Set a simple texture
             landObject->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/pontoon.png"));
         }
-        
-
     } else {
         if (morph) {
             // Remove nearly flat mesh buffers
