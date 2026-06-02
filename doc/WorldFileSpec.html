@@ -35,8 +35,12 @@ terrain when taking depth soundings, and to decide if the ship is aground.
 </p>
 
 <p>
-For small details such as harbours and marinas, 3d models can be loaded into the world model. See the detail below in the landobject.ini 
+For small details such as harbours, 3d models can be loaded into the world model. See the detail below in the landobject.ini 
 for how land objects can be set to appear in the radar, and act as physical models that the own ship can interact with.
+</p>
+
+<p>
+In addition, floating pontoons can be defined by a series of coordinates, which can be useful to model marinas.
 </p>
 
 <p>
@@ -94,6 +98,7 @@ configured in the .ini files.</p>
 <li>light.ini:&nbsp;Specifies navigation lights in world (floating or land based)</li>
 <li>tide.ini:&nbsp;Defines the tides</li>
 <li>tidalstream.ini:&nbsp;Defines the tidal stream (optional)</li>
+<li>pontoon.ini:&nbsp;Defines floating pontoons (optional)</li>
 <!--<li>RadarReflector.ini:&nbsp;Defines location of fixed radar reflecting objects (Optional)</li>-->
 <!--<li>Description.ini:&nbsp;A brief description of the world model (Optional)</li>-->
 <!--<li>Thumb.bmp:&nbsp;A thumbnail image (Optional)</li>-->
@@ -494,6 +499,48 @@ Direction(2,4)=180
 Direction(2,5)=190
 Direction(2,6)=260
 
+</pre>
+</p>
+
+<h5>pontoon.ini</h5>
+
+<p>This is an optional file, and defines floating pontoons (like in a marina), using a series of location coordinates.
+</p>
+
+<p>There is one general variables, <i>number</i> to set the number of  pontoons.</p>
+
+<p>For each pontoon, a series of coordinates is given, defining the end point of each straight section. The number of these points is given by the Nodes(#) parameter. For each node, the position is given in latitude and longitude.</p>
+
+<h5>Example tidalstream.ini:</h5>
+<p>
+<pre>
+Number=3
+
+Nodes(1)=2
+Lat(1,1)=48.3922659
+Long(1,1)=-122.4968183
+Lat(1,2)=48.3922369
+Long(1,2)=-122.4965243
+
+Nodes(2)=3
+Lat(2,1)=48.3919328
+Long(2,1)=-122.4968907
+Lat(2,2)=48.3922659
+Long(2,2)=-122.4968183
+Lat(2,3)=48.3925858
+Long(2,3)=-122.4967724
+
+Nodes(3)=5
+Lat(3,1)=48.3915730
+Long(3,1)=-122.4967124
+Lat(3,2)=48.3916300
+Long(3,2)=-122.4969726
+Lat(3,3)=48.3918882
+Long(3,3)=-122.4968375
+Lat(3,4)=48.3918302
+Long(3,4)=-122.4965865
+Lat(3,5)=48.3915730
+Long(3,5)=-122.4967124
 </pre>
 </p>
 
