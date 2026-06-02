@@ -77,6 +77,10 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
         // Special case, make the object float
         if (name == "PONTOON_INTERNAL") {
             floating = true;
+            // Scale the mesh
+            irr::scene::IMeshManipulator* meshManipulator = smgr->getMeshManipulator();
+            meshManipulator->scale(objectMesh, irr::core::vector3df(2.0, 1.0, sectionLength));
+            // Set a simple texture
             landObject->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/pontoon.png"));
         }
         
@@ -124,10 +128,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
         }
     }
 
-    if (dummyObject) {
-        landObject->setScale(irr::core::vector3df(2.0, 1.0, sectionLength));
-    }
-    else {
+    if (!dummyObject) {
         landObject->setScale(irr::core::vector3df(objectScale, objectScale, objectScale));
     }
     landObject->setRotation(irr::core::vector3df(0,rotation,0));
