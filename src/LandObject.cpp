@@ -24,7 +24,7 @@
 
 //using namespace irr;
 
-LandObject::LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+LandObject::LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, bool dummyObject, irr::f32 sectionLength)
 {
 
     const irr::f32 tallHeightRatio = 5.0;  // Minimum ratio of height to max of width, length for an object to be considered 'tall'
@@ -55,13 +55,18 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     std::string objectFullPath = basePath + objectFileName;
 
     //Load the mesh
-    irr::scene::IMesh* objectMesh = smgr->getMesh(objectFullPath.c_str());
+    irr::scene::IMesh* objectMesh = 0;
+    if (!dummyObject) {
+        objectMesh = smgr->getMesh(objectFullPath.c_str());
+    }
+    
 	//add to scene node
-	if (objectMesh==0) {
+	if (dummyObject || objectMesh==0) {
         //Failed to load mesh - load with dummy and continue
         dev->getLogger()->log("Failed to load land object model:");
         dev->getLogger()->log(objectFullPath.c_str());
         landObject = smgr->addCubeSceneNode(1, 0, -1, location);
+        objectMesh = landObject->getMesh();
     } else {
         if (morph) {
             // Remove nearly flat mesh buffers
@@ -85,13 +90,16 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     }
 
     //Set ID as a flag if we should model collisions with this, also used to get radar points
+    triangleSelectorEnabled = false;
+    selector = 0;
     if (collisionObject || radarObject) {
         landObject->setID(IDFlag_IsPickable);
 
         //Add a triangle selector
-        irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(objectMesh,landObject);
+        selector=smgr->createTriangleSelector(objectMesh,landObject);
         if(selector) {
             landObject->setTriangleSelector(selector);
+            triangleSelectorEnabled = true;
         }
     }
 
@@ -102,7 +110,12 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
         }
     }
 
-    landObject->setScale(irr::core::vector3df(objectScale,objectScale,objectScale));
+    if (dummyObject) {
+        landObject->setScale(irr::core::vector3df(objectScale, objectScale, objectScale * sectionLength));
+    }
+    else {
+        landObject->setScale(irr::core::vector3df(objectScale, objectScale, objectScale));
+    }
     landObject->setRotation(irr::core::vector3df(0,rotation,0));
     landObject->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
     landObject->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
@@ -221,6 +234,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     if (!collisionObject) {
         landObject->setID(-1);
         landObject->setTriangleSelector(0);
+        triangleSelectorEnabled = false;
     }
     //End contact points for radar detection
     //======================================
@@ -273,4 +287,19 @@ void LandObject::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 irr::scene::ISceneNode* LandObject::getSceneNode() const
 {
     return (irr::scene::ISceneNode*)landObject;
+}
+
+void LandObject::enableTriangleSelector(bool selectorEnabled)
+{
+    //Only re-set if we need to change the state
+
+    if (selectorEnabled && !triangleSelectorEnabled) {
+        landObject->setTriangleSelector(selector);
+        triangleSelectorEnabled = true;
+    }
+
+    if (!selectorEnabled && triangleSelectorEnabled) {
+        landObject->setTriangleSelector(0);
+        triangleSelectorEnabled = false;
+    }
 }

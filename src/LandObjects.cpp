@@ -94,11 +94,23 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
     for (irr::u32 currentPontoon = 1; currentPontoon <= numberOfPontoons; currentPontoon++) {
         irr::u32 numberOfNodes;
         numberOfNodes = IniFile::iniFileTou32(scenarioPontoonFilename, IniFile::enumerate1("Nodes", currentPontoon));
-        for (irr::u32 currentNode = 1; currentNode <= numberOfNodes; currentNode++) {
-            //Get object position
-            irr::f32 nodeX = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode)));
-            irr::f32 nodeZ = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode)));
-            irr::f32 nodeY = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode));
+        for (irr::u32 currentNode = 1; currentNode < numberOfNodes; currentNode++) {
+            //Get position of this node and next one
+            irr::f32 node1X = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode)));
+            irr::f32 node1Z = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode)));
+            irr::f32 node1Y = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode));
+
+            irr::f32 node2X = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode + 1)));
+            irr::f32 node2Z = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode + 1)));
+            irr::f32 node2Y = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode + 1));
+
+            irr::f32 midPointX = (node1X + node2X) / 2.0;
+            irr::f32 midPointY = (node1Y + node2Y) / 2.0;
+            irr::f32 midPointZ = (node1Z + node2Z) / 2.0;
+
+            // Find length and angle of this section
+            irr::f32 rotation = atan2(node2X - node1X, node2Z - node1Z) * irr::core::RADTODEG;
+            irr::f32 sectionLength = pow(pow(node2X - node1X, 2.0) + pow(node2Z - node1Z, 2.0), 0.5);
 
             //Create land object and load into vector
             std::string internalName = "LandObject_";
@@ -106,12 +118,11 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
             
             // Defaults - TODO: Check/set these
             std::string objectName = "DUMMY";
-            irr::f32 rotation = 0;
             bool collisionObject = true;
             bool radarObject = false;
             bool morph = false;
 
-            landObjects.push_back(LandObject(objectName.c_str(), internalName, worldName, irr::core::vector3df(nodeX, nodeY, nodeZ), rotation, collisionObject, radarObject, morph, terrain, smgr, dev));
+            landObjects.push_back(LandObject(objectName.c_str(), internalName, worldName, irr::core::vector3df(midPointX, midPointY, midPointZ), rotation, collisionObject, radarObject, morph, terrain, smgr, dev, true, sectionLength));
 
         }
     }
