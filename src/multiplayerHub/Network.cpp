@@ -108,7 +108,7 @@ void Network::connectToServer(std::string hostnames)
                 //exit (EXIT_FAILURE);
             }
             /* Wait up to 1 second for the connection attempt to succeed. */
-            if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
+            if (enet_host_service (client, & event, 10000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
                 std::cout << "ENet connection succeeded to: " << thisHostname << std::endl;
                 //Store peer, and initialise the vector of latest strings received
                 peers.push_back(peer);
