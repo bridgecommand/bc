@@ -97,28 +97,32 @@ void Network::connectToServer(std::string hostnames)
             }
         }
 
-        enet_address_set_host (& address, thisHostname.c_str());
+        if (enet_address_set_host (& address, thisHostname.c_str()) == 0) {
 
-        /* Initiate the connection, allocating the maximum number of channels. */
-        peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
+            /* Initiate the connection, allocating the maximum number of channels. */
+            peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
 
-        if (peer == NULL)
-        {
-            std::cout << "No available peers for initiating an ENet connection." << std::endl;
-            exit (EXIT_FAILURE);
-        }
-        /* Wait up to 1 second for the connection attempt to succeed. */
-        if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-            std::cout << "ENet connection succeeded to: " << thisHostname << std::endl;
-            //Store peer, and initialise the vector of latest strings received
-            peers.push_back(peer);
-            latestMessageFromPeer.push_back("");
+            if (peer == NULL)
+            {
+                std::cout << "No available peers for initiating an ENet connection." << std::endl;
+                //exit (EXIT_FAILURE);
+            }
+            /* Wait up to 1 second for the connection attempt to succeed. */
+            if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
+                std::cout << "ENet connection succeeded to: " << thisHostname << std::endl;
+                //Store peer, and initialise the vector of latest strings received
+                peers.push_back(peer);
+                latestMessageFromPeer.push_back("");
+            } else {
+                /* Either the 1 second is up or a disconnect event was */
+                /* received. Reset the peer in the event the 1 second */
+                /* had run out without any significant event. */
+                enet_peer_reset (peer);
+                std::cout << "ENet connection failed to:" << thisHostname << std::endl;
+            }
         } else {
-            /* Either the 1 second is up or a disconnect event was */
-            /* received. Reset the peer in the event the 1 second */
-            /* had run out without any significant event. */
-            enet_peer_reset (peer);
-            std::cout << "ENet connection failed to:" << thisHostname << std::endl;
+            // Failed to look up address with enet_address_set_host
+            std::cout << "ENet could not resolve hostname:" << thisHostname << std::endl;
         }
     }
 }
