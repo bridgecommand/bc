@@ -89,7 +89,7 @@ std::string Network::findWorldName()
     std::string worldName = "";
 
 
-    if (enet_host_service (server, & event, 10) > 0) {
+    while (worldName == "" && enet_host_service (server, & event, 10) > 0) {
         if (event.type == ENET_EVENT_TYPE_RECEIVE) {
             //receive it
             char tempString[8192]; //Fixme: Think if this is long enough
