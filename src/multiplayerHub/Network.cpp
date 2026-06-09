@@ -159,7 +159,11 @@ void Network::sendString(std::string stringToSend, bool reliable, unsigned int p
             reliableFlag); //Flag
 
             // Send the packet to peer over channel id matching the peer number (one channel per peer).
-            if (enet_peer_send(peers.at(peerNumber), min(peerNumber, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT - 1), packet) == 0) { 
+            enet_uint8 channelNumber = peerNumber;
+            if (channelNumber >= ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT) {
+                channelNumber = ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT - 1;
+            }
+            if (enet_peer_send(peers.at(peerNumber), channelNumber, packet) == 0) {
                 // One could just use enet_host_service() instead.
                 enet_host_flush(client);
             } else {

@@ -484,7 +484,11 @@ void NetworkPrimary::sendNetwork(std::string aManualCmd)
             packetFlag);
 
         /* Send the packet to each peer over channel id i. */
-        if (enet_peer_send(&client->peers[i], min(i, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT - 1), packet) == 0) {
+        enet_uint8 channelNumber = i;
+        if (channelNumber >= ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT) {
+            channelNumber = ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT - 1;
+        }
+        if (enet_peer_send(&client->peers[i], channelNumber, packet) == 0) {
             /* One could just use enet_host_service() instead. */
             enet_host_flush(client);
         }
