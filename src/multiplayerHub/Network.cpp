@@ -164,6 +164,7 @@ void Network::sendString(std::string stringToSend, bool reliable, unsigned int p
                 enet_host_flush(client);
             } else {
                 enet_packet_destroy(packet);
+                std::cout << "Could not send packet to peer " << peerNumber << std::endl;
             }
         }
     }

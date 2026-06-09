@@ -472,6 +472,12 @@ void NetworkPrimary::sendNetwork(std::string aManualCmd)
 
     // Send data to connected peers
     for (int i = 0; i < client->peerCount; i++) {
+        
+        // Skip non-connected peers
+        if (client->peers[i].state != ENET_PEER_STATE_CONNECTED) {
+            continue;
+        }
+        
         /* Create a packet */
         ENetPacket* packet = enet_packet_create(stringToSend.c_str(),
             strlen(stringToSend.c_str()) + 1,
@@ -484,7 +490,7 @@ void NetworkPrimary::sendNetwork(std::string aManualCmd)
         }
         else {
             enet_packet_destroy(packet);
-            // TODO: Add warning/error message here?
+            std::cout << "Could not send packet to peer " << i << std::endl;
         }
     }
   }

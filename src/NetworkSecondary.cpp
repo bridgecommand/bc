@@ -87,7 +87,7 @@ void NetworkSecondary::connectToServer(std::string hostnames)
 
 void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not used by primary
 {
-     if (enet_host_service (server, & event, 10) > 0) { //Wait 10ms for event
+     while (enet_host_service (server, & event, 10) > 0) { //Wait 10ms for event, and process multiple events if needed
         if (event.type ==ENET_EVENT_TYPE_RECEIVE) {
 
             //receive it
@@ -104,6 +104,8 @@ void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not use
                     (receivedString.substr(0,4) == "SCN5")) { //Check if it starts with SCN1-SCN5
                     //If valid, use this string
                     dataString = receivedString;
+                    // Break out of loop so we don't overwrite the scenario data
+                    break;
                 }
             }
         }
@@ -534,6 +536,7 @@ void NetworkSecondary::receiveMessage()
                             enet_host_flush(server);
                         } else {
                             enet_packet_destroy(packet);
+                            std::cout << "Could not send multiplayer feedback packet on channel " << event.channelID << std::endl;
                         }
                     }
                 }
@@ -594,6 +597,7 @@ void NetworkSecondary::receiveMessage()
                         }
                         else {
                             enet_packet_destroy(packet);
+                            std::cout << "Could not send control override packet on channel " << event.channelID << std::endl;
                         }
                         
                     }
