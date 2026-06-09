@@ -530,8 +530,11 @@ void NetworkSecondary::receiveMessage()
                     //Send back to event.peer
                     ENetPacket* packet = enet_packet_create (multiplayerFeedback.c_str(), strlen (multiplayerFeedback.c_str()) + 1,0/*reliable flag*/);
                     if (packet!=0) {
-                        enet_peer_send (event.peer, 0, packet);
-                        enet_host_flush (server);
+                        if (enet_peer_send(event.peer, event.channelID, packet) == 0) {
+                            enet_host_flush(server);
+                        } else {
+                            enet_packet_destroy(packet);
+                        }
                     }
                 }
 
@@ -586,8 +589,13 @@ void NetworkSecondary::receiveMessage()
                     //Send back to event.peer
                     ENetPacket* packet = enet_packet_create (controlOverride.c_str(), strlen (controlOverride.c_str()) + 1,0/*reliable flag*/);
                     if (packet!=0) {
-                        enet_peer_send (event.peer, 0, packet);
-                        enet_host_flush (server);
+                        if (enet_peer_send(event.peer, event.channelID, packet) == 0) {
+                            enet_host_flush(server);
+                        }
+                        else {
+                            enet_packet_destroy(packet);
+                        }
+                        
                     }
                 }
                 

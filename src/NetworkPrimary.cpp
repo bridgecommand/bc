@@ -123,13 +123,23 @@ void NetworkPrimary::connectToServer(std::string hostnames)
                     enet_deinitialize();
                     exit(EXIT_FAILURE);
                 }
-                /* Wait up to 1 second for the connection attempt to succeed. */
-                if (enet_host_service (client, & event, 10000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-                    //std::string logMessage = "ENet connection succeeded to: ";
-                    //logMessage.append(thisHostname);
-                    device->getLogger()->log("ENet connection succeeded to:");
-                    device->getLogger()->log(thisHostname.c_str());
-                } else {
+                
+                bool connectedPeer = false;
+
+                // Retry connection 10 times
+                for (unsigned int j = 0; j < 10; j++) {
+                    /* Wait up to 1 second for the connection attempt to succeed. */
+                    if (enet_host_service(client, &event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
+                        //std::string logMessage = "ENet connection succeeded to: ";
+                        //logMessage.append(thisHostname);
+                        device->getLogger()->log("ENet connection succeeded to:");
+                        device->getLogger()->log(thisHostname.c_str());
+                        connectedPeer = true;
+                        break;
+                    }
+                }
+                
+                if (!connectedPeer) {
                     /* Either the 1 second is up or a disconnect event was */
                     /* received. Reset the peer in the event the 1 second */
                     /* had run out without any significant event. */
@@ -137,6 +147,7 @@ void NetworkPrimary::connectToServer(std::string hostnames)
                     device->getLogger()->log("ENet connection failed to:");
                     device->getLogger()->log(thisHostname.c_str());
                 }
+
             } else {
                 // Failed to look up address with enet_address_set_host
                 std::cout << "ENet could not resolve hostname:" << thisHostname << std::endl;
@@ -459,16 +470,23 @@ void NetworkPrimary::sendNetwork(std::string aManualCmd)
       packetFlag = ENET_PACKET_FLAG_RELIABLE;
     }
 
-    /* Create a packet */
-    ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
-					      strlen (stringToSend.c_str()) + 1,
-					      packetFlag);
+    // Send data to connected peers
+    for (int i = 0; i < client->peerCount; i++) {
+        /* Create a packet */
+        ENetPacket* packet = enet_packet_create(stringToSend.c_str(),
+            strlen(stringToSend.c_str()) + 1,
+            packetFlag);
 
-    /* Send the packet to all connected peers over channel id 0. */
-    enet_host_broadcast(client, 0, packet);
-
-    /* One could just use enet_host_service() instead. */
-    enet_host_flush (client);
+        /* Send the packet to each peer over channel id i. */
+        if (enet_peer_send(&client->peers[i], min(i, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT - 1), packet) == 0) {
+            /* One could just use enet_host_service() instead. */
+            enet_host_flush(client);
+        }
+        else {
+            enet_packet_destroy(packet);
+            // TODO: Add warning/error message here?
+        }
+    }
   }
 }
 
