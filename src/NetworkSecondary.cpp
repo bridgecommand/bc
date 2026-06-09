@@ -87,7 +87,9 @@ void NetworkSecondary::connectToServer(std::string hostnames)
 
 void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not used by primary
 {
-     while (enet_host_service (server, & event, 10) > 0) { //Wait 10ms for event, and process multiple events if needed
+    std::cout << "Waiting for scenario." << std::endl; // TODO: Remove after debugging
+    while (enet_host_service (server, & event, 10) > 0) { //Wait 10ms for event, and process multiple events if needed
+        std::cout << "event.type:" << event.type << std::endl; // TODO: Remove after debugging
         if (event.type ==ENET_EVENT_TYPE_RECEIVE) {
 
             //receive it
@@ -95,7 +97,7 @@ void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not use
             snprintf(tempString,8192,"%s",event.packet -> data);
             std::string receivedString(tempString);
 
-            std::cout << "Received message: " << receivedString << std::endl;
+            std::cout << "Received message: " << receivedString << std::endl; // TODO: Remove after debugging
 
             //Basic checks
             if (receivedString.length() > 4) { //Check if more than 4 chars long, ie we have at least some data
@@ -110,9 +112,10 @@ void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not use
                     break;
                 }
             }
+            /* Clean up the packet now that we're done using it. */
+            enet_packet_destroy(event.packet);
         }
-        /* Clean up the packet now that we're done using it. */
-        enet_packet_destroy (event.packet);
+        
      }
 }
 
