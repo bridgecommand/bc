@@ -95,6 +95,8 @@ void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not use
             snprintf(tempString,8192,"%s",event.packet -> data);
             std::string receivedString(tempString);
 
+            std::cout << "Received message: " << receivedString << std::endl;
+
             //Basic checks
             if (receivedString.length() > 4) { //Check if more than 4 chars long, ie we have at least some data
                 if ((receivedString.substr(0,4) == "SCN1") || 

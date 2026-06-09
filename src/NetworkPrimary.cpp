@@ -190,7 +190,7 @@ void NetworkPrimary::receiveNetwork()
         std::cerr << "Network not linked to model" << std::endl;
         return;
     }
-    if (enet_host_service (client, & event, 10) > 0) {
+    while (enet_host_service (client, & event, 10) > 0) {
         if (event.type==ENET_EVENT_TYPE_RECEIVE) {
 
             //Convert into a string, max length 8192
