@@ -897,14 +897,6 @@ int main(int argc, char ** argv)
     //Network network(&model);
     network->connectToServer(hostname);
 
-    // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
-    Network* extraNetwork = 0;
-    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 )) {
-        extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
-        extraNetwork->connectToServer(hostname);
-        //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
-    }
-
     //Read in scenario data (work in progress)
     ScenarioData scenarioData;
     if (mode == OperatingMode::Normal) {
@@ -934,6 +926,14 @@ int main(int argc, char ** argv)
 
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
     
+    // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
+    Network* extraNetwork = 0;
+    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 )) {
+        extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
+        extraNetwork->connectToServer(hostname);
+        //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
+    }
+
     // Check VR mode
     bool vr3dMode = false;
     if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {

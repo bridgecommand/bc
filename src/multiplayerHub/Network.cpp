@@ -97,28 +97,42 @@ void Network::connectToServer(std::string hostnames)
             }
         }
 
-        enet_address_set_host (& address, thisHostname.c_str());
+        if (enet_address_set_host (& address, thisHostname.c_str()) == 0) {
 
-        /* Initiate the connection, allocating the maximum number of channels. */
-        peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
+            /* Initiate the connection, allocating the maximum number of channels. */
+            peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
 
-        if (peer == NULL)
-        {
-            std::cout << "No available peers for initiating an ENet connection." << std::endl;
-            exit (EXIT_FAILURE);
-        }
-        /* Wait up to 1 second for the connection attempt to succeed. */
-        if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-            std::cout << "ENet connection succeeded to: " << thisHostname << std::endl;
-            //Store peer, and initialise the vector of latest strings received
-            peers.push_back(peer);
-            latestMessageFromPeer.push_back("");
+            if (peer == NULL)
+            {
+                std::cout << "No available peers for initiating an ENet connection." << std::endl;
+                //exit (EXIT_FAILURE);
+            }
+
+            bool connectedPeer = false;
+
+            // Retry connection 10 times
+            for (unsigned int j = 0; j < 10; j++) {
+                /* Wait up to 1 second for the connection attempt to succeed. */
+                if (enet_host_service(client, &event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
+                    std::cout << "ENet multiplayer connection succeeded to: " << thisHostname << std::endl;
+                    //Store peer, and initialise the vector of latest strings received
+                    peers.push_back(peer);
+                    latestMessageFromPeer.push_back("");
+                    connectedPeer = true;
+                    break;
+                }   
+            }
+            if (!connectedPeer) {
+                /* Either the 1 second is up or a disconnect event was */
+                /* received. Reset the peer in the event the 1 second */
+                /* had run out without any significant event. */
+                enet_peer_reset(peer);
+                std::cout << "ENet multiplayer connection failed to:" << thisHostname << std::endl;
+            }
+            
         } else {
-            /* Either the 1 second is up or a disconnect event was */
-            /* received. Reset the peer in the event the 1 second */
-            /* had run out without any significant event. */
-            enet_peer_reset (peer);
-            std::cout << "ENet connection failed to:" << thisHostname << std::endl;
+            // Failed to look up address with enet_address_set_host
+            std::cout << "ENet multiplayer could not resolve hostname:" << thisHostname << std::endl;
         }
     }
 }
@@ -144,11 +158,18 @@ void Network::sendString(std::string stringToSend, bool reliable, unsigned int p
             strlen (stringToSend.c_str()) + 1,
             reliableFlag); //Flag
 
-            // Send the packet to peer over channel id 0.
-            enet_peer_send(peers.at(peerNumber), 0, packet);
-
-            // One could just use enet_host_service() instead.
-            enet_host_flush (client);
+            // Send the packet to peer over channel id matching the peer number (one channel per peer).
+            enet_uint8 channelNumber = peerNumber;
+            if (channelNumber >= ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT) {
+                channelNumber = ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT - 1;
+            }
+            if (enet_peer_send(peers.at(peerNumber), channelNumber, packet) == 0) {
+                // One could just use enet_host_service() instead.
+                enet_host_flush(client);
+            } else {
+                enet_packet_destroy(packet);
+                std::cout << "Could not send packet to peer " << peerNumber << std::endl;
+            }
         }
     }
 }

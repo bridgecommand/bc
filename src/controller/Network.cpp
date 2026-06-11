@@ -89,7 +89,7 @@ std::string Network::findWorldName()
     std::string worldName = "";
 
 
-    if (enet_host_service (server, & event, 10) > 0) {
+    while (worldName == "" && enet_host_service (server, & event, 10) > 0) {
         if (event.type == ENET_EVENT_TYPE_RECEIVE) {
             //receive it
             char tempString[8192]; //Fixme: Think if this is long enough
@@ -138,7 +138,7 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
                 receiveMessage(time,ownShipData,otherShipsData,buoysData,weather,visibility,rain,mobVisible,mobData,windDirection,windSpeed,streamDirection,streamSpeed,streamOverride);
 
                 //send something back
-                sendMessage(event.peer); //Todo: Think if we only want to send after receipt?
+                sendMessage(event.peer, event.channelID); //Todo: Think if we only want to send after receipt?
 
                 /* Clean up the packet now that we're done using it. */
                 enet_packet_destroy (event.packet);
@@ -163,7 +163,7 @@ void Network::setStringToSend(std::string stringToSend)
     this->stringToSend.append("|");
 }
 
-void Network::sendMessage(ENetPeer* peer)
+void Network::sendMessage(ENetPeer* peer, enet_uint8 channel)
 {
     //Assumes that event contains a received message
 
@@ -173,14 +173,18 @@ void Network::sendMessage(ENetPeer* peer)
         strlen (stringToSend.c_str()) + 1,
         /*ENET_PACKET_FLAG_RELIABLE*/1);
 
-        /* Send the packet to the peer over channel id 0. */
+        /* Send the packet to the peer over specified channel id. */
         /* One could also broadcast the packet by */
         /* enet_host_broadcast (host, 0, packet); */
-        enet_peer_send (peer, 0, packet);
-        /* One could just use enet_host_service() instead. */
-        enet_host_flush (server);
+        if (enet_peer_send(peer, channel, packet) == 0) {
+            /* One could just use enet_host_service() instead. */
+            enet_host_flush(server);
+            stringToSend = ""; //Sent message, so clear it
+        } else {
+            enet_packet_destroy(packet);
+        }
 
-        stringToSend = ""; //Sent message, so clear it
+       
     }
 }
 

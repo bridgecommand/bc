@@ -57,7 +57,7 @@ private:
     void findOtherShipData(const std::vector<std::string>& otherShipsDataString, std::vector<OtherShipDisplayData>& otherShipsData);
     void findBuoyPositionData(const std::vector<std::string>& buoysDataString, std::vector<PositionData>& buoysData);
 
-    void sendMessage(ENetPeer * peer);
+    void sendMessage(ENetPeer * peer, enet_uint8 channel);
 
 };
 #endif // __NETWORK_HPP_INCLUDED__

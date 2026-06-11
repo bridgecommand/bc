@@ -112,30 +112,45 @@ void NetworkPrimary::connectToServer(std::string hostnames)
             //std::cout << "In NetworkPrimary, trying to set up to " << address.port << std::endl;
 
             /* Connect to some.server.net:18304. */
-            enet_address_set_host (& address, thisHostname.c_str());
+            if (enet_address_set_host (& address, thisHostname.c_str()) == 0) {
 
-            /* Initiate the connection, allocating the maximum number of channels. */
-            peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
-            //Note we don't store peer pointer, as we broadcast to all connected peers.
-            if (peer == NULL)
-            {
-                std::cerr << "No available peers for initiating an ENet connection." << std::endl;
-                enet_deinitialize();
-                exit(EXIT_FAILURE);
-            }
-            /* Wait up to 1 second for the connection attempt to succeed. */
-            if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-                //std::string logMessage = "ENet connection succeeded to: ";
-                //logMessage.append(thisHostname);
-                device->getLogger()->log("ENet connection succeeded to:");
-                device->getLogger()->log(thisHostname.c_str());
+                /* Initiate the connection, allocating the maximum number of channels. */
+                peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
+                //Note we don't store peer pointer, as we broadcast to all connected peers.
+                if (peer == NULL)
+                {
+                    std::cerr << "No available peers for initiating an ENet connection." << std::endl;
+                    enet_deinitialize();
+                    exit(EXIT_FAILURE);
+                }
+                
+                bool connectedPeer = false;
+
+                // Retry connection 10 times
+                for (unsigned int j = 0; j < 10; j++) {
+                    /* Wait up to 1 second for the connection attempt to succeed. */
+                    if (enet_host_service(client, &event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
+                        //std::string logMessage = "ENet connection succeeded to: ";
+                        //logMessage.append(thisHostname);
+                        device->getLogger()->log("ENet connection succeeded to:");
+                        device->getLogger()->log(thisHostname.c_str());
+                        connectedPeer = true;
+                        break;
+                    }
+                }
+                
+                if (!connectedPeer) {
+                    /* Either the 1 second is up or a disconnect event was */
+                    /* received. Reset the peer in the event the 1 second */
+                    /* had run out without any significant event. */
+                    enet_peer_reset (peer);
+                    device->getLogger()->log("ENet connection failed to:");
+                    device->getLogger()->log(thisHostname.c_str());
+                }
+
             } else {
-                /* Either the 1 second is up or a disconnect event was */
-                /* received. Reset the peer in the event the 1 second */
-                /* had run out without any significant event. */
-                enet_peer_reset (peer);
-                device->getLogger()->log("ENet connection failed to:");
-                device->getLogger()->log(thisHostname.c_str());
+                // Failed to look up address with enet_address_set_host
+                std::cout << "ENet could not resolve hostname:" << thisHostname << std::endl;
             }
         }
     }
@@ -175,7 +190,7 @@ void NetworkPrimary::receiveNetwork()
         std::cerr << "Network not linked to model" << std::endl;
         return;
     }
-    if (enet_host_service (client, & event, 10) > 0) {
+    while (enet_host_service (client, & event, 10) > 0) {
         if (event.type==ENET_EVENT_TYPE_RECEIVE) {
 
             //Convert into a string, max length 8192
@@ -455,16 +470,33 @@ void NetworkPrimary::sendNetwork(std::string aManualCmd)
       packetFlag = ENET_PACKET_FLAG_RELIABLE;
     }
 
-    /* Create a packet */
-    ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
-					      strlen (stringToSend.c_str()) + 1,
-					      packetFlag);
+    // Send data to connected peers
+    for (int i = 0; i < client->peerCount; i++) {
+        
+        // Skip non-connected peers
+        if (client->peers[i].state != ENET_PEER_STATE_CONNECTED) {
+            continue;
+        }
+        
+        /* Create a packet */
+        ENetPacket* packet = enet_packet_create(stringToSend.c_str(),
+            strlen(stringToSend.c_str()) + 1,
+            packetFlag);
 
-    /* Send the packet to all connected peers over channel id 0. */
-    enet_host_broadcast(client, 0, packet);
-
-    /* One could just use enet_host_service() instead. */
-    enet_host_flush (client);
+        /* Send the packet to each peer over channel id i. */
+        enet_uint8 channelNumber = i;
+        if (channelNumber >= ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT) {
+            channelNumber = ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT - 1;
+        }
+        if (enet_peer_send(&client->peers[i], channelNumber, packet) == 0) {
+            /* One could just use enet_host_service() instead. */
+            enet_host_flush(client);
+        }
+        else {
+            enet_packet_destroy(packet);
+            std::cout << "Could not send packet to peer " << i << std::endl;
+        }
+    }
   }
 }
 

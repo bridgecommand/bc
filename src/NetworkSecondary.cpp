@@ -87,7 +87,7 @@ void NetworkSecondary::connectToServer(std::string hostnames)
 
 void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not used by primary
 {
-     if (enet_host_service (server, & event, 10) > 0) { //Wait 10ms for event
+    while (enet_host_service (server, & event, 10) > 0) { //Wait 10ms for event, and process multiple events if needed
         if (event.type ==ENET_EVENT_TYPE_RECEIVE) {
 
             //receive it
@@ -104,11 +104,14 @@ void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not use
                     (receivedString.substr(0,4) == "SCN5")) { //Check if it starts with SCN1-SCN5
                     //If valid, use this string
                     dataString = receivedString;
+                    // Break out of loop so we don't overwrite the scenario data
+                    break;
                 }
             }
+            /* Clean up the packet now that we're done using it. */
+            enet_packet_destroy(event.packet);
         }
-        /* Clean up the packet now that we're done using it. */
-        enet_packet_destroy (event.packet);
+        
      }
 }
 
@@ -530,8 +533,12 @@ void NetworkSecondary::receiveMessage()
                     //Send back to event.peer
                     ENetPacket* packet = enet_packet_create (multiplayerFeedback.c_str(), strlen (multiplayerFeedback.c_str()) + 1,0/*reliable flag*/);
                     if (packet!=0) {
-                        enet_peer_send (event.peer, 0, packet);
-                        enet_host_flush (server);
+                        if (enet_peer_send(event.peer, event.channelID, packet) == 0) {
+                            enet_host_flush(server);
+                        } else {
+                            enet_packet_destroy(packet);
+                            std::cout << "Could not send multiplayer feedback packet on channel " << event.channelID << std::endl;
+                        }
                     }
                 }
 
@@ -586,8 +593,14 @@ void NetworkSecondary::receiveMessage()
                     //Send back to event.peer
                     ENetPacket* packet = enet_packet_create (controlOverride.c_str(), strlen (controlOverride.c_str()) + 1,0/*reliable flag*/);
                     if (packet!=0) {
-                        enet_peer_send (event.peer, 0, packet);
-                        enet_host_flush (server);
+                        if (enet_peer_send(event.peer, event.channelID, packet) == 0) {
+                            enet_host_flush(server);
+                        }
+                        else {
+                            enet_packet_destroy(packet);
+                            std::cout << "Could not send control override packet on channel " << event.channelID << std::endl;
+                        }
+                        
                     }
                 }
                 
