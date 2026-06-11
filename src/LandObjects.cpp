@@ -38,6 +38,8 @@ LandObjects::~LandObjects()
 
 void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
+    this->model = model;
+    
     //get landObject.ini filename
     std::string scenarioLandObjectFilename = worldName;
     scenarioLandObjectFilename.append("/landobject.ini");
@@ -52,7 +54,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         //Get object position
         irr::f32 objectX = model->longToX(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Long",currentObject)));
         irr::f32 objectZ = model->latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Lat",currentObject)));
-        irr::f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));;
+        irr::f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));
         
         //Check if we should 'morph' the model to fit the land (mostly for OSM2World models)
         bool morph = false;
@@ -79,8 +81,76 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
 
         //Create land object and load into vector
         std::string internalName = "LandObject_";
-        internalName.append(std::to_string(currentObject-1)); // -1 as we want index from 0
+        internalName.append(std::to_string(landObjects.size()));
         landObjects.push_back(LandObject (objectName.c_str(),internalName,worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,radarObject,morph,terrain,smgr,dev));
+
+    }
+
+    // Add 'pontoons' here.
+    std::string scenarioPontoonFilename = worldName;
+    scenarioPontoonFilename.append("/pontoon.ini");
+
+    //Find number of objects
+    irr::u32 numberOfPontoons;
+    numberOfPontoons = IniFile::iniFileTou32(scenarioPontoonFilename, "Number");
+    for (irr::u32 currentPontoon = 1; currentPontoon <= numberOfPontoons; currentPontoon++) {
+        irr::u32 numberOfNodes;
+        numberOfNodes = IniFile::iniFileTou32(scenarioPontoonFilename, IniFile::enumerate1("Nodes", currentPontoon));
+        for (irr::u32 currentNode = 1; currentNode < numberOfNodes; currentNode++) {
+            //Get position of this node and next one
+            irr::f32 node1X = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode)));
+            irr::f32 node1Z = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode)));
+            irr::f32 node1Y = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode));
+
+            irr::f32 node2X = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode + 1)));
+            irr::f32 node2Z = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode + 1)));
+            irr::f32 node2Y = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode + 1));
+
+            irr::f32 midPointX = (node1X + node2X) / 2.0;
+            irr::f32 midPointY = (node1Y + node2Y) / 2.0;
+            irr::f32 midPointZ = (node1Z + node2Z) / 2.0;
+
+            // Find length and angle of this section
+            irr::f32 rotation = atan2(node2X - node1X, node2Z - node1Z) * irr::core::RADTODEG;
+            irr::f32 sectionLength = pow(pow(node2X - node1X, 2.0) + pow(node2Z - node1Z, 2.0), 0.5);
+
+            //Create land object and load into vector
+            std::string internalName = "LandObject_";
+            internalName.append(std::to_string(landObjects.size()));
+            
+            // Set properties
+            std::string objectName = "PONTOON_INTERNAL"; // This name is used to trigger floating behaviour in 'land object'
+            bool collisionObject = true;
+            bool radarObject = false; // We could turn this on, but may use a lot of memory!
+            bool morph = false;
+
+            landObjects.push_back(LandObject(objectName.c_str(), internalName, worldName, irr::core::vector3df(midPointX, midPointY, midPointZ), rotation, collisionObject, radarObject, morph, terrain, smgr, dev, true, sectionLength));
+
+        }
+    }
+}
+
+void LandObjects::update(irr::f32 tideHeight, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
+{
+    for (std::vector<LandObject>::iterator it = landObjects.begin(); it != landObjects.end(); ++it) {
+
+        if (it->getFloating()) {
+            irr::f32 xPos, yPos, zPos;
+            irr::core::vector3df pos = it->getPosition();
+            xPos = pos.X;
+            //yPos = tideHeight + model->getWaveHeight(pos.X, pos.Z) + it->getHeightCorrection();
+            yPos = tideHeight + it->getHeightCorrection(); // Don't include wave height for floating pontoons etc.
+            zPos = pos.Z;
+            it->setPosition(irr::core::vector3df(xPos, yPos, zPos));
+        }
+        //Set or clear triangle selector depending on distance from own ship;
+        irr::f32 landObjectMaxLength = it->getSceneNode()->getTransformedBoundingBox().getExtent().getLength(); // Max length between corners of the bounding box
+        if (it->getSceneNode()->getAbsolutePosition().getDistanceFrom(ownShipPosition) < (ownShipLength + landObjectMaxLength)) {
+            it->enableTriangleSelector(true);
+        }
+        else {
+            it->enableTriangleSelector(false);
+        }
 
     }
 }
