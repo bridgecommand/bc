@@ -41,14 +41,8 @@
 
 ////using namespace irr;
 
-RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(360)
+RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(360), radarGain(50), radarRainClutterReduction(0), radarSeaClutterReduction(0)
 {
-    
-    //Initial values for controls, all 0-100:
-    radarGain = 50;
-    radarRainClutterReduction=0;
-    radarSeaClutterReduction=0;
-
     currentRadarColourChoice=0;
 
     EBLRangeNm=0;
@@ -108,6 +102,20 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
     irr::u32 rangeResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes_Max");
     irr::u32 angularResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes_Max");
     
+    //Initial values for controls, all 0-100:
+    radarGain = IniFile::iniFileTof32(iniFilename, "RADAR_InitialGain", radarGain);
+    radarRainClutterReduction = IniFile::iniFileTof32(iniFilename, "RADAR_InitialRainClutter", radarRainClutterReduction);
+    radarSeaClutterReduction = IniFile::iniFileTof32(iniFilename, "RADAR_InitialSeaClutter", radarSeaClutterReduction);
+
+    if (radarGain > 100) { radarGain = 100; }
+    if (radarGain < 0) { radarGain = 0; }
+    
+    if (radarRainClutterReduction > 100) { radarRainClutterReduction = 100; }
+    if (radarRainClutterReduction < 0) { radarRainClutterReduction = 0; }
+    
+    if (radarSeaClutterReduction > 100) { radarSeaClutterReduction = 100; }
+    if (radarSeaClutterReduction < 0) { radarSeaClutterReduction = 0; }
+
     //Load parameters from the radarConfig file (if it exists)
     irr::u32 numberOfRadarRanges = IniFile::iniFileTou32(radarConfigFile,"NumberOfRadarRanges");
     if (numberOfRadarRanges==0) {
