@@ -14,5 +14,6 @@ add_executable(bridgecommand-ed
 
 
 target_link_libraries(bridgecommand-ed
-    bc-irrlicht
+    #bc-irrlicht
+    irrlicht
 )

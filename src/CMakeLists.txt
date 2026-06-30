@@ -14,12 +14,32 @@ if (APPLE)
     set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 endif (APPLE)
 
-add_subdirectory(libs/asio)
-add_subdirectory(libs/enet-1.3.14)
-add_subdirectory(libs/Irrlicht)
-add_subdirectory(libs/serial)
+if (WIN32)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+endif (WIN32)
 
+add_subdirectory(libs/asio)
+add_subdirectory(libs/serial)
 include_directories("libs/enet-1.3.14/include")
+
+if (WIN32)
+include_directories(libs/libsndfile/include)
+include_directories(libs/portaudio/include)
+include_directories(libs/Irrlicht/irrlicht-svn/include)
+include_directories(libs/OpenXR/OpenXR-SDK-main/include/openxr)
+
+LINK_DIRECTORIES(libs/libsndfile/lib)
+LINK_DIRECTORIES(libs/portaudio/lib)
+LINK_DIRECTORIES(libs/enet-1.3.14)
+LINK_DIRECTORIES(libs/Irrlicht/irrlicht-svn/lib/Win64-visualstudio)
+LINK_DIRECTORIES(libs/OpenXR/OpenXR-SDK-main/build/win64/src/loader/Release)
+else (WIN32)
+add_subdirectory(libs/enet-1.3.14)
+#add_subdirectory(libs/Irrlicht)
+add_subdirectory(libs/OpenXR/OpenXR-SDK-main)
+endif (WIN32)
+
 add_definitions(-DWITH_SOUND)
 # add_definitions(-DWITH_PROFILING)
 if (NOT APPLE)
@@ -36,9 +56,9 @@ add_subdirectory(repeater)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
-if (NOT APPLE)
-find_package(OpenXR REQUIRED)
-endif(NOT APPLE)
+#if (NOT APPLE)
+#find_package(OpenXR REQUIRED)
+#endif(NOT APPLE)
 
 set(BC_SOURCES
     iprof.cpp
@@ -130,14 +150,19 @@ if (APPLE)
 else (APPLE)
     target_link_libraries(bridgecommand-bc PRIVATE
         bc-asio
-        enet
+        enet64
         bc-serial
-        bc-irrlicht
+        irrlicht #(instead of bc-irrlicht below)
+		#bc-irrlicht
         Threads::Threads
         sndfile
-        portaudio
-        asound
-        GL
-        OpenXR::openxr_loader
+        portaudio_x64
+        #asound
+        #GL
+        #OpenXR::openxr_loader
+        winmm
+        ws2_32
+        openxr_loader
+        opengl32.lib
     )
 endif (APPLE)
