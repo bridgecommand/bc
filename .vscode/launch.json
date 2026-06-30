@@ -1,0 +1,55 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Bridge Command",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/BridgeCommand-bc.exe",
+            "cwd": "${workspaceFolder}/bin"
+        },
+        {
+            "name": "Scenario Editor",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/BridgeCommand-ed.exe",
+            "cwd": "${workspaceFolder}/bin"
+        },
+        {
+            "name": "Settings Editor",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/BridgeCommand-ini.exe",
+            "cwd": "${workspaceFolder}/bin"
+        },
+        {
+            "name": "Map Controller",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/BridgeCommand-mc.exe",
+            "cwd": "${workspaceFolder}/bin"
+        },
+        {
+            "name": "Multiplayer Hub",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/BridgeCommand-mh.exe",
+            "cwd": "${workspaceFolder}/bin"
+        },
+        {
+            "name": "Repeater",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/BridgeCommand-rp.exe",
+            "cwd": "${workspaceFolder}/bin"
+        },
+        {
+            "name": "Launcher",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/BridgeCommand.exe",
+            "cwd": "${workspaceFolder}/bin"
+        }
+    ]
+}
