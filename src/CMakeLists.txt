@@ -31,6 +31,7 @@ LINK_DIRECTORIES(libs/portaudio/lib)
 LINK_DIRECTORIES(libs/enet-1.3.14)
 LINK_DIRECTORIES(libs/Irrlicht/irrlicht-svn/lib/Win64-visualstudio)
 LINK_DIRECTORIES(libs/OpenXR/OpenXR-SDK-main/build/win64/src/loader/Release)
+LINK_DIRECTORIES(libs/OpenXR/OpenXR-SDK-main/build/win64/src/loader/Debug)
 else (WIN32)
 add_subdirectory(libs/asio)
 add_subdirectory(libs/enet-1.3.14)
@@ -158,7 +159,8 @@ elseif (WIN32)
         portaudio_x64
         winmm
         ws2_32
-        openxr_loader
+        debug openxr_loaderd
+        optimized openxr_loader
         opengl32
     )
 else ()
