@@ -16,12 +16,21 @@ add_executable(bridgecommand-rp
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
 
+if (WIN32)
 target_link_libraries(bridgecommand-rp
     bc-asio
     enet64
-    #bc-irrlicht
     irrlicht
     Threads::Threads
     winmm
     ws2_32
 )
+else ()
+target_link_libraries(bridgecommand-rp
+    bc-asio
+    enet
+    bc-irrlicht
+    Threads::Threads
+)
+endif ()
+

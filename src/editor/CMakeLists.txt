@@ -12,8 +12,12 @@ add_executable(bridgecommand-ed
     StartupEventReceiver.cpp
 )
 
-
+if (WIN32)
 target_link_libraries(bridgecommand-ed
-    #bc-irrlicht
     irrlicht
 )
+else ()
+target_link_libraries(bridgecommand-ed
+    bc-irrlicht
+)
+endif ()

@@ -6,7 +6,12 @@ add_executable(bridgecommand-ini
     ../Utilities.cpp
 )
 
+if (WIN32)
 target_link_libraries(bridgecommand-ini
-    #bc-irrlicht
     irrlicht
 )
+else ()
+target_link_libraries(bridgecommand-ini
+    bc-irrlicht
+)
+endif ()
