@@ -14,12 +14,33 @@ if (APPLE)
     set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 endif (APPLE)
 
+if (WIN32)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+
+add_subdirectory(libs/asio)
+add_subdirectory(libs/serial)
+include_directories("libs/enet-1.3.14/include")
+include_directories(libs/libsndfile/include)
+include_directories(libs/portaudio/include)
+include_directories(libs/Irrlicht/irrlicht-svn/include)
+include_directories(libs/OpenXR/OpenXR-SDK-main/include/openxr)
+
+LINK_DIRECTORIES(libs/libsndfile/lib)
+LINK_DIRECTORIES(libs/portaudio/lib)
+LINK_DIRECTORIES(libs/enet-1.3.14)
+LINK_DIRECTORIES(libs/Irrlicht/irrlicht-svn/lib/Win64-visualstudio)
+LINK_DIRECTORIES(libs/OpenXR/OpenXR-SDK-main/build/win64/src/loader/Release)
+LINK_DIRECTORIES(libs/OpenXR/OpenXR-SDK-main/build/win64/src/loader/Debug)
+else (WIN32)
 add_subdirectory(libs/asio)
 add_subdirectory(libs/enet-1.3.14)
 add_subdirectory(libs/Irrlicht)
 add_subdirectory(libs/serial)
 
 include_directories("libs/enet-1.3.14/include")
+endif (WIN32)
+
 add_definitions(-DWITH_SOUND)
 # add_definitions(-DWITH_PROFILING)
 if (NOT APPLE)
@@ -36,9 +57,9 @@ add_subdirectory(repeater)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
-if (NOT APPLE)
+if (NOT APPLE AND NOT WIN32)
 find_package(OpenXR REQUIRED)
-endif(NOT APPLE)
+endif(NOT APPLE AND NOT WIN32)
 
 set(BC_SOURCES
     iprof.cpp
@@ -127,7 +148,22 @@ if (APPLE)
 	    "-framework AudioToolbox"
 	    "-framework CoreAudio"
     )
-else (APPLE)
+elseif (WIN32)
+    target_link_libraries(bridgecommand-bc PRIVATE
+        bc-asio
+        enet64
+        bc-serial
+        irrlicht 
+        Threads::Threads
+        sndfile
+        portaudio_x64
+        winmm
+        ws2_32
+        debug openxr_loaderd
+        optimized openxr_loader
+        opengl32
+    )
+else ()
     target_link_libraries(bridgecommand-bc PRIVATE
         bc-asio
         enet
@@ -140,4 +176,4 @@ else (APPLE)
         GL
         OpenXR::openxr_loader
     )
-endif (APPLE)
+endif ()
