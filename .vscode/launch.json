@@ -3,49 +3,49 @@
     "configurations": [
         
         {
-            "name": "Bridge Command",
+            "name": "Bridge Command (vsdbg)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/BridgeCommand-bc.exe",
             "cwd": "${workspaceFolder}/bin"
         },
         {
-            "name": "Scenario Editor",
+            "name": "Scenario Editor (vsdbg)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/BridgeCommand-ed.exe",
             "cwd": "${workspaceFolder}/bin"
         },
         {
-            "name": "Settings Editor",
+            "name": "Settings Editor (vsdbg)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/BridgeCommand-ini.exe",
             "cwd": "${workspaceFolder}/bin"
         },
         {
-            "name": "Map Controller",
+            "name": "Map Controller (vsdbg)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/BridgeCommand-mc.exe",
             "cwd": "${workspaceFolder}/bin"
         },
         {
-            "name": "Multiplayer Hub",
+            "name": "Multiplayer Hub (vsdbg)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/BridgeCommand-mh.exe",
             "cwd": "${workspaceFolder}/bin"
         },
         {
-            "name": "Repeater",
+            "name": "Repeater (vsdbg)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/BridgeCommand-rp.exe",
             "cwd": "${workspaceFolder}/bin"
         },
         {
-            "name": "Launcher",
+            "name": "Launcher (vsdbg)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/BridgeCommand.exe",
