@@ -62,6 +62,9 @@ void Light::update(irr::f32 scenarioTime)
 {
     //convert scenario time (in seconds) into hours
     irr::f32 hourTime = std::fmod(scenarioTime,SECONDS_IN_DAY)/SECONDS_IN_HOUR;
+    while (hourTime < 0) {
+        hourTime += HOURS_IN_DAY;
+    }
 
     //Light parameters
     irr::s32 lightLow=50;

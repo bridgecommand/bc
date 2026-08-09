@@ -32,7 +32,8 @@ const irr::f32 VIEW_PROPORTION_3D = 0.6;
 
 //units conversions
 const irr::f32 SECONDS_IN_HOUR = 3600.0;
-const irr::f32 SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
+const irr::f32 HOURS_IN_DAY = 24.0;
+const irr::f32 SECONDS_IN_DAY = SECONDS_IN_HOUR * HOURS_IN_DAY;
 const irr::f32 M_IN_NM = 1852.0;
 const irr::f32 KTS_TO_MPS = M_IN_NM/SECONDS_IN_HOUR;
 const irr::f32 MPS_TO_KTS = SECONDS_IN_HOUR/M_IN_NM;
