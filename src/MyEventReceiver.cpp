@@ -1024,6 +1024,12 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 case irr::KEY_KEY_H:
                     model->startHorn();
                     break;
+                case irr::KEY_KEY_8:
+                    model->changeTime(-3600);
+                    break;
+                case irr::KEY_KEY_9:
+                    model->changeTime(3600);
+                    break;
 
                     // DEE_NOV22 vvvvv
 

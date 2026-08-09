@@ -365,6 +365,12 @@ SimulationModel::~SimulationModel()
         return scenarioOffsetTime;
     }
 
+    void SimulationModel::changeTime(irr::f32 deltaTime) {
+        scenarioTime += deltaTime;
+        // Need to update all other ship leg information to keep consistent.
+        otherShips.offsetLegTimes(deltaTime);
+    }
+
     void SimulationModel::setTimeDelta(irr::f32 scenarioTime) {
         this->scenarioTime = scenarioTime;
     }

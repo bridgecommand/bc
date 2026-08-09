@@ -360,6 +360,10 @@ int main()
         // Find current time acceleration
         accelerator = eventReceiver.getAccelerator();
 
+        // Apply a time shift if requrested by the event receiver
+        irr::f32 timeShift = eventReceiver.getAndResetTimeShift();
+        scenarioTime += timeShift;
+
         //Do time handling here.
         currentTime = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = currentTime-previousTime;

@@ -61,6 +61,7 @@ class OtherShips
         void resetLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm, irr::f32 scenarioTime);
         std::string getName(int number) const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void offsetLegTimes(irr::f32 deltaTime);
         void enableAllTriangleSelectors();
         irr::scene::ISceneNode* getSceneNode(int number);
 

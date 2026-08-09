@@ -22,6 +22,7 @@
         irr::f32 initialAccelerator) //Constructor
 	{
 		accelerator = initialAccelerator;
+        timeShift = 0;
         this->pauseButtonID = pauseButtonID;
         this->runButtonID = runButtonID;
 	}
@@ -45,7 +46,11 @@
             {
                 accelerator = 0;
             } else if ((event.KeyInput.Key==irr::KEY_KEY_0) || (event.KeyInput.Key == irr::KEY_RETURN)) {
-                    accelerator = 1;
+                accelerator = 1;
+            } else if (event.KeyInput.Key == irr::KEY_KEY_8) {
+                timeShift = -3600;
+            } else if (event.KeyInput.Key == irr::KEY_KEY_9) {
+                timeShift = 3600;
             }
         }
         return false;
@@ -54,4 +59,11 @@
     irr::f32 EventReceiver::getAccelerator() const
     {
         return accelerator;
+    }
+
+    irr::f32 EventReceiver::getAndResetTimeShift()
+    {
+        irr::f32 returnValue = timeShift;
+        timeShift = 0;
+        return returnValue;
     }
