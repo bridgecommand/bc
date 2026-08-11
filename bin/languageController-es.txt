@@ -90,3 +90,6 @@ multiplayer="¿Modo multijugador?"
 multiplayerinfo="Editar un escenario multijugador: \n\nEl menú 'Tu buque' será ignorado. Cada 'Otro buque' será utilizado en orden por los clientes multijugador como su buque. Añade una ruta para cada buque para establecer la velocidad inicial y el rumbo."
 multiplayerNeedsMP="El nombre de los escenario multijugador debe terminar por "_mp""
 nonMultiplayerNoMP="El nombre de los escenario que NO son multijugador NO debe terminar por '_mp'"
+
+shiftTimeForward="Adelantar la hora del día"
+shiftTimeBackward="Retroceder la hora del día"

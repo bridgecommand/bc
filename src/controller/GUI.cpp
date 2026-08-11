@@ -179,6 +179,10 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     brightnessBar->setSmallStep(1);
     brightnessBar->setPos(100);
 
+    //Add buttons to allow user to change scenario time
+    guienv->addButton(irr::core::rect<irr::s32>(15.0 * fw, 1 * fh, 35 * fw, 3.25 * fh), extraTab, GUI_ID_TIMEFORWARD_BUTTON, language->translate("shiftTimeForward").c_str());
+    guienv->addButton(irr::core::rect<irr::s32>(15.0 * fw, 3.25 * fh, 35 * fw, 5.5 * fh), extraTab, GUI_ID_TIMEBACKWARD_BUTTON, language->translate("shiftTimeBackward").c_str());
+
     //This is used to track when the edit boxes need updating, when ship or legs have changed
     editBoxesNeedUpdating = false;
 

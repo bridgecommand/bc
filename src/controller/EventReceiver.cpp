@@ -195,6 +195,16 @@
                     network->setStringToSend(messageToSend);
                 }
 
+                if (id == GUIMain::GUI_ID_TIMEFORWARD_BUTTON) {
+                    std::string messageToSend = "MCCT,3600#";
+                    network->setStringToSend(messageToSend);
+                }
+
+                if (id == GUIMain::GUI_ID_TIMEBACKWARD_BUTTON) {
+                    std::string messageToSend = "MCCT,-3600#";
+                    network->setStringToSend(messageToSend);
+                }
+
             }
 
             if (event.GUIEvent.EventType==irr::gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_CHANGED) {
@@ -299,6 +309,15 @@
 
             } else {
                 //Shift and Ctrl not down
+                if (event.KeyInput.Key == irr::KEY_KEY_9) {
+                    std::string messageToSend = "MCCT,3600#";
+                    network->setStringToSend(messageToSend);
+                }
+
+                if (event.KeyInput.Key == irr::KEY_KEY_8) {
+                    std::string messageToSend = "MCCT,-3600#";
+                    network->setStringToSend(messageToSend);
+                }
 
             }
 		} //end of key down event

@@ -411,6 +411,13 @@ void NetworkPrimary::receiveNetwork()
                                             }
                                             model->setOtherShipSARTOn(shipNo, sartStatus);
                                         }
+                                    } else if (thisCommand.substr(0, 2).compare("CT") == 0) {
+                                        //'CT', Change time
+                                        std::vector<std::string> parts = Utilities::split(thisCommand, ','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 2) {
+                                            irr::f32 timeChange = Utilities::lexical_cast<irr::f32>(parts.at(1));
+                                            model->changeTime(timeChange);
+                                        }
                                     }
 
 

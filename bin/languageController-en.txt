@@ -91,3 +91,6 @@ multiplayerinfo="Editing a multiplayer scenario:\n\nThe 'own ship' entry will be
 multiplayerNeedsMP="Multiplayer scenario name must end in _mp"
 nonMultiplayerNoMP="Non-multiplayer scenario name must not end in _mp"
 
+shiftTimeForward="Change time of day later"
+shiftTimeBackward="Change time of day earlier"
+
