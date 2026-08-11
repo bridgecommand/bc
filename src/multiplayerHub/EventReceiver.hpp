@@ -26,16 +26,22 @@ public:
     EventReceiver(
         irr::s32 pauseButtonID, 
         irr::s32 runButtonID,
+        irr::s32 timeForwardButtonID, 
+        irr::s32 timeBackwardButtonID,
         irr::f32 initialAccelerator);
     bool OnEvent(const irr::SEvent& event);
 
     irr::f32 getAccelerator() const;
+    irr::f32 getAndResetTimeShift(); 
 
 private:
 
     irr::f32 accelerator;
+    irr::f32 timeShift;
     irr::s32 pauseButtonID;
     irr::s32 runButtonID;
+    irr::s32 timeForwardButtonID;
+    irr::s32 timeBackwardButtonID;
 
 };
 

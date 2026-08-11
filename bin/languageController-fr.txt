@@ -90,3 +90,6 @@ multiplayer="Mode multijoueurs ?"
 multiplayerinfo="Edition d'un scénario multijoueurs :\n\nL'entrée 'Votre navire' sera ignorée.\n\nChaque 'autre navire' est utilisé dans l'ordre par les clients multijoueurs comme leur navire. Ajoutez un itinéraire pour chaque navire pour paramétrer la vitesse et le cap initiaux."
 multiplayerNeedsMP="Le nom du scénario multijoueurs doit se terminer par _mp"
 nonMultiplayerNoMP="Le scénario non multijoueurs ne doit pas se terminer par  _mp"
+
+shiftTimeForward="Avancer l'heure de la journée"
+shiftTimeBackward="Reculer l'heure de la journée"

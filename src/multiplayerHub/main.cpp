@@ -299,14 +299,18 @@ int main()
     irr::u32 sh = driver->getScreenSize().Height;
     irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.74*sh),true);
 
-    // Add run and pause buttons
+    // Add run, pause and time shift buttons
     irr::s32 runButtonID = 101;
     irr::s32 pauseButtonID = 102;
-    irr::gui::IGUIButton* runButton = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.76*sh,0.49*su,0.99*sh), 0, runButtonID, language.translate("run").c_str());
-    irr::gui::IGUIButton* pauseButton = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.51*su,0.76*sh,0.99*su,0.99*sh), 0, pauseButtonID, language.translate("pause").c_str());
+    irr::s32 timeForwardButtonID = 103;
+    irr::s32 timeBackwardButtonID = 104;
+    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.76*sh,0.49*su,0.87*sh), 0, runButtonID, language.translate("run").c_str());
+    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.51*su,0.76*sh,0.99*su,0.87*sh), 0, pauseButtonID, language.translate("pause").c_str());
+    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01 * su, 0.88 * sh, 0.49 * su, 0.99 * sh), 0, timeForwardButtonID, language.translate("shiftTimeForward").c_str());
+    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.51 * su, 0.88 * sh, 0.99 * su, 0.99 * sh), 0, timeBackwardButtonID, language.translate("shiftTimeBackward").c_str());
 
     // Setup event receiver
-    EventReceiver eventReceiver(pauseButtonID, runButtonID, accelerator);
+    EventReceiver eventReceiver(pauseButtonID, runButtonID, timeForwardButtonID, timeBackwardButtonID, accelerator);
     device->setEventReceiver(&eventReceiver);
 
     //Fixme: Think about time zone handling
@@ -359,6 +363,10 @@ int main()
 
         // Find current time acceleration
         accelerator = eventReceiver.getAccelerator();
+
+        // Apply a time shift if requrested by the event receiver
+        irr::f32 timeShift = eventReceiver.getAndResetTimeShift();
+        scenarioTime += timeShift;
 
         //Do time handling here.
         currentTime = std::chrono::system_clock::now();

@@ -418,6 +418,13 @@ void OtherShip::resetLegs(irr::f32 course, irr::f32 speedKts, irr::f32 distanceN
     legs.push_back(stopLeg);
 }
 
+void OtherShip::offsetLegTimes(irr::f32 deltaTime)
+{
+    for (std::vector<Leg>::iterator it = legs.begin(); it != legs.end(); ++it) {
+        it->startTime += deltaTime;
+    }
+}
+
 void OtherShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (only used in multiplayer mode)
 {
     this->rateOfTurn = rateOfTurn;

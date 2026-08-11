@@ -179,6 +179,7 @@ public:
     //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
     uint64_t getTimestamp() const; //The unix timestamp in s
     uint64_t getTimeOffset() const; //The timestamp at the start of the first day of the scenario
+    void changeTime(irr::f32 deltaTime); // Change the scenario time, without affecting other ship movements
     irr::f32 getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
     void     setTimeDelta(irr::f32 scenarioTime);
 

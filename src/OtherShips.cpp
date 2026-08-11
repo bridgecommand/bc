@@ -336,3 +336,10 @@ void OtherShips::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
         (*it)->moveNode(deltaX,deltaY,deltaZ);
     }
 }
+
+void OtherShips::offsetLegTimes(irr::f32 deltaTime)
+{
+    for (std::vector<OtherShip*>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
+        (*it)->offsetLegTimes(deltaTime);
+    }
+}

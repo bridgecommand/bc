@@ -14,4 +14,5 @@ heading="Heading"
 startupInstructions="Please ensure each player has started Bridge Command first, then start the scenario by clicking OK below."
 run="Run"
 pause="Pause"
-
+shiftTimeForward="Change time of day later"
+shiftTimeBackward="Change time of day earlier"
