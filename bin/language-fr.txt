@@ -116,6 +116,11 @@ collided="COLLISION !"
 showinterface="Afficher"
 hideinterface="Cacher"
 
+time="Temps"
+pause="Pause"
+shiftTimeForward="Avancer l'heure"
+shiftTimeBackward="Reculer l'heure"
+
 exit="Quitter"
 
 log="!"

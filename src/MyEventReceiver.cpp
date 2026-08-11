@@ -721,6 +721,56 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 model->changeView();
             }
 
+            if (id == GUIMain::GUI_ID_TIMECOMPRESSION_0_BUTTON) 
+            {
+                model->setAccelerator(0.0);
+            }
+
+            if (id == GUIMain::GUI_ID_TIMECOMPRESSION_1_BUTTON)
+            {
+                model->setAccelerator(1.0);
+            }
+
+            if (id == GUIMain::GUI_ID_TIMECOMPRESSION_2_BUTTON)
+            {
+                model->setAccelerator(2.0);
+            }
+
+            if (id == GUIMain::GUI_ID_TIMECOMPRESSION_5_BUTTON)
+            {
+                model->setAccelerator(5.0);
+            }
+
+            if (id == GUIMain::GUI_ID_TIMECOMPRESSION_15_BUTTON)
+            {
+                model->setAccelerator(15.0);
+            }
+
+            if (id == GUIMain::GUI_ID_TIMECOMPRESSION_30_BUTTON)
+            {
+                model->setAccelerator(30.0);
+            }
+
+            if (id == GUIMain::GUI_ID_TIMECOMPRESSION_60_BUTTON)
+            {
+                model->setAccelerator(60.0);
+            }
+
+            if (id == GUIMain::GUI_ID_TIMECOMPRESSION_3600_BUTTON)
+            {
+                model->setAccelerator(3600.0);
+            }
+
+            if (id == GUIMain::GUI_ID_TIMEFORWARD_BUTTON)
+            {
+                model->changeTime(3600);
+            }
+
+            if (id == GUIMain::GUI_ID_TIMEBACKWARD_BUTTON)
+            {
+                model->changeTime(-3600);
+            }
+
         } // Button clicked
 
         if (event.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED)

@@ -475,6 +475,20 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         magnificationScrollbar->setSmallStep(5);
         magnificationScrollbar->setPos(1.0 * 10); // Initialise as 1x zoom
 
+        //Add extra controls for time (compression and time of day)
+        irr::gui::IGUITab* extraControlsTabTime = extraControlsTabControl->addTab(language->translate("time").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005 * su, 0.010 * sh, 0.16 * su, 0.035 * sh), extraControlsTabTime, GUI_ID_TIMECOMPRESSION_0_BUTTON, language->translate("pause").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005 * su, 0.035 * sh, 0.16 * su, 0.060 * sh), extraControlsTabTime, GUI_ID_TIMECOMPRESSION_1_BUTTON, L"1:1");
+        guienv->addButton(irr::core::rect<irr::s32>(0.005 * su, 0.060 * sh, 0.16 * su, 0.085 * sh), extraControlsTabTime, GUI_ID_TIMECOMPRESSION_2_BUTTON, L"2:1");
+        guienv->addButton(irr::core::rect<irr::s32>(0.005 * su, 0.085 * sh, 0.16 * su, 0.110 * sh), extraControlsTabTime, GUI_ID_TIMECOMPRESSION_5_BUTTON, L"5:1");
+        guienv->addButton(irr::core::rect<irr::s32>(0.005 * su, 0.110 * sh, 0.16 * su, 0.135 * sh), extraControlsTabTime, GUI_ID_TIMECOMPRESSION_15_BUTTON, L"15:1");
+
+        guienv->addButton(irr::core::rect<irr::s32>(0.165 * su, 0.010 * sh, 0.325 * su, 0.035 * sh), extraControlsTabTime, GUI_ID_TIMECOMPRESSION_30_BUTTON, L"30:1");
+        guienv->addButton(irr::core::rect<irr::s32>(0.165 * su, 0.035 * sh, 0.325 * su, 0.060 * sh), extraControlsTabTime, GUI_ID_TIMECOMPRESSION_60_BUTTON, L"60:1");
+        guienv->addButton(irr::core::rect<irr::s32>(0.165 * su, 0.060 * sh, 0.325 * su, 0.085 * sh), extraControlsTabTime, GUI_ID_TIMECOMPRESSION_3600_BUTTON, L"3600:1");
+        guienv->addButton(irr::core::rect<irr::s32>(0.165 * su, 0.085 * sh, 0.325 * su, 0.110 * sh), extraControlsTabTime, GUI_ID_TIMEFORWARD_BUTTON, language->translate("shiftTimeForward").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.165 * su, 0.110 * sh, 0.325 * su, 0.135 * sh), extraControlsTabTime, GUI_ID_TIMEBACKWARD_BUTTON, language->translate("shiftTimeBackward").c_str());
+
         //Add an additional window for lines (will normally be hidden)
         irr::core::rect<irr::s32> linesWindowPos = stdDataDisplayPos;
         linesWindowPos.LowerRightCorner -= irr::core::position2d<irr::s32>(0,0.03*sh);
