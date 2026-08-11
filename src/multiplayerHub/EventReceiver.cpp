@@ -19,12 +19,16 @@
     EventReceiver::EventReceiver(
         irr::s32 pauseButtonID, 
         irr::s32 runButtonID,
+        irr::s32 timeForwardButtonID,
+        irr::s32 timeBackwardButtonID,
         irr::f32 initialAccelerator) //Constructor
 	{
 		accelerator = initialAccelerator;
         timeShift = 0;
         this->pauseButtonID = pauseButtonID;
         this->runButtonID = runButtonID;
+        this->timeForwardButtonID = timeForwardButtonID;
+        this->timeBackwardButtonID = timeBackwardButtonID;
 	}
 
     bool EventReceiver::OnEvent(const irr::SEvent& event)
@@ -37,6 +41,10 @@
                     accelerator = 0;
                 } else if (id == runButtonID) {
                     accelerator = 1;
+                } else if (id == timeForwardButtonID) {
+                    timeShift = 3600;
+                } else if (id == timeBackwardButtonID) {
+                    timeShift = -3600;
                 }
             }
 		}
