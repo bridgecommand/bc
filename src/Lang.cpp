@@ -28,9 +28,9 @@ Lang::Lang(std::string language)
 irr::core::stringw Lang::translate(std::string phraseName)
 {
     //Look up
-    std::wstring translatedPhrase = IniFile::iniFileToWString(languageFileName, phraseName);
+    std::string translatedPhrase = IniFile::iniFileToString(languageFileName, phraseName);
     //Fall back
-    if (translatedPhrase==L"") {
+    if (translatedPhrase=="") {
         if (phraseName == "deg") {
             //FIXME: Temp fix for the degree symbol, while utf-8 isn't properly sorted on all platforms
             wchar_t degSymbolChar = 176;
@@ -39,21 +39,22 @@ irr::core::stringw Lang::translate(std::string phraseName)
             return degSymbolString;
         } else {
             std::cout << "Translation for " << phraseName << " not found in " << languageFileName << std::endl;
-            translatedPhrase = std::wstring(phraseName.begin(), phraseName.end());
+            translatedPhrase = phraseName;
         }
     }
 
     //Convert '\n' characters within string to a newline - based on http://stackoverflow.com/a/24315631
     size_t start_pos = 0;
-    std::wstring from = L"\\n";
-    std::wstring to = L"\n";
-    while((start_pos = translatedPhrase.find(from, start_pos)) != std::wstring::npos) {
+    std::string from = "\\n";
+    std::string to = "\n";
+    while((start_pos = translatedPhrase.find(from, start_pos)) != std::string::npos) {
         translatedPhrase.replace(start_pos, from.length(), to);
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
     }
 
     //convert to stringw
-    irr::core::stringw returnPhrase(translatedPhrase.c_str());
+    irr::core::stringw returnPhrase;
+    irr::core::multibyteToWString(returnPhrase, translatedPhrase.c_str());
 
     return returnPhrase;
 }

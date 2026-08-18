@@ -36,25 +36,16 @@ public:
     IniCache() = default;
 
     std::string getStringValue(const std::string &fileName, const std::string &key, const std::string &defValue = "");
-    std::wstring getWStringValue(const std::string &fileName, const std::string &key, const std::wstring &defValue = L"");
-
     irr::u32 getUIntValue(const std::string &fileName, const std::string &key, irr::u32 defValue = 0);
     irr::s32 getSIntValue(const std::string &fileName, const std::string &key, irr::s32 defValue = 0);
     irr::f32 getFloatValue(const std::string &fileName, const std::string &key, irr::f32 defValue = 0.f);
 
 private:
     bool readFile(const std::string &fileName);
-
-    bool readWFile(const std::string &fileName);
-
-private:
     std::map<std::string, std::map<std::string,  std::string>>  m_stringData;
-    std::map<std::string, std::map<std::wstring, std::wstring>> m_wstringData;
 };
 
-
 static IniCache g_iniCache;
-
 
 bool IniCache::readFile(const std::string& fileName)
 {
@@ -111,63 +102,6 @@ bool IniCache::readFile(const std::string& fileName)
     return true;
 }
 
-
-bool IniCache::readWFile(const std::string& fileName)
-{
-    if (m_stringData.find(fileName) != m_stringData.end()) {
-        return true; // file already read
-    }
-
-    std::wifstream file(fileName.c_str());
-
-    //Set UTF-8 on Linux/OSX etc
-    #ifndef _WIN32
-    try {
-        #  ifdef __APPLE__
-        char* thisLocale = setlocale(LC_ALL, "");
-        if (thisLocale) {
-            file.imbue(std::locale(thisLocale));
-        }
-        #  else
-        file.imbue(std::locale("en_US.UTF8"));
-        #  endif
-    } catch (const std::runtime_error& runtimeError) {
-        file.imbue(std::locale(""));
-    }
-    #endif
-
-    if (!file.is_open()) {
-        if (IniFile::irrlichtLogger) {
-            std::string logMessage = "Unable to open file: ";
-            logMessage.append(fileName);
-            IniFile::irrlichtLogger->log(logMessage.c_str());
-        }
-        else {
-            std::cerr << "Unable to open file " << fileName << std::endl;
-        }
-        return false;
-    }
-
-    std::wstring line;
-    while ( std::getline (file,line) )
-    {
-        const std::size_t equalsPos = line.find_first_of(L"=");
-        if (equalsPos != std::wstring::npos) {
-            std::wstring key   = Utilities::trim(line.substr(0, equalsPos));
-            std::wstring value = Utilities::trim(line.substr(equalsPos+1, std::wstring::npos));
-
-            Utilities::to_lower(key);
-            value = Utilities::trim(value, L"\"");
-
-            m_wstringData[fileName][key] = value;
-        }
-    }
-
-    file.close();
-    return true;
-}
-
-
 std::string IniCache::getStringValue(const std::string& fileName, const std::string& key, const std::string& defValue)
 {
     std::string keyLow = key;
@@ -189,30 +123,6 @@ std::string IniCache::getStringValue(const std::string& fileName, const std::str
     }
 
     return keyIt->second;
-}
-
-std::wstring IniCache::getWStringValue(const std::string& fileName, const std::string& key, const std::wstring& defValue)
-{
-    std::wstring keyLow = std::wstring(key.begin(), key.end());
-    Utilities::to_lower(keyLow);
-
-    auto fileIt = m_wstringData.find(fileName);
-    if (fileIt == m_wstringData.end()) {
-        if (!readWFile(fileName)) {
-            // file not found
-            return defValue;
-        }
-        fileIt = m_wstringData.find(fileName);
-        assert(fileIt != m_wstringData.end());
-    }
-
-    const auto keyIt = fileIt->second.find(keyLow);
-    if (keyIt == (fileIt->second).end()) {
-        return defValue;
-    }
-
-    return keyIt->second;
-
 }
 
 irr::u32 IniCache::getUIntValue(const std::string& fileName, const std::string& key, irr::u32 defValue)
@@ -288,11 +198,6 @@ namespace IniFile
     std::string iniFileToString(const std::string &fileName, const std::string &key, const std::string &defValue)
     {
         return g_iniCache.getStringValue(fileName, key, defValue);
-    }
-
-    std::wstring iniFileToWString(const std::string &fileName, const std::string &key, const std::wstring &defValue)
-    {
-        return g_iniCache.getWStringValue(fileName, key, defValue);
     }
 
     //Load unsigned integer from an ini file
