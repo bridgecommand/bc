@@ -247,6 +247,8 @@ private:
     bool previousJoystickPOVInitialised;
 
     irr::u32 linesMode; // 0 = none, 1 = own ship end, 2 = other end
+
+    irr::f32 preShutdownAccelerator;
 };
 
 #endif

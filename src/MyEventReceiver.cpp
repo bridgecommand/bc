@@ -478,6 +478,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_CLOSE_BOX)
             {
                 shutdownDialogActive = false;
+                model->setAccelerator(preShutdownAccelerator);
             }
         }
 
@@ -2151,10 +2152,10 @@ bool MyEventReceiver::IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) co
 
 void MyEventReceiver::startShutdown()
 {
-    model->setAccelerator(0.0);
-    device->sleep(500);
     if (!shutdownDialogActive)
     {
+        preShutdownAccelerator = model->getAccelerator();
+        model->setAccelerator(0.0);
         device->getGUIEnvironment()->getRootGUIElement()->setVisible(true);
         device->getGUIEnvironment()->addMessageBox(L"Quit?", L"Quit?", true, irr::gui::EMBF_OK | irr::gui::EMBF_CANCEL, 0, GUIMain::GUI_ID_CLOSE_BOX); // I18n
         shutdownDialogActive = true;
