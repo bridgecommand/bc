@@ -18,6 +18,13 @@
 #include "Lang.hpp"
 #include "IniFile.hpp"
 
+#ifdef _WIN32
+// For UTF8 to ANSI conversion
+#include <codecvt>
+#include <locale>
+#include <vector>
+#endif // _WIN32
+
 //using namespace irr;
 
 Lang::Lang(std::string language)
@@ -51,6 +58,16 @@ irr::core::stringw Lang::translate(std::string phraseName)
         translatedPhrase.replace(start_pos, from.length(), to);
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
     }
+
+#ifdef _WIN32
+    // If Windows, convert the UTF8 string to ANSI:
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> wconv;
+    std::wstring wstr = wconv.from_bytes(translatedPhrase);
+    // wstring to string
+    std::vector<char> buf(wstr.size());
+    std::use_facet<std::ctype<wchar_t>>(std::locale(".1252")).narrow(wstr.data(), wstr.data() + wstr.size(), '?', buf.data());
+    translatedPhrase = std::string(buf.data(), buf.size());
+#endif
 
     //convert to stringw
     irr::core::stringw returnPhrase;
