@@ -1,7 +1,7 @@
 Multiplayer Language file. To translate, please change the part after the 'equals' symbol
 The characters \n will be replaced with a line break, so multiple lines of text are possible
 
-This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
+This file must be saved with UTF-8 encoding on all platforms
 
 scnChoose="Veuillez choisir un scénario :"
 hostname="Nom d'hôte (nom du PC) pour chaque joueur.\nLes entrées doivent être séparées par des virgules."
