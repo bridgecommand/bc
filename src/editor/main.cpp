@@ -629,14 +629,10 @@ int main (int argc, char ** argv)
             //Set UTF-8 on Linux/OSX etc
             #ifndef _WIN32
                 try {
-            #  ifdef __APPLE__
-                    char* thisLocale = setlocale(LC_ALL, "");
+                    char* thisLocale = setlocale(LC_CTYPE, "");
                     if (thisLocale) {
                         descriptionStream.imbue(std::locale(thisLocale));
                     }
-            #  else
-                    descriptionStream.imbue(std::locale("en_US.UTF8"));
-            #  endif
                 } catch (const std::runtime_error& runtimeError) {
                     descriptionStream.imbue(std::locale(""));
                 }
