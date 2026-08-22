@@ -289,6 +289,11 @@ void checkUserScenarioDir(void)
 int main (int argc, char ** argv)
 {
 
+    // For POSIX, set default locale character type (UTF-8)
+    #ifndef _WIN32
+    setlocale(LC_ALL, "");
+    #endif
+    
     #ifdef FOR_DEB
     chdir("/usr/share/bridgecommand");
     #endif // FOR_DEB
@@ -626,10 +631,10 @@ int main (int argc, char ** argv)
 
             //Load description information
             std::ifstream descriptionStream (descriptionFilename.c_str());
-            //Set UTF-8 on Linux/OSX etc
             #ifndef _WIN32
+            //Get currently used locale (should be for UTF-8), and use for file reading
                 try {
-                    char* thisLocale = setlocale(LC_CTYPE, "");
+                    char* thisLocale = setlocale(LC_CTYPE, NULL);
                     if (thisLocale) {
                         descriptionStream.imbue(std::locale(thisLocale));
                     }

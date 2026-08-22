@@ -219,18 +219,14 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
                     irr::io::path descriptionFilePath = fileName;
                     irr::io::path descriptionFilename = descriptionFilePath.append("/description.ini");
                     std::ifstream descriptionStream (descriptionFilename.c_str());
-                    //Set UTF-8 on Linux/OSX etc
                     #ifndef _WIN32
+                    //Get currently used locale (should be for UTF-8), and use for file reading
                         try {
-//                    #  ifdef __APPLE__
-                            char* thisLocale = setlocale(LC_CTYPE, "");
+                            char* thisLocale = setlocale(LC_CTYPE, NULL);
                             if (thisLocale) {
                                 descriptionStream.imbue(std::locale(thisLocale));
                             }
-//                    #  else
-//                            setlocale(LC_CTYPE, "");
-//                            descriptionStream.imbue(std::locale("en_US.UTF8"));
-//                    #  endif
+
                         } catch (const std::runtime_error& runtimeError) {
                             descriptionStream.imbue(std::locale(""));
                         }
