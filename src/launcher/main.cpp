@@ -368,6 +368,11 @@ public:
 int main (int argc, char ** argv)
 {
 
+    // For POSIX, set default locale character type (UTF-8)
+    #ifndef _WIN32
+    setlocale(LC_ALL, "");
+    #endif
+    
     if ((argc>1)&&(strcmp(argv[1],"--version")==0)) {
         std::cout << LONGVERSION << std::endl;
         exit(EXIT_SUCCESS);

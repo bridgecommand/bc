@@ -200,6 +200,11 @@ int findCharOccurrences(std::string inputString, std::string findStr)
 int main (int argc, char ** argv)
 {
 
+    // For POSIX, set default locale character type (UTF-8)
+    #ifndef _WIN32
+    setlocale(LC_ALL, "");
+    #endif
+    
     #ifdef FOR_DEB
     chdir("/usr/share/bridgecommand");
     #endif // FOR_DEB

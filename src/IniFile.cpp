@@ -55,17 +55,14 @@ bool IniCache::readFile(const std::string& fileName)
 
     std::ifstream file (fileName.c_str());
 
-    //Set UTF-8 on Linux/OSX etc
+    
 #ifndef _WIN32
+    //Get currently used locale (should be for UTF-8), and use for file reading
     try {
-#  ifdef __APPLE__
-        char* thisLocale = setlocale(LC_ALL, "");
+        char* thisLocale = setlocale(LC_CTYPE, NULL);
         if (thisLocale) {
             file.imbue(std::locale(thisLocale));
         }
-#  else
-        file.imbue(std::locale("en_US.UTF8"));
-#  endif
     } catch (const std::runtime_error& runtimeError) {
         file.imbue(std::locale(""));
     }

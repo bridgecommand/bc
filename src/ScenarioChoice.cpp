@@ -23,6 +23,13 @@
 #include <iostream>
 #include <fstream>
 
+#ifdef _WIN32
+// For UTF8 to ANSI conversion
+#include <codecvt>
+#include <locale>
+#include <vector>
+#endif // _WIN32
+
 //using namespace irr;
 
 ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
@@ -113,7 +120,10 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
                 //Update the description text
                 description->setText(L"");
                 if (scenarioDescription.size() > currentSelection && currentSelection>=0) {
-                    description->setText(irr::core::stringw(scenarioDescription.at(currentSelection).c_str()).c_str());
+                    // Convert, allowing UTF-8
+                    irr::core::stringw description_stringw;
+                    irr::core::multibyteToWString(description_stringw, scenarioDescription.at(currentSelection).c_str());
+                    description->setText(description_stringw.c_str());
                 }
                 currentSelection = descriptionScenario;
             }
@@ -216,17 +226,14 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
                     irr::io::path descriptionFilePath = fileName;
                     irr::io::path descriptionFilename = descriptionFilePath.append("/description.ini");
                     std::ifstream descriptionStream (descriptionFilename.c_str());
-                    //Set UTF-8 on Linux/OSX etc
                     #ifndef _WIN32
+                    //Get currently used locale (should be for UTF-8), and use for file reading
                         try {
-                    #  ifdef __APPLE__
-                            char* thisLocale = setlocale(LC_ALL, "");
+                            char* thisLocale = setlocale(LC_CTYPE, NULL);
                             if (thisLocale) {
                                 descriptionStream.imbue(std::locale(thisLocale));
                             }
-                    #  else
-                            descriptionStream.imbue(std::locale("en_US.UTF8"));
-                    #  endif
+
                         } catch (const std::runtime_error& runtimeError) {
                             descriptionStream.imbue(std::locale(""));
                         }
@@ -243,6 +250,17 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
                         }
                         descriptionStream.close();
                     }
+
+                    #ifdef _WIN32
+                    // If Windows, convert the UTF8 string to ANSI:
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>> wconv;
+                    std::wstring wstr = wconv.from_bytes(descriptionLines);
+                    // wstring to string
+                    std::vector<char> buf(wstr.size());
+                    std::use_facet<std::ctype<wchar_t>>(std::locale(".1252")).narrow(wstr.data(), wstr.data() + wstr.size(), '?', buf.data());
+                    descriptionLines = std::string(buf.data(), buf.size());
+                    #endif
+
                     scenarioDescription.push_back(descriptionLines); //Add even if empty
 
                 }

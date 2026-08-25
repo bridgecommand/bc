@@ -76,6 +76,11 @@ std::string makeTimeString(uint64_t absoluteTime, uint64_t offsetTime, irr::f32 
 int main()
 {
 
+    // For POSIX, set default locale character type (UTF-8)
+    #ifndef _WIN32
+    setlocale(LC_ALL, "");
+    #endif
+    
     #ifdef FOR_DEB
     chdir("/usr/share/bridgecommand");
     #endif // FOR_DEB
