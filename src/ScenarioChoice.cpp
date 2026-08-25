@@ -23,6 +23,13 @@
 #include <iostream>
 #include <fstream>
 
+#ifdef _WIN32
+// For UTF8 to ANSI conversion
+#include <codecvt>
+#include <locale>
+#include <vector>
+#endif // _WIN32
+
 //using namespace irr;
 
 ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
@@ -243,6 +250,17 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
                         }
                         descriptionStream.close();
                     }
+
+                    #ifdef _WIN32
+                    // If Windows, convert the UTF8 string to ANSI:
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>> wconv;
+                    std::wstring wstr = wconv.from_bytes(descriptionLines);
+                    // wstring to string
+                    std::vector<char> buf(wstr.size());
+                    std::use_facet<std::ctype<wchar_t>>(std::locale(".1252")).narrow(wstr.data(), wstr.data() + wstr.size(), '?', buf.data());
+                    descriptionLines = std::string(buf.data(), buf.size());
+                    #endif
+
                     scenarioDescription.push_back(descriptionLines); //Add even if empty
 
                 }
