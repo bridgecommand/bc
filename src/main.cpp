@@ -1200,6 +1200,9 @@ int main(int argc, char ** argv)
             }
         }
 
+        model.getRadarSceneNode()->setVisible(model.getOwnShipSceneNode()->isVisible());
+        
+
  //       renderRadarProfile.toc();
 
  //       renderProfile.tic();

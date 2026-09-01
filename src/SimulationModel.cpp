@@ -1783,6 +1783,11 @@ SimulationModel::~SimulationModel()
         return contactPointNode;
     }
 
+    void SimulationModel::setOwnShipVisibility(bool visible)
+    {
+        ownShip.getSceneNode()->setVisible(visible);
+    }
+
     irr::scene::ISceneNode* SimulationModel::getOwnShipSceneNode()
     {
         return (irr::scene::ISceneNode*)ownShip.getSceneNode();
@@ -1826,6 +1831,11 @@ SimulationModel::~SimulationModel()
     Lines* SimulationModel::getLines() // Get pointer to lines object
     {
         return &lines;
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getRadarSceneNode()
+    {
+        return radarScreen.getSceneNode();
     }
 
     void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)

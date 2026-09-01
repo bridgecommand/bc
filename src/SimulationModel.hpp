@@ -356,11 +356,14 @@ public:
 
     irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode);
     
+    void setOwnShipVisibility(bool visible);
     irr::scene::ISceneNode* getOwnShipSceneNode();
     irr::scene::ISceneNode* getOtherShipSceneNode(int number);
     irr::scene::ISceneNode* getBuoySceneNode(int number);
     irr::scene::ISceneNode* getLandObjectSceneNode(int number);
     irr::scene::ISceneNode* getTerrainSceneNode(int number);
+
+    irr::scene::ISceneNode* getRadarSceneNode();
 
     Terrain* getTerrain();
 
