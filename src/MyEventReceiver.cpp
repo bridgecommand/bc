@@ -294,7 +294,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_OWNSHIP_VIEW_BOX)
             {
-                model->setOwnShipVisibility(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
+                model->getOwnShipSceneNode()->setVisible(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
             }
         }
 

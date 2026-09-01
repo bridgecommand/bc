@@ -1783,11 +1783,6 @@ SimulationModel::~SimulationModel()
         return contactPointNode;
     }
 
-    void SimulationModel::setOwnShipVisibility(bool visible)
-    {
-        ownShip.getSceneNode()->setVisible(visible);
-    }
-
     irr::scene::ISceneNode* SimulationModel::getOwnShipSceneNode()
     {
         return (irr::scene::ISceneNode*)ownShip.getSceneNode();
