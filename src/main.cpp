@@ -434,14 +434,16 @@ int main(int argc, char ** argv)
 
     //Read basic ini settings
     std::string iniFilename = "bc5.ini";
-    //Use local ini file if it exists
-    if (Utilities::pathExists(userFolder + iniFilename)) {
-        iniFilename = userFolder + iniFilename;
-    }
 
+    // Allow ini file name to be overwritten from the command line
     if ((argc>2)&&(strcmp(argv[1],"-c")==0)) {
         iniFilename = std::string(argv[2]); //TODO: Check this for sanity?
         std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
+    }
+
+    //Use local ini file if it exists
+    if (Utilities::pathExists(userFolder + iniFilename)) {
+        iniFilename = userFolder + iniFilename;
     }
 
     std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");

@@ -221,6 +221,12 @@ int main (int argc, char ** argv)
         iniFilename = "repeater.ini";
     }
 
+    // Allow ini file name to be overwritten from the command line
+    if ((argc>2)&&(strcmp(argv[1],"-c")==0)) {
+        iniFilename = std::string(argv[2]); //TODO: Check this for sanity?
+        std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
+    }
+
     bool autoMode = false;
     if (((argc > 1) && (strcmp(argv[1], "-auto") == 0)) || 
         ((argc > 2) && (strcmp(argv[2], "-auto") == 0))) {
