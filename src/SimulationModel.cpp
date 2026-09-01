@@ -2065,6 +2065,7 @@ SimulationModel::~SimulationModel()
         guiData->streamDirection = streamOverrideDirection;
         guiData->streamSpeed = streamOverrideSpeed;
         guiData->streamOverride = streamOverride;
+        guiData->viewOwnShip = getOwnShipSceneNode()->isVisible();
         guiData->radarRangeNm = radarCalculation.getRangeNm();
         guiData->radarGain = radarCalculation.getGain();
         guiData->radarClutter = radarCalculation.getClutter();

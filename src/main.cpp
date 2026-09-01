@@ -538,6 +538,8 @@ int main(int argc, char ** argv)
         viewAngle = 90;
     }
 
+    bool viewOwnShip = (IniFile::iniFileTou32(iniFilename, "own_ship_hidden") != 1);
+
     irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
     irr::f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
     if (cameraMinDistance<=0) {
@@ -1025,6 +1027,11 @@ int main(int argc, char ** argv)
                           &sound, 
                           scenarioData, 
                           modelParameters);
+
+    // Set own ship visibility
+    if (!viewOwnShip) {
+        model.getOwnShipSceneNode()->setVisible(false);
+    }
 
     //check enough time has elapsed to show the credits screen (5s)
     while (device->getTimer()->getRealTime() - creditsStartTime < 5000) {
