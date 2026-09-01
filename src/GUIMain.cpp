@@ -465,9 +465,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Add extra controls for view (zoom etc)
         irr::gui::IGUITab* extraControlsTabView = extraControlsTabControl->addTab(language->translate("view").c_str());
         
-        guienv->addStaticText(language->translate("3dView").c_str(), irr::core::rect<irr::s32>(0.005 * su, 0.02 * sh, 0.085 * su, 0.05 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-        show3d = guienv->addCheckBox(true, irr::core::rect<irr::s32>(0.038 * su, 0.080 * sh, 0.052 * su, 0.100 * sh), extraControlsTabView);
+        guienv->addStaticText(language->translate("3dView").c_str(), irr::core::rect<irr::s32>(0.005 * su, 0.02 * sh, 0.085 * su, 0.04 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        show3d = guienv->addCheckBox(true, irr::core::rect<irr::s32>(0.038 * su, 0.040 * sh, 0.052 * su, 0.060 * sh), extraControlsTabView);
         
+        guienv->addStaticText(language->translate("ownShipVisible").c_str(), irr::core::rect<irr::s32>(0.005 * su, 0.070 * sh, 0.085 * su, 0.090 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        viewOwnShip = guienv->addCheckBox(true, irr::core::rect<irr::s32>(0.038 * su, 0.090 * sh, 0.052 * su, 0.110 * sh), extraControlsTabView, GUI_ID_OWNSHIP_VIEW_BOX);
+
         guienv->addStaticText(language->translate("magnification").c_str(), irr::core::rect<irr::s32>(0.085 * su, 0.02 * sh, 0.165 * su, 0.05 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
         magnificationScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.125 * su, 0.09 * sh), 0.03 * su, guienv, extraControlsTabView, GUI_ID_MAGNIFICATION_SCROLL_BAR);
         magnificationScrollbar->setMax(200); //Divide by 10 to get magnification
@@ -1225,6 +1228,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         streamDirectionScrollbar->setPos(Utilities::round(guiData->streamDirection));
         streamSpeedScrollbar->setPos(Utilities::round(guiData->streamSpeed));
         streamOverride->setChecked(guiData->streamOverride);
+
+        viewOwnShip->setChecked(guiData->viewOwnShip);
 
 
 // DEE vvvvv  this should display the rate of turn data on the screen

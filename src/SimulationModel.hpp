@@ -362,6 +362,8 @@ public:
     irr::scene::ISceneNode* getLandObjectSceneNode(int number);
     irr::scene::ISceneNode* getTerrainSceneNode(int number);
 
+    irr::scene::ISceneNode* getRadarSceneNode();
+
     Terrain* getTerrain();
 
     irr::f32 getTerrainHeight(irr::f32 posX, irr::f32 posZ) const;

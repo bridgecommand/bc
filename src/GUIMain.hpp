@@ -60,6 +60,7 @@ struct GUIData {
     irr::f32 streamSpeed;
     bool streamOverride;
     bool radarOn;
+    bool viewOwnShip;
     irr::f32 radarRangeNm;
     irr::f32 radarGain;
     irr::f32 radarClutter;
@@ -213,7 +214,8 @@ public:
         GUI_ID_TIMECOMPRESSION_15_BUTTON,
         GUI_ID_TIMECOMPRESSION_30_BUTTON,
         GUI_ID_TIMECOMPRESSION_60_BUTTON,
-        GUI_ID_TIMECOMPRESSION_3600_BUTTON
+        GUI_ID_TIMECOMPRESSION_3600_BUTTON,
+        GUI_ID_OWNSHIP_VIEW_BOX
     };
 
     bool getShowInterface() const;
@@ -339,6 +341,7 @@ private:
 
     irr::gui::IGUIScrollBar* magnificationScrollbar;
     irr::gui::IGUICheckBox* show3d;
+    irr::gui::IGUICheckBox* viewOwnShip;
 
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;

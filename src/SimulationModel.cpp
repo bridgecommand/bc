@@ -1828,6 +1828,11 @@ SimulationModel::~SimulationModel()
         return &lines;
     }
 
+    irr::scene::ISceneNode* SimulationModel::getRadarSceneNode()
+    {
+        return radarScreen.getSceneNode();
+    }
+
     void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
     {
         camera.update(0, quat, pos, lensShift, true);
@@ -2055,6 +2060,7 @@ SimulationModel::~SimulationModel()
         guiData->streamDirection = streamOverrideDirection;
         guiData->streamSpeed = streamOverrideSpeed;
         guiData->streamOverride = streamOverride;
+        guiData->viewOwnShip = getOwnShipSceneNode()->isVisible();
         guiData->radarRangeNm = radarCalculation.getRangeNm();
         guiData->radarGain = radarCalculation.getGain();
         guiData->radarClutter = radarCalculation.getClutter();

@@ -434,14 +434,16 @@ int main(int argc, char ** argv)
 
     //Read basic ini settings
     std::string iniFilename = "bc5.ini";
-    //Use local ini file if it exists
-    if (Utilities::pathExists(userFolder + iniFilename)) {
-        iniFilename = userFolder + iniFilename;
-    }
 
+    // Allow ini file name to be overwritten from the command line
     if ((argc>2)&&(strcmp(argv[1],"-c")==0)) {
         iniFilename = std::string(argv[2]); //TODO: Check this for sanity?
         std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
+    }
+
+    //Use local ini file if it exists
+    if (Utilities::pathExists(userFolder + iniFilename)) {
+        iniFilename = userFolder + iniFilename;
     }
 
     std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");
@@ -537,6 +539,8 @@ int main(int argc, char ** argv)
     if (viewAngle <= 0) {
         viewAngle = 90;
     }
+
+    bool viewOwnShip = (IniFile::iniFileTou32(iniFilename, "own_ship_hidden") != 1);
 
     irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
     irr::f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
@@ -1026,6 +1030,11 @@ int main(int argc, char ** argv)
                           scenarioData, 
                           modelParameters);
 
+    // Set own ship visibility
+    if (!viewOwnShip) {
+        model.getOwnShipSceneNode()->setVisible(false);
+    }
+
     //check enough time has elapsed to show the credits screen (5s)
     while (device->getTimer()->getRealTime() - creditsStartTime < 5000) {
         device->run();
@@ -1199,6 +1208,9 @@ int main(int argc, char ** argv)
                 model.setWaterVisible(true); //Re-show the water
             }
         }
+
+        model.getRadarSceneNode()->setVisible(model.getOwnShipSceneNode()->isVisible());
+        
 
  //       renderRadarProfile.toc();
 
