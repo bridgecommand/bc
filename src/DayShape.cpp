@@ -22,19 +22,27 @@ DayShape::DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     //Store the scene manager, so we can find the active camera
     this->smgr = smgr;
 
-    if (parent && parent->getScale().X > 0) {
-        scaleFactor /= parent->getScale().X; //Assume scale in all directions is the same
-    }
-
     std::string fullPath = shipModelPath + shapeName;
-    // If model doesn't exist, check in Models/Dayshapes/ folder
+
+    // If model doesn't exist at same level as the own ship model, check in Models/Dayshapes/ folder
     if (!Utilities::pathExists(fullPath)) {
+        std::string logMessage = "Cannot find dayshape file " + fullPath;
         fullPath = "Models/Dayshapes/" + shapeName;
+        logMessage.append(". Trying " + fullPath);
+        dev->getLogger()->log(logMessage.c_str());
+     
+        // As we're loading from a general model, assume it's scaled relative to metres (not parent model scaling)
+        if (parent && parent->getScale().X > 0) {
+            scaleFactor /= parent->getScale().X; //Assume scale in all directions is the same
+        }
     }
 
     // If it still doesn't exist, check in user folder
     if (!Utilities::pathExists(fullPath)) {
+        std::string logMessage = "Cannot find dayshape file " + fullPath;
         fullPath = Utilities::getUserDir() + fullPath;
+        logMessage.append(". Trying " + fullPath);
+        dev->getLogger()->log(logMessage.c_str());
     }
 
     //load mesh
@@ -45,7 +53,7 @@ DayShape::DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
         //Failed to load mesh - load with dummy and continue
         dev->getLogger()->log("Failed to load other dayshape model:");
         dev->getLogger()->log(shapeName.c_str());
-        shapeMesh = smgr->addSphereMesh("Dummy");
+        shapeMesh = smgr->addSphereMesh("Sphere", 1);
     }
     shapeNode = smgr->addMeshSceneNode( shapeMesh, parent, -1);
     shapeNode->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
