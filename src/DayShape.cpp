@@ -19,7 +19,7 @@
 
 DayShape::DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, irr::core::vector3df position, std::string shapeName, std::string shipModelPath, irr::f32 scaleFactor) {
 
-    //Store the scene manager, so we can find the active camera
+    //Store the scene manager
     this->smgr = smgr;
 
     std::string fullPath = shipModelPath + shapeName;
