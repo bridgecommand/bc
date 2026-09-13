@@ -148,6 +148,8 @@
 		<Unit filename="Constants.hpp" />
 		<Unit filename="ControlVisualiser.cpp" />
 		<Unit filename="ControlVisualiser.hpp" />
+		<Unit filename="DayShape.cpp" />
+		<Unit filename="DayShape.hpp" />
 		<Unit filename="DefaultEventReceiver.cpp" />
 		<Unit filename="DefaultEventReceiver.hpp" />
 		<Unit filename="ExitMessage.cpp" />
