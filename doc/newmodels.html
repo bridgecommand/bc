@@ -546,6 +546,16 @@ where it is off, then restarting with 0.75s of light and so on. If omitted, the 
 <li>(Optional) PhaseStart(#): Which 'step' the light starts on, and should be given as an integer between 1 and the length of the sequence. For example, if you want two lights synchronised, you can give them the same sequence and set both to have a PhaseStart(#) of 1. If omitted or set to zero, the starting phase will be set randomly.</li>
 </ul>
 </li>
+<li>NumberOfDayShapes: The number of day shapes to load</li>
+<li>For each day shape, where # is the day shape number:
+<ul>
+<li>ShapeX(#): The shape's X coordinate (in the model's unit system - as long as AngleCorrection is zero)</li>
+<li>ShapeY(#): The shape's y coordinate (in the model's unit system - as long as AngleCorrection is zero)</li>
+<li>ShapeZ(#): The shape's z coordinate (in the model's unit system - as long as AngleCorrection is zero)</li>
+<li>(Optional) ShapeScale(#): Scale factor to apply to the day shape model.</li>
+<li>ShapeModelFile(#): Day shape model filename. The own ship folder will be checked first, then Models/Dayshapes/, then Models/Dayshapes/ in the user folder.</li>
+</ul>
+</li>
 </ul>
 </p>
 
