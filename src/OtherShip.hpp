@@ -22,6 +22,7 @@
 #include "Ship.hpp"
 
 #include "NavLight.hpp"
+#include "DayShape.hpp"
 #include "Leg.hpp"
 
 #include <cmath>
@@ -62,6 +63,7 @@ class OtherShip : public Ship
         std::string name;
         std::vector<Leg> legs;
         std::vector<NavLight*> navLights;
+        std::vector<DayShape*> dayShapes;
         irr::f32 height; //For radar
         irr::f32 solidHeight; //For radar
         irr::f32 rcs;

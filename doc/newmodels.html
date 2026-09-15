@@ -546,6 +546,31 @@ where it is off, then restarting with 0.75s of light and so on. If omitted, the 
 <li>(Optional) PhaseStart(#): Which 'step' the light starts on, and should be given as an integer between 1 and the length of the sequence. For example, if you want two lights synchronised, you can give them the same sequence and set both to have a PhaseStart(#) of 1. If omitted or set to zero, the starting phase will be set randomly.</li>
 </ul>
 </li>
+<li>NumberOfDayShapes: The number of day shapes to load</li>
+<li>For each day shape, where # is the day shape number:
+<ul>
+<li>ShapeX(#): The shape's X coordinate (in the model's unit system - as long as AngleCorrection is zero)</li>
+<li>ShapeY(#): The shape's y coordinate (in the model's unit system - as long as AngleCorrection is zero)</li>
+<li>ShapeZ(#): The shape's z coordinate (in the model's unit system - as long as AngleCorrection is zero)</li>
+<li>(Optional) ShapeScale(#): Scale factor to apply to the day shape model.</li>
+<li>ShapeModelFile(#): Day shape model filename. The own ship folder will be checked first, then Models/Dayshapes/, then Models/Dayshapes/ in the user folder.</li>
+<li>The following models are available in the Models/Dayshapes/ folder:
+<ul>
+<li>ball.obj (a single ball for anchoring)</li>
+<li>ball_diamond_ball.obj (for a vessel restricted in ability to manoeuvre)</li>
+<li>cone.obj (a single cone, point down, for a vessel under sail and power)</li>
+<li>cone_up.obj (a single cone, point up, can be used as an extra cone for fishing)</li>
+<li>cylinder.obj (a cylinder, for a vessel constrained by draught)</li>
+<li>diamond.obj (a single diamond, for a vessel towing or being towed)</li>
+<li>three_balls_aground.obj (three balls vertically, for a vessel aground)</li>
+<li>three_balls_minesweeping.obj (three balls in a triangular arrangement, for minesweeping)</li>
+<li>two_balls.obj (for a vessel not under command)</li>
+<li>two_cones.obj (for a vessel fishing)</li>
+<li>two_diamonds.obj (to be used to indicate the safe side for a vessel restricted in ability to manoeuvre)</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </p>
 

@@ -72,6 +72,7 @@ set(BC_SOURCES
     Buoys.cpp
     Camera.cpp
     ControlVisualiser.cpp
+    DayShape.cpp
     DefaultEventReceiver.cpp
     FFTWave.cpp
     GUIMain.cpp

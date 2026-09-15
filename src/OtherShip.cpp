@@ -178,6 +178,23 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
         }
     }
 
+    // Get dayshape locations
+    irr::u32 numberOfDayshapes = IniFile::iniFileTou32(iniFilename,"NumberOfDayShapes");
+    if (numberOfDayshapes>0) {
+        for (irr::u32 currentShape=1; currentShape<=numberOfDayshapes; currentShape++) {
+            irr::f32 shapeX = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("ShapeX",currentShape));
+            irr::f32 shapeY = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("ShapeY",currentShape));
+            irr::f32 shapeZ = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("ShapeZ",currentShape));
+
+            irr::f32 shapeScale = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("ShapeScale",currentShape),1.0f);
+
+            std::string shapeName = IniFile::iniFileToString(iniFilename,IniFile::enumerate1("ShapeModelFile",currentShape));
+
+            //add this shape into array
+            dayShapes.push_back(new DayShape (ship,smgr,dev,irr::core::vector3df(shapeX,shapeY,shapeZ),shapeName, basePath, shapeScale));
+        }
+    }
+
     //store leg information
     legs=legsLoaded;
 }
