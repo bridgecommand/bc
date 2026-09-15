@@ -26,9 +26,6 @@ class DayShape {
     public:
         DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, irr::core::vector3df position, std::string shapeName, std::string shipModelPath, irr::f32 scaleFactor);
         ~DayShape();
-        irr::core::vector3df getPosition() const;
-        void setPosition(irr::core::vector3df position);
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 
     private:
         irr::scene::ISceneManager* smgr;

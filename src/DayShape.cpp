@@ -76,25 +76,3 @@ DayShape::DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
 DayShape::~DayShape() {
     //TODO: Check if day shapes are being repeatedly created and destroyed at startup
 }
-
-irr::core::vector3df DayShape::getPosition() const
-{
-    shapeNode->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
-    return shapeNode->getAbsolutePosition();
-}
-
-void DayShape::setPosition(irr::core::vector3df position)
-{
-    shapeNode->setPosition(position);
-}
-
-
-void DayShape::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
-{
-    irr::core::vector3df currentPos = shapeNode->getPosition();
-    irr::f32 newPosX = currentPos.X + deltaX;
-    irr::f32 newPosY = currentPos.Y + deltaY;
-    irr::f32 newPosZ = currentPos.Z + deltaZ;
-
-    shapeNode->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
-}
