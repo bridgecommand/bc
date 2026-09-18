@@ -779,8 +779,8 @@ int VRInterface::load(SimulationModel* model) {
 			return 1;
 	}
 
-	// suggest actions for simple controller
-	// Valid actions are: input/select/click, input/menu/click, input/grip/pose, input/aim/pose, output/haptic
+	// Suggest actions for simple controller.
+	// Valid actions are: input/select/click, input/menu/click, input/grip/pose, input/aim/pose, output/haptic.
 	{
 		XrPath interaction_profile_path;
 		result = xrStringToPath(instance, "/interaction_profiles/khr/simple_controller",
@@ -809,12 +809,56 @@ int VRInterface::load(SimulationModel* model) {
 			sizeof(bindings) / sizeof(bindings[0]),
 			bindings};
 
-		xrSuggestInteractionProfileBindings(instance, &suggested_bindings);
+		result = xrSuggestInteractionProfileBindings(instance, &suggested_bindings);
 		if (!xr_check(instance, result, "failed to suggest bindings"))
 			return 1;
 	}
 
-	// TODO: Could add additional controllers here (e.g. Valve Index)
+	// Suggest equivalent actions for Oculus Touch controllers.
+	{
+		XrPath interaction_profile_path;
+		result = xrStringToPath(instance, "/interaction_profiles/oculus/touch_controller",
+			&interaction_profile_path);
+		if (!xr_check(instance, result, "failed to get Oculus Touch interaction profile"))
+			return 1;
+
+		XrPath left_menu_path;
+		XrPath left_trigger_path;
+		XrPath right_trigger_path;
+		result = xrStringToPath(instance, "/user/hand/left/input/menu/click", &left_menu_path);
+		if (!xr_check(instance, result, "failed to get Oculus Touch left menu path"))
+			return 1;
+		result = xrStringToPath(instance, "/user/hand/left/input/trigger/value", &left_trigger_path);
+		if (!xr_check(instance, result, "failed to get Oculus Touch left trigger path"))
+			return 1;
+		result = xrStringToPath(instance, "/user/hand/right/input/trigger/value", &right_trigger_path);
+		if (!xr_check(instance, result, "failed to get Oculus Touch right trigger path"))
+			return 1;
+
+		const XrActionSuggestedBinding bindings[] = {
+			{grip_pose_action, grip_pose_path[HAND_LEFT_INDEX]},
+			{grip_pose_action, grip_pose_path[HAND_RIGHT_INDEX]},
+			{aim_pose_action, aim_pose_path[HAND_LEFT_INDEX]},
+			{aim_pose_action, aim_pose_path[HAND_RIGHT_INDEX]},
+			{select_action_float, left_trigger_path},
+			{select_action_float, right_trigger_path},
+			// Touch exposes the application menu button on the left controller.
+			{menu_action, left_menu_path},
+			{haptic_action, haptic_path[HAND_LEFT_INDEX]},
+			{haptic_action, haptic_path[HAND_RIGHT_INDEX]},
+		};
+
+		const XrInteractionProfileSuggestedBinding suggested_bindings = {
+			XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING,
+			NULL,
+			interaction_profile_path,
+			sizeof(bindings) / sizeof(bindings[0]),
+			bindings};
+
+		result = xrSuggestInteractionProfileBindings(instance, &suggested_bindings);
+		if (!xr_check(instance, result, "failed to suggest Oculus Touch bindings"))
+			return 1;
+	}
 
 	XrSessionActionSetsAttachInfo actionset_attach_info;
 	actionset_attach_info.type = XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO;
