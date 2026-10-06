@@ -44,7 +44,7 @@ Terrain::~Terrain()
     }
 }
 
-void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device, irr::u32 terrainResolutionLimit)
+void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device, irr::u32 terrainResolutionLimit, irr::u32 terrainLOD)
 {
 
     dev = device;
@@ -170,11 +170,22 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         //Add an empty terrain
         //irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,irr::core::vector3df(0.f, terrainY, 0.f),irr::core::vector3df(0.f, 0.f, 0.f),irr::core::vector3df(1,1,1),irr::video::SColor(255,255,255,255),5,irr::scene::ETPS_9,0,true);
 
+        irr::scene::E_TERRAIN_PATCH_SIZE terrainLevelOfDetail;
+        //Map terrainLOD value to ETPS level (0->ETPS_9, 1->ETPS_17, 2->ETPS_33, 3->ETPS_65, 4->ETPS_129)
+        switch(terrainLOD) {
+            case 0: terrainLevelOfDetail = irr::scene::ETPS_9; break;
+            case 1: terrainLevelOfDetail = irr::scene::ETPS_17; break;
+            case 2: terrainLevelOfDetail = irr::scene::ETPS_33; break;
+            case 3: terrainLevelOfDetail = irr::scene::ETPS_65; break;
+            case 4: terrainLevelOfDetail = irr::scene::ETPS_129; break;
+            default: terrainLevelOfDetail = irr::scene::ETPS_33; //Default if invalid value provided
+        }
+
         irr::scene::BCTerrainSceneNode* terrain = new irr::scene::BCTerrainSceneNode(
             device,
             smgr->getRootSceneNode(), 
             smgr,
-			smgr->getFileSystem(), -1, 5, irr::scene::ETPS_33
+			smgr->getFileSystem(), -1, 5, terrainLevelOfDetail
         );
 
         //Load the map
