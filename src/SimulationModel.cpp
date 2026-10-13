@@ -1838,6 +1838,11 @@ SimulationModel::~SimulationModel()
         camera.update(0, quat, pos, lensShift, true);
     }
 
+    void SimulationModel::updateCamera()
+    {
+        camera.update(0);
+    }
+
     void SimulationModel::update()
     {
 

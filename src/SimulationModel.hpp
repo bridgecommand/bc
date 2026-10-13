@@ -373,6 +373,8 @@ public:
     Lines* getLines(); // Get pointer to lines object
 
     void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
+    
+    void updateCamera(); // Update camera view point without updating anything else
 
     void update();
   

@@ -540,6 +540,13 @@ int main(int argc, char ** argv)
         viewAngle = 90;
     }
 
+    irr::u32 splitViews = IniFile::iniFileTou32(iniFilename, "split_views"); //How many cameras to split the view across
+    if (splitViews < 1) {
+        splitViews = 1;
+    }
+
+    viewAngle = viewAngle / (irr::f32)splitViews;
+
     bool viewOwnShip = (IniFile::iniFileTou32(iniFilename, "own_ship_hidden") != 1);
 
     irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
@@ -809,8 +816,8 @@ int main(int argc, char ** argv)
 	graphicsHeight = sh;
 	irr::u32 graphicsWidth3d = su;
 	irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
-	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
-	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
+    irr::f32 aspect = (irr::f32)su / (irr::f32)sh / (irr::f32)splitViews;
+	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d / (irr::f32)splitViews;
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
@@ -1222,17 +1229,66 @@ int main(int argc, char ** argv)
 
         // Normal rendering
         if (!fullScreenRadar) {
+            
+            // Count view increment so it can be reset
+            int viewIncrement = 0;
+
+            // Set initial angle for camera if we're splitting the rendering
+            int centreCamera = 0;
+
+            int renderWindowWidthPx;
+            int renderWindowHeightPx;
+            irr::f32 renderWindowAspectRatio;
             if (guiMain.getShowInterface()) {
-                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
-                model.updateViewport(aspect3d);
+                // 2d view shown
+                renderWindowWidthPx = graphicsWidth3d;
+                renderWindowHeightPx = graphicsHeight3d;
+                renderWindowAspectRatio = aspect3d; // Already includes split effect if needed
             }
             else {
-                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
-                model.updateViewport(aspect);
+                // Just 3d view, use the whole screen
+                renderWindowWidthPx = graphicsWidth;
+                renderWindowHeightPx = graphicsHeight;
+                renderWindowAspectRatio = aspect; // Already includes split effect if needed
+            }
+
+            if (splitViews > 1) {
+                // TODO: We could make the centre camera a contollable parameter for the user?
+                centreCamera = floor((irr::f32)splitViews / 2.0);
+                for (int cameraSplitStep = 0; cameraSplitStep < centreCamera; cameraSplitStep++) {
+                    model.lookStepLeft();
+                    viewIncrement -= 1;
+                }
+                model.updateCamera();
+                
+                renderWindowWidthPx = renderWindowWidthPx / splitViews;
+            }
+
+           
+            // Set the right aspect ratio (may be changed by radar/VR render)
+            model.updateViewport(renderWindowAspectRatio);
+
+            for (int cameraSplitStep = 0; cameraSplitStep < splitViews; cameraSplitStep++)
+            {
+                driver->setViewPort(irr::core::rect<irr::s32>(cameraSplitStep * renderWindowWidthPx, 0, (cameraSplitStep + 1) * renderWindowWidthPx, renderWindowHeightPx));
+                if (guiMain.getShow3d()) {
+                    smgr->drawAll();
+                }
+
+                if (cameraSplitStep < splitViews - 1) {
+                    // Don't need to do this if on the last step
+                    model.lookStepRight(); // TODO: Try using quaternion method like for VR instead?
+                    viewIncrement += 1;
+                    model.updateCamera();
+                }
             }
             
-            if (guiMain.getShow3d()) {
-                smgr->drawAll();
+            // Reset camera if needed
+            if (splitViews > 1) {
+                for (int cameraSplitStep = 0; cameraSplitStep < viewIncrement; cameraSplitStep++) {
+                    model.lookStepLeft();
+                }
+                model.updateCamera();
             }
         }
 
