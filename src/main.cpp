@@ -545,6 +545,9 @@ int main(int argc, char ** argv)
         splitViews = 1;
     }
 
+    irr::f32 centreView = IniFile::iniFileTof32(iniFilename, "centre_view", 1.0); //Which screen should be centred, can be fractional
+    centreView = centreView - 1; // Indexing from 1 for users, from 0 internally
+
     viewAngle = viewAngle / (irr::f32)splitViews;
 
     bool viewOwnShip = (IniFile::iniFileTou32(iniFilename, "own_ship_hidden") != 1);
@@ -1230,9 +1233,6 @@ int main(int argc, char ** argv)
         // Normal rendering
         if (!fullScreenRadar) {
             
-            // Count view increment so it can be reset
-            int viewIncrement = 0;
-
             // Set initial angle for camera if we're splitting the rendering
             int centreCamera = 0;
 
@@ -1257,16 +1257,8 @@ int main(int argc, char ** argv)
             }
 
             if (splitViews > 1) {
-                // TODO: We could make the centre camera a contollable parameter for the user?
-                centreCamera = floor((irr::f32)splitViews / 2.0);
-                for (int cameraSplitStep = 0; cameraSplitStep < centreCamera; cameraSplitStep++) {
-                    viewIncrement -= 1;
-                }
-                quat.fromAngleAxis(viewIncrement * viewAngleWithZoom * irr::core::DEGTORAD, irr::core::vector3df(0, 1, 0));
-                model.updateCamera(quat);
                 renderWindowWidthPx = renderWindowWidthPx / splitViews;
             }
-
            
             // Set the right aspect ratio (may be changed by radar/VR render)
             model.updateViewport(renderWindowAspectRatio);
@@ -1274,23 +1266,17 @@ int main(int argc, char ** argv)
             for (int cameraSplitStep = 0; cameraSplitStep < splitViews; cameraSplitStep++)
             {
                 driver->setViewPort(irr::core::rect<irr::s32>(cameraSplitStep * renderWindowWidthPx, 0, (cameraSplitStep + 1) * renderWindowWidthPx, renderWindowHeightPx));
+                
                 if (guiMain.getShow3d()) {
-                    smgr->drawAll();
-                }
-
-                if (cameraSplitStep < splitViews - 1) {
-                    // Don't need to do this if on the last step
-                    viewIncrement += 1;
-                    quat.fromAngleAxis(viewIncrement * viewAngleWithZoom * irr::core::DEGTORAD, irr::core::vector3df(0, 1, 0));
+                    quat.fromAngleAxis((cameraSplitStep - centreView)* viewAngleWithZoom* irr::core::DEGTORAD, irr::core::vector3df(0, 1, 0));
                     model.updateCamera(quat);
+                    smgr->drawAll();
                 } 
             }
             
             // Reset camera if needed
-            if (splitViews > 1) {
-                quat.fromAngleAxis(0, irr::core::vector3df(0, 1, 0));
-                model.updateCamera(quat);
-            }
+            quat.fromAngleAxis(0, irr::core::vector3df(0, 1, 0));
+            model.updateCamera(quat);
         }
 
         if (vr3dMode && vrSuccess == 0) {
