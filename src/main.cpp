@@ -1233,9 +1233,6 @@ int main(int argc, char ** argv)
         // Normal rendering
         if (!fullScreenRadar) {
             
-            // Set initial angle for camera if we're splitting the rendering
-            int centreCamera = 0;
-
             int renderWindowWidthPx;
             int renderWindowHeightPx;
             irr::f32 renderWindowAspectRatio;
