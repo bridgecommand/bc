@@ -1239,6 +1239,10 @@ int main(int argc, char ** argv)
             int renderWindowWidthPx;
             int renderWindowHeightPx;
             irr::f32 renderWindowAspectRatio;
+            
+            irr::core::quaternion quat;
+            irr::f32 viewAngleWithZoom = viewAngle / model.getZoom();
+            
             if (guiMain.getShowInterface()) {
                 // 2d view shown
                 renderWindowWidthPx = graphicsWidth3d;
@@ -1256,11 +1260,10 @@ int main(int argc, char ** argv)
                 // TODO: We could make the centre camera a contollable parameter for the user?
                 centreCamera = floor((irr::f32)splitViews / 2.0);
                 for (int cameraSplitStep = 0; cameraSplitStep < centreCamera; cameraSplitStep++) {
-                    model.lookStepLeft();
                     viewIncrement -= 1;
                 }
-                model.updateCamera();
-                
+                quat.fromAngleAxis(viewIncrement * viewAngleWithZoom * irr::core::DEGTORAD, irr::core::vector3df(0, 1, 0));
+                model.updateCamera(quat);
                 renderWindowWidthPx = renderWindowWidthPx / splitViews;
             }
 
@@ -1277,18 +1280,16 @@ int main(int argc, char ** argv)
 
                 if (cameraSplitStep < splitViews - 1) {
                     // Don't need to do this if on the last step
-                    model.lookStepRight(); // TODO: Try using quaternion method like for VR instead?
                     viewIncrement += 1;
-                    model.updateCamera();
-                }
+                    quat.fromAngleAxis(viewIncrement * viewAngleWithZoom * irr::core::DEGTORAD, irr::core::vector3df(0, 1, 0));
+                    model.updateCamera(quat);
+                } 
             }
             
             // Reset camera if needed
             if (splitViews > 1) {
-                for (int cameraSplitStep = 0; cameraSplitStep < viewIncrement; cameraSplitStep++) {
-                    model.lookStepLeft();
-                }
-                model.updateCamera();
+                quat.fromAngleAxis(0, irr::core::vector3df(0, 1, 0));
+                model.updateCamera(quat);
             }
         }
 
