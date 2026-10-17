@@ -303,6 +303,7 @@ public:
     void setMouseDown(bool isMouseDown);
     void setZoom(bool zoomOn);
     void setZoom(bool zoomOn, irr::f32 zoomLevel);
+    irr::f32 getZoom() const;
     void setViewAngle(irr::f32 viewAngle);
     irr::u32 getLoopNumber() const;
     std::string getSerialisedScenario() const;
@@ -373,6 +374,8 @@ public:
     Lines* getLines(); // Get pointer to lines object
 
     void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
+    
+    void updateCamera(irr::core::quaternion quat); // Update camera view without updating anything else
 
     void update();
   
