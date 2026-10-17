@@ -681,8 +681,12 @@ int main(int argc, char ** argv)
             //Set to fill requested monitor
             int x = Monitors.rcMonitors[requestedMonitor].left;
             int y = Monitors.rcMonitors[requestedMonitor].top;
-            graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
-            graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
+            if (graphicsWidth == 0) {
+                graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
+            }
+            if (graphicsHeight == 0) {
+                graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
+            }
 
             hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
                 style, x, y, graphicsWidth, graphicsHeight,
@@ -720,8 +724,12 @@ int main(int argc, char ** argv)
                 //Set to fill current monitor
                 x = rc.left;
                 y = rc.top;
-                graphicsWidth = rc.right - rc.left;
-                graphicsHeight = rc.bottom - rc.top;
+                if (graphicsWidth == 0) {
+                    graphicsWidth = rc.right - rc.left;
+                }
+                if (graphicsHeight == 0) {
+                    graphicsHeight = rc.bottom - rc.top;
+                }
             }
 
             hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
