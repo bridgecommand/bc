@@ -520,7 +520,7 @@ int main(int argc, char ** argv)
     bool showTideHeight = (IniFile::iniFileTou32(iniFilename, "show_tide_height")==1);
 
     irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
-    irr::u32 terrainLOD = IniFile::iniFileTou32(iniFilename, "terrain_lod", 2); // Default to ETPS_33 (2) if not set
+    irr::u32 terrainLOD = IniFile::iniFileTou32(iniFilename, "terrain_lod", 3); // Default to ETPS_65 (3) if not set
 
 
     irr::f32 contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
