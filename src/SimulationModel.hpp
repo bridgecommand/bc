@@ -70,7 +70,8 @@ public:
         irr::f32 lineDampingFactor;
         irr::f32 frictionCoefficient;
         irr::f32 tanhFrictionFactor;
-        irr::u32 limitTerrainResolution;
+        irr::u32 limitTerrainResolution;        
+        irr::u32 terrainLOD;       
         bool secondaryControlWheel;
         bool secondaryControlPortEngine;
         bool secondaryControlStbdEngine;

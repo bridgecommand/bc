@@ -134,8 +134,8 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         
 
         //Add terrain: Needs to happen first, so the terrain parameters are available
-        terrain.load(worldPath, smgr, device, modelParameters.limitTerrainResolution);
-
+        terrain.load(worldPath, smgr, device, modelParameters.limitTerrainResolution, modelParameters.terrainLOD);
+        
         //sky box/dome
         Sky sky (smgr);
 
