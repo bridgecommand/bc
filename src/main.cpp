@@ -541,6 +541,16 @@ int main(int argc, char ** argv)
         viewAngle = 90;
     }
 
+    irr::u32 splitViews = IniFile::iniFileTou32(iniFilename, "split_views"); //How many cameras to split the view across
+    if (splitViews < 1) {
+        splitViews = 1;
+    }
+
+    irr::f32 centreView = IniFile::iniFileTof32(iniFilename, "centre_view", 1.0); //Which screen should be centred, can be fractional
+    centreView = centreView - 1; // Indexing from 1 for users, from 0 internally
+
+    viewAngle = viewAngle / (irr::f32)splitViews;
+
     bool viewOwnShip = (IniFile::iniFileTou32(iniFilename, "own_ship_hidden") != 1);
 
     irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
@@ -672,8 +682,12 @@ int main(int argc, char ** argv)
             //Set to fill requested monitor
             int x = Monitors.rcMonitors[requestedMonitor].left;
             int y = Monitors.rcMonitors[requestedMonitor].top;
-            graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
-            graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
+            if (graphicsWidth == 0) {
+                graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
+            }
+            if (graphicsHeight == 0) {
+                graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
+            }
 
             hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
                 style, x, y, graphicsWidth, graphicsHeight,
@@ -711,8 +725,12 @@ int main(int argc, char ** argv)
                 //Set to fill current monitor
                 x = rc.left;
                 y = rc.top;
-                graphicsWidth = rc.right - rc.left;
-                graphicsHeight = rc.bottom - rc.top;
+                if (graphicsWidth == 0) {
+                    graphicsWidth = rc.right - rc.left;
+                }
+                if (graphicsHeight == 0) {
+                    graphicsHeight = rc.bottom - rc.top;
+                }
             }
 
             hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
@@ -810,8 +828,8 @@ int main(int argc, char ** argv)
 	graphicsHeight = sh;
 	irr::u32 graphicsWidth3d = su;
 	irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
-	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
-	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
+    irr::f32 aspect = (irr::f32)su / (irr::f32)sh / (irr::f32)splitViews;
+	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d / (irr::f32)splitViews;
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
@@ -1224,18 +1242,48 @@ int main(int argc, char ** argv)
 
         // Normal rendering
         if (!fullScreenRadar) {
+            
+            int renderWindowWidthPx;
+            int renderWindowHeightPx;
+            irr::f32 renderWindowAspectRatio;
+            
+            irr::core::quaternion quat;
+            irr::f32 viewAngleWithZoom = viewAngle / model.getZoom();
+            
             if (guiMain.getShowInterface()) {
-                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
-                model.updateViewport(aspect3d);
+                // 2d view shown
+                renderWindowWidthPx = graphicsWidth3d;
+                renderWindowHeightPx = graphicsHeight3d;
+                renderWindowAspectRatio = aspect3d; // Already includes split effect if needed
             }
             else {
-                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
-                model.updateViewport(aspect);
+                // Just 3d view, use the whole screen
+                renderWindowWidthPx = graphicsWidth;
+                renderWindowHeightPx = graphicsHeight;
+                renderWindowAspectRatio = aspect; // Already includes split effect if needed
+            }
+
+            if (splitViews > 1) {
+                renderWindowWidthPx = renderWindowWidthPx / splitViews;
+            }
+           
+            // Set the right aspect ratio (may be changed by radar/VR render)
+            model.updateViewport(renderWindowAspectRatio);
+
+            for (int cameraSplitStep = 0; cameraSplitStep < splitViews; cameraSplitStep++)
+            {
+                driver->setViewPort(irr::core::rect<irr::s32>(cameraSplitStep * renderWindowWidthPx, 0, (cameraSplitStep + 1) * renderWindowWidthPx, renderWindowHeightPx));
+                
+                if (guiMain.getShow3d()) {
+                    quat.fromAngleAxis((cameraSplitStep - centreView)* viewAngleWithZoom* irr::core::DEGTORAD, irr::core::vector3df(0, 1, 0));
+                    model.updateCamera(quat);
+                    smgr->drawAll();
+                } 
             }
             
-            if (guiMain.getShow3d()) {
-                smgr->drawAll();
-            }
+            // Reset camera if needed
+            quat.fromAngleAxis(0, irr::core::vector3df(0, 1, 0));
+            model.updateCamera(quat);
         }
 
         if (vr3dMode && vrSuccess == 0) {

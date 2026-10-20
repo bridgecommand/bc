@@ -1437,6 +1437,11 @@ SimulationModel::~SimulationModel()
        setZoom(zoomOn);
     }
 
+    irr::f32 SimulationModel::getZoom() const
+    {
+        return currentZoom;
+    }
+
     void SimulationModel::setViewAngle(irr::f32 viewAngle)
     {
         modelParameters.viewAngle = viewAngle;
@@ -1836,6 +1841,11 @@ SimulationModel::~SimulationModel()
     void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
     {
         camera.update(0, quat, pos, lensShift, true);
+    }
+
+    void SimulationModel::updateCamera(irr::core::quaternion quat)
+    {
+        camera.update(0, quat);
     }
 
     void SimulationModel::update()
