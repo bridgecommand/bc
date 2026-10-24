@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+#
+# Clone, build, and install the static libraries:
+#   • PortAudio  v19.7.0  → libportaudio.a
+#   • libsndfile 1.2.2    → libsndfile.a
+#
+# Both are built as universal (arm64 + x86_64) static libraries.
+# Run from anywhere:  bin/build_audio_deps.sh
+#
+# Re-run is safe – existing clones are reused.
+# Pass --clean to wipe the work directory and start fresh.
+
+set -euo pipefail
+
+# ── resolve paths ────────────────────────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# ── tunables ─────────────────────────────────────────────────────
+CMAKE="/Applications/CMake.app/Contents/bin/cmake"
+ARCHS="arm64;x86_64"
+BUILD_TYPE="RELEASE"
+DEPLOY_TARGET="12.0"
+POLICY_MIN="3.5"
+
+WORK_DIR="$PROJECT_ROOT/bin/sound_deps"
+
+# Where the .a files land in your source tree.  Adjust these two
+# lines to match your actual directory layout.
+PA_DEST="$PROJECT_ROOT/src/libs/portaudio/lib"
+SF_DEST="$PROJECT_ROOT/src/libs/libsndfile/lib"
+
+PA_VERSION="v19.7.0"
+PA_REPO="https://github.com/PortAudio/portaudio.git"
+SF_VERSION="1.2.2"
+SF_REPO="https://github.com/libsndfile/libsndfile.git"
+
+# ── helpers ──────────────────────────────────────────────────────
+die()  { echo "ERROR: $*" >&2; exit 1; }
+info() { echo "→ $*"; }
+
+# Ensure CMake is reachable
+[[ -x "$CMAKE" ]] || die "CMake not found at $CMAKE – fix the CMAKE variable at the top of this script."
+"$CMAKE" --version | head -1
+
+# ── clean flag ───────────────────────────────────────────────────
+if [[ "${1:-}" == "--clean" ]]; then
+  info "Removing $WORK_DIR"
+  rm -rf "$WORK_DIR"
+fi
+
+mkdir -p "$WORK_DIR"
+
+# ── common CMake flags (reused by both libs) ─────────────────────
+CMAKE_COMMON=(
+  -DCMAKE_OSX_ARCHITECTURES="$ARCHS"
+  -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+  -DBUILD_SHARED_LIBS=OFF
+  -DCMAKE_OSX_DEPLOYMENT_TARGET="$DEPLOY_TARGET"
+  -DCMAKE_POLICY_VERSION_MINIMUM="$POLICY_MIN"
+)
+
+# =================================================================
+# 1. PortAudio
+# =================================================================
+PA_SRC="$WORK_DIR/portaudio"
+PA_BUILD="$PA_SRC/build"
+
+if [[ ! -d "$PA_SRC/.git" ]]; then
+  info "Cloning PortAudio $PA_VERSION"
+  git clone --depth 1 --branch "$PA_VERSION" "$PA_REPO" "$PA_SRC"
+else
+  info "PortAudio already cloned - skipping"
+fi
+
+info "Configuring PortAudio"
+$CMAKE -S "$PA_SRC" -B "$PA_BUILD" "${CMAKE_COMMON[@]}"
+
+info "Building PortAudio"
+$CMAKE --build "$PA_BUILD" -- -j"$(sysctl -n hw.ncpu)"
+
+PA_LIB="$PA_BUILD/libportaudio.a"
+[[ -f "$PA_LIB" ]] || die "libportaudio.a not found in $PA_BUILD - build may have failed."
+info "Found  $PA_LIB"
+
+# =================================================================
+# 2. libsndfile
+# =================================================================
+SF_SRC="$WORK_DIR/libsndfile"
+SF_BUILD="$SF_SRC/build"
+
+if [[ ! -d "$SF_SRC/.git" ]]; then
+  info "Cloning libsndfile $SF_VERSION"
+  git clone --depth 1 --branch "$SF_VERSION" "$SF_REPO" "$SF_SRC"
+else
+  info "libsndfile already cloned - skipping"
+fi
+
+info "Configuring libsndfile"
+$CMAKE -S "$SF_SRC" -B "$SF_BUILD" "${CMAKE_COMMON[@]}" -DBUILD_TESTING=OFF
+
+info "Building libsndfile"
+$CMAKE --build "$SF_BUILD" -- -j"$(sysctl -n hw.ncpu)"
+
+SF_LIB="$SF_BUILD/libsndfile.a"
+[[ -f "$SF_LIB" ]] || die "libsndfile.a not found in $SF_BUILD - build may have failed."
+info "Found  $SF_LIB"
+
+# =================================================================
+# 3. Install into src/libs/
+# =================================================================
+info "Installing PortAudio  → $PA_DEST"
+mkdir -p "$PA_DEST"
+cp -f "$PA_LIB" "$PA_DEST/libportaudio.a"
+
+info "Installing libsndfile → $SF_DEST"
+mkdir -p "$SF_DEST"
+cp -f "$SF_LIB" "$SF_DEST/libsndfile.a"
+
+# =================================================================
+echo
+info "Done.  Built artefacts:"
+ls -lh "$PA_DEST/libportaudio.a" "$SF_DEST/libsndfile.a"
