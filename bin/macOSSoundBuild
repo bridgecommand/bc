@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 #
 # Clone, build, and install the static libraries:
-#   • PortAudio  v19.7.0  → libportaudio.a
-#   • libsndfile 1.2.2    → libsndfile.a
+#   PortAudio  v19.7.0  → libportaudio.a
+#   libsndfile 1.2.2    → libsndfile.a
 #
 # Both are built as universal (arm64 + x86_64) static libraries.
-# Run from anywhere:  bin/build_audio_deps.sh
 #
 # Re-run is safe – existing clones are reused.
 # Pass --clean to wipe the work directory and start fresh.
@@ -40,7 +39,7 @@ die()  { echo "ERROR: $*" >&2; exit 1; }
 info() { echo "→ $*"; }
 
 # Ensure CMake is reachable
-[[ -x "$CMAKE" ]] || die "CMake not found at $CMAKE – fix the CMAKE variable at the top of this script."
+[[ -x "$CMAKE" ]] || die "CMake not found at $CMAKE - fix the CMAKE variable at the top of this script."
 "$CMAKE" --version | head -1
 
 # ── clean flag ───────────────────────────────────────────────────
