@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # ── tunables ─────────────────────────────────────────────────────
-CMAKE="/Applications/CMake.app/Contents/bin/cmake"
+CMAKE="${CMAKE:-/Applications/CMake.app/Contents/bin/cmake}"
 ARCHS="arm64;x86_64"
 BUILD_TYPE="RELEASE"
 DEPLOY_TARGET="12.0"
@@ -38,8 +38,11 @@ SF_REPO="https://github.com/libsndfile/libsndfile.git"
 die()  { echo "ERROR: $*" >&2; exit 1; }
 info() { echo "→ $*"; }
 
-# Ensure CMake is reachable
-[[ -x "$CMAKE" ]] || die "CMake not found at $CMAKE - fix the CMAKE variable at the top of this script."
+# Ensure CMake is reachable - fall back to the cmake on PATH (e.g. CI runners)
+if [[ ! -x "$CMAKE" ]]; then
+  CMAKE="$(command -v cmake || true)"
+fi
+[[ -n "$CMAKE" ]] || die "CMake not found - install cmake or set the CMAKE variable."
 "$CMAKE" --version | head -1
 
 # ── clean flag ───────────────────────────────────────────────────

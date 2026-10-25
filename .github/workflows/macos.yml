@@ -1,0 +1,47 @@
+name: macOS
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    paths:
+      - '**/Constants.hpp'
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    # The sound libraries are built as universal (arm64 + x86_64), so the
+    # arm64 runner produces an app that runs on both Apple Silicon and Intel.
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        # cmake and Xcode command line tools ship with the runner;
+        # ensure a recent cmake is on PATH.
+        brew install cmake
+
+    - name: Build sound libraries
+      # Produces libportaudio.a and libsndfile.a into src/libs/{portaudio,libsndfile}/lib
+      working-directory: ${{env.GITHUB_WORKSPACE}}/bin
+      run: ./macOSSoundBuild
+
+    - name: Build app
+      # Configure (cmake ../src), build (make), and assemble BridgeCommand.app.
+      # The GUI launch inside the script is skipped automatically on CI.
+      working-directory: ${{env.GITHUB_WORKSPACE}}/bin
+      run: ./makeAndBuildApp
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: BC_macos
+        path: bin/BridgeCommand.app
