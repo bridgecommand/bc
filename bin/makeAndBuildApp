@@ -1,2 +1,10 @@
 #!/bin/sh
-/Applications/CMake.app/Contents/bin/cmake ../src/ && make && ./macOScopy && open -n ./BridgeCommand.app
+# Build the mac app bundle and (locally) launch it.
+# On CI runners skip the GUI launch (headless) and allow a cmake from PATH.
+CMAKE="${CMAKE:-/Applications/CMake.app/Contents/bin/cmake}"
+[ -x "$CMAKE" ] || CMAKE="$(command -v cmake || true)"
+
+"$CMAKE" ../src/ && make && ./macOScopy
+if [ -z "$CI" ]; then
+    open -n ./BridgeCommand.app
+fi
