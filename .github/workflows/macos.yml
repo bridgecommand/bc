@@ -7,10 +7,6 @@ on:
     paths:
       - '**/Constants.hpp'
 
-env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
-
 permissions:
   contents: read
 
@@ -31,13 +27,13 @@ jobs:
 
     - name: Build sound libraries
       # Produces libportaudio.a and libsndfile.a into src/libs/{portaudio,libsndfile}/lib
-      working-directory: ${{env.GITHUB_WORKSPACE}}/bin
+      working-directory: ${{ github.workspace }}/bin
       run: ./macOSSoundBuild
 
     - name: Build app
       # Configure (cmake ../src), build (make), and assemble BridgeCommand.app.
       # The GUI launch inside the script is skipped automatically on CI.
-      working-directory: ${{env.GITHUB_WORKSPACE}}/bin
+      working-directory: ${{ github.workspace }}/bin
       run: ./makeAndBuildApp
 
     - name: Upload Artifacts
