@@ -28,7 +28,7 @@ ControlVisualiser::~ControlVisualiser()
     //dtor
 }
 
-void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 scale, irr::u32 rotationAxis, irr::u32 controlType)
+void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, float scale, irr::u32 rotationAxis, irr::u32 controlType)
 {
     // Store rotation axis (0=x, 1=y, 2=z)
     this->rotationAxis = rotationAxis;
@@ -75,7 +75,7 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
     }
 }
 
-void ControlVisualiser::update(irr::f32 displayValue)
+void ControlVisualiser::update(float displayValue)
 {
 
     this->displayValue = displayValue;

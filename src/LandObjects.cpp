@@ -52,9 +52,9 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         //Get Object type and construct filename
         std::string objectName = IniFile::iniFileToString(scenarioLandObjectFilename,IniFile::enumerate1("Type",currentObject));
         //Get object position
-        irr::f32 objectX = model->longToX(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Long",currentObject)));
-        irr::f32 objectZ = model->latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Lat",currentObject)));
-        irr::f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));
+        float objectX = model->longToX(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Long",currentObject)));
+        float objectZ = model->latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Lat",currentObject)));
+        float objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));
         
         //Check if we should 'morph' the model to fit the land (mostly for OSM2World models)
         bool morph = false;
@@ -71,7 +71,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         }
 
         //Get rotation
-        irr::f32 rotation = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Rotation",currentObject));
+        float rotation = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Rotation",currentObject));
 
         //Check if we should be able to interact with this by collision
         bool collisionObject = IniFile::iniFileTou32(scenarioLandObjectFilename,IniFile::enumerate1("Collision",currentObject))==1;
@@ -98,21 +98,21 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         numberOfNodes = IniFile::iniFileTou32(scenarioPontoonFilename, IniFile::enumerate1("Nodes", currentPontoon));
         for (irr::u32 currentNode = 1; currentNode < numberOfNodes; currentNode++) {
             //Get position of this node and next one
-            irr::f32 node1X = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode)));
-            irr::f32 node1Z = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode)));
-            irr::f32 node1Y = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode));
+            float node1X = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode)));
+            float node1Z = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode)));
+            float node1Y = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode));
 
-            irr::f32 node2X = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode + 1)));
-            irr::f32 node2Z = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode + 1)));
-            irr::f32 node2Y = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode + 1));
+            float node2X = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode + 1)));
+            float node2Z = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode + 1)));
+            float node2Y = IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("HeightCorrection", currentPontoon, currentNode + 1));
 
-            irr::f32 midPointX = (node1X + node2X) / 2.0;
-            irr::f32 midPointY = (node1Y + node2Y) / 2.0;
-            irr::f32 midPointZ = (node1Z + node2Z) / 2.0;
+            float midPointX = (node1X + node2X) / 2.0;
+            float midPointY = (node1Y + node2Y) / 2.0;
+            float midPointZ = (node1Z + node2Z) / 2.0;
 
             // Find length and angle of this section
-            irr::f32 rotation = atan2(node2X - node1X, node2Z - node1Z) * irr::core::RADTODEG;
-            irr::f32 sectionLength = pow(pow(node2X - node1X, 2.0) + pow(node2Z - node1Z, 2.0), 0.5);
+            float rotation = atan2(node2X - node1X, node2Z - node1Z) * irr::core::RADTODEG;
+            float sectionLength = pow(pow(node2X - node1X, 2.0) + pow(node2Z - node1Z, 2.0), 0.5);
 
             //Create land object and load into vector
             std::string internalName = "LandObject_";
@@ -130,12 +130,12 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
     }
 }
 
-void LandObjects::update(irr::f32 tideHeight, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
+void LandObjects::update(float tideHeight, irr::core::vector3df ownShipPosition, float ownShipLength)
 {
     for (std::vector<LandObject>::iterator it = landObjects.begin(); it != landObjects.end(); ++it) {
 
         if (it->getFloating()) {
-            irr::f32 xPos, yPos, zPos;
+            float xPos, yPos, zPos;
             irr::core::vector3df pos = it->getPosition();
             xPos = pos.X;
             //yPos = tideHeight + model->getWaveHeight(pos.X, pos.Z) + it->getHeightCorrection();
@@ -144,7 +144,7 @@ void LandObjects::update(irr::f32 tideHeight, irr::core::vector3df ownShipPositi
             it->setPosition(irr::core::vector3df(xPos, yPos, zPos));
         }
         //Set or clear triangle selector depending on distance from own ship;
-        irr::f32 landObjectMaxLength = it->getSceneNode()->getTransformedBoundingBox().getExtent().getLength(); // Max length between corners of the bounding box
+        float landObjectMaxLength = it->getSceneNode()->getTransformedBoundingBox().getExtent().getLength(); // Max length between corners of the bounding box
         if (it->getSceneNode()->getAbsolutePosition().getDistanceFrom(ownShipPosition) < (ownShipLength + landObjectMaxLength)) {
             it->enableTriangleSelector(true);
         }
@@ -160,7 +160,7 @@ irr::u32 LandObjects::getNumber() const
     return landObjects.size();
 }
 
-void LandObjects::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void LandObjects::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     for(std::vector<LandObject>::iterator it = landObjects.begin(); it != landObjects.end(); ++it) {
         it->moveNode(deltaX,deltaY,deltaZ);

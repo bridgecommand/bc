@@ -34,9 +34,9 @@ class LandObjects
         virtual ~LandObjects();
         void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev);
         irr::u32 getNumber() const;
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void moveNode(float deltaX, float deltaY, float deltaZ);
         irr::scene::ISceneNode* getSceneNode(int number);
-        void update(irr::f32 tideHeight, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength);
+        void update(float tideHeight, irr::core::vector3df ownShipPosition, float ownShipLength);
 
     private:
         std::vector<LandObject> landObjects;

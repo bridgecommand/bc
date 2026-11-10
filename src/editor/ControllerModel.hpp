@@ -36,10 +36,10 @@ public:
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
     ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, ScenarioData* scenarioData, std::vector<PositionData>* buoysData, std::vector<PositionData>* landObjectsData, irr::u32 _zoomLevels);
     ~ControllerModel();
-    irr::f32 longToX(irr::f32 longitude) const;
-    irr::f32 latToZ(irr::f32 latitude) const;
-    irr::f32 xToLong(irr::f32 x) const;
-    irr::f32 zToLat(irr::f32 z) const;
+    float longToX(float longitude) const;
+    float latToZ(float latitude) const;
+    float xToLong(float x) const;
+    float zToLat(float z) const;
     void update(); //Called once per loop from the main function.
     void resetOffset(); //Re-centre the map on the own-ship
 
@@ -50,9 +50,9 @@ public:
     void setGeneralScenarioData(ScenarioData newData); //To be called from event receiver
     void checkName(); //Check if the scenario name chosen will mean that an existing scenario gets overwritten, and update flag in GeneralData
 
-    void changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance); //Change othership (or ownship) course, speed etc.
+    void changeLeg(irr::s32 ship, irr::s32 index, float legCourse, float legSpeed, float legDistance); //Change othership (or ownship) course, speed etc.
     void deleteLeg(irr::s32 ship, irr::s32 index);
-    void addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance);
+    void addLeg(irr::s32 ship, irr::s32 afterLegNumber, float legCourse, float legSpeed, float legDistance);
     void setMMSI(irr::s32 ship, int mmsi);
     void setDrifting(irr::s32 ship, bool drifting);
     void setSARTOn(irr::s32 ship, bool SART);
@@ -88,14 +88,14 @@ private:
     std::vector<irr::video::IImage*> scaledMap;
     irr::u32 currentZoom;
 
-    irr::f32 terrainLong;
-    irr::f32 terrainLat;
-    irr::f32 terrainLongExtent;
-    irr::f32 terrainLatExtent;
-    irr::f32 terrainXWidth;
-    irr::f32 terrainZWidth;
+    float terrainLong;
+    float terrainLat;
+    float terrainLongExtent;
+    float terrainLatExtent;
+    float terrainXWidth;
+    float terrainZWidth;
 
-    std::vector<irr::f32> metresPerPx;
+    std::vector<float> metresPerPx;
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;

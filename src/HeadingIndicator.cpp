@@ -58,7 +58,7 @@ if (!IsVisible)
     irr::s32 minAngle = ceil(heading - angleRange);
     irr::s32 maxAngle = floor(heading + angleRange);
 
-    irr::f32 pxPerDegree = (irr::f32)AbsoluteRect.getWidth()/(irr::f32)(angleRange*2);
+    float pxPerDegree = (float)AbsoluteRect.getWidth()/(float)(angleRange*2);
 
     //Draw tics
     irr::core::vector2d<irr::s32> startPoint;
@@ -97,7 +97,7 @@ if (!IsVisible)
 
 }
 
-void HeadingIndicator::setHeading(irr::f32 heading)
+void HeadingIndicator::setHeading(float heading)
 {
     this->heading = heading;
 }

@@ -88,14 +88,14 @@ VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* sm
 
 	// Add 2d interface rendering option
 	// Create mesh and scene node for HUD
-	irr::f32 hudRatio = 0.75;
+	float hudRatio = 0.75;
 	if (suGUI > 0 && shGUI > 0) {
-		hudRatio = (irr::f32)shGUI / (irr::f32)suGUI;
+		hudRatio = (float)shGUI / (float)suGUI;
 	}
 
-	irr::f32 hudWidth = 1.5;
-	irr::f32 hudHeight = hudWidth * hudRatio;
-	irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(hudWidth, hudHeight));
+	float hudWidth = 1.5;
+	float hudHeight = hudWidth * hudRatio;
+	irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<float>(hudWidth, hudHeight));
 	smgr->getMeshManipulator()->setVertexColorAlpha(hudPlane, 192); // Set to be 25% transparent
 	// Make HUD mesh vertical so we don't need to worry about rotation later
 	meshRotationMatrix.setRotationDegrees(irr::core::vector3df(-90, 0, 0));
@@ -1468,7 +1468,7 @@ int VRInterface::update() {
 			dev->postEventFromUser(userEventFromVR);
 
 			// Get ray from controller, prioritise right hand. Length 10m
-			irr::core::line3d<irr::f32> selectRay;
+			irr::core::line3d<float> selectRay;
 			getRayFromController(&selectRay, 10.0);
 
 			// Tracks the current intersection point with the level or a mesh
@@ -1493,8 +1493,8 @@ int VRInterface::update() {
 				irr::core::vector3df hudScreenTopLeftPos = hudScreenTopLeft->getAbsolutePosition();
 				irr::core::vector3df hudScreenBottomRightPos = hudScreenBottomRight->getAbsolutePosition();
 
-				irr::f32 interpY = 0;
-				irr::f32 interpX = 0;
+				float interpY = 0;
+				float interpX = 0;
 				// Get screen Y from Y
 				if ((hudScreenTopLeftPos.Y - hudScreenBottomRightPos.Y) != 0) {
 					interpY = (intersection.Y - hudScreenBottomRightPos.Y) / (hudScreenTopLeftPos.Y - hudScreenBottomRightPos.Y);
@@ -1578,8 +1578,8 @@ int VRInterface::update() {
     				portAzimuthThrottleReference = model->getPortAzimuthThrustLever();
 				}
 
-				irr::f32 leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
-				irr::f32 leftHandDeltaX = vrLeftGripPosition.X - vrLeftGripPositionReference.X;
+				float leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
+				float leftHandDeltaX = vrLeftGripPosition.X - vrLeftGripPositionReference.X;
 
 				// The 'set' functions will check limits, so don't clamp here
 				model->setPortSchottel(portSchottelReference + 360 * leftHandDeltaX); // TODO: Make sensitivity a parameter?
@@ -1593,8 +1593,8 @@ int VRInterface::update() {
     				stbdAzimuthThrottleReference = model->getStbdAzimuthThrustLever();
 				}
 
-				irr::f32 rightHandDeltaZ = vrRightGripPosition.Z - vrRightGripPositionReference.Z;
-				irr::f32 rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
+				float rightHandDeltaZ = vrRightGripPosition.Z - vrRightGripPositionReference.Z;
+				float rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
 
 				// The 'set' functions will check limits, so don't clamp here
 				model->setStbdSchottel(stbdSchottelReference + 360 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
@@ -1629,7 +1629,7 @@ int VRInterface::update() {
 					}
 				}
 				
-				irr::f32 leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
+				float leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
 
 				if (vrChangingPortEngine) {
 					//setPortEngine clips to valid range, so don't worry about this here
@@ -1651,7 +1651,7 @@ int VRInterface::update() {
 					vrRightGripPositionReference = vrRightGripPosition;
 					wheelReference = model->getWheel();
 				}
-				irr::f32 rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
+				float rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
 				//setWheel clips to valid range, so don't worry about this here
 				model->setWheel(wheelReference + 60 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
 				// TODO: Add haptic feedback if passing zero position?
@@ -1674,7 +1674,7 @@ int VRInterface::update() {
 #endif
 }
 
-bool VRInterface::getRayFromController(irr::core::line3d<irr::f32>* ray, irr::f32 rayLength)
+bool VRInterface::getRayFromController(irr::core::line3d<float>* ray, float rayLength)
 {
 #if defined _WIN64 || defined __linux__
 	if (selectState[HAND_LEFT_INDEX] || selectState[HAND_RIGHT_INDEX]) {

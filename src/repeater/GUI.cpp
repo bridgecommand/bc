@@ -57,7 +57,7 @@ GUIMain::~GUIMain()
     heading->drop();
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rudderAngle, irr::f32 wheelAngle, irr::s32 portEngineRPM, irr::s32 stbdEngineRPM)
+void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle, float wheelAngle, irr::s32 portEngineRPM, irr::s32 stbdEngineRPM)
 {
 
     if(!modeChosen) {
@@ -66,7 +66,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rud
 
     } else if (showHeadingIndicator) {
 
-        irr::f32 angleScale = 2.0; //Magnification factor for indicator
+        float angleScale = 2.0; //Magnification factor for indicator
 
         heading->setVisible(true);
 
@@ -106,11 +106,11 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rud
             irr::s32 radius = 0.25*sh;
 
             //Draw compass bearings
-            irr::f32 xVector = sin(i*irr::core::DEGTORAD*angleScale);
-            irr::f32 yVector = cos(i*irr::core::DEGTORAD*angleScale);
+            float xVector = sin(i*irr::core::DEGTORAD*angleScale);
+            float yVector = cos(i*irr::core::DEGTORAD*angleScale);
 
             //set scale of line
-            irr::f32 lineEnd;
+            float lineEnd;
             bool printAngle = false;
             if (i%10==0) {
                 lineEnd = 1.1;
@@ -177,11 +177,11 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rud
 
         for(unsigned int i = 0; i<360; i++) {
             //Draw compass bearings
-            irr::f32 xVector = sin(irr::core::degToRad(i-ownShipHeading));
-            irr::f32 yVector = -1*cos(irr::core::degToRad(i-ownShipHeading));
+            float xVector = sin(irr::core::degToRad(i-ownShipHeading));
+            float yVector = -1*cos(irr::core::degToRad(i-ownShipHeading));
 
             //set scale of line
-            irr::f32 lineStart;
+            float lineStart;
             bool printAngle = false;
             bool printText = true;
             if (i%45==0) {
@@ -246,7 +246,7 @@ void GUIMain::setMode(bool headingMode)
     showHeadingIndicator=headingMode;
 }
 
-std::wstring GUIMain::f32To1dp(irr::f32 value)
+std::wstring GUIMain::f32To1dp(float value)
 {
     //Convert a floating point value to a wstring, with 1dp
     char tempStr[100];
@@ -254,7 +254,7 @@ std::wstring GUIMain::f32To1dp(irr::f32 value)
     return std::wstring(tempStr, tempStr+strlen(tempStr));
 }
 
-std::wstring GUIMain::f32To3dp(irr::f32 value)
+std::wstring GUIMain::f32To3dp(float value)
 {
     //Convert a floating point value to a wstring, with 3dp
     char tempStr[100];

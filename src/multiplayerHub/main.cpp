@@ -57,7 +57,7 @@ namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;
 }
 
-std::string makeTimeString(uint64_t absoluteTime, uint64_t offsetTime, irr::f32 scenarioTime, irr::f32 accelerator)
+std::string makeTimeString(uint64_t absoluteTime, uint64_t offsetTime, float scenarioTime, float accelerator)
 {
     //timestamp (unix),
     //timestamp of start of first scenario day,
@@ -287,7 +287,7 @@ int main()
     LinesData linesData(numberOfOtherShips+1);
 
     //Get time information and initialise
-    irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
+    float scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
     uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
     uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
 
@@ -296,7 +296,7 @@ int main()
 
     //irr::u32 currentTime = millisecs(); //Computer clock time (ms)
     //irr::u32 previousTime = currentTime; //Computer clock time (ms)
-    irr::f32 accelerator = 1.0;
+    float accelerator = 1.0;
 
     //Add some simple information to the GUI, so the user knows it's running
     //Add text, which will list connected peers, and current time.
@@ -370,7 +370,7 @@ int main()
         accelerator = eventReceiver.getAccelerator();
 
         // Apply a time shift if requrested by the event receiver
-        irr::f32 timeShift = eventReceiver.getAndResetTimeShift();
+        float timeShift = eventReceiver.getAndResetTimeShift();
         scenarioTime += timeShift;
 
         //Do time handling here.
@@ -410,11 +410,11 @@ int main()
             std::string otherShipsString;
             for(unsigned int i = 0; i < (numberOfOtherShips+1); i++) {
                 if (i!=thisPeer) {
-                    irr::f32 thisOtherShipX = 0;
-                    irr::f32 thisOtherShipZ = 0;
-                    irr::f32 thisOtherShipSpeed = 0;
-                    irr::f32 thisOtherShipBearing = 0;
-                    irr::f32 thisOtherShipRateOfTurn = 0;
+                    float thisOtherShipX = 0;
+                    float thisOtherShipZ = 0;
+                    float thisOtherShipSpeed = 0;
+                    float thisOtherShipBearing = 0;
+                    float thisOtherShipRateOfTurn = 0;
 
                     shipPositionData.getShipPosition(i,
                                                      scenarioTime,
@@ -499,12 +499,12 @@ int main()
                 std::vector<std::string> splitMessage = Utilities::split(receivedMessage,'#');
                 //Store information
                 if (splitMessage.size() == 7) {
-                    irr::f32 thisOtherShipX = Utilities::lexical_cast<irr::f32>(splitMessage.at(0));
-                    irr::f32 thisOtherShipZ = Utilities::lexical_cast<irr::f32>(splitMessage.at(1));
-                    irr::f32 thisOtherShipBearing = Utilities::lexical_cast<irr::f32>(splitMessage.at(2));
-                    irr::f32 thisOtherShipRateOfTurn = Utilities::lexical_cast<irr::f32>(splitMessage.at(3)); // deg/s
-                    irr::f32 thisOtherShipSpeed = Utilities::lexical_cast<irr::f32>(splitMessage.at(4));
-                    irr::f32 thisOtherShipTime = Utilities::lexical_cast<irr::f32>(splitMessage.at(5));
+                    float thisOtherShipX = Utilities::lexical_cast<float>(splitMessage.at(0));
+                    float thisOtherShipZ = Utilities::lexical_cast<float>(splitMessage.at(1));
+                    float thisOtherShipBearing = Utilities::lexical_cast<float>(splitMessage.at(2));
+                    float thisOtherShipRateOfTurn = Utilities::lexical_cast<float>(splitMessage.at(3)); // deg/s
+                    float thisOtherShipSpeed = Utilities::lexical_cast<float>(splitMessage.at(4));
+                    float thisOtherShipTime = Utilities::lexical_cast<float>(splitMessage.at(5));
                     shipPositionData.setShipPosition(thisPeer,thisOtherShipTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing,thisOtherShipRateOfTurn);
 
                     // Lines data, from splitMessage.at(6)
@@ -520,20 +520,20 @@ int main()
                         std::vector<std::string> thisLineData = Utilities::split(linesDataString.at(lineID),',');
                         // Check number of elements for line data line
                         if (thisLineData.size() == 16) {
-                            irr::f32 thisStartX = Utilities::lexical_cast<irr::f32>(thisLineData.at(0));
-                            irr::f32 thisStartY = Utilities::lexical_cast<irr::f32>(thisLineData.at(1));
-                            irr::f32 thisStartZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(2));
-                            irr::f32 thisEndX = Utilities::lexical_cast<irr::f32>(thisLineData.at(3));
-                            irr::f32 thisEndY = Utilities::lexical_cast<irr::f32>(thisLineData.at(4));
-                            irr::f32 thisEndZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(5));
+                            float thisStartX = Utilities::lexical_cast<float>(thisLineData.at(0));
+                            float thisStartY = Utilities::lexical_cast<float>(thisLineData.at(1));
+                            float thisStartZ = Utilities::lexical_cast<float>(thisLineData.at(2));
+                            float thisEndX = Utilities::lexical_cast<float>(thisLineData.at(3));
+                            float thisEndY = Utilities::lexical_cast<float>(thisLineData.at(4));
+                            float thisEndZ = Utilities::lexical_cast<float>(thisLineData.at(5));
                             int thisStartType = Utilities::lexical_cast<int>(thisLineData.at(6));
                             int thisEndType = Utilities::lexical_cast<int>(thisLineData.at(7));
                             int thisStartID = Utilities::lexical_cast<int>(thisLineData.at(8));
                             int thisEndID = Utilities::lexical_cast<int>(thisLineData.at(9));
-                            irr::f32 thisNominalLength = Utilities::lexical_cast<irr::f32>(thisLineData.at(10));
-                            irr::f32 thisBreakingTension = Utilities::lexical_cast<irr::f32>(thisLineData.at(11));
-                            irr::f32 thisBreakingStrain = Utilities::lexical_cast<irr::f32>(thisLineData.at(12));
-                            irr::f32 thisNominalShipMass = Utilities::lexical_cast<irr::f32>(thisLineData.at(13));
+                            float thisNominalLength = Utilities::lexical_cast<float>(thisLineData.at(10));
+                            float thisBreakingTension = Utilities::lexical_cast<float>(thisLineData.at(11));
+                            float thisBreakingStrain = Utilities::lexical_cast<float>(thisLineData.at(12));
+                            float thisNominalShipMass = Utilities::lexical_cast<float>(thisLineData.at(13));
                             int thisKeepSlack = Utilities::lexical_cast<int>(thisLineData.at(14));
                             int thisHeaveIn = Utilities::lexical_cast<int>(thisLineData.at(15));
 
@@ -587,11 +587,11 @@ int main()
         displayText.append(irr::core::stringw(displayTime.c_str()));
         displayText.append(L"\n\n");
         for(unsigned int i = 0; i<numberOfPeers; i++ ) {
-            irr::f32 thisOtherShipX = 0;
-            irr::f32 thisOtherShipZ = 0;
-            irr::f32 thisOtherShipSpeed = 0;
-            irr::f32 thisOtherShipBearing = 0;
-            irr::f32 thisOtherShipRateOfTurn = 0;
+            float thisOtherShipX = 0;
+            float thisOtherShipZ = 0;
+            float thisOtherShipSpeed = 0;
+            float thisOtherShipBearing = 0;
+            float thisOtherShipRateOfTurn = 0;
 
             shipPositionData.getShipPosition(i,scenarioTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing,thisOtherShipRateOfTurn);
             std::string thisShipNumber = Utilities::lexical_cast<std::string>(i+1);

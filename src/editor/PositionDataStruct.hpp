@@ -22,7 +22,7 @@
 
 struct PositionData //To hold information about a position (with optional name)
 {
-    irr::f32 X, Z;
+    float X, Z;
     std::string name;
     PositionData():X(0), Z(0), name(""){}
 };

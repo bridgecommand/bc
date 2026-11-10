@@ -38,9 +38,9 @@ public:
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
     ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, irr::u32 _zoomLevels);
     ~ControllerModel();
-    irr::f32 longToX(irr::f32 longitude) const;
-    irr::f32 latToZ(irr::f32 latitude) const;
-    void update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const irr::f32& windDirection, const irr::f32& windSpeed, const irr::f32& streamDirection, const irr::f32& streamSpeed, const bool& streamOverride);
+    float longToX(float longitude) const;
+    float latToZ(float latitude) const;
+    void update(const float& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const float& weather, const float& visibility, const float& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const float& windDirection, const float& windSpeed, const float& streamDirection, const float& streamSpeed, const bool& streamOverride);
     void resetOffset(); //Re-centre the map on the own-ship
     void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
     void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
@@ -62,14 +62,14 @@ private:
 
     irr::u32 currentZoom;
 
-    irr::f32 terrainLong;
-    irr::f32 terrainLat;
-    irr::f32 terrainLongExtent;
-    irr::f32 terrainLatExtent;
-    irr::f32 terrainXWidth;
-    irr::f32 terrainZWidth;
+    float terrainLong;
+    float terrainLat;
+    float terrainLongExtent;
+    float terrainLatExtent;
+    float terrainXWidth;
+    float terrainZWidth;
 
-    std::vector<irr::f32> metresPerPx;
+    std::vector<float> metresPerPx;
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;

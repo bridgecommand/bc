@@ -397,31 +397,31 @@ void NMEA::updateNMEA()
     const char *min  = minuteString.c_str();
     const char *sec  =secondsString.c_str();
 
-    irr::f32 rudderAngle = model->getRudder();
+    float rudderAngle = model->getRudder();
 
     int engineRPM[] = {
         Utilities::round(model->getStbdEngineRPM()), // idx=1, odd (starboard)
         Utilities::round(model->getPortEngineRPM())  // idx=2, even (port)
     };
 
-    irr::f32 lat = model->getLat();
-    irr::f32 lon = model->getLong();
+    float lat = model->getLat();
+    float lon = model->getLong();
 
-    irr::f32 cog = model->getCOG();
-    irr::f32 sog = model->getSOG()*MPS_TO_KTS;
+    float cog = model->getCOG();
+    float sog = model->getSOG()*MPS_TO_KTS;
 
-    irr::f32 hdg = model->getHeading();
-    irr::f32 rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
+    float hdg = model->getHeading();
+    float rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
 
-    irr::f32 depth = model->getDepth();
+    float depth = model->getDepth();
 
     char eastWest = easting[lon < 0];
     char northSouth = northing[lat < 0];
 
     lat = fabs(lat);
     lon = fabs(lon);
-    irr::f32 latMinutes = (lat - (int)lat)*60;
-    irr::f32 lonMinutes = (lon - (int)lon)*60;
+    float latMinutes = (lat - (int)lat)*60;
+    float lonMinutes = (lon - (int)lon)*60;
     irr::u8 latDegrees = (int) lat;
     irr::u8 lonDegrees = (int) lon;
 

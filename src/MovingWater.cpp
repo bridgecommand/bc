@@ -91,17 +91,17 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
 	//FIXME: Hardcoded or defined in multiple places
 	tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 100, so visible jumps in water are minimised
-    irr::f32 segmentSize = tileWidth / segments;
+    float segmentSize = tileWidth / segments;
 
     ocean = new cOcean(segments, 0.00005f, vector2(32.0f,32.0f), tileWidth); //Note that the A and w parameters will get overwritten by ocean->resetParameters() dependent on the model's weather
 
 	mesh = mgr->addHillPlaneMesh( "myHill",
-                           irr::core::dimension2d<irr::f32>(segmentSize,segmentSize),
+                           irr::core::dimension2d<float>(segmentSize,segmentSize),
                            irr::core::dimension2d<irr::u32>(segments,segments),
                            0,
                            0.0f,
-                           irr::core::dimension2d<irr::f32>(0,0),
-                           irr::core::dimension2d<irr::f32>(tileWidth/(irr::f32)(segments),tileWidth/(irr::f32)(segments)));
+                           irr::core::dimension2d<float>(0,0),
+                           irr::core::dimension2d<float>(tileWidth/(float)(segments),tileWidth/(float)(segments)));
 
 
     flatMesh = mgr->getMesh("media/flatsea.x");
@@ -190,7 +190,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
     //Hard code bounding box to be large - we always want to render water, and we actually render multiple displaced copies of the mesh, so just getting the mesh bounding box isn't correct.
     //TODO: Look here if there's a problem with the water disappearing or if we implement collision with water.
-    boundingBox = irr::core::aabbox3d<irr::f32>(-10000,-100,-10000,10000,100,10000);
+    boundingBox = irr::core::aabbox3d<float>(-10000,-100,-10000,10000,100,10000);
 
 }
 
@@ -326,7 +326,7 @@ void MovingWaterSceneNode::OnRegisterSceneNode()
 }
 
 /*
-void MovingWaterSceneNode::setVerticalScale(irr::f32 scale)
+void MovingWaterSceneNode::setVerticalScale(float scale)
 {
     scaleFactorVertical = scale;
 }
@@ -342,7 +342,7 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
         video::SColorf ambientLight = this->getSceneManager()->getAmbientLight();
         lightLevel = (ambientLight.r + ambientLight.g + ambientLight.b) / 3.0; //Average
 
-		const irr::f32 time = timeMs / 1000.f;
+		const float time = timeMs / 1000.f;
 
 		//Update the FFT Calculation
 		ocean->evaluateWavesFFT(time);
@@ -379,7 +379,7 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
 		
 		if (withReflection) {
             //fixes glitches with incomplete refraction
-            const irr::f32 CLIP_PLANE_OFFSET_Y = 0.0f;
+            const float CLIP_PLANE_OFFSET_Y = 0.0f;
 
             irr::core::rect<irr::s32> currentViewPort = driver->getViewPort(); //Get the previous viewPort
 
@@ -397,15 +397,15 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
 
             //get current camera
             scene::ICameraSceneNode* currentCamera = SceneManager->getActiveCamera();
-            irr::f32 currentAspect = currentCamera->getAspectRatio();
+            float currentAspect = currentCamera->getAspectRatio();
 
             //use this aspect ratio
             _camera->setAspectRatio(currentAspect);
 
             //set FOV and far value from current camera
             _camera->setFarValue(currentCamera->getFarValue());
-            irr::f32 renderScale = 1.5; //This matches the scaling in the shader, to avoid artefacts near the edge of the screen
-            irr::f32 renderFOV = 2*atan(renderScale * tan(currentCamera->getFOV()/2));
+            float renderScale = 1.5; //This matches the scaling in the shader, to avoid artefacts near the edge of the screen
+            float renderFOV = 2*atan(renderScale * tan(currentCamera->getFOV()/2));
             _camera->setFOV(renderFOV);
 
             irr::core::vector3df position = currentCamera->getAbsolutePosition();
@@ -422,7 +422,7 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
             SceneManager->setActiveCamera(_camera);
 
             //reflection clipping plane
-            irr::core::plane3d<irr::f32> reflectionClipPlane(0, RelativeTranslation.Y - CLIP_PLANE_OFFSET_Y, 0, 0, 1, 0);
+            irr::core::plane3d<float> reflectionClipPlane(0, RelativeTranslation.Y - CLIP_PLANE_OFFSET_Y, 0, 0, 1, 0);
             driver->setClipPlane(0, reflectionClipPlane, true);
 
             SceneManager->drawAll(); //draw the scene
@@ -450,15 +450,15 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
 	}
 }
 
-irr::f32 MovingWaterSceneNode::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const
+float MovingWaterSceneNode::getWaveHeight(float relPosX, float relPosZ) const
 {
 
     //Adjust relative position by 1/2 tile width
 
 
     //Get the wave height (not including tide height) at this position relative to the origin of the water
-    irr::f32 relPosXInternal = fmod(relPosX+tileWidth/2,tileWidth);
-    irr::f32 relPosZInternal = fmod(relPosZ+tileWidth/2,tileWidth);
+    float relPosXInternal = fmod(relPosX+tileWidth/2,tileWidth);
+    float relPosZInternal = fmod(relPosZ+tileWidth/2,tileWidth);
 
     //TODO: Probably not needed?
     while (relPosXInternal < 0)
@@ -466,8 +466,8 @@ irr::f32 MovingWaterSceneNode::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ)
     while (relPosZInternal < 0)
         relPosZInternal+=tileWidth;
 
-    irr::f32 xIndexFloat = (irr::f32)(segments+1)*relPosXInternal/tileWidth;
-    irr::f32 zIndexFloat = (irr::f32)(segments+1)*relPosZInternal/tileWidth;
+    float xIndexFloat = (float)(segments+1)*relPosXInternal/tileWidth;
+    float zIndexFloat = (float)(segments+1)*relPosZInternal/tileWidth;
     xIndexFloat = (segments+1) - xIndexFloat; //Sign of x is flipped when heights are applied!
 
     //std::cout << "xIndexF:" << xIndexFloat << " zIndexF:" << zIndexFloat << " segments+1:" << segments+1 << std::endl;
@@ -484,8 +484,8 @@ irr::f32 MovingWaterSceneNode::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ)
     if (xIndex1 == (segments+1)) {xIndex1=0;}
     if (zIndex1 == (segments+1)) {zIndex1=0;}
 
-    irr::f32 interpX = xIndexFloat - xIndex0;
-    irr::f32 interpZ = zIndexFloat - zIndex0;
+    float interpX = xIndexFloat - xIndex0;
+    float interpZ = zIndexFloat - zIndex0;
 
     unsigned int index00 = (segments+1) * zIndex0 + xIndex0;
     unsigned int index01 = (segments+1) * zIndex1 + xIndex0;
@@ -495,13 +495,13 @@ irr::f32 MovingWaterSceneNode::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ)
     vertex_ocean* vertices = ocean->getVertices();
 
     //Error checking here?
-    irr::f32 height00 = vertices[index00].y;
-    irr::f32 height01 = vertices[index01].y;
-    irr::f32 height10 = vertices[index10].y;
-    irr::f32 height11 = vertices[index11].y;
+    float height00 = vertices[index00].y;
+    float height01 = vertices[index01].y;
+    float height10 = vertices[index10].y;
+    float height11 = vertices[index11].y;
 
 
-    irr::f32 localHeight = height00*(1-interpX)*(1-interpZ) + height10*interpX*(1-interpZ) + height01*(1-interpX)*interpZ + height11*interpX*interpZ;
+    float localHeight = height00*(1-interpX)*(1-interpZ) + height10*interpX*(1-interpZ) + height01*(1-interpX)*interpZ + height11*interpX*interpZ;
 
     if (localisnan(localHeight) || localisinf(localHeight)) {
         return 0;
@@ -511,14 +511,14 @@ irr::f32 MovingWaterSceneNode::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ)
 
 }
 
-irr::core::vector2df MovingWaterSceneNode::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const
+irr::core::vector2df MovingWaterSceneNode::getLocalNormals(float relPosX, float relPosZ) const
 {
 
     //Adjust relative position by 1/2 tile width
 
     //Get the wave normal
-    irr::f32 relPosXInternal = fmod(relPosX+tileWidth/2,tileWidth);
-    irr::f32 relPosZInternal = fmod(relPosZ+tileWidth/2,tileWidth);
+    float relPosXInternal = fmod(relPosX+tileWidth/2,tileWidth);
+    float relPosZInternal = fmod(relPosZ+tileWidth/2,tileWidth);
 
     //TODO: Probably not needed?
     while (relPosXInternal < 0)
@@ -526,8 +526,8 @@ irr::core::vector2df MovingWaterSceneNode::getLocalNormals(irr::f32 relPosX, irr
     while (relPosZInternal < 0)
         relPosZInternal+=tileWidth;
 
-    irr::f32 xIndexFloat = (irr::f32)(segments+1)*relPosXInternal/tileWidth;
-    irr::f32 zIndexFloat = (irr::f32)(segments+1)*relPosZInternal/tileWidth;
+    float xIndexFloat = (float)(segments+1)*relPosXInternal/tileWidth;
+    float zIndexFloat = (float)(segments+1)*relPosZInternal/tileWidth;
     xIndexFloat = (segments+1) - xIndexFloat; //Sign of x is flipped when heights are applied!
 
     //std::cout << "xIndexF:" << xIndexFloat << " zIndexF:" << zIndexFloat << " segments+1:" << segments+1 << std::endl;
@@ -544,8 +544,8 @@ irr::core::vector2df MovingWaterSceneNode::getLocalNormals(irr::f32 relPosX, irr
     if (xIndex1 == (segments+1)) {xIndex1=0;}
     if (zIndex1 == (segments+1)) {zIndex1=0;}
 
-    irr::f32 interpX = xIndexFloat - xIndex0;
-    irr::f32 interpZ = zIndexFloat - zIndex0;
+    float interpX = xIndexFloat - xIndex0;
+    float interpZ = zIndexFloat - zIndex0;
 
     unsigned int index00 = (segments+1) * zIndex0 + xIndex0;
     unsigned int index01 = (segments+1) * zIndex1 + xIndex0;
@@ -555,18 +555,18 @@ irr::core::vector2df MovingWaterSceneNode::getLocalNormals(irr::f32 relPosX, irr
     vertex_ocean* vertices = ocean->getVertices();
 
     //Error checking here?
-    irr::f32 nx00 = vertices[index00].nx;
-    irr::f32 nx01 = vertices[index01].nx;
-    irr::f32 nx10 = vertices[index10].nx;
-    irr::f32 nx11 = vertices[index11].nx;
+    float nx00 = vertices[index00].nx;
+    float nx01 = vertices[index01].nx;
+    float nx10 = vertices[index10].nx;
+    float nx11 = vertices[index11].nx;
 
-    irr::f32 nz00 = vertices[index00].nz;
-    irr::f32 nz01 = vertices[index01].nz;
-    irr::f32 nz10 = vertices[index10].nz;
-    irr::f32 nz11 = vertices[index11].nz;
+    float nz00 = vertices[index00].nz;
+    float nz01 = vertices[index01].nz;
+    float nz10 = vertices[index10].nz;
+    float nz11 = vertices[index11].nz;
 
-    irr::f32 localNx = nx00*(1-interpX)*(1-interpZ) + nx10*interpX*(1-interpZ) + nx01*(1-interpX)*interpZ + nx11*interpX*interpZ;
-    irr::f32 localNz = nz00*(1-interpX)*(1-interpZ) + nz10*interpX*(1-interpZ) + nz01*(1-interpX)*interpZ + nz11*interpX*interpZ;
+    float localNx = nx00*(1-interpX)*(1-interpZ) + nx10*interpX*(1-interpZ) + nx01*(1-interpX)*interpZ + nx11*interpX*interpZ;
+    float localNz = nz00*(1-interpX)*(1-interpZ) + nz10*interpX*(1-interpZ) + nz01*(1-interpX)*interpZ + nz11*interpX*interpZ;
 
     if (localisnan(localNx) || localisinf(localNx) || localisnan(localNz) || localisinf(localNz)) {
         return irr::core::vector2df(0,0);
@@ -647,7 +647,7 @@ void MovingWaterSceneNode::render()
 
 }
 
-const irr::core::aabbox3d<irr::f32>& MovingWaterSceneNode::getBoundingBox() const
+const irr::core::aabbox3d<float>& MovingWaterSceneNode::getBoundingBox() const
 {
     return boundingBox;
 }
@@ -663,7 +663,7 @@ void MovingWaterSceneNode::setMesh(IMesh* mesh, bool copyMeshMaterials)
     // Don't do anything here, the mesh is created manually
 }
 
-IShadowVolumeSceneNode* MovingWaterSceneNode::addShadowVolumeSceneNode(const IMesh* shadowMesh, irr::s32 id, bool zfailmethod, irr::f32 infinity)
+IShadowVolumeSceneNode* MovingWaterSceneNode::addShadowVolumeSceneNode(const IMesh* shadowMesh, irr::s32 id, bool zfailmethod, float infinity)
 {
     //std::cerr << "In addShadowVolumeSceneNode()" << std::endl;
     return 0;

@@ -78,7 +78,7 @@ void Line::setStart(irr::scene::ISceneNode* lineStart, int nodeType, int id)
     startNodeID = id;
 }
 
-void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id, irr::f32 lengthFactor)
+void Line::setEnd(irr::scene::ISceneNode* lineEnd, float shipMass, int nodeType, int id, float lengthFactor)
 {
     this->lineEnd = lineEnd;
     shipNominalMass = shipMass;
@@ -146,7 +146,7 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
     }
 }
 
-void Line::setNominalLength(irr::f32 lineNominalLength)
+void Line::setNominalLength(float lineNominalLength)
 {
     this->lineNominalLength = lineNominalLength;
 }
@@ -192,7 +192,7 @@ void Line::setSelected(bool selected)
     this->isSelected = selected;
 }
 
-irr::f32 Line::getLineStartX() const // Relative position
+float Line::getLineStartX() const // Relative position
 {
     if (lineStart) {
         return lineStart->getPosition().X;
@@ -201,7 +201,7 @@ irr::f32 Line::getLineStartX() const // Relative position
     }
 }
 
-irr::f32 Line::getLineStartY() const
+float Line::getLineStartY() const
 {
     if (lineStart) {
         return lineStart->getPosition().Y;
@@ -210,7 +210,7 @@ irr::f32 Line::getLineStartY() const
     }
 }
 
-irr::f32 Line::getLineStartZ() const
+float Line::getLineStartZ() const
 {
     if (lineStart) {
         return lineStart->getPosition().Z;
@@ -219,7 +219,7 @@ irr::f32 Line::getLineStartZ() const
     }
 }
 
-irr::f32 Line::getLineEndX() const
+float Line::getLineEndX() const
 {
     if (lineEnd) {
         return lineEnd->getPosition().X;
@@ -228,7 +228,7 @@ irr::f32 Line::getLineEndX() const
     }
 }
 
-irr::f32 Line::getLineEndY() const
+float Line::getLineEndY() const
 {
     if (lineEnd) {
         return lineEnd->getPosition().Y;
@@ -237,7 +237,7 @@ irr::f32 Line::getLineEndY() const
     }
 }
 
-irr::f32 Line::getLineEndZ() const
+float Line::getLineEndZ() const
 {
     if (lineEnd) {
         return lineEnd->getPosition().Z;
@@ -266,48 +266,48 @@ int Line::getLineEndID() const
     return endNodeID;
 }
 
-irr::f32 Line::getLineNominalLength() const
+float Line::getLineNominalLength() const
 {
     return lineNominalLength;
 }
 
-void Line::setLineNominalLength(irr::f32 lineNominalLength)
+void Line::setLineNominalLength(float lineNominalLength)
 {
     this->lineNominalLength = lineNominalLength;
 }
 
-irr::f32 Line::getLineBreakingTension() const
+float Line::getLineBreakingTension() const
 {
     return lineBreakingTension;
 }
 
-void Line::setLineBreakingTension(irr::f32 lineBreakingTension)
+void Line::setLineBreakingTension(float lineBreakingTension)
 {
     this->lineBreakingTension = lineBreakingTension;
 }
 
 
-irr::f32 Line::getLineBreakingStrain() const
+float Line::getLineBreakingStrain() const
 {
     return lineBreakingStrain;
 }
 
-void Line::setLineBreakingStrain(irr::f32 lineBreakingStrain)
+void Line::setLineBreakingStrain(float lineBreakingStrain)
 {
     this->lineBreakingStrain=lineBreakingStrain;
 }
 
-irr::f32 Line::getLineNominalShipMass() const
+float Line::getLineNominalShipMass() const
 {
     return shipNominalMass;
 }
 
-void Line::setLineNominalShipMass(irr::f32 shipNominalMass)
+void Line::setLineNominalShipMass(float shipNominalMass)
 {
     this->shipNominalMass=shipNominalMass;
 }
 
-void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting on the ownship in the local coordinate system
+void Line::update(float deltaTime) // Calculate the force and torque acting on the ownship in the local coordinate system
 {
     
     // Initially assume no force and torque
@@ -334,23 +334,23 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
         irr::core::vector3df endPosAbs = lineEnd->getAbsolutePosition();
         
         irr::core::vector3df lineVectorAbs = endPosAbs - startPosAbs;
-        irr::f32 lineExtensionPrevious = lineExtension;
-        irr::f32 lineActualLength = lineVectorAbs.getLength();
+        float lineExtensionPrevious = lineExtension;
+        float lineActualLength = lineVectorAbs.getLength();
         
         if (keepSlack) {
             lineNominalLength = lineActualLength;
         }
 
         lineExtension = lineActualLength - lineNominalLength;
-        irr::f32 lineExtensionChange = lineExtension - lineExtensionPrevious;
+        float lineExtensionChange = lineExtension - lineExtensionPrevious;
 
         // Find force in local coordinate system (i.e. force magnitude * local unit vector)
-        irr::f32 forceMagnitude = 0;
+        float forceMagnitude = 0;
         if (lineActualLength > 0 && lineNominalLength > 0 && lineBreakingStrain > 0 && lineBreakingTension > 0) {
             // Valid line parameters
             
             if (lineExtension > 0) {
-                irr::f32 lineStiffness = lineBreakingTension / (lineNominalLength * lineBreakingStrain);
+                float lineStiffness = lineBreakingTension / (lineNominalLength * lineBreakingStrain);
                 
                 // Upper limit to stiffness for stability (based on 10m length) - Todo, could be improved?
                 if (lineStiffness > (lineBreakingTension / (10 * lineBreakingStrain))) {
@@ -358,7 +358,7 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                 }
 
                 // Ramp in line stiffness for low extensions
-                irr::f32 strainProportion = lineExtension / (lineNominalLength * lineBreakingStrain); // Ratio of actual strain to breaking strain
+                float strainProportion = lineExtension / (lineNominalLength * lineBreakingStrain); // Ratio of actual strain to breaking strain
                 if (strainProportion < 0.1) {
                     // Linear increase of stiffness up to full stiffness at 10% of breaking strain
                     lineStiffness = lineStiffness * strainProportion / 0.1;
@@ -372,8 +372,8 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                     if ((model->getModelParameters().mode != OperatingMode::Multiplayer) || 
                         (startNodeType != 2 && endNodeType !=2)) { 
                         // Do not add damping if in multiplayer mode, and line is attached to another ship
-                        irr::f32 lineExtensionSpeed = lineExtensionChange / deltaTime;
-                        irr::f32 criticalDamping = 2*sqrt(lineStiffness * shipNominalMass);
+                        float lineExtensionSpeed = lineExtensionChange / deltaTime;
+                        float criticalDamping = 2*sqrt(lineStiffness * shipNominalMass);
                         forceMagnitude += lineExtensionSpeed * 0.5 * criticalDamping * model->getLineDampingFactor();
                     }
                 }
@@ -390,7 +390,7 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
             }
             // Reduce line length for next time if 'heave in' is active
             if (!keepSlack && heaveIn) {
-                irr::f32 haulInSpeed = 0;
+                float haulInSpeed = 0;
                 if (forceMagnitude <= 0) {
                     // 1m/s heave in speed if unloaded
                     haulInSpeed = 1.0;
@@ -457,7 +457,7 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
             irr::video::SColor lineColour = irr::video::SColor(255, 255, 255, 255);
             
             // set x & y size based on strength what's selected
-            irr::f32 xySize = 0;
+            float xySize = 0;
             if (lineBreakingTension > 0) {
                 xySize = sqrt(lineBreakingTension) * 0.00001;
             }

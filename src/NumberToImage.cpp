@@ -25,7 +25,7 @@ namespace NumberToImage
     const irr::u32 PADDING_PX = 1;
     const irr::video::SColor BG_COLOUR = irr::video::SColor(0,0,0,0);
 
-    irr::video::IImage* getImage(irr::u32 number, irr::f32 brilliance, irr::IrrlichtDevice* dev)
+    irr::video::IImage* getImage(irr::u32 number, float brilliance, irr::IrrlichtDevice* dev)
     {
 
         irr::core::stringc numberString = irr::core::stringc(number);

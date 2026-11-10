@@ -348,10 +348,10 @@ int main (int argc, char ** argv)
     ControllerModel controller(device, &guiMain);
 
     //Create data structures to hold own ship, other ship and buoy data
-    irr::f32 time = 0; //Time since start of day 1 of the scenario
-    irr::f32 weather = 0; //(0-12)
-    irr::f32 rain = 0; //(0-10)
-    irr::f32 visibility = 10.1; //(0.1-10.1)
+    float time = 0; //Time since start of day 1 of the scenario
+    float weather = 0; //(0-12)
+    float rain = 0; //(0-10)
+    float visibility = 10.1; //(0.1-10.1)
     ShipData ownShipData;
 
     //create event receiver, linked to model

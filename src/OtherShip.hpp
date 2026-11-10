@@ -39,19 +39,19 @@ class OtherShip : public Ship
         OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, bool SART, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         ~OtherShip();
 
-        irr::f32 getHeight() const;
-        irr::f32 getRCS() const;
+        float getHeight() const;
+        float getRCS() const;
         std::string getName() const;
         std::vector<Leg> getLegs() const;
-        void changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
-        void addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
-        void deleteLeg(int legNumber, irr::f32 scenarioTime);
-        void resetLegs(irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm, irr::f32 scenarioTime);
-        void offsetLegTimes(irr::f32 deltaTime);
+        void changeLeg(int legNumber, float bearing, float speed, float distance, float scenarioTime);
+        void addLeg(int afterLegNumber, float bearing, float speed, float distance, float scenarioTime);
+        void deleteLeg(int legNumber, float scenarioTime);
+        void resetLegs(float course, float speedKts, float distanceNm, float scenarioTime);
+        void offsetLegTimes(float deltaTime);
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel);
+        void update(float deltaTime, float scenarioTime, float tideHeight, irr::u32 lightLevel);
         void enableTriangleSelector(bool selectorEnabled);
-        void setRateOfTurn(irr::f32 rateOfTurn); // This could be moved to Ship.hpp
+        void setRateOfTurn(float rateOfTurn); // This could be moved to Ship.hpp
         void setSARTtimeStamp(uint64_t timeStamp);
         bool getSARTOn() const;
         void setSARTOn(bool sartState);
@@ -64,11 +64,11 @@ class OtherShip : public Ship
         std::vector<Leg> legs;
         std::vector<NavLight*> navLights;
         std::vector<DayShape*> dayShapes;
-        irr::f32 height; //For radar
-        irr::f32 solidHeight; //For radar
-        irr::f32 rcs;
-        irr::f32 rateOfTurn;
-        std::vector<Leg>::size_type findCurrentLeg(irr::f32 scenarioTime);
+        float height; //For radar
+        float solidHeight; //For radar
+        float rcs;
+        float rateOfTurn;
+        std::vector<Leg>::size_type findCurrentLeg(float scenarioTime);
         irr::scene::ITriangleSelector* selector;
         bool triangleSelectorEnabled;
         bool drifting;

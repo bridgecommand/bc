@@ -41,8 +41,8 @@ public:
     irr::u32 rudderJoystickNo;
     irr::u32 bowThrusterJoystickNo;
     irr::u32 sternThrusterJoystickNo;
-    std::vector<irr::f32> inputPoints;
-    std::vector<irr::f32> outputPoints;
+    std::vector<float> inputPoints;
+    std::vector<float> outputPoints;
     irr::s32 rudderDirection;
     bool updateAllAxes;
     bool enableMacOSJoystick;
@@ -76,20 +76,20 @@ public:
     irr::s32 thrustLeverStbdDirection;
 
 // scaling and offset values for the schottel    
-//    irr::f32 azimuth1Scaling;
-//    irr::f32 azimuth2Scaling;
-//    irr::f32 azimuth1Offset;
-//    irr::f32 azimuth2Offset;
-    irr::f32 schottelPortScaling;
-    irr::f32 schottelStbdScaling;
-    irr::f32 schottelPortOffset;
-    irr::f32 schottelStbdOffset;
+//    float azimuth1Scaling;
+//    float azimuth2Scaling;
+//    float azimuth1Offset;
+//    float azimuth2Offset;
+    float schottelPortScaling;
+    float schottelStbdScaling;
+    float schottelPortOffset;
+    float schottelStbdOffset;
     
 // scaling and offset for the thrust levers
-    irr::f32 thrustLeverPortScaling;
-    irr::f32 thrustLeverStbdScaling;
-    irr::f32 thrustLeverPortOffset;
-    irr::f32 thrustLeverStbdOffset;
+    float thrustLeverPortScaling;
+    float thrustLeverStbdScaling;
+    float thrustLeverPortOffset;
+    float thrustLeverStbdOffset;
     
     
 // DEE 10JAN2023 ^^^^
@@ -195,8 +195,8 @@ public:
 private:
 
     void startShutdown();
-    irr::f32 lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints);
-    std::wstring f32To3dp(irr::f32 value, bool stripZeros = false);
+    float lookup1D(float lookupValue, std::vector<float> inputPoints, std::vector<float> outputPoints);
+    std::wstring f32To3dp(float value, bool stripZeros = false);
     bool IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) const;
     void handleMooringLines(irr::core::line3df rayForLines);
 
@@ -211,26 +211,26 @@ private:
     irr::s32 scrollBarPosHeading;
     irr::core::array<irr::SJoystickInfo> joystickInfo;
 
-    irr::f32 previousJoystickPort;
-    irr::f32 previousJoystickStbd;
-    irr::f32 previousJoystickRudder;
+    float previousJoystickPort;
+    float previousJoystickStbd;
+    float previousJoystickRudder;
 // DEE 10JAN23 vvvv
-//    irr::f32 previousJoystickAzimuthAngPort;
-//    irr::f32 previousJoystickAzimuthAngStbd;
+//    float previousJoystickAzimuthAngPort;
+//    float previousJoystickAzimuthAngStbd;
 
-    irr::f32 previousJoystickThrustLeverPort;
-    irr::f32 previousJoystickThrustLeverStbd;
-    irr::f32 newJoystickThrustLeverPort;
-    irr::f32 newJoystickThrustLeverStbd;
+    float previousJoystickThrustLeverPort;
+    float previousJoystickThrustLeverStbd;
+    float newJoystickThrustLeverPort;
+    float newJoystickThrustLeverStbd;
 
-    irr::f32 previousJoystickSchottelPort;
-    irr::f32 previousJoystickSchottelStbd;
-    irr::f32 newJoystickSchottelPort;
-    irr::f32 newJoystickSchottelStbd;
+    float previousJoystickSchottelPort;
+    float previousJoystickSchottelStbd;
+    float newJoystickSchottelPort;
+    float newJoystickSchottelStbd;
 
 // DEE 10JAN23 ^^^^
-    irr::f32 previousJoystickBowThruster;
-    irr::f32 previousJoystickSternThruster;
+    float previousJoystickBowThruster;
+    float previousJoystickSternThruster;
 
     irr::s32 mouseClickX;
     irr::s32 mouseClickY;
@@ -248,7 +248,7 @@ private:
 
     irr::u32 linesMode; // 0 = none, 1 = own ship end, 2 = other end
 
-    irr::f32 preShutdownAccelerator;
+    float preShutdownAccelerator;
 };
 
 #endif

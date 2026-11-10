@@ -72,9 +72,9 @@
                 if (id == GUIMain::GUI_ID_CHANGE_BUTTON) {
                     //Get data from gui
 
-                    irr::f32 legCourse = gui->getEditBoxCourse();
-                    irr::f32 legSpeed = gui->getEditBoxSpeed();
-                    irr::f32 legDistance = gui->getEditBoxDistance();
+                    float legCourse = gui->getEditBoxCourse();
+                    float legSpeed = gui->getEditBoxSpeed();
+                    float legDistance = gui->getEditBoxDistance();
 
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
@@ -94,9 +94,9 @@
 
                 if (id == GUIMain::GUI_ID_ADDLEG_BUTTON) {
 
-                    irr::f32 legCourse = gui->getEditBoxCourse();
-                    irr::f32 legSpeed = gui->getEditBoxSpeed();
-                    irr::f32 legDistance = gui->getEditBoxDistance();
+                    float legCourse = gui->getEditBoxCourse();
+                    float legSpeed = gui->getEditBoxSpeed();
+                    float legDistance = gui->getEditBoxDistance();
 
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();

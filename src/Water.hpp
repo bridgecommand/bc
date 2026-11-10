@@ -25,15 +25,15 @@ class Water
     public:
         Water();
         virtual ~Water();
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, irr::f32 weather, irr::u32 disableShaders, bool withReflection, irr::u32 segments);
-        void update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather);
-        irr::f32 getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const;
-        irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
+        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, float weather, irr::u32 disableShaders, bool withReflection, irr::u32 segments);
+        void update(float tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, float weather);
+        float getWaveHeight(float relPosX, float relPosZ) const;
+        irr::core::vector2df getLocalNormals(float relPosX, float relPosZ) const;
         irr::core::vector3df getPosition() const;
         void setVisible(bool visible);
 
     private:
-        irr::f32 tileWidth;
+        float tileWidth;
         irr::scene::MovingWaterSceneNode* waterNode;
 };
 

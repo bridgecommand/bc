@@ -30,7 +30,7 @@ namespace IniFile
     std::string iniFileToString(const std::string &fileName, const std::string &key, const std::string &defValue = "");
     irr::u32 iniFileTou32(const std::string &fileName, const std::string &key, irr::u32 defValue = 0);
     irr::s32 iniFileTos32(const std::string &fileName, const std::string &key, irr::s32 defValue = 0);
-    irr::f32 iniFileTof32(const std::string &fileName, const std::string &key, irr::f32 defValue = 0.f);
+    float iniFileTof32(const std::string &fileName, const std::string &key, float defValue = 0.f);
 }
 
 #endif

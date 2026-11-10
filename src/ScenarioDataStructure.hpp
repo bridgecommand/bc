@@ -27,8 +27,8 @@
 class OwnShipData {
     public:
     std::string ownShipName;    
-    irr::f32 initialSpeed, initialLong, initialLat, initialBearing;
-    irr::f32 initialX, initialZ; // initialX and initialZ only used for scenario editor
+    float initialSpeed, initialLong, initialLat, initialBearing;
+    float initialX, initialZ; // initialX and initialZ only used for scenario editor
 
     OwnShipData():initialSpeed(0),initialLong(0),initialLat(0), initialBearing(0), initialX(0), initialZ(0){}
     std::string serialise(bool withSpaces);
@@ -37,8 +37,8 @@ class OwnShipData {
 
 class LegData {
     public:
-    irr::f32 bearing, speed, distance;
-    irr::f32 startTime; //startTime only used in scenario editor
+    float bearing, speed, distance;
+    float startTime; //startTime only used in scenario editor
 
     LegData():bearing(0),speed(0),distance(0),startTime(0){}
 
@@ -50,8 +50,8 @@ class OtherShipData {
     public:
     std::string shipName;
     irr::u32 mmsi;
-    irr::f32 initialLong, initialLat;
-    irr::f32 initialX, initialZ; // initialX and initialZ only used for scenario editor
+    float initialLong, initialLat;
+    float initialX, initialZ; // initialX and initialZ only used for scenario editor
     std::vector<LegData> legs;
     bool drifting; // If ship should move with wind and tidal stream
     bool SART;
@@ -65,7 +65,7 @@ class OtherShipData {
 class ScenarioData {
     public:
     std::string scenarioName, worldName;
-    irr::f32 startTime, sunRise, sunSet, weather, rainIntensity, visibilityRange, windDirection, windSpeed;
+    float startTime, sunRise, sunSet, weather, rainIntensity, visibilityRange, windDirection, windSpeed;
     irr::u32 startDay, startMonth, startYear;
     OwnShipData ownShipData;
     std::vector<OtherShipData> otherShipsData;

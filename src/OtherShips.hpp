@@ -36,32 +36,32 @@ class OtherShips
     public:
         OtherShips();
         ~OtherShips();
-        void load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength);
+        void load(std::vector<OtherShipData> otherShipsData, float scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
+        void update(float deltaTime, float scenarioTime, float tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength);
         RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
         irr::u32 getNumber() const;
         irr::core::vector3df getPosition(int number) const;
-        irr::f32 getLength(int number) const;
-        irr::f32 getBreadth(int number) const;
-        irr::f32 getHeading(int number) const;
-        irr::f32 getSpeed(int number) const; //Speed in m/s
+        float getLength(int number) const;
+        float getBreadth(int number) const;
+        float getHeading(int number) const;
+        float getSpeed(int number) const; //Speed in m/s
         irr::u32 getMMSI(int number) const;
-        irr::f32 getEstimatedDisplacement(int number) const;
+        float getEstimatedDisplacement(int number) const;
         bool getSARTOn(int number) const;
         void setSARTOn(int number, bool sartState);
-        void setSpeed(int number, irr::f32 speed); //Speed in m/s
+        void setSpeed(int number, float speed); //Speed in m/s
         void setMMSI(int number, irr::u32 mmsi);
-        void setPos(int number, irr::f32 positionX, irr::f32 positionZ);
-        void setHeading(int number, irr::f32 hdg);
-        void setRateOfTurn(int number, irr::f32 rateOfTurn);
+        void setPos(int number, float positionX, float positionZ);
+        void setHeading(int number, float hdg);
+        void setRateOfTurn(int number, float rateOfTurn);
         std::vector<Leg> getLegs(int number) const;
-        void changeLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
-        void addLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
-        void deleteLeg(int shipNumber, int legNumber, irr::f32 scenarioTime);
-        void resetLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm, irr::f32 scenarioTime);
+        void changeLeg(int shipNumber, int legNumber, float bearing, float speed, float distance, float scenarioTime);
+        void addLeg(int shipNumber, int afterLegNumber, float bearing, float speed, float distance, float scenarioTime);
+        void deleteLeg(int shipNumber, int legNumber, float scenarioTime);
+        void resetLegs(int shipNumber, float course, float speedKts, float distanceNm, float scenarioTime);
         std::string getName(int number) const;
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void offsetLegTimes(irr::f32 deltaTime);
+        void moveNode(float deltaX, float deltaY, float deltaZ);
+        void offsetLegTimes(float deltaTime);
         void enableAllTriangleSelectors();
         irr::scene::ISceneNode* getSceneNode(int number);
 

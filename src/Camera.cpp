@@ -33,7 +33,7 @@ Camera::~Camera()
 }
 
 
-void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, std::vector<bool> isHighView, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection)
+void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, std::vector<bool> isHighView, float hFOV, float lookAngle, float angleCorrection)
 {
     this->hFOV = hFOV;
     camera = smgr->addCameraSceneNode(0, irr::core::vector3df(0,0,0), irr::core::vector3df(0,0,1));
@@ -107,15 +107,15 @@ void Camera::lookDown()
     }
 }
 
-void Camera::setPanSpeed(irr::f32 horizontalPanSpeed){
+void Camera::setPanSpeed(float horizontalPanSpeed){
     this->horizontalPanSpeed = horizontalPanSpeed;
 }
 
-void Camera::setVerticalPanSpeed(irr::f32 verticalPanSpeed){
+void Camera::setVerticalPanSpeed(float verticalPanSpeed){
     this->verticalPanSpeed = verticalPanSpeed;
 }
 
-void Camera::setLookUp(irr::f32 angle)
+void Camera::setLookUp(float angle)
 {
 	lookUpAngle = angle;
 }
@@ -138,7 +138,7 @@ void Camera::lookRight()
     }
 }
 
-void Camera::lookChange(irr::f32 deltaX, irr::f32 deltaY) //Change as a proportion of screen width
+void Camera::lookChange(float deltaX, float deltaY) //Change as a proportion of screen width
 {
     lookAngle -= deltaX*hFOV*irr::core::RADTODEG;
     lookUpAngle += deltaY*hFOV*irr::core::RADTODEG; //hFOV for this, as both are scaled by screen width
@@ -202,12 +202,12 @@ void Camera::lookStbd()
     lookUpAngle = 0;
 }
 
-irr::f32 Camera::getLook() const
+float Camera::getLook() const
 {
     return lookAngle;
 }
 
-irr::f32 Camera::getLookUp() const
+float Camera::getLookUp() const
 {
     return lookUpAngle;
 }
@@ -303,19 +303,19 @@ irr::u32 Camera::getView() const
     return currentView;
 }
 
-void Camera::setHFOV(irr::f32 hFOV)
+void Camera::setHFOV(float hFOV)
 {
     this->hFOV=hFOV;
-    irr::f32 aspect=camera->getAspectRatio();
+    float aspect=camera->getAspectRatio();
 
-    irr::f32 vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
+    float vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
     camera->setFOV(vFOV);
 }
 
-void Camera::updateViewport(irr::f32 aspect)
+void Camera::updateViewport(float aspect)
 {
     camera->setAspectRatio(aspect);
-    irr::f32 vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
+    float vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
     camera->setFOV(vFOV);
 }
 
@@ -324,12 +324,12 @@ void Camera::setActive()
     camera->getSceneManager()->setActiveCamera(camera);
 }
 
-void Camera::setNearValue(irr::f32 zn)
+void Camera::setNearValue(float zn)
 {
     camera->setNearValue(zn);
 }
 
-void Camera::setFarValue(irr::f32 zf)
+void Camera::setFarValue(float zf)
 {
     camera->setFarValue(zf);
 }
@@ -344,7 +344,7 @@ void Camera::toggleFrozen()
     frozen = !frozen;
 }
 
-void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void Camera::applyOffset(float deltaX, float deltaY, float deltaZ)
 {
     if (frozen) {
         // Only applicable in frozen mode, otherwise update will be
@@ -355,7 +355,7 @@ void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     }
 }
 
-void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift, bool vrMode)
+void Camera::update(float deltaTime, irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift, bool vrMode)
 {
      //link camera rotation to shipNode
         //Adjust camera angle if panning

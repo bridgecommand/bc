@@ -229,14 +229,14 @@ int main (int argc, char ** argv)
     ControllerModel controller(device, &guiMain, &network, worldName, zoomLevels);
 
     //Create data structures to hold own ship, other ship and buoy data
-    irr::f32 time = 0; //Time since start of day 1 of the scenario
-    irr::f32 weather = 0; //(0-12)
-    irr::f32 rain = 0; //(0-10)
-    irr::f32 visibility = 10.1; //(0.1-10.1)
-    irr::f32 windDirection = 0;
-    irr::f32 windSpeed = 0;
-    irr::f32 streamDirection = 0;
-    irr::f32 streamSpeed = 0;
+    float time = 0; //Time since start of day 1 of the scenario
+    float weather = 0; //(0-12)
+    float rain = 0; //(0-10)
+    float visibility = 10.1; //(0.1-10.1)
+    float windDirection = 0;
+    float windSpeed = 0;
+    float streamDirection = 0;
+    float streamSpeed = 0;
     bool streamOverride = false;
     ShipData ownShipData;
     std::vector<PositionData> buoysData;

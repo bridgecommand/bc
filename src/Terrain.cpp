@@ -103,12 +103,12 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     for (unsigned int i = 1; i<=numberOfTerrains; i++) {
 
-        irr::f32 terrainLong;
-        irr::f32 terrainLat;
-        irr::f32 terrainLongExtent;
-        irr::f32 terrainLatExtent;
-        irr::f32 terrainMaxHeight;
-        irr::f32 seaMaxDepth;
+        float terrainLong;
+        float terrainLat;
+        float terrainLongExtent;
+        float terrainLatExtent;
+        float terrainMaxHeight;
+        float seaMaxDepth;
         bool usesRGBEncoding;
         //Full paths
         std::string heightMapPath;
@@ -144,7 +144,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
             terrainMaxHeight=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainMaxHeight",i));
             seaMaxDepth=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("SeaMaxDepth",i));
-            //irr::f32 terrainHeightMapSize=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapSize",i));
+            //float terrainHeightMapSize=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapSize",i));
 
             std::string heightMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("HeightMap",i));
             std::string textureMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("Texture",i));
@@ -162,10 +162,10 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         }
 
         //calculations just needed for terrain loading
-        //irr::f32 scaleX = terrainXWidth / (terrainHeightMapSize);
-        irr::f32 scaleY = (terrainMaxHeight + seaMaxDepth)/ (255.0);
-        //irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize);
-        irr::f32 terrainY = -1*seaMaxDepth;
+        //float scaleX = terrainXWidth / (terrainHeightMapSize);
+        float scaleY = (terrainMaxHeight + seaMaxDepth)/ (255.0);
+        //float scaleZ = terrainZWidth / (terrainHeightMapSize);
+        float terrainY = -1*seaMaxDepth;
 
         //Add an empty terrain
         //irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,irr::core::vector3df(0.f, terrainY, 0.f),irr::core::vector3df(0.f, 0.f, 0.f),irr::core::vector3df(1,1,1),irr::video::SColor(255,255,255,255),5,irr::scene::ETPS_9,0,true);
@@ -200,8 +200,8 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         //Load the terrain and check success
         bool loaded = false;
-        irr::f32 terrainXLoadScaling = 1;
-        irr::f32 terrainZLoadScaling = 1;
+        float terrainXLoadScaling = 1;
+        float terrainZLoadScaling = 1;
         
         //Check extension
         std::string extension = "";
@@ -227,7 +227,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             }
 
             //Load from binary file into a vector, 
-            std::vector<std::vector<irr::f32>> heightMapVector = heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,true);
+            std::vector<std::vector<float>> heightMapVector = heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,true);
             
             //limit size if needed
             if (terrainResolutionLimit>0) {
@@ -268,7 +268,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             if (heightMapFile) {
                 try {
                     //Load from binary file into a vector, and then use this vector to load terrain
-                    std::vector<std::vector<irr::f32>> heightMapVector = heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,floatingPoint);
+                    std::vector<std::vector<float>> heightMapVector = heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,floatingPoint);
                     //limit size if needed
                     if (terrainResolutionLimit>0) {
                         heightMapVector = limitSize(heightMapVector,terrainResolutionLimit);
@@ -282,7 +282,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         } else {
             //Normal image file
-            std::vector<std::vector<irr::f32>> heightMapVector = heightMapImageToVector(heightMapFile,usesRGBEncoding,false,smgr);
+            std::vector<std::vector<float>> heightMapVector = heightMapImageToVector(heightMapFile,usesRGBEncoding,false,smgr);
             
             //limit size if needed
             if (terrainResolutionLimit>0) {
@@ -299,11 +299,11 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         }
 
         //Terrain dimensions in metres
-        irr::f32 terrainXWidth = terrainLongExtent * 2.0 * PI * EARTH_RAD_M * cos( irr::core::degToRad(terrainLat + terrainLatExtent/2.0)) / 360.0;
-        irr::f32 terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
+        float terrainXWidth = terrainLongExtent * 2.0 * PI * EARTH_RAD_M * cos( irr::core::degToRad(terrainLat + terrainLatExtent/2.0)) / 360.0;
+        float terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
 
-        irr::f32 scaleX = terrainXLoadScaling*terrainXWidth/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
-        irr::f32 scaleZ = terrainZLoadScaling*terrainZWidth/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
+        float scaleX = terrainXLoadScaling*terrainXWidth/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
+        float scaleZ = terrainZLoadScaling*terrainZWidth/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
             
         if (extension.compare(".f32") == 0 || extension.compare(".hdr") == 0 || usesRGBEncoding) {
             //Set scales etc to be 1.0, so heights are used directly
@@ -337,11 +337,11 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             //Non-primary terrains need to be moved to account for their position (primary terrain starts at 0,0)
 
             irr::core::vector3df currentPos = terrain->getPosition();
-            irr::f32 deltaX = (terrainLong - primeTerrainLong) * primeTerrainXWidth / primeTerrainLongExtent;
-            irr::f32 deltaZ = (terrainLat - primeTerrainLat) * primeTerrainZWidth / primeTerrainLatExtent;
-            irr::f32 newPosX = currentPos.X + deltaX;
-            irr::f32 newPosY = currentPos.Y;
-            irr::f32 newPosZ = currentPos.Z + deltaZ;
+            float deltaX = (terrainLong - primeTerrainLong) * primeTerrainXWidth / primeTerrainLongExtent;
+            float deltaZ = (terrainLat - primeTerrainLat) * primeTerrainZWidth / primeTerrainLatExtent;
+            float newPosX = currentPos.X + deltaX;
+            float newPosY = currentPos.Y;
+            float newPosZ = currentPos.Z + deltaZ;
             terrain->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
         }
 
@@ -359,10 +359,10 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
 }
 
-std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IReadFile* heightMapFile, bool usesRGBEncoding, bool normaliseSize, irr::scene::ISceneManager* smgr)
+std::vector<std::vector<float>> Terrain::heightMapImageToVector(irr::io::IReadFile* heightMapFile, bool usesRGBEncoding, bool normaliseSize, irr::scene::ISceneManager* smgr)
 {
     irr::video::IImage* heightMap = smgr->getVideoDriver()->createImageFromFile(heightMapFile);
-    std::vector<std::vector<irr::f32>> heightMapVector;
+    std::vector<std::vector<float>> heightMapVector;
 
     if (heightMap==0) {
         //Return empty vector if we can't load the image
@@ -391,15 +391,15 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IRea
         scaledHeight = (irr::s32)imageHeight;
     }
     
-    irr::f32 heightValue;
+    float heightValue;
 
     for (unsigned int k=0; k<scaledHeight; k++) {
-        std::vector<irr::f32> heightMapLine;
+        std::vector<float> heightMapLine;
         for (unsigned int j=0; j<scaledWidth; j++) {
             
             //Pick the pixel to use (very simple scaling, to be replaced with bilinear interpolation)
-            irr::f32 pixelX_float = (irr::f32)j * (irr::f32)imageWidth/(irr::f32)scaledWidth;
-            irr::f32 pixelY_float = (irr::f32)(scaledHeight - k - 1) * (irr::f32)imageHeight/(irr::f32)scaledHeight;
+            float pixelX_float = (float)j * (float)imageWidth/(float)scaledWidth;
+            float pixelY_float = (float)(scaledHeight - k - 1) * (float)imageHeight/(float)scaledHeight;
             irr::u32 pixelX_int = round(pixelX_float);
             irr::u32 pixelY_int = round(pixelY_float);
 
@@ -407,7 +407,7 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IRea
             
             if (usesRGBEncoding) {
                 //Absolute height is (red * 256 + green + blue / 256) - 32768
-                heightValue = ((irr::f32)pixelColor.getRed()*256 + (irr::f32)pixelColor.getGreen() + (irr::f32)pixelColor.getBlue()/256.0)-32768.0;
+                heightValue = ((float)pixelColor.getRed()*256 + (float)pixelColor.getGreen() + (float)pixelColor.getBlue()/256.0)-32768.0;
             } else {
                 heightValue = pixelColor.getLightness();
             }
@@ -421,25 +421,25 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IRea
 
 }
 
-std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IReadFile* heightMapFile, irr::u32 binaryWidth, irr::u32 binaryHeight, bool floatingPoint)
+std::vector<std::vector<float>> Terrain::heightMapBinaryToVector(irr::io::IReadFile* heightMapFile, irr::u32 binaryWidth, irr::u32 binaryHeight, bool floatingPoint)
 {
-    std::vector<std::vector<irr::f32>> heightMapVector;
+    std::vector<std::vector<float>> heightMapVector;
 
     if (heightMapFile==0) {
         //Return empty vector if we can't load the image
         return heightMapVector;
     }
     
-    irr::f32 heightValue;
+    float heightValue;
 
     for (unsigned int j=0; j<binaryWidth; j++) {
-        std::vector<irr::f32> heightMapLine;
+        std::vector<float> heightMapLine;
         for (unsigned int k=0; k<binaryHeight; k++) {
             
             if (floatingPoint) {
                 //read heightValue from binary file: floating point 32 bit
                 const size_t bytesPerPixel = 4; //Hard coded for 32 bit (4 byte)
-                irr::f32 val;
+                float val;
                 if (heightMapFile->read(&val, bytesPerPixel) == bytesPerPixel) {
                     if (std::isnormal(val)) {
                         heightMapLine.push_back(val); //We use this as an unscaled height in metres
@@ -470,7 +470,7 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IRe
 
 }
 
-void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heightVector, irr::f32 positionX, irr::f32 positionZ, irr::f32 widthX, irr::f32 widthZ)
+void Terrain::addRadarReflectingTerrain(std::vector<std::vector<float>> heightVector, float positionX, float positionZ, float widthX, float widthZ)
 {
     //Add a terrain to be used to give the impression of a radar reflection from a land object.
     
@@ -481,8 +481,8 @@ void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heigh
 			dev->getSceneManager()->getFileSystem(), -1, 5, irr::scene::ETPS_33
         );
 
-    irr::f32 terrainXLoadScaling = 1;
-    irr::f32 terrainZLoadScaling = 1;
+    float terrainXLoadScaling = 1;
+    float terrainZLoadScaling = 1;
 
     bool loaded = terrain->loadHeightMapVector(heightVector, terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
 
@@ -492,8 +492,8 @@ void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heigh
         return;
     }
 
-    irr::f32 scaleX = terrainXLoadScaling*widthX/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
-    irr::f32 scaleZ = terrainZLoadScaling*widthZ/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
+    float scaleX = terrainXLoadScaling*widthX/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
+    float scaleZ = terrainZLoadScaling*widthZ/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
 
     terrain->setScale(irr::core::vector3df(scaleX,1.0f,scaleZ));
     terrain->setPosition(irr::core::vector3df(positionX, 0.f, positionZ));
@@ -514,8 +514,8 @@ irr::scene::ISceneNode* Terrain::getSceneNode(int number)
     }
 }
 
-std::vector<std::vector<irr::f32>> Terrain::transposeHeightMapVector(std::vector<std::vector<irr::f32>> inVector){
-    std::vector<std::vector<irr::f32>> outVector;
+std::vector<std::vector<float>> Terrain::transposeHeightMapVector(std::vector<std::vector<float>> inVector){
+    std::vector<std::vector<float>> outVector;
 
     if (inVector.size() == 0 || inVector.at(0).size() == 0) {
 		//Zero length, return empty output vector
@@ -526,7 +526,7 @@ std::vector<std::vector<irr::f32>> Terrain::transposeHeightMapVector(std::vector
     irr::u32 inputWidth = inVector.at(0).size();
 
     for (int i = 0; i < inputWidth; i++) {
-        std::vector<irr::f32> lineVector;
+        std::vector<float> lineVector;
         for (int j = 0; j < inputHeight; j++) {
             
             if (j < inVector.size() && i < inVector.at(j).size()) {
@@ -542,8 +542,8 @@ std::vector<std::vector<irr::f32>> Terrain::transposeHeightMapVector(std::vector
     return outVector;
 }
 
-std::vector<std::vector<irr::f32>> Terrain::limitSize(std::vector<std::vector<irr::f32>> inVector, irr::u32 maxSize){
-    std::vector<std::vector<irr::f32>> outVector;
+std::vector<std::vector<float>> Terrain::limitSize(std::vector<std::vector<float>> inVector, irr::u32 maxSize){
+    std::vector<std::vector<float>> outVector;
 
     if (inVector.size() == 0 || inVector.at(0).size() == 0) {
 		//Zero length, return input vector
@@ -562,16 +562,16 @@ std::vector<std::vector<irr::f32>> Terrain::limitSize(std::vector<std::vector<ir
     irr::u32 outputWidth = std::min(inputWidth, maxSize);
 
     for (int i = 0; i < outputHeight; i++) {
-        std::vector<irr::f32> lineVector;
+        std::vector<float> lineVector;
         for (int j = 0; j < outputWidth; j++) {
             
             //Pick the pixel to use (very simple scaling, to be replaced with bilinear interpolation)
-            irr::f32 pixelX_float = (irr::f32)j * (irr::f32)inputWidth/(irr::f32)outputWidth;
-            irr::f32 pixelY_float = (irr::f32)i * (irr::f32)inputHeight/(irr::f32)outputHeight;
+            float pixelX_float = (float)j * (float)inputWidth/(float)outputWidth;
+            float pixelY_float = (float)i * (float)inputHeight/(float)outputHeight;
             irr::u32 pixelX_int = round(pixelX_float);
             irr::u32 pixelY_int = round(pixelY_float);
 
-            irr::f32 pointValue;
+            float pointValue;
             if ((pixelY_int < inVector.size()) && (pixelX_int < inVector.at(pixelY_int).size())){
                 pointValue = inVector.at(pixelY_int).at(pixelX_int);
             } else {
@@ -585,14 +585,14 @@ std::vector<std::vector<irr::f32>> Terrain::limitSize(std::vector<std::vector<ir
     return outVector;
 }
 
-irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from global coordinates
+float Terrain::getHeight(float x, float z) const //Get height from global coordinates
 {
     //Fallback minimum value
-    irr::f32 terrainHeight = -FLT_MAX;
+    float terrainHeight = -FLT_MAX;
     
     //Check down list, find highest return value
     for (int i=(int)terrains.size()-1; i>=0; i--) {
-        irr::f32 thisHeight = terrains.at(i)->getHeight(x,z);
+        float thisHeight = terrains.at(i)->getHeight(x,z);
         if (thisHeight > terrainHeight) {
             terrainHeight = thisHeight;
         }
@@ -601,31 +601,31 @@ irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from glob
     return terrainHeight;
 }
 
-irr::f32 Terrain::longToX(irr::f32 longitude) const
+float Terrain::longToX(float longitude) const
 {
     return ((longitude - primeTerrainLong ) * (primeTerrainXWidth)) / primeTerrainLongExtent;
 }
 
-irr::f32 Terrain::latToZ(irr::f32 latitude) const
+float Terrain::latToZ(float latitude) const
 {
     return ((latitude - primeTerrainLat ) * (primeTerrainZWidth)) / primeTerrainLatExtent;
 }
 
-irr::f32 Terrain::xToLong(irr::f32 x) const{
+float Terrain::xToLong(float x) const{
     return primeTerrainLong + x*primeTerrainLongExtent/primeTerrainXWidth;
 }
 
-irr::f32 Terrain::zToLat(irr::f32 z) const{
+float Terrain::zToLat(float z) const{
     return primeTerrainLat + z*primeTerrainLatExtent/primeTerrainZWidth;
 }
 
-void Terrain::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void Terrain::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     for (unsigned int i=0; i<terrains.size(); i++) {
         irr::core::vector3df currentPos = terrains.at(i)->getPosition();
-        irr::f32 newPosX = currentPos.X + deltaX;
-        irr::f32 newPosY = currentPos.Y + deltaY;
-        irr::f32 newPosZ = currentPos.Z + deltaZ;
+        float newPosX = currentPos.X + deltaX;
+        float newPosY = currentPos.Y + deltaY;
+        float newPosZ = currentPos.Z + deltaZ;
         terrains.at(i)->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
     }
 }

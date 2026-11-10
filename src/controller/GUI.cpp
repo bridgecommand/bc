@@ -210,7 +210,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain, irr::f32 windDirection, irr::f32 windSpeed, irr::f32 streamDirection, irr::f32 streamSpeed, bool streamOverride)
+void GUIMain::updateGuiData(float time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, float metresPerPx, float ownShipPosX, float ownShipPosZ, float ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, float mobPosX, float mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, float terrainLong, float terrainLongExtent, float terrainXWidth, float terrainLat, float terrainLatExtent, float terrainZWidth, float weather, float visibility, float rain, float windDirection, float windSpeed, float streamDirection, float streamSpeed, bool streamOverride)
 {
     //Show map texture
     device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
@@ -220,8 +220,8 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     mapCentreX = ownShipPosX - mapOffsetX*metresPerPx;
     mapCentreZ = ownShipPosZ + mapOffsetZ*metresPerPx;
 
-    irr::f32 mapCentreLong = terrainLong + mapCentreX*terrainLongExtent/terrainXWidth;
-    irr::f32 mapCentreLat = terrainLat + mapCentreZ*terrainLatExtent/terrainZWidth;
+    float mapCentreLong = terrainLong + mapCentreX*terrainLongExtent/terrainXWidth;
+    float mapCentreLat = terrainLat + mapCentreZ*terrainLatExtent/terrainZWidth;
 
     //Convert lat/long into a readable format
     wchar_t eastWest;
@@ -236,11 +236,11 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     } else {
         eastWest='W';
     }
-    irr::f32 displayLat = fabs(mapCentreLat);
-    irr::f32 displayLong = fabs(mapCentreLong);
+    float displayLat = fabs(mapCentreLat);
+    float displayLong = fabs(mapCentreLong);
 
-    irr::f32 latMinutes = (displayLat - (int)displayLat)*60;
-    irr::f32 lonMinutes = (displayLong - (int)displayLong)*60;
+    float latMinutes = (displayLat - (int)displayLat)*60;
+    float lonMinutes = (displayLong - (int)displayLong)*60;
     irr::u8 latDegrees = (int) displayLat;
     irr::u8 lonDegrees = (int) displayLong;
 
@@ -305,9 +305,9 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
             //Distance
             if ( (selectedLeg+1) < otherShips.at(selectedShip).legs.size() ) {
                 //There is a next leg, so can check distance
-                irr::f32 legDurationS = otherShips.at(selectedShip).legs.at(selectedLeg+1).startTime - otherShips.at(selectedShip).legs.at(selectedLeg).startTime;
-                irr::f32 legDurationH = legDurationS / SECONDS_IN_HOUR;
-                irr::f32 legDistanceNm  = legDurationH * otherShips.at(selectedShip).legs.at(selectedLeg).speed;
+                float legDurationS = otherShips.at(selectedShip).legs.at(selectedLeg+1).startTime - otherShips.at(selectedShip).legs.at(selectedLeg).startTime;
+                float legDurationH = legDurationS / SECONDS_IN_HOUR;
+                float legDistanceNm  = legDurationH * otherShips.at(selectedShip).legs.at(selectedLeg).speed;
                 legDistanceEdit->setText(irr::core::stringw(legDistanceNm).c_str());
             } else {
                 legDistanceEdit->setText(L""); //No next leg, so can't find distance
@@ -339,7 +339,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
 
 }
 
-void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, const irr::s32& selectedShip, const irr::s32& selectedLeg, const bool& mobVisible, const irr::f32& mobPosX, const irr::f32& mobPosZ)
+void GUIMain::drawInformationOnMap(const float& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const float& metresPerPx, const float& ownShipPosX, const float& ownShipPosZ, const float& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, const irr::s32& selectedShip, const irr::s32& selectedLeg, const bool& mobVisible, const float& mobPosX, const float& mobPosZ)
 {
 
     irr::video::SColor black = irr::video::SColor(255, 0, 0, 0);
@@ -438,20 +438,20 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             }
 
             //find time remaining on current leg
-            irr::f32 currentLegTimeRemaining = 0;
+            float currentLegTimeRemaining = 0;
             if (currentLeg < (it->legs.size()-1) ) { //If not on the last leg, find time until we change onto next course
 
-                irr::f32 legStartX = screenCentreX + relPosX;
-                irr::f32 legStartY = screenCentreY - relPosY;
+                float legStartX = screenCentreX + relPosX;
+                float legStartY = screenCentreY - relPosY;
 
-                irr::f32 legEndX = legStartX; //Default values in case current leg is zero length
-                irr::f32 legEndY = legStartY;
+                float legEndX = legStartX; //Default values in case current leg is zero length
+                float legEndY = legStartY;
 
                 currentLegTimeRemaining = it->legs.at(currentLeg+1).startTime - time;
                 if (currentLegTimeRemaining>0) {
                     //Line starts at screenCentreX + relPosX, screenCentreY-relPosY
-                    irr::f32 legLengthPx = currentLegTimeRemaining * it->legs.at(currentLeg).speed * KTS_TO_MPS / metresPerPx;
-                    if (fabs(currentLegTimeRemaining) != std::numeric_limits<irr::f32>::infinity()) {
+                    float legLengthPx = currentLegTimeRemaining * it->legs.at(currentLeg).speed * KTS_TO_MPS / metresPerPx;
+                    if (fabs(currentLegTimeRemaining) != std::numeric_limits<float>::infinity()) {
                         legEndX = legStartX + legLengthPx*sin(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
                         legEndY = legStartY - legLengthPx*cos(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
 
@@ -465,10 +465,10 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
 
                 //Draw remaining legs, excluding 'stop'one
                 for (irr::u32 i = currentLeg+1; i < (it->legs.size()-1); i++) {
-                    irr::f32 legTimeRemaining = it->legs.at(i+1).startTime -  it->legs.at(i).startTime;
-                    irr::f32 legLengthPx = legTimeRemaining * it->legs.at(i).speed * KTS_TO_MPS / metresPerPx;
+                    float legTimeRemaining = it->legs.at(i+1).startTime -  it->legs.at(i).startTime;
+                    float legLengthPx = legTimeRemaining * it->legs.at(i).speed * KTS_TO_MPS / metresPerPx;
 
-                    if (fabs(legTimeRemaining) != std::numeric_limits<irr::f32>::infinity()) { //FIXME: Also check for NaN?
+                    if (fabs(legTimeRemaining) != std::numeric_limits<float>::infinity()) { //FIXME: Also check for NaN?
                         //current start is previous end
                         legStartX = legEndX;
                         legStartY = legEndY;
@@ -516,14 +516,14 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
 
             //Show cog if known. AIS COG is: 3600 for unknown, otherwise COG is AIS COG/10. SOG: 1023 is unknown, otherwise knots is AIS SOG/10
             if (it->cog != 3600) {
-                irr::f32 cog = (irr::f32)it->cog/10.0;
-                irr::f32 sog = 0;
+                float cog = (float)it->cog/10.0;
+                float sog = 0;
                 if (it->sog != 1023) {
-                    sog = (irr::f32)it->sog/10.0;
+                    sog = (float)it->sog/10.0;
                 }
-                irr::f32 cogLineLength = sog; //In pixels
-                irr::f32 cogLineX = relPosX + cogLineLength*sin(cog * RAD_IN_DEG);
-                irr::f32 cogLineY = relPosY + cogLineLength*cos(cog * RAD_IN_DEG);
+                float cogLineLength = sog; //In pixels
+                float cogLineX = relPosX + cogLineLength*sin(cog * RAD_IN_DEG);
+                float cogLineY = relPosY + cogLineLength*cos(cog * RAD_IN_DEG);
                 //Draw
                 irr::core::position2d<irr::s32> startLine (screenCentreX + relPosX, screenCentreY - relPosY);
                 irr::core::position2d<irr::s32> endLine (screenCentreX + cogLineX, screenCentreY - cogLineY);
@@ -535,7 +535,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
 
 }
 
-void GUIMain::updateDropDowns(const std::vector<OtherShipDisplayData>& otherShips, irr::s32 selectedShip, irr::f32 time) {
+void GUIMain::updateDropDowns(const std::vector<OtherShipDisplayData>& otherShips, irr::s32 selectedShip, float time) {
 
 //Update drop down menus for ships and legs
     if(shipSelector->getItemCount() != otherShips.size() + 1) {
@@ -628,24 +628,24 @@ bool GUIMain::manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::E
     return device->postEventFromUser(triggerUpdateEvent);
 }
 
-irr::f32 GUIMain::getEditBoxCourse() const {
-    //irr::f32 course = _wtof(legCourseEdit->getText()); //TODO: Check portability
+float GUIMain::getEditBoxCourse() const {
+    //float course = _wtof(legCourseEdit->getText()); //TODO: Check portability
     wchar_t* endPtr;
-    irr::f32 course = wcstof(legCourseEdit->getText(), &endPtr);
+    float course = wcstof(legCourseEdit->getText(), &endPtr);
     return course;
 }
 
-irr::f32 GUIMain::getEditBoxSpeed() const {
-    //irr::f32 speed = _wtof(legSpeedEdit->getText()); //TODO: Check portability
+float GUIMain::getEditBoxSpeed() const {
+    //float speed = _wtof(legSpeedEdit->getText()); //TODO: Check portability
     wchar_t* endPtr;
-    irr::f32 speed = wcstof(legSpeedEdit->getText(), &endPtr); //TODO: Check portability
+    float speed = wcstof(legSpeedEdit->getText(), &endPtr); //TODO: Check portability
     return speed;
 }
 
-irr::f32 GUIMain::getEditBoxDistance() const {
-    //irr::f32 distance = _wtof(legDistanceEdit->getText()); //TODO: Check portability
+float GUIMain::getEditBoxDistance() const {
+    //float distance = _wtof(legDistanceEdit->getText()); //TODO: Check portability
     wchar_t* endPtr;
-    irr::f32 distance = wcstof(legDistanceEdit->getText(), &endPtr); //TODO: Check portability
+    float distance = wcstof(legDistanceEdit->getText(), &endPtr); //TODO: Check portability
     return distance;
 }
 
@@ -667,43 +667,43 @@ irr::core::vector2df GUIMain::getScreenCentrePosition() const {
     return irr::core::vector2df(mapCentreX, mapCentreZ);
 }
 
-irr::f32 GUIMain::getWeather() const {
-    return (irr::f32)(weatherBar->getPos())/10.0;
+float GUIMain::getWeather() const {
+    return (float)(weatherBar->getPos())/10.0;
 }
 
-irr::f32 GUIMain::getRain() const {
-    return (irr::f32)(rainBar->getPos())/10.0;
+float GUIMain::getRain() const {
+    return (float)(rainBar->getPos())/10.0;
 }
 
-irr::f32 GUIMain::getVisibility() const {
-    return (irr::f32)(visibilityBar->getPos())/10.0;
+float GUIMain::getVisibility() const {
+    return (float)(visibilityBar->getPos())/10.0;
 }
 
-irr::f32 GUIMain::getWindDirection() const {
-    return (irr::f32)(windDirectionBar->getPos());
+float GUIMain::getWindDirection() const {
+    return (float)(windDirectionBar->getPos());
 }
 
-irr::f32 GUIMain::getWindSpeed() const {
-    return (irr::f32)(windSpeedBar->getPos());
+float GUIMain::getWindSpeed() const {
+    return (float)(windSpeedBar->getPos());
 }
 
-irr::f32 GUIMain::getStreamDirection() const {
-    return (irr::f32)(streamDirectionBar->getPos());
+float GUIMain::getStreamDirection() const {
+    return (float)(streamDirectionBar->getPos());
 }
 
-irr::f32 GUIMain::getStreamSpeed() const {
-    return (irr::f32)(streamSpeedBar->getPos());
+float GUIMain::getStreamSpeed() const {
+    return (float)(streamSpeedBar->getPos());
 }
 
 bool GUIMain::getStreamOverride() const {
     return (streamOverrideBox->isChecked());
 }
 
-irr::f32 GUIMain::getBrightnessScaling() const {
-    return ((irr::f32)brightnessBar->getPos() / 100);
+float GUIMain::getBrightnessScaling() const {
+    return ((float)brightnessBar->getPos() / 100);
 }
 
-std::wstring GUIMain::f32To1dp(irr::f32 value)
+std::wstring GUIMain::f32To1dp(float value)
 {
     //Convert a floating point value to a wstring, with 1dp
     char tempStr[100];
@@ -711,7 +711,7 @@ std::wstring GUIMain::f32To1dp(irr::f32 value)
     return std::wstring(tempStr, tempStr+strlen(tempStr));
 }
 
-std::wstring GUIMain::f32To3dp(irr::f32 value)
+std::wstring GUIMain::f32To3dp(float value)
 {
     //Convert a floating point value to a wstring, with 3dp
     char tempStr[100];

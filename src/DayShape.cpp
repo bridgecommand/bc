@@ -17,7 +17,7 @@
 #include "DayShape.hpp"
 #include "Utilities.hpp"
 
-DayShape::DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, irr::core::vector3df position, std::string shapeName, std::string shipModelPath, irr::f32 scaleFactor) {
+DayShape::DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, irr::core::vector3df position, std::string shapeName, std::string shipModelPath, float scaleFactor) {
 
     //Store the scene manager
     this->smgr = smgr;

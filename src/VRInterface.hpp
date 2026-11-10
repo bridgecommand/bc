@@ -69,7 +69,7 @@ public:
     bool isVRActive() const;
     int runtimeEvents();
     int update();
-    bool getRayFromController(irr::core::line3d<irr::f32>* ray, irr::f32 rayLength);
+    bool getRayFromController(irr::core::line3d<float>* ray, float rayLength);
 
 private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);
@@ -160,13 +160,13 @@ private:
     bool vrChangingPortEngine;
     bool vrChangingStbdEngine;
     // Engine settings for these reference positions
-    irr::f32 portEngineReference;
-    irr::f32 stbdEngineReference;
-    irr::f32 wheelReference;
-    irr::f32 portSchottelReference;
-    irr::f32 portAzimuthThrottleReference;
-    irr::f32 stbdSchottelReference;
-    irr::f32 stbdAzimuthThrottleReference;
+    float portEngineReference;
+    float stbdEngineReference;
+    float wheelReference;
+    float portSchottelReference;
+    float portAzimuthThrottleReference;
+    float stbdSchottelReference;
+    float stbdAzimuthThrottleReference;
 
     irr::scene::ISceneNode* leftController;
     irr::scene::ISceneNode* rightController;

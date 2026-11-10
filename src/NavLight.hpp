@@ -24,26 +24,26 @@
 class NavLight {
 
     public:
-        NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence="", irr::u32 phaseStart=0);
+        NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::vector3df position, irr::video::SColor colour, float lightStartAngle, float lightEndAngle, float lightRange, std::string lightSequence="", irr::u32 phaseStart=0);
         ~NavLight();
-        void update(irr::f32 scenarioTime, irr::u32 lightLevel);
+        void update(float scenarioTime, irr::u32 lightLevel);
         irr::core::vector3df getPosition() const;
         void setPosition(irr::core::vector3df position);
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void moveNode(float deltaX, float deltaY, float deltaZ);
 
     private:
         irr::scene::ISceneManager* smgr;
         irr::scene::IMeshSceneNode* lightNode;
 		irr::video::ITexture* lightTexture;
-        irr::f32 startAngle;
-        irr::f32 endAngle;
-        irr::f32 range;
+        float startAngle;
+        float endAngle;
+        float range;
         std::string sequence;
-        irr::f32 charTime; //Time in seconds per character in sequence
-        irr::f32 timeOffset;
+        float charTime; //Time in seconds per character in sequence
+        float timeOffset;
         irr::u16 currentAlpha; //Note that this is u16 not u8 so we can indicate an initial implausible value.
         //bool setAlpha(irr::u8 alpha, irr::video::ITexture* tex);
-        //irr::f32 lightLevel;
+        //float lightLevel;
 };
 
 #endif

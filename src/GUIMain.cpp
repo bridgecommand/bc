@@ -40,7 +40,7 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode)
+void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, float maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode)
     {
         this->device = device;
         this->model = model;
@@ -152,7 +152,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         irr::core::array<irr::s32> centreTic; centreTic.push_back(0);
 
         if (hasBowThruster) {
-            irr::f32 verticalScreenPos;
+            float verticalScreenPos;
             if (hasSternThruster) {
                 verticalScreenPos = 0.99-2*0.04;
             } else {
@@ -170,7 +170,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         }
 
         if (hasSternThruster) {
-            irr::f32 verticalScreenPos = 0.99-1*0.04;
+            float verticalScreenPos = 0.99-1*0.04;
             sternThrusterScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_STERNTHRUSTER_SCROLL_BAR,irr::core::rect<irr::s32>(0.01*su, verticalScreenPos*sh, 0.08*su, (verticalScreenPos+0.04)*sh),engineTics,centreTic);
             sternThrusterScrollbar->setMax(100);
             sternThrusterScrollbar->setMin(-100);
@@ -1071,7 +1071,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (sternThrusterScrollbar) {sternThrusterScrollbar->setVisible(false);}
     }
 
-    std::wstring GUIMain::f32To1dp(irr::f32 value)
+    std::wstring GUIMain::f32To1dp(float value)
     {
         //Convert a floating point value to a wstring, with 1dp
         char tempStr[100];
@@ -1079,7 +1079,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return std::wstring(tempStr, tempStr+strlen(tempStr));
     }
 
-    std::wstring GUIMain::f32To2dp(irr::f32 value)
+    std::wstring GUIMain::f32To2dp(float value)
     {
         //Convert a floating point value to a wstring, with 2dp
         char tempStr[100];
@@ -1087,7 +1087,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return std::wstring(tempStr, tempStr+strlen(tempStr));
     }
 
-    std::wstring GUIMain::f32To3dp(irr::f32 value)
+    std::wstring GUIMain::f32To3dp(float value)
     {
         //Convert a floating point value to a wstring, with 3dp
         char tempStr[100];
@@ -1333,11 +1333,11 @@ guiTideHeight = guiData->tideHeight;
         } else {
             eastWest='W';
         }
-        irr::f32 displayLat = fabs(guiLat);
-        irr::f32 displayLong = fabs(guiLong);
+        float displayLat = fabs(guiLat);
+        float displayLong = fabs(guiLong);
 
-        irr::f32 latMinutes = (displayLat - (int)displayLat)*60;
-        irr::f32 lonMinutes = (displayLong - (int)displayLong)*60;
+        float latMinutes = (displayLat - (int)displayLat)*60;
+        float lonMinutes = (displayLong - (int)displayLong)*60;
         irr::u8 latDegrees = (int) displayLat;
         irr::u8 lonDegrees = (int) displayLong;
 
@@ -1415,8 +1415,8 @@ guiTideHeight = guiData->tideHeight;
         dataDisplay->setText(displayText.c_str());
 
         //add radar text (reuse the displayText)
-        irr::f32 displayEBLBearing = guiRadarEBLBrg;
-        irr::f32 displayCursorBearing = guiRadarCursorBrg;
+        float displayEBLBearing = guiRadarEBLBrg;
+        float displayCursorBearing = guiRadarCursorBrg;
         if (radarHeadUp) {
             displayEBLBearing += guiHeading;
             displayCursorBearing += guiHeading;
@@ -1494,8 +1494,8 @@ guiTideHeight = guiData->tideHeight;
 
             displayText = L"";
 
-            irr::f32 tcpa = arpaContactStates.at(i).tcpa;
-            irr::f32 cpa  = arpaContactStates.at(i).cpa;
+            float tcpa = arpaContactStates.at(i).tcpa;
+            float cpa  = arpaContactStates.at(i).cpa;
             irr::u32 arpahdg = round(arpaContactStates.at(i).absHeading);
             irr::u32 arpaspd = round(arpaContactStates.at(i).speed);
 
@@ -1728,7 +1728,7 @@ guiTideHeight = guiData->tideHeight;
         irr::s32 centreY;
         irr::s32 radius;
 
-        irr::f32 brilliance = model->getBrilliance();
+        float brilliance = model->getBrilliance();
 
         if (radarLarge) {
             centreX = largeRadarScreenCentreX;
@@ -1747,7 +1747,7 @@ guiTideHeight = guiData->tideHeight;
             device->getVideoDriver()->draw2DRectangleOutline(radarLargeRect,brill(irr::video::SColor(255,0,0,0), brilliance));
         }
 
-        irr::f32 radarHeadingIndicator;
+        float radarHeadingIndicator;
         if (radarHeadUp) {
             radarHeadingIndicator = 0;
         } else {
@@ -1778,7 +1778,7 @@ guiTideHeight = guiData->tideHeight;
         device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,brill(irr::video::SColor(255, 255, 0, 0), brilliance));
         //draw EBL range
         if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
-            irr::f32 eblRangePx = radius*guiRadarEBLRangeNm/guiRadarRangeNm;
+            float eblRangePx = radius*guiRadarEBLRangeNm/guiRadarRangeNm;
             irr::u8 noSegments = eblRangePx/2;
             if (noSegments < 10) {noSegments=10;}
             device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,brill(irr::video::SColor(255, 255, 0, 0), brilliance),noSegments); //An n segment polygon, to approximate a circle
@@ -1797,12 +1797,12 @@ guiTideHeight = guiData->tideHeight;
         //Draw compass rose around radar (?Rotate with radar in head up and course up?)
         for (irr::u32 ticAngle = 0; ticAngle < 360; ticAngle += 5) {
 
-            irr::f32 displayTicAngle = ticAngle;
+            float displayTicAngle = ticAngle;
             if (radarHeadUp) {
                 displayTicAngle -= guiHeading;
             }
 
-            irr::f32 scaling = 0.98;
+            float scaling = 0.98;
             bool showValue = false;
             if(ticAngle % 20 == 0 ) {
                 scaling = 0.90;
@@ -1844,7 +1844,7 @@ guiTideHeight = guiData->tideHeight;
             rangeRings = 4;
         }
         for (unsigned int i = 1; i<rangeRings; i++) {
-            irr::f32 ringRadius = radius*i/(float)rangeRings;
+            float ringRadius = radius*i/(float)rangeRings;
             irr::u8 noSegments = ringRadius/2;
             device->getVideoDriver()->draw2DPolygon(radarCentre,ringRadius,brill(irr::video::SColor(128, 128, 128, 128), brilliance),noSegments);
         }
@@ -1912,7 +1912,7 @@ guiTideHeight = guiData->tideHeight;
         linesText->setText(irr::core::stringw(textToShow.c_str()).c_str());
     }
 
-    irr::video::SColor GUIMain::brill(irr::video::SColor originalColour, irr::f32 brilliance) const
+    irr::video::SColor GUIMain::brill(irr::video::SColor originalColour, float brilliance) const
     {
         irr::video::SColor black = irr::video::SColor(255, 0, 0, 0);
         return originalColour.getInterpolated(black, brilliance);

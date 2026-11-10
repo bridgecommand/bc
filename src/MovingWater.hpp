@@ -80,7 +80,7 @@ namespace scene
 		void resetParameters(float A, vector2 w, float seaState);
 
 		f32 getWaveHeight(f32 relPosX, f32 relPosZ) const;
-		irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
+		irr::core::vector2df getLocalNormals(float relPosX, float relPosZ) const;
 
 
 	private:

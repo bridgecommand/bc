@@ -36,12 +36,12 @@ RadarScreen::~RadarScreen()
 }
 
 
-void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 size, irr::f32 tilt)
+void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, float size, float tilt)
 {
     driver = smgr->getVideoDriver(); //store video driver so we can work with textures
 
 
-	irr::scene::IMesh* radarPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(size, size));
+	irr::scene::IMesh* radarPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<float>(size, size));
 
     radarScreen = smgr->addMeshSceneNode(radarPlane);
     radarScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
@@ -93,9 +93,9 @@ void RadarScreen::update(irr::video::IImage* radarImage)
     radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage",radarImage));
     }{ IPROF("Scale texture");
     //Scale the texture to get 1:1 image to screen pixel mapping
-    irr::f32 radarTextureScaling=1;
+    float radarTextureScaling=1;
     if (radarImage->getDimension().Width>0) {
-        radarTextureScaling = (irr::f32)radarRadiusPx * 2.0 / radarImage->getDimension().Width;
+        radarTextureScaling = (float)radarRadiusPx * 2.0 / radarImage->getDimension().Width;
         if (radarTextureScaling > 1) {radarTextureScaling = 1;} //Don't scale if not needed
     }
     radarScreen->getMaterial(0).getTextureMatrix(0).setTextureScale(radarTextureScaling,radarTextureScaling); //Use this to scale to the correct size: Ratio between radarImage size and the screen pixel diameter.

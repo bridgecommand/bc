@@ -58,15 +58,15 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //Get buoy type and construct filename
         std::string buoyName = IniFile::iniFileToString(scenarioBuoyFilename,IniFile::enumerate1("Type",currentBuoy));
         //Get buoy position
-        irr::f32 buoyX = model->longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
-        irr::f32 buoyZ = model->latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
+        float buoyX = model->longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
+        float buoyZ = model->latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
 
         //get buoy RCS if set
-        irr::f32 rcs = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RCS",currentBuoy));
+        float rcs = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RCS",currentBuoy));
         std::string racon = IniFile::iniFileToString(scenarioBuoyFilename, IniFile::enumerate1("RACON", currentBuoy));
-        irr::f32 raconOnTime = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RaconOnTime",currentBuoy), 20.0f);
+        float raconOnTime = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RaconOnTime",currentBuoy), 20.0f);
 
-        irr::f32 heightCorrection = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("HeightCorrection",currentBuoy));
+        float heightCorrection = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("HeightCorrection",currentBuoy));
 
 
         bool floating = true;
@@ -91,15 +91,15 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         for (irr::u32 currentLight=1;currentLight<=numberOfLights;currentLight++) {
             if (IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Buoy",currentLight)) ==currentBuoy ) {
                 //Light on this buoy, add a light to the buoysLights vector in this location if required (FIXME: Think about response to waves?)
-                irr::f32 lightHeight = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Height",currentLight));
+                float lightHeight = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Height",currentLight));
                 irr::u32 lightR = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Red",currentLight));
                 irr::u32 lightG = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Green",currentLight));
                 irr::u32 lightB = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Blue",currentLight));
-                irr::f32 lightRange = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Range",currentLight));
+                float lightRange = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Range",currentLight));
                 std::string lightSequence = IniFile::iniFileToString(scenarioLightFilename,IniFile::enumerate1("Sequence",currentLight));
                 irr::u32 phaseStart = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("PhaseStart",currentLight));
-                irr::f32 lightStart = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("StartAngle",currentLight));
-                irr::f32 lightEnd = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("EndAngle",currentLight));
+                float lightStart = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("StartAngle",currentLight));
+                float lightEnd = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("EndAngle",currentLight));
                 lightRange = lightRange * M_IN_NM;
 
                 //Scale height to adjust for buoy scaling (As buoy lights given absolute heights, so needs to be scaled to match parent)
@@ -113,10 +113,10 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
     }
 }
 
-void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
+void Buoys::update(float deltaTime, float scenarioTime, float tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength)
 {
     for(std::vector<Buoy>::iterator it = buoys.begin(); it != buoys.end(); ++it) {
-        irr::f32 xPos, yPos, zPos;
+        float xPos, yPos, zPos;
         irr::core::vector3df pos = it->getPosition();
         xPos = pos.X;
         if (it->getFloating()) {
@@ -128,7 +128,7 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
         it->setPosition(irr::core::vector3df(xPos,yPos,zPos));
 
         if (it->getFloating()) {
-            irr::f32 angleX, angleZ;
+            float angleX, angleZ;
             irr::core::vector2df normals = model->getLocalNormals(pos.X,pos.Z);
             angleX = normals.X * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
             angleZ = normals.Y * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
@@ -200,7 +200,7 @@ irr::scene::ISceneNode* Buoys::getSceneNode(int number)
 }
 
 
-void Buoys::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void Buoys::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     for(std::vector<Buoy>::iterator it = buoys.begin(); it != buoys.end(); ++it) {
         it->moveNode(deltaX,deltaY,deltaZ);

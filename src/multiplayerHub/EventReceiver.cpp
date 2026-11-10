@@ -21,7 +21,7 @@
         irr::s32 runButtonID,
         irr::s32 timeForwardButtonID,
         irr::s32 timeBackwardButtonID,
-        irr::f32 initialAccelerator) //Constructor
+        float initialAccelerator) //Constructor
 	{
 		accelerator = initialAccelerator;
         timeShift = 0;
@@ -64,14 +64,14 @@
         return false;
     }
 
-    irr::f32 EventReceiver::getAccelerator() const
+    float EventReceiver::getAccelerator() const
     {
         return accelerator;
     }
 
-    irr::f32 EventReceiver::getAndResetTimeShift()
+    float EventReceiver::getAndResetTimeShift()
     {
-        irr::f32 returnValue = timeShift;
+        float returnValue = timeShift;
         timeShift = 0;
         return returnValue;
     }

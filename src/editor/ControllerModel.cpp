@@ -178,7 +178,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
     std::cout << "Width m " << terrainXWidth << " Height m " << terrainZWidth << std::endl;
 
     //Calculate ratio required
-    irr::f32 widthToHeight;
+    float widthToHeight;
     if (terrainXWidth>0 &&  terrainZWidth>0) {
         widthToHeight = terrainXWidth/terrainZWidth;
     } else {
@@ -191,7 +191,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
 
     //Calculate scaling needed
     for (unsigned int i = 0; i<zoomLevels; i++) {
-         irr::f32 scaling = 0.00625 * pow(2, i);
+         float scaling = 0.00625 * pow(2, i);
 
          irr::u32 requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
          irr::u32 requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
@@ -243,22 +243,22 @@ ControllerModel::~ControllerModel()
     }
 }
 
-irr::f32 ControllerModel::longToX(irr::f32 longitude) const
+float ControllerModel::longToX(float longitude) const
 {
     return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
 }
 
-irr::f32 ControllerModel::latToZ(irr::f32 latitude) const
+float ControllerModel::latToZ(float latitude) const
 {
     return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
 }
 
-irr::f32 ControllerModel::xToLong(irr::f32 x) const
+float ControllerModel::xToLong(float x) const
 {
     return terrainLong + x*terrainLongExtent/terrainXWidth;
 }
 
-irr::f32 ControllerModel::zToLat(irr::f32 z) const
+float ControllerModel::zToLat(float z) const
 {
     return terrainLat + z*terrainLatExtent/terrainZWidth;
 }
@@ -326,7 +326,7 @@ void ControllerModel::increaseZoom()
     if(currentZoom+1<zoomLevels) {
         currentZoom++;
 
-        irr::f32 scaleChange = (irr::f32)scaledMap.at(currentZoom)->getDimension().Width/(irr::f32)scaledMap.at(currentZoom-1)->getDimension().Width;
+        float scaleChange = (float)scaledMap.at(currentZoom)->getDimension().Width/(float)scaledMap.at(currentZoom-1)->getDimension().Width;
         mapOffsetX*=scaleChange;
         mapOffsetZ*=scaleChange;
     }
@@ -337,7 +337,7 @@ void ControllerModel::decreaseZoom()
     if(currentZoom>0) {
         currentZoom--;
 
-        irr::f32 scaleChange = (irr::f32)scaledMap.at(currentZoom)->getDimension().Width/(irr::f32)scaledMap.at(currentZoom+1)->getDimension().Width;
+        float scaleChange = (float)scaledMap.at(currentZoom)->getDimension().Width/(float)scaledMap.at(currentZoom+1)->getDimension().Width;
         mapOffsetX*=scaleChange;
         mapOffsetZ*=scaleChange;
     }
@@ -425,7 +425,7 @@ void ControllerModel::checkName() //Check if the scenario name chosen will mean 
 
 }
 
-void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)  //Change othership (or ownship) course, speed etc.
+void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, float legCourse, float legSpeed, float legDistance)  //Change othership (or ownship) course, speed etc.
 {
     //If ownship:
     if (ship==0) {
@@ -495,7 +495,7 @@ void ControllerModel::setSARTOn(irr::s32 ship, bool SART)
     }
 }
 
-void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)
+void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, float legCourse, float legSpeed, float legDistance)
 {
     //If other ship:
     if (ship>0) {
@@ -566,15 +566,15 @@ void ControllerModel::deleteShip(irr::s32 ship)
 void ControllerModel::recalculateLegTimes()
 {
     //Run through all othership legs, recalculating leg stop times
-    irr::f32 scenarioStartTime = scenarioData->startTime; //Legs start at the start of the scenario
+    float scenarioStartTime = scenarioData->startTime; //Legs start at the start of the scenario
 
     for (int thisShip = 0; thisShip < scenarioData->otherShipsData.size(); thisShip++) {
 
-        irr::f32 legStartTime = scenarioStartTime; //Legs start at the start of the scenario
+        float legStartTime = scenarioStartTime; //Legs start at the start of the scenario
         for (int thisLeg = 0; thisLeg < scenarioData->otherShipsData.at(thisShip).legs.size(); thisLeg++) {
             scenarioData->otherShipsData.at(thisShip).legs.at(thisLeg).startTime = legStartTime;
-            irr::f32 thisLegDistance = scenarioData->otherShipsData.at(thisShip).legs.at(thisLeg).distance;
-            irr::f32 thisLegSpeed = scenarioData->otherShipsData.at(thisShip).legs.at(thisLeg).speed;
+            float thisLegDistance = scenarioData->otherShipsData.at(thisShip).legs.at(thisLeg).distance;
+            float thisLegSpeed = scenarioData->otherShipsData.at(thisShip).legs.at(thisLeg).speed;
             //Update legStart time for start of next leg:
             legStartTime+= SECONDS_IN_HOUR*(thisLegDistance/fabs(thisLegSpeed)); // nm/kts -> hours, so convert to seconds
         }

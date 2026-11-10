@@ -513,7 +513,7 @@ int main(int argc, char ** argv)
 	}
     irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
 
-    irr::f32 minContactPointSpacing = IniFile::iniFileTof32(iniFilename, "contact_points_minSpacing", 100); // Large default
+    float minContactPointSpacing = IniFile::iniFileTof32(iniFilename, "contact_points_minSpacing", 100); // Large default
 
     bool debugMode = (IniFile::iniFileTou32(iniFilename, "debug_mode")==1);
 
@@ -523,20 +523,20 @@ int main(int argc, char ** argv)
     irr::u32 terrainLOD = IniFile::iniFileTou32(iniFilename, "terrain_lod", 3); // Default to ETPS_65 (3) if not set
 
 
-    irr::f32 contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
-    irr::f32 contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
-    irr::f32 lineStiffnessFactor = IniFile::iniFileTof32(iniFilename, "lineStiffness_factor", 1.0); //Line stiffness scaling factor
-    irr::f32 lineDampingFactor = IniFile::iniFileTof32(iniFilename, "lineDamping_factor", 1.0); //Line damping factor (roughly proportion of critical)
-    irr::f32 frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
-    irr::f32 tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
+    float contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
+    float contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
+    float lineStiffnessFactor = IniFile::iniFileTof32(iniFilename, "lineStiffness_factor", 1.0); //Line stiffness scaling factor
+    float lineDampingFactor = IniFile::iniFileTof32(iniFilename, "lineDamping_factor", 1.0); //Line damping factor (roughly proportion of critical)
+    float frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
+    float tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
     if (frictionCoefficient < 0) {frictionCoefficient = 0;}
     if (frictionCoefficient > 1) {frictionCoefficient = 1;}
     if (tanhFrictionFactor < 0) {tanhFrictionFactor = 0;}
 
 
     //Initial view configuration
-    irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
-    irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
+    float viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
+    float lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
     if (viewAngle <= 0) {
         viewAngle = 90;
     }
@@ -546,15 +546,15 @@ int main(int argc, char ** argv)
         splitViews = 1;
     }
 
-    irr::f32 centreView = IniFile::iniFileTof32(iniFilename, "centre_view", 1.0); //Which screen should be centred, can be fractional
+    float centreView = IniFile::iniFileTof32(iniFilename, "centre_view", 1.0); //Which screen should be centred, can be fractional
     centreView = centreView - 1; // Indexing from 1 for users, from 0 internally
 
-    viewAngle = viewAngle / (irr::f32)splitViews;
+    viewAngle = viewAngle / (float)splitViews;
 
     bool viewOwnShip = (IniFile::iniFileTou32(iniFilename, "own_ship_hidden") != 1);
 
-    irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
-    irr::f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
+    float cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
+    float cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
     if (cameraMinDistance<=0) {
         cameraMinDistance = 1;
     }
@@ -828,8 +828,8 @@ int main(int argc, char ** argv)
 	graphicsHeight = sh;
 	irr::u32 graphicsWidth3d = su;
 	irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
-    irr::f32 aspect = (irr::f32)su / (irr::f32)sh / (irr::f32)splitViews;
-	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d / (irr::f32)splitViews;
+    float aspect = (float)su / (float)sh / (float)splitViews;
+	float aspect3d = (float)graphicsWidth3d / (float)graphicsHeight3d / (float)splitViews;
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
@@ -1245,10 +1245,10 @@ int main(int argc, char ** argv)
             
             int renderWindowWidthPx;
             int renderWindowHeightPx;
-            irr::f32 renderWindowAspectRatio;
+            float renderWindowAspectRatio;
             
             irr::core::quaternion quat;
-            irr::f32 viewAngleWithZoom = viewAngle / model.getZoom();
+            float viewAngleWithZoom = viewAngle / model.getZoom();
             
             if (guiMain.getShowInterface()) {
                 // 2d view shown
@@ -1289,7 +1289,7 @@ int main(int argc, char ** argv)
         if (vr3dMode && vrSuccess == 0) {
             
             // Set aspect ratio
-            irr::f32 aspectRatioVR = vrInterface.getAspectRatio();
+            float aspectRatioVR = vrInterface.getAspectRatio();
             model.updateViewport(aspectRatioVR);
 
             // Process events

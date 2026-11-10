@@ -163,7 +163,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
     std::cout << "Width m " << terrainXWidth << " Height m " << terrainZWidth << std::endl;
 
     //Calculate ratio required
-    irr::f32 widthToHeight;
+    float widthToHeight;
     if (terrainXWidth>0 &&  terrainZWidth>0) {
         widthToHeight = terrainXWidth/terrainZWidth;
     } else {
@@ -178,7 +178,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
     //Always scale bigger if needed
     //std::cout << terrainXWidth <<  " " << terrainZWidth << std::endl;
     for (unsigned int i = 0; i<zoomLevels; i++) {
-		irr::f32 scaling = 0.00625 * pow(2, i);
+		float scaling = 0.00625 * pow(2, i);
 
         irr::u32 requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
         irr::u32 requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
@@ -236,17 +236,17 @@ ControllerModel::~ControllerModel()
 
 }
 
-irr::f32 ControllerModel::longToX(irr::f32 longitude) const
+float ControllerModel::longToX(float longitude) const
 {
     return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
 }
 
-irr::f32 ControllerModel::latToZ(irr::f32 latitude) const
+float ControllerModel::latToZ(float latitude) const
 {
     return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
 }
 
-void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const irr::f32& windDirection, const irr::f32& windSpeed, const irr::f32& streamDirection, const irr::f32& streamSpeed, const bool& streamOverride)
+void ControllerModel::update(const float& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const float& weather, const float& visibility, const float& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const float& windDirection, const float& windSpeed, const float& streamDirection, const float& streamSpeed, const bool& streamOverride)
 {
     //Check if current zoom is valid, if not return.
     if(!(currentZoom<zoomLevels)) {
@@ -281,7 +281,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     scaledMap.at(currentZoom)->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
     // Scale tempImage brightness if needed
-    irr::f32 brightnessScaling = gui->getBrightnessScaling();
+    float brightnessScaling = gui->getBrightnessScaling();
     if (brightnessScaling < 1) {
         for (int i = 0; i < tempImage->getDimension().Width; i++) {
             for (int j = 0; j < tempImage->getDimension().Height; j++) {
@@ -354,13 +354,13 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
             if (sendNetworkUpdate) {
                 
                 //Get COG in degrees and SOG in Nm, from AIS coding
-                irr::f32 cogFromAIS = 0;
+                float cogFromAIS = 0;
                 if (aisShips.at(aisShipsId).cog != 3600) {
-                    cogFromAIS = (irr::f32)aisShips.at(aisShipsId).cog/10.0;
+                    cogFromAIS = (float)aisShips.at(aisShipsId).cog/10.0;
                 }
-                irr::f32 sogFromAIS = 0;
+                float sogFromAIS = 0;
                 if (aisShips.at(aisShipsId).sog != 1023) {
-                    sogFromAIS = (irr::f32)aisShips.at(aisShipsId).sog/10.0;
+                    sogFromAIS = (float)aisShips.at(aisShipsId).sog/10.0;
                 }
                 
                 std::string messageToSend = "MCRL,"; //Reset legs, to give a single leg, and set position
@@ -419,7 +419,7 @@ void ControllerModel::increaseZoom()
     if(currentZoom+1<zoomLevels) {
         currentZoom++;
 
-        irr::f32 scaleChange = (irr::f32)scaledMap.at(currentZoom)->getDimension().Width/(irr::f32)scaledMap.at(currentZoom-1)->getDimension().Width;
+        float scaleChange = (float)scaledMap.at(currentZoom)->getDimension().Width/(float)scaledMap.at(currentZoom-1)->getDimension().Width;
         mapOffsetX*=scaleChange;
         mapOffsetZ*=scaleChange;
     }
@@ -430,7 +430,7 @@ void ControllerModel::decreaseZoom()
     if(currentZoom>0) {
         currentZoom--;
 
-        irr::f32 scaleChange = (irr::f32)scaledMap.at(currentZoom)->getDimension().Width/(irr::f32)scaledMap.at(currentZoom+1)->getDimension().Width;
+        float scaleChange = (float)scaledMap.at(currentZoom)->getDimension().Width/(float)scaledMap.at(currentZoom+1)->getDimension().Width;
         mapOffsetX*=scaleChange;
         mapOffsetZ*=scaleChange;
     }

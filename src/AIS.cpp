@@ -51,7 +51,7 @@ std::vector<irr::u32> AIS::getReadyShips(SimulationModel* model, irr::u32 now) {
             elapsed_time = 0;
         }
         irr::u32 reportingInterval;
-        irr::f32 shipSpeed = model->getOtherShipSpeed(ship);
+        float shipSpeed = model->getOtherShipSpeed(ship);
 
         // TODO: take into account course changes
         // TODO: take into account transmission range in the case of huge maps
@@ -106,8 +106,8 @@ std::tuple<std::string, int> AIS::generateClassAReport(SimulationModel* model, i
     irr::u32 speed = std::min<int>((int) 10.0f * MPS_TO_KTS * model->getOtherShipSpeed(ship), 1022);
 
     // BC internal coordinate system
-    irr::f32 shipLong = model->getOtherShipLong(ship);
-    irr::f32 shipLat  = model->getOtherShipLat(ship);
+    float shipLong = model->getOtherShipLong(ship);
+    float shipLat  = model->getOtherShipLat(ship);
 
     std::uint32_t timestamp = model->getTimestamp() % 60;
 

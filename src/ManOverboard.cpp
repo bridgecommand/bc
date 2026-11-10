@@ -44,7 +44,7 @@ ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISc
     std::string mobFileName = IniFile::iniFileToString(mobIniFilename,"FileName", "ManOverboard.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    irr::f32 mobScale = IniFile::iniFileTof32(mobIniFilename,"Scalefactor", 1.f);
+    float mobScale = IniFile::iniFileTof32(mobIniFilename,"Scalefactor", 1.f);
 
     //The path to the actual model file
     std::string mobFullPath = basePath + mobFileName;
@@ -106,40 +106,40 @@ irr::scene::ISceneNode* ManOverboard::getSceneNode() const
     return (irr::scene::ISceneNode*)man;
 }
 
-void ManOverboard::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void ManOverboard::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     irr::core::vector3df currentPos = man->getPosition();
-    irr::f32 newPosX = currentPos.X + deltaX;
-    irr::f32 newPosY = currentPos.Y + deltaY;
-    irr::f32 newPosZ = currentPos.Z + deltaZ;
+    float newPosX = currentPos.X + deltaX;
+    float newPosY = currentPos.Y + deltaY;
+    float newPosZ = currentPos.Z + deltaZ;
 
     man->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }
 
-void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
+void ManOverboard::update(float deltaTime, float tideHeight)
 {
     //Move with tide and waves
     irr::core::vector3df pos=getPosition();
     pos.Y = tideHeight + model->getWaveHeight(pos.X,pos.Z);
 
     //Move with tidal stream (if not aground)
-    irr::f32 depth = -1*model->getTerrain()->getHeight(pos.X,pos.Z)+pos.Y;
+    float depth = -1*model->getTerrain()->getHeight(pos.X,pos.Z)+pos.Y;
     irr::core::vector2df mobVector = model->getTidalStream(model->getTerrain()->xToLong(pos.X), model->getTerrain()->zToLat(pos.Z),model->getTimestamp());
     
     // Add component from wind
-    irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;
-    irr::f32 windDirection = model->getWindDirection();
+    float windSpeed = model->getWindSpeed() * KTS_TO_MPS;
+    float windDirection = model->getWindDirection();
     // Convert this into wind axial speed and wind lateral speed
-    irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
-    irr::f32 windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);
-    irr::f32 windZ = windSpeed * cos(windFlowDirection * irr::core::DEGTORAD);
+    float windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
+    float windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);
+    float windZ = windSpeed * cos(windFlowDirection * irr::core::DEGTORAD);
     // Assume that the MoB moves at 1/10 of the wind speed
     mobVector.X += windX * 0.1;
     mobVector.Y += windZ * 0.1;
 
     // Apply movement vector
     if (depth > 0) {
-        irr::f32 streamScaling = fmin(1,depth); //Reduce effect as water gets shallower
+        float streamScaling = fmin(1,depth); //Reduce effect as water gets shallower
         pos.X += mobVector.X*deltaTime*streamScaling;
         pos.Z += mobVector.Y*deltaTime*streamScaling;
     }

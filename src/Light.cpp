@@ -32,7 +32,7 @@ Light::~Light()
     //dtor
 }
 
-void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet, irr::scene::ISceneNode* parent)
+void Light::load(irr::scene::ISceneManager* smgr, float sunRise, float sunSet, irr::scene::ISceneNode* parent)
 {
 
     this->smgr = smgr;
@@ -58,10 +58,10 @@ void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sun
 
 }
 
-void Light::update(irr::f32 scenarioTime)
+void Light::update(float scenarioTime)
 {
     //convert scenario time (in seconds) into hours
-    irr::f32 hourTime = std::fmod(scenarioTime,SECONDS_IN_DAY)/SECONDS_IN_HOUR;
+    float hourTime = std::fmod(scenarioTime,SECONDS_IN_DAY)/SECONDS_IN_HOUR;
     while (hourTime < 0) {
         hourTime += HOURS_IN_DAY;
     }
