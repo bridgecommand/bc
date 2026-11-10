@@ -44,8 +44,8 @@ class Ship
         float getSpeed() const; //m/s
         void moveNode(float deltaX, float deltaY, float deltaZ);
         void setPosition(float xPos, float yPos);
-        irr::u32 getMMSI() const;
-        void setMMSI(irr::u32 mmsi);
+        unsigned int getMMSI() const;
+        void setMMSI(unsigned int mmsi);
 
     protected:
 
@@ -67,7 +67,7 @@ class Ship
 // DEE_DEC22
 	int controlMode;
         bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
-        irr::u32 mmsi;
+        unsigned int mmsi;
         enum CONTROL_MODE
         {
             MODE_AUTO = 0,

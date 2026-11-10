@@ -37,20 +37,20 @@ class OtherShips
         OtherShips();
         ~OtherShips();
         void load(std::vector<OtherShipData> otherShipsData, float scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
-        void update(float deltaTime, float scenarioTime, float tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength);
-        RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
-        irr::u32 getNumber() const;
+        void update(float deltaTime, float scenarioTime, float tideHeight, unsigned int lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength);
+        RadarData getRadarData(unsigned int number, irr::core::vector3df scannerPosition) const;
+        unsigned int getNumber() const;
         irr::core::vector3df getPosition(int number) const;
         float getLength(int number) const;
         float getBreadth(int number) const;
         float getHeading(int number) const;
         float getSpeed(int number) const; //Speed in m/s
-        irr::u32 getMMSI(int number) const;
+        unsigned int getMMSI(int number) const;
         float getEstimatedDisplacement(int number) const;
         bool getSARTOn(int number) const;
         void setSARTOn(int number, bool sartState);
         void setSpeed(int number, float speed); //Speed in m/s
-        void setMMSI(int number, irr::u32 mmsi);
+        void setMMSI(int number, unsigned int mmsi);
         void setPos(int number, float positionX, float positionZ);
         void setHeading(int number, float hdg);
         void setRateOfTurn(int number, float rateOfTurn);

@@ -56,8 +56,8 @@ class Camera
         irr::core::vector3df getForwardVector() const;
         void highView(bool highViewRequired);
         void changeView();
-        void setView(irr::u32 view);
-        irr::u32 getView() const;
+        void setView(unsigned int view);
+        unsigned int getView() const;
         void setNearValue(float zn);
         void setFarValue(float zf);
         void setFrozen(bool frozen);
@@ -72,7 +72,7 @@ class Camera
         irr::core::matrix4 parentAngles;
         bool frozen;
         irr::ILogger* logger;
-        irr::u32 currentView;
+        unsigned int currentView;
         std::vector<irr::core::vector3df> views;
         std::vector<bool> isHighView; //Should be the same size as views (todo: Make this into a struct with views)
         float angleCorrection;
@@ -80,8 +80,8 @@ class Camera
         float lookUpAngle;
         float minLookUpAngle;
         float maxLookUpAngle;
-        irr::s32 horizontalPanSpeed; //Degrees per second
-        irr::s32 verticalPanSpeed; //Degrees per second
+        signed int horizontalPanSpeed; //Degrees per second
+        signed int verticalPanSpeed; //Degrees per second
         float hFOV;//horizontal field of view (radians)
         irr::core::vector3df sideViewVector; // Side vector
         irr::core::vector3df frv;

@@ -49,7 +49,7 @@ class LegData {
 class OtherShipData {
     public:
     std::string shipName;
-    irr::u32 mmsi;
+    unsigned int mmsi;
     float initialLong, initialLat;
     float initialX, initialZ; // initialX and initialZ only used for scenario editor
     std::vector<LegData> legs;
@@ -66,7 +66,7 @@ class ScenarioData {
     public:
     std::string scenarioName, worldName;
     float startTime, sunRise, sunSet, weather, rainIntensity, visibilityRange, windDirection, windSpeed;
-    irr::u32 startDay, startMonth, startYear;
+    unsigned int startDay, startMonth, startYear;
     OwnShipData ownShipData;
     std::vector<OtherShipData> otherShipsData;
     std::string description; // description only used in scenario editor

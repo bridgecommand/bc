@@ -24,10 +24,10 @@ class EventReceiver : public irr::IEventReceiver
 public:
 
     EventReceiver(
-        irr::s32 pauseButtonID, 
-        irr::s32 runButtonID,
-        irr::s32 timeForwardButtonID, 
-        irr::s32 timeBackwardButtonID,
+        signed int pauseButtonID, 
+        signed int runButtonID,
+        signed int timeForwardButtonID, 
+        signed int timeBackwardButtonID,
         float initialAccelerator);
     bool OnEvent(const irr::SEvent& event);
 
@@ -38,10 +38,10 @@ private:
 
     float accelerator;
     float timeShift;
-    irr::s32 pauseButtonID;
-    irr::s32 runButtonID;
-    irr::s32 timeForwardButtonID;
-    irr::s32 timeBackwardButtonID;
+    signed int pauseButtonID;
+    signed int runButtonID;
+    signed int timeForwardButtonID;
+    signed int timeBackwardButtonID;
 
 };
 

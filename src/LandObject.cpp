@@ -123,7 +123,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(landObject->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<landObject->getMaterialCount();mat++) {
+        for(unsigned int mat=0;mat<landObject->getMaterialCount();mat++) {
             landObject->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
@@ -146,7 +146,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
             irr::core::vector3df boundingBoxExtent = mb->getBoundingBox().getExtent();
 
             if (mb->getVertexType() == irr::video::EVT_STANDARD) {
-                const irr::u32 vtxCnt = mb->getVertexCount();
+                const unsigned int vtxCnt = mb->getVertexCount();
                 irr::video::S3DVertex* v = (irr::video::S3DVertex*)mb->getVertices();
                 for (int vertexId = 0; vertexId < vtxCnt; vertexId++) {
                     // Find global location for each vertex, using transformation matrix

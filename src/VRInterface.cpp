@@ -24,7 +24,7 @@
 #include <cstdarg>
 
 // Constructor
-VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, irr::u32 suGUI, irr::u32 shGUI) {
+VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, unsigned int suGUI, unsigned int shGUI) {
 	this->dev = dev;
 	this->smgr = smgr;
     this->driver = driver;
@@ -127,7 +127,7 @@ VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* sm
 
 	hudTexture = 0;
 	if (driver->queryFeature(irr::video::EVDF_RENDER_TO_TARGET)) {
-		hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(suGUI, shGUI), "HUD");
+		hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<unsigned int>(suGUI, shGUI), "HUD");
 		hudScreen->setMaterialTexture(0, hudTexture); // set material to render target
 	}
 
@@ -1557,8 +1557,8 @@ int VRInterface::update() {
 		if (hudTexture) {
 			driver->setRenderTarget(hudTexture, true, true, irr::video::SColor(0, 128, 128, 128));
 			// Draw GUI, this should have been updated in guiMain.drawGUI() above
-			driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
-			driver->setViewPort(irr::core::rect<irr::s32>(0, 0, suGUI, shGUI));
+			driver->setViewPort(irr::core::rect<signed int>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
+			driver->setViewPort(irr::core::rect<signed int>(0, 0, suGUI, shGUI));
 			smgr->getGUIEnvironment()->drawAll();
 			//set back usual render target
 			driver->setRenderTarget(0, 0); // TODO: Maybe not needed here

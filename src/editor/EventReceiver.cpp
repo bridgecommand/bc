@@ -39,7 +39,7 @@
 
         if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
+			signed int id = event.GUIEvent.Caller->getID();
 
             
             if (event.GUIEvent.EventType==irr::gui::EGET_EDITBOX_CHANGED) {
@@ -64,7 +64,7 @@
                 }
 
                 if (id == GUIMain::GUI_ID_SETMMSI_BUTTON) {
-                    irr::u32 mmsi = gui->getEditBoxMMSI();
+                    unsigned int mmsi = gui->getEditBoxMMSI();
                     int ship = gui->getSelectedShip();
                     model->setMMSI(ship,mmsi);
                 }

@@ -35,7 +35,7 @@ Water::~Water()
     //dtor
 }
 
-void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, float weather, irr::u32 disableShaders, bool withReflection, irr::u32 segments)
+void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, float weather, unsigned int disableShaders, bool withReflection, unsigned int segments)
 {
 
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
@@ -53,7 +53,7 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShi
 
 }
 
-void Water::update(float tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, float weather)
+void Water::update(float tideHeight, irr::core::vector3df viewPosition, unsigned int lightLevel, float weather)
 {
     //Round these to nearest tileWidth
     float xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);

@@ -70,7 +70,7 @@ RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(3
     arpaListSelection = -1;
 
     //Hard coded in GUI and here for 10 parallel index lines
-    for(irr::u32 i=0; i<10; i++) {
+    for(unsigned int i=0; i<10; i++) {
         piBearings.push_back(0.0);
         piRanges.push_back(0.0);
     }
@@ -99,8 +99,8 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
     }
     rangeResolution = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes", rangeResolution);
     angularResolution = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes", angularResolution);
-    irr::u32 rangeResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes_Max");
-    irr::u32 angularResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes_Max");
+    unsigned int rangeResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes_Max");
+    unsigned int angularResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes_Max");
     
     //Initial values for controls, all 0-100:
     radarGain = IniFile::iniFileTof32(iniFilename, "RADAR_InitialGain", radarGain);
@@ -117,7 +117,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
     if (radarSeaClutterReduction < 0) { radarSeaClutterReduction = 0; }
 
     //Load parameters from the radarConfig file (if it exists)
-    irr::u32 numberOfRadarRanges = IniFile::iniFileTou32(radarConfigFile,"NumberOfRadarRanges");
+    unsigned int numberOfRadarRanges = IniFile::iniFileTou32(radarConfigFile,"NumberOfRadarRanges");
     if (numberOfRadarRanges==0) {
         //Assume file doesn't exist, and load defaults
 
@@ -200,7 +200,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         if (radarRainClutter< 0) {radarRainClutter= 0.00001;}
         if (rangeSensitivity< 0) {rangeSensitivity=20;}
 
-        irr::u32 numberOfRadarColourSets = IniFile::iniFileTof32(radarConfigFile,"NumberOfRadarColourSets");
+        unsigned int numberOfRadarColourSets = IniFile::iniFileTof32(radarConfigFile,"NumberOfRadarColourSets");
         if (numberOfRadarColourSets == 0) {
             //legacy loading
             irr::video::SColor radarBackgroundColour;
@@ -278,8 +278,8 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
     toReplot.resize(angularResolution);
 
     //initialise arrays
-    for(irr::u32 i = 0; i<angularResolution; i++) {
-        for(irr::u32 j = 0; j<rangeResolution; j++) {
+    for(unsigned int i = 0; i<angularResolution; i++) {
+        for(unsigned int j = 0; j<rangeResolution; j++) {
             scanArray[i][j] = 0.0;
             scanArrayAmplified[i][j] = 0.0;
             scanArrayToPlot[i][j] = 0.0;
@@ -407,26 +407,26 @@ float RadarCalculation::getEBLBrg() const
     return EBLBrg;
 }
 
-void RadarCalculation::setPIData(irr::s32 PIid, float PIbearing, float PIrange)
+void RadarCalculation::setPIData(signed int PIid, float PIbearing, float PIrange)
 {
-    if (PIid >= 0 && PIid < (irr::s32)piBearings.size() && PIid < (irr::s32)piRanges.size()) {
+    if (PIid >= 0 && PIid < (signed int)piBearings.size() && PIid < (signed int)piRanges.size()) {
         piBearings.at(PIid) = PIbearing;
         piRanges.at(PIid) = PIrange;
     }
 }
 
-float RadarCalculation::getPIbearing(irr::s32 PIid) const
+float RadarCalculation::getPIbearing(signed int PIid) const
 {
-    if (PIid >= 0 && PIid < (irr::s32)piBearings.size()) {
+    if (PIid >= 0 && PIid < (signed int)piBearings.size()) {
         return piBearings.at(PIid);
     } else {
         return 0;
     }
 }
 
-float RadarCalculation::getPIrange(irr::s32 PIid) const
+float RadarCalculation::getPIrange(signed int PIid) const
 {
-    if (PIid >= 0 && PIid < (irr::s32)piRanges.size()) {
+    if (PIid >= 0 && PIid < (signed int)piRanges.size()) {
         return piRanges.at(PIid);
     } else {
         return 0;
@@ -608,8 +608,8 @@ void RadarCalculation::toggleRadarOn()
 
 	if (!radarOn) {
 		//Reset array to empty
-		for (irr::u32 i = 0; i < angularResolution; i++) {
-			for (irr::u32 j = 0; j < rangeResolution; j++) {
+		for (unsigned int i = 0; i < angularResolution; i++) {
+			for (unsigned int j = 0; j < rangeResolution; j++) {
 				scanArrayToPlot[i][j] = 0.0;
 			}
 		}
@@ -657,12 +657,12 @@ void RadarCalculation::setRadarARPATrue()
     trueVectors = true;
 }
 
-void RadarCalculation::setArpaListSelection(irr::s32 selection) 
+void RadarCalculation::setArpaListSelection(signed int selection) 
 {
     arpaListSelection = selection;
 }
 
-irr::s32 RadarCalculation::getArpaListSelection() const
+signed int RadarCalculation::getArpaListSelection() const
 {
     return arpaListSelection;
 }
@@ -672,7 +672,7 @@ void RadarCalculation::setRadarARPAVectors(float vectorMinutes)
     vectorLengthMinutes = vectorMinutes;
 }
 
-void RadarCalculation::setRadarDisplayRadius(irr::u32 radiusPx)
+void RadarCalculation::setRadarDisplayRadius(unsigned int radiusPx)
 {
     if (radarRadiusPx != radiusPx) { //If changed
         radarRadiusPx = radiusPx;
@@ -680,12 +680,12 @@ void RadarCalculation::setRadarDisplayRadius(irr::u32 radiusPx)
     }
 }
 
-irr::u32 RadarCalculation::getARPATracksSize() const
+unsigned int RadarCalculation::getARPATracksSize() const
 {
     return arpaTracks.size();
 }
 
-int RadarCalculation::getARPAContactIDFromTrackIndex(irr::u32 trackIndex) const
+int RadarCalculation::getARPAContactIDFromTrackIndex(unsigned int trackIndex) const
 {
     if (trackIndex >= 0 && trackIndex < arpaTracks.size()) {
         return arpaTracks.at(trackIndex);
@@ -695,7 +695,7 @@ int RadarCalculation::getARPAContactIDFromTrackIndex(irr::u32 trackIndex) const
     }
 }
 
-ARPAContact RadarCalculation::getARPAContactFromTrackIndex(irr::u32 trackIndex) const
+ARPAContact RadarCalculation::getARPAContactFromTrackIndex(unsigned int trackIndex) const
 {
     
     int contactID = getARPAContactIDFromTrackIndex(trackIndex);
@@ -732,9 +732,9 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
     if(radarScreenStale) {
         radarImage->fill(getRadarSurroundColour());
         //Reset 'previous' array so it will all get re-drawn
-        for(irr::u32 i = 0; i<angularResolution; i++) {
+        for(unsigned int i = 0; i<angularResolution; i++) {
             toReplot[i] = true;
-            for(irr::u32 j = 0; j<rangeResolution; j++) {
+            for(unsigned int j = 0; j<rangeResolution; j++) {
                 scanArrayToPlotPrevious[i][j] = -1.0;
             }
         }
@@ -781,7 +781,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 {
 
     //IPROF_FUNC;
-    const irr::u32 SECONDS_BETWEEN_SCANS = 2;
+    const unsigned int SECONDS_BETWEEN_SCANS = 2;
 
     irr::core::vector3df position = ownShip.getPosition();
     //Get absolute position relative to SW corner of world model
@@ -812,7 +812,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
     const float RADAR_RPM = 25; //Todo: Make a ship parameter
     const float RPMtoDEGPERSECOND = 6;
-    irr::u32 scansPerLoop = RADAR_RPM * RPMtoDEGPERSECOND * deltaTime / (float) scanAngleStep + (float) rand() / RAND_MAX ; //Add random value (0-1, mean 0.5), so with rounding, we get the correct radar speed, even though we can only do an integer number of scans
+    unsigned int scansPerLoop = RADAR_RPM * RPMtoDEGPERSECOND * deltaTime / (float) scanAngleStep + (float) rand() / RAND_MAX ; //Add random value (0-1, mean 0.5), so with rounding, we get the correct radar speed, even though we can only do an integer number of scans
 
     if (scansPerLoop > 30) {scansPerLoop = 30;} //Limit to reasonable bounds
 
@@ -820,7 +820,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
     // 30 here is max number of scans per loop
     uint64_t maxTimeForSARTDetected = std::max(3, int(2 * deltaTime * 360 / (30 * scanAngleStep)));
 
-    for(irr::u32 i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
+    for(unsigned int i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
 
         // the actual angle we want to work with has to be determined here
         currentScanAngle = ((float) currentScanLine / (float) angularResolution) * 360.0f;
@@ -828,12 +828,12 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
         float scanSlope = -0.5; //Slope at start of scan (in metres/metre) - Make slightly negative so vessel contacts close in get detected
         
         // clear this line (before the main scan loop, so we can add things like racon which will appear beyond contact
-        for (irr::u32 currentStep = 1; currentStep < rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
+        for (unsigned int currentStep = 1; currentStep < rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
             scanArray[currentScanLine][currentStep] = 0.0;
         }
 
 
-        for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
+        for (unsigned int currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
 
             //Get location of area being scanned
@@ -1119,28 +1119,28 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             scanArrayAmplified[currentScanLine][currentStep] = std::max(0.0f,logSignal);
 
             //Generate a filtered version, based on the angles around. Lag behind by (for example) 3 steps, so we can filter on what's ahead, as well as what's behind
-            irr::s32 filterAngle = (irr::s32)currentScanLine - 3;
+            signed int filterAngle = (signed int)currentScanLine - 3;
                 while(filterAngle < 0) {filterAngle+=angularResolution;}
                 while(filterAngle >= angularResolution) {filterAngle-=angularResolution;}
-            irr::s32 filterAngle_1 = filterAngle - 3;
+            signed int filterAngle_1 = filterAngle - 3;
                 while(filterAngle_1 < 0) {filterAngle_1+=angularResolution;}
                 while(filterAngle_1 >= angularResolution) {filterAngle_1-=angularResolution;}
-            irr::s32 filterAngle_2 = filterAngle - 2;
+            signed int filterAngle_2 = filterAngle - 2;
                 while(filterAngle_2 < 0) {filterAngle_2+=angularResolution;}
                 while(filterAngle_2 >= angularResolution) {filterAngle_2-=angularResolution;}
-            irr::s32 filterAngle_3 = filterAngle - 1;
+            signed int filterAngle_3 = filterAngle - 1;
                 while(filterAngle_3 < 0) {filterAngle_3+=angularResolution;}
                 while(filterAngle_3 >= angularResolution) {filterAngle_3-=angularResolution;}
-            irr::s32 filterAngle_4 = filterAngle;
+            signed int filterAngle_4 = filterAngle;
                 while(filterAngle_4 < 0) {filterAngle_4+=angularResolution;}
                 while(filterAngle_4 >= angularResolution) {filterAngle_4-=angularResolution;}
-            irr::s32 filterAngle_5 = filterAngle + 1;
+            signed int filterAngle_5 = filterAngle + 1;
                 while(filterAngle_5 < 0) {filterAngle_5+=angularResolution;}
                 while(filterAngle_5 >= angularResolution) {filterAngle_5-=angularResolution;}
-            irr::s32 filterAngle_6 = filterAngle + 2;
+            signed int filterAngle_6 = filterAngle + 2;
                 while(filterAngle_6 < 0) {filterAngle_6+=angularResolution;}
                 while(filterAngle_6 >= angularResolution) {filterAngle_6-=angularResolution;}
-            irr::s32 filterAngle_7 = filterAngle + 3;
+            signed int filterAngle_7 = filterAngle + 3;
                 while(filterAngle_7 < 0) {filterAngle_7+=angularResolution;}
                 while(filterAngle_7 >= angularResolution) {filterAngle_7-=angularResolution;}
             if (currentStep < rangeResolution * 0.1) {
@@ -1381,7 +1381,7 @@ void RadarCalculation::addRaconReturn(float raconEchoStrength, float cellLength,
     float raconEchoEnd = raconEchoStart + raconEchoLength;
 
     // As with other radar scans, start sweep at 1 (0 reserved so we can do rain clutter 'graient' calculation)
-    for (irr::u32 raconStep = 1; raconStep < rangeResolution; raconStep++) {
+    for (unsigned int raconStep = 1; raconStep < rangeResolution; raconStep++) {
 
         if ((raconStep * cellLength >= raconEchoStart) && (raconStep * cellLength <= raconEchoEnd)) {
             scanArray[currentScanLine][raconStep] += raconEchoStrength;
@@ -1693,11 +1693,11 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                     }
                 }
 
-                irr::s32 stepsBack = 60; //Default time for tracking (time = stepsBack * SECONDS_BETWEEN_SCANS)
-                irr::s32 recentStepsBack = 10; //Shorter time for tracking (if motion has changed significantly)
+                signed int stepsBack = 60; //Default time for tracking (time = stepsBack * SECONDS_BETWEEN_SCANS)
+                signed int recentStepsBack = 10; //Shorter time for tracking (if motion has changed significantly)
 
-                irr::s32 currentScanIndex = thisArpaContact.scans.size() - 1;
-                irr::s32 referenceScanIndex = currentScanIndex - stepsBack;
+                signed int currentScanIndex = thisArpaContact.scans.size() - 1;
+                signed int referenceScanIndex = currentScanIndex - stepsBack;
                 if (referenceScanIndex < 0) {
                     referenceScanIndex = 0;
                 }
@@ -1706,7 +1706,7 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                 ARPAScan referenceScanData = thisArpaContact.scans.at(referenceScanIndex);
 
                 //Check if heading/speed has changed dramatically, by taking last 10 scans. If so, reduce steps back to 10
-                irr::s32 actualStepsBack = currentScanIndex - referenceScanIndex;
+                signed int actualStepsBack = currentScanIndex - referenceScanIndex;
                 if (actualStepsBack > recentStepsBack) {
                     ARPAScan recentScanData = thisArpaContact.scans.at(currentScanIndex-recentStepsBack);
                     float deltaTimeRecent = currentScanData.timeStamp - recentScanData.timeStamp;
@@ -1801,7 +1801,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
     //*************************
 
     //Render background radar picture into radarImage, then copy to radarImageOverlaid and do any 2d drawing on top (so we don't have to redraw all pixels each time
-    irr::u32 bitmapWidth = radarRadiusPx*2; //Set width to use - to map GUI radar display diameter in screen pixels
+    unsigned int bitmapWidth = radarRadiusPx*2; //Set width to use - to map GUI radar display diameter in screen pixels
 
     //If the image is smaller than ideal, render anyway
     if (radarImage->getDimension().Width < bitmapWidth) {
@@ -1820,7 +1820,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
     //float cellMaxRange [rangeResolution];
 	cellMinRange.push_back(0);
 	cellMaxRange.push_back(0);
-    for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that we start with the element at 1, so we've already pushed in a dummy entry at 0
+    for (unsigned int currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that we start with the element at 1, so we've already pushed in a dummy entry at 0
         cellMinRange.push_back((currentStep-0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Range in pixels from centre
         cellMaxRange.push_back((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));
     }
@@ -1834,7 +1834,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
         float cellMinAngle = scanAngle - scanAngleStep / 2.0;
         float cellMaxAngle = scanAngle + scanAngleStep / 2.0;
 
-        for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
+        for (unsigned int currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
             //If the sector has changed, draw it. If we're stabilising the picture, need to re-draw all in case the ship's head has changed
             if(toReplot[scanLine] || stabilised)
@@ -1914,13 +1914,13 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                     xDirection/=mag;
                     yDirection/=mag;
 
-                    irr::s32 xTextPos = x_a + 15*xDirection;
-                    irr::s32 yTextPos = z_a + 15*yDirection;
+                    signed int xTextPos = x_a + 15*xDirection;
+                    signed int yTextPos = z_a + 15*yDirection;
 
                     irr::video::IImage* idNumberImage = NumberToImage::getImage(i+1, brilliance, device);
                     if (idNumberImage) {
-                        irr::core::rect<irr::s32> sourceRect = irr::core::rect<irr::s32>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
-                        idNumberImage->copyToWithAlpha(radarImageOverlaid,irr::core::position2d<irr::s32>(xTextPos,yTextPos),sourceRect,irr::video::SColor(255,255,255,255));
+                        irr::core::rect<signed int> sourceRect = irr::core::rect<signed int>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
+                        idNumberImage->copyToWithAlpha(radarImageOverlaid,irr::core::position2d<signed int>(xTextPos,yTextPos),sourceRect,irr::video::SColor(255,255,255,255));
                         idNumberImage->drop();
                     }
 				}
@@ -1943,8 +1943,8 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
             float contactRangePx = (float)bitmapWidth/2.0 * thisEstimate.range/getRangeNm();
 
             //Find estimated screen location of contact
-            irr::s32 deltaX = centrePixel + contactRangePx * sin((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
-            irr::s32 deltaY = centrePixel - contactRangePx * cos((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
+            signed int deltaX = centrePixel + contactRangePx * sin((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
+            signed int deltaY = centrePixel - contactRangePx * cos((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
 
             //Show contact on screen
             drawCircle(radarImageOverlaid,deltaX,deltaY,radarRadiusPx/40,brill(irr::video::SColor(255,255,255,255), brilliance)); //Draw circle around contact
@@ -1953,8 +1953,8 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
             irr::video::IImage* idNumberImage = NumberToImage::getImage(thisEstimate.displayID, brilliance, device);
 
             if (idNumberImage) {
-                irr::core::rect<irr::s32> sourceRect = irr::core::rect<irr::s32>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
-                idNumberImage->copyToWithAlpha(radarImageOverlaid,irr::core::position2d<irr::s32>(deltaX-10,deltaY-10),sourceRect,irr::video::SColor(255,255,255,255));
+                irr::core::rect<signed int> sourceRect = irr::core::rect<signed int>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
+                idNumberImage->copyToWithAlpha(radarImageOverlaid,irr::core::position2d<signed int>(deltaX-10,deltaY-10),sourceRect,irr::video::SColor(255,255,255,255));
                 idNumberImage->drop();
             }
 
@@ -1982,8 +1982,8 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                 adjustedVectorZ = newZ;
             }
 
-            irr::s32 headingVectorX = Utilities::round(((float)bitmapWidth/2.0)   * adjustedVectorX * 60 * vectorLengthMinutes / (M_IN_NM * getRangeNm())); //Vector length in pixels
-            irr::s32 headingVectorY = Utilities::round(((float)bitmapWidth/2.0)*-1* adjustedVectorZ * 60 * vectorLengthMinutes / (M_IN_NM * getRangeNm()));
+            signed int headingVectorX = Utilities::round(((float)bitmapWidth/2.0)   * adjustedVectorX * 60 * vectorLengthMinutes / (M_IN_NM * getRangeNm())); //Vector length in pixels
+            signed int headingVectorY = Utilities::round(((float)bitmapWidth/2.0)*-1* adjustedVectorZ * 60 * vectorLengthMinutes / (M_IN_NM * getRangeNm()));
 
             //std::cout << headingVectorX << " " << headingVectorY << std::endl;
 
@@ -2022,10 +2022,10 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,float centreX,
     float point4Y = centreY - cosEndAngle*innerRadius;
 
     //find the 'bounding box'
-    irr::s32 minX = std::min(std::min(point1X,point2X),std::min(point3X,point4X));
-    irr::s32 maxX = std::max(std::max(point1X,point2X),std::max(point3X,point4X));
-    irr::s32 minY = std::min(std::min(point1Y,point2Y),std::min(point3Y,point4Y));
-    irr::s32 maxY = std::max(std::max(point1Y,point2Y),std::max(point3Y,point4Y));
+    signed int minX = std::min(std::min(point1X,point2X),std::min(point3X,point4X));
+    signed int maxX = std::max(std::max(point1X,point2X),std::max(point3X,point4X));
+    signed int minY = std::min(std::min(point1Y,point2Y),std::min(point3Y,point4Y));
+    signed int maxY = std::max(std::max(point1Y,point2Y),std::max(point3Y,point4Y));
 
     float innerRadiusSqr = innerRadius*innerRadius;
     float outerRadiusSqr = outerRadius*outerRadius;
@@ -2064,15 +2064,15 @@ void RadarCalculation::drawLine(irr::video::IImage * radarImage, float startX, f
 
     float lengthSum = std::abs(deltaX) + std::abs(deltaY);
 
-    irr::u32 radiusSquared = pow(radarRadiusPx,2);
+    unsigned int radiusSquared = pow(radarRadiusPx,2);
 
     if (lengthSum > 0) {
         for (float i = 0; i<=1; i += 1/lengthSum) {
-            irr::s32 thisX = Utilities::round(startX + deltaX * i);
-            irr::s32 thisY = Utilities::round(startY + deltaY * i);
+            signed int thisX = Utilities::round(startX + deltaX * i);
+            signed int thisY = Utilities::round(startY + deltaY * i);
             //Find distance from centre
-            irr::s32 centreToX = thisX - radarRadiusPx;
-            irr::s32 centreToY = thisY - radarRadiusPx;
+            signed int centreToX = thisX - radarRadiusPx;
+            signed int centreToY = thisY - radarRadiusPx;
             if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
                 if (thisX >= 0 && thisY >= 0) {
                     radarImage->setPixel(thisX,thisY,colour);
@@ -2080,11 +2080,11 @@ void RadarCalculation::drawLine(irr::video::IImage * radarImage, float startX, f
             }
         }
     } else {
-        irr::s32 thisX = Utilities::round(startX);
-        irr::s32 thisY = Utilities::round(startY);
+        signed int thisX = Utilities::round(startX);
+        signed int thisY = Utilities::round(startY);
         //Find distance from centre
-        irr::s32 centreToX = thisX - radarRadiusPx;
-        irr::s32 centreToY = thisY - radarRadiusPx;
+        signed int centreToX = thisX - radarRadiusPx;
+        signed int centreToY = thisY - radarRadiusPx;
         if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
             if (thisX >= 0 && thisY >= 0) {radarImage->setPixel(thisX,thisY, colour);}
         }
@@ -2095,15 +2095,15 @@ void RadarCalculation::drawCircle(irr::video::IImage * radarImage, float centreX
 {
     float circumference = 2.0 * PI * radius;
 
-    irr::u32 radiusSquared = pow(radarRadiusPx,2);
+    unsigned int radiusSquared = pow(radarRadiusPx,2);
 
     if (circumference > 0) {
         for (float i = 0; i<=1; i += 1/circumference) {
-            irr::s32 thisX = Utilities::round(centreX + radius * sin(i*2*PI));
-            irr::s32 thisY = Utilities::round(centreY + radius * cos(i*2*PI));
+            signed int thisX = Utilities::round(centreX + radius * sin(i*2*PI));
+            signed int thisY = Utilities::round(centreY + radius * cos(i*2*PI));
             //Find distance from centre
-            irr::s32 centreToX = thisX - radarRadiusPx;
-            irr::s32 centreToY = thisY - radarRadiusPx;
+            signed int centreToX = thisX - radarRadiusPx;
+            signed int centreToY = thisY - radarRadiusPx;
             if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
                 if (thisX >= 0 && thisY >= 0) {
                     radarImage->setPixel(thisX,thisY, colour);
@@ -2111,11 +2111,11 @@ void RadarCalculation::drawCircle(irr::video::IImage * radarImage, float centreX
             }
         }
     } else {
-        irr::s32 thisX = Utilities::round(centreX);
-        irr::s32 thisY = Utilities::round(centreY);
+        signed int thisX = Utilities::round(centreX);
+        signed int thisY = Utilities::round(centreY);
         //Find distance from centre
-        irr::s32 centreToX = thisX - radarRadiusPx;
-        irr::s32 centreToY = thisY - radarRadiusPx;
+        signed int centreToX = thisX - radarRadiusPx;
+        signed int centreToY = thisY - radarRadiusPx;
         if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
             if (thisX >= 0 && thisY >= 0) {
                 radarImage->setPixel(thisX,thisY, colour);

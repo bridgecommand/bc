@@ -45,9 +45,9 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
     scenarioLandObjectFilename.append("/landobject.ini");
 
     //Find number of objects
-    irr::u32 numberOfObjects;
+    unsigned int numberOfObjects;
     numberOfObjects = IniFile::iniFileTou32(scenarioLandObjectFilename,"Number");
-    for(irr::u32 currentObject=1;currentObject<=numberOfObjects;currentObject++) {
+    for(unsigned int currentObject=1;currentObject<=numberOfObjects;currentObject++) {
 
         //Get Object type and construct filename
         std::string objectName = IniFile::iniFileToString(scenarioLandObjectFilename,IniFile::enumerate1("Type",currentObject));
@@ -91,12 +91,12 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
     scenarioPontoonFilename.append("/pontoon.ini");
 
     //Find number of objects
-    irr::u32 numberOfPontoons;
+    unsigned int numberOfPontoons;
     numberOfPontoons = IniFile::iniFileTou32(scenarioPontoonFilename, "Number");
-    for (irr::u32 currentPontoon = 1; currentPontoon <= numberOfPontoons; currentPontoon++) {
-        irr::u32 numberOfNodes;
+    for (unsigned int currentPontoon = 1; currentPontoon <= numberOfPontoons; currentPontoon++) {
+        unsigned int numberOfNodes;
         numberOfNodes = IniFile::iniFileTou32(scenarioPontoonFilename, IniFile::enumerate1("Nodes", currentPontoon));
-        for (irr::u32 currentNode = 1; currentNode < numberOfNodes; currentNode++) {
+        for (unsigned int currentNode = 1; currentNode < numberOfNodes; currentNode++) {
             //Get position of this node and next one
             float node1X = model->longToX(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Long", currentPontoon, currentNode)));
             float node1Z = model->latToZ(IniFile::iniFileTof32(scenarioPontoonFilename, IniFile::enumerate2("Lat", currentPontoon, currentNode)));
@@ -155,7 +155,7 @@ void LandObjects::update(float tideHeight, irr::core::vector3df ownShipPosition,
     }
 }
 
-irr::u32 LandObjects::getNumber() const
+unsigned int LandObjects::getNumber() const
 {
     return landObjects.size();
 }

@@ -214,7 +214,7 @@ namespace scene
 		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f) IRR_OVERRIDE;
 
 		//! Force node to use a fixed LOD level at the borders of the terrain.
-		virtual void setFixedBorderLOD(irr::s32 borderLOD)  IRR_OVERRIDE
+		virtual void setFixedBorderLOD(signed int borderLOD)  IRR_OVERRIDE
 		{
 			FixedBorderLOD = borderLOD;
 		}

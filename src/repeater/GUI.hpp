@@ -38,7 +38,7 @@ public:
         GUI_ID_REPEATER_CHOICE
     };
 
-    void updateGuiData(float time, float ownShipHeading, float rudderAngle, float wheelAngle, irr::s32 portEngineRPM, irr::s32 stbdEngineRPM);
+    void updateGuiData(float time, float ownShipHeading, float rudderAngle, float wheelAngle, signed int portEngineRPM, signed int stbdEngineRPM);
     void setMode(bool headingMode);
 
 private:

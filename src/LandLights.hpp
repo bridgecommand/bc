@@ -33,8 +33,8 @@ class LandLights
         LandLights();
         virtual ~LandLights();
         void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain& terrain);
-        void update(float deltaTime, float scenarioTime, irr::u32 lightLevel);
-        irr::u32 getNumber() const;
+        void update(float deltaTime, float scenarioTime, unsigned int lightLevel);
+        unsigned int getNumber() const;
         void moveNode(float deltaX, float deltaY, float deltaZ);
     private:
         std::vector<NavLight*> landLights;

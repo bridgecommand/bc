@@ -26,7 +26,7 @@ class RadarScreen
         virtual ~RadarScreen();
 
         void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, float size, float tilt);
-        void setRadarDisplayRadius(irr::u32 radiusPx);
+        void setRadarDisplayRadius(unsigned int radiusPx);
         void update(irr::video::IImage* radarImage);
         irr::scene::ISceneNode* getSceneNode() const;
 
@@ -36,7 +36,7 @@ class RadarScreen
         irr::scene::IMeshSceneNode* radarScreen;
         irr::scene::ISceneNode* parent;
         irr::core::vector3df offset;
-        irr::u32 radarRadiusPx;
+        unsigned int radarRadiusPx;
 		float tilt;
 };
 

@@ -32,7 +32,7 @@ namespace scene
 {
 
 //! constructor
-MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, ISceneNode* ownShip, irr::s32 id, irr::u32 disableShaders, bool withReflection, irr::u32 segments,
+MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, ISceneNode* ownShip, signed int id, unsigned int disableShaders, bool withReflection, unsigned int segments,
 		const irr::core::vector3df& position, const irr::core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
 	: IMeshSceneNode(parent, mgr, id, position, rotation, irr::core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5), disableShaders(disableShaders), withReflection(withReflection), segments(segments)
@@ -55,7 +55,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
 	//cubemapConstants* cns = new cubemapConstants(driverType==irr::video::EDT_OPENGL);
     //So far there are no materials ready to use a cubemap, so we provide our own.
-    irr::s32 shader=0;
+    signed int shader=0;
 
 	if (!disableShaders) {
 		irr::io::path vertexShader;
@@ -97,7 +97,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
 	mesh = mgr->addHillPlaneMesh( "myHill",
                            irr::core::dimension2d<float>(segmentSize,segmentSize),
-                           irr::core::dimension2d<irr::u32>(segments,segments),
+                           irr::core::dimension2d<unsigned int>(segments,segments),
                            0,
                            0.0f,
                            irr::core::dimension2d<float>(0,0),
@@ -113,7 +113,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
     //For testing, make wireframe
     /*
-    for (irr::u32 i=0; i<mesh->getMeshBufferCount(); ++i)
+    for (unsigned int i=0; i<mesh->getMeshBufferCount(); ++i)
     {
         scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
         if (mb)
@@ -130,12 +130,12 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 	if (!disableShaders) {
 		if (withReflection) {
             _camera = mgr->addCameraSceneNode(0, irr::core::vector3df(0, 0, 0), irr::core::vector3df(0, 0, 0), -1, false);
-            _reflectionMap = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(512, 512)); //TODO: Check hardcoding here
+            _reflectionMap = driver->addRenderTargetTexture(irr::core::dimension2d<unsigned int>(512, 512)); //TODO: Check hardcoding here
 		}
 		
 		irr::video::ITexture* bumpTexture = driver->getTexture("media/waterbump.png");
 
-		for (irr::u32 i = 0; i < mesh->getMeshBufferCount(); ++i)
+		for (unsigned int i = 0; i < mesh->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
 			if (mb)
@@ -150,7 +150,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 		}
 
 
-		for (irr::u32 i = 0; i < flatMesh->getMeshBufferCount(); ++i)
+		for (unsigned int i = 0; i < flatMesh->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
 			if (mb)
@@ -168,7 +168,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
 
 	if (disableShaders) {
-		for (irr::u32 i = 0; i < mesh->getMeshBufferCount(); ++i)
+		for (unsigned int i = 0; i < mesh->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
 			if (mb)
@@ -178,7 +178,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 		}
 
 
-		for (irr::u32 i = 0; i < flatMesh->getMeshBufferCount(); ++i)
+		for (unsigned int i = 0; i < flatMesh->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
 			if (mb)
@@ -240,7 +240,7 @@ void MovingWaterSceneNode::resetParameters(float A, vector2 w, float seaState)
     this->seaState = seaState;
 }
 
-void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* services, irr::s32 userData)
+void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* services, signed int userData)
 {
     //From Mel's cubemap demo
 	if (!disableShaders) {
@@ -332,7 +332,7 @@ void MovingWaterSceneNode::setVerticalScale(float scale)
 }
 */
 
-void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
+void MovingWaterSceneNode::OnAnimate(unsigned int timeMs)
 {
 	//std::cout << "In OnAnimate()" << std::endl;
 	if (mesh && IsVisible)
@@ -348,13 +348,13 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
 		ocean->evaluateWavesFFT(time);
 		vertex_ocean* vertices = ocean->getVertices();
 
-		const irr::u32 meshBufferCount = mesh->getMeshBufferCount();
+		const unsigned int meshBufferCount = mesh->getMeshBufferCount();
 
-		for (irr::u32 b=0; b<meshBufferCount; ++b)
+		for (unsigned int b=0; b<meshBufferCount; ++b)
 		{
-			const irr::u32 vtxCnt = mesh->getMeshBuffer(b)->getVertexCount();
+			const unsigned int vtxCnt = mesh->getMeshBuffer(b)->getVertexCount();
 
-			for (irr::u32 i=0; i<vtxCnt; ++i) {
+			for (unsigned int i=0; i<vtxCnt; ++i) {
 				mesh->getMeshBuffer(b)->getPosition(i).X = -1*vertices[i].x; //Swap sign to maintain correct rotation order of vertices: TODO: Look at basic definition of X and Z coordinate system between water and FFTWave
 				mesh->getMeshBuffer(b)->getPosition(i).Y = vertices[i].y;
 				mesh->getMeshBuffer(b)->getPosition(i).Z = vertices[i].z;
@@ -381,7 +381,7 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
             //fixes glitches with incomplete refraction
             const float CLIP_PLANE_OFFSET_Y = 0.0f;
 
-            irr::core::rect<irr::s32> currentViewPort = driver->getViewPort(); //Get the previous viewPort
+            irr::core::rect<signed int> currentViewPort = driver->getViewPort(); //Get the previous viewPort
 
             setVisible(false); //hide the water
 
@@ -443,7 +443,7 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
             }
 
             //Reset :: Fixme: Doesn't seem to be working on old PC
-            driver->setViewPort(irr::core::rect<irr::s32>(0,0,10,10));//Set to a dummy value first to force the next call to make the change
+            driver->setViewPort(irr::core::rect<signed int>(0,0,10,10));//Set to a dummy value first to force the next call to make the change
             driver->setViewPort(currentViewPort);
             currentCamera->setAspectRatio(currentAspect);
 		}
@@ -595,7 +595,7 @@ void MovingWaterSceneNode::render()
 	//driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 	//Draw main water
-	for (irr::u32 i=0; i<mesh->getMeshBufferCount(); ++i)
+	for (unsigned int i=0; i<mesh->getMeshBufferCount(); ++i)
     {
         scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
         if (mb)
@@ -625,7 +625,7 @@ void MovingWaterSceneNode::render()
     }
 
     //Draw flat sea beyond the animated sea
-	for (irr::u32 i=0; i<flatMesh->getMeshBufferCount(); ++i)
+	for (unsigned int i=0; i<flatMesh->getMeshBufferCount(); ++i)
     {
         scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
         if (mb)
@@ -663,7 +663,7 @@ void MovingWaterSceneNode::setMesh(IMesh* mesh, bool copyMeshMaterials)
     // Don't do anything here, the mesh is created manually
 }
 
-IShadowVolumeSceneNode* MovingWaterSceneNode::addShadowVolumeSceneNode(const IMesh* shadowMesh, irr::s32 id, bool zfailmethod, float infinity)
+IShadowVolumeSceneNode* MovingWaterSceneNode::addShadowVolumeSceneNode(const IMesh* shadowMesh, signed int id, bool zfailmethod, float infinity)
 {
     //std::cerr << "In addShadowVolumeSceneNode()" << std::endl;
     return 0;
@@ -681,20 +681,20 @@ bool MovingWaterSceneNode::isReadOnlyMaterials() const
     return true; //Fixme: Check!
 }
 
-void MovingWaterSceneNode::setMaterialTexture(irr::u32 textureLayer, video::ITexture * texture)
+void MovingWaterSceneNode::setMaterialTexture(unsigned int textureLayer, video::ITexture * texture)
 {
     if (textureLayer >= video::MATERIAL_MAX_TEXTURES)
         return;
 
-    for (irr::u32 i = 0; i<mesh->getMeshBufferCount(); i++) {
+    for (unsigned int i = 0; i<mesh->getMeshBufferCount(); i++) {
         mesh->getMeshBuffer(i)->getMaterial().setTexture(textureLayer, texture);
     }
 
 	//also set for far mesh
-	for (irr::u32 i = 0; i<flatMesh->getMeshBufferCount(); i++) {
+	for (unsigned int i = 0; i<flatMesh->getMeshBufferCount(); i++) {
 		flatMesh->getMeshBuffer(i)->getMaterial().setTexture(textureLayer, texture);
 	}
-    //for (irr::u32 i=0; i<getMaterialCount(); ++i)
+    //for (unsigned int i=0; i<getMaterialCount(); ++i)
     //    getMaterial(i).setTexture(textureLayer, texture);
 }
 

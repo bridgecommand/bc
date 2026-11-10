@@ -129,12 +129,12 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, float shipMass, int nodeType,
 
         //Set lighting to use diffuse and ambient, so lighting of untextured models works
         if(lineVisualisation1->getMaterialCount()>0) {
-            for(irr::u32 mat=0;mat<lineVisualisation1->getMaterialCount();mat++) {
+            for(unsigned int mat=0;mat<lineVisualisation1->getMaterialCount();mat++) {
                 lineVisualisation1->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
             }
         }
         if(lineVisualisation2->getMaterialCount()>0) {
-            for(irr::u32 mat=0;mat<lineVisualisation2->getMaterialCount();mat++) {
+            for(unsigned int mat=0;mat<lineVisualisation2->getMaterialCount();mat++) {
                 lineVisualisation2->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
             }
         }

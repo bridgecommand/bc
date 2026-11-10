@@ -36,7 +36,7 @@ struct RadarData;
 class OtherShip : public Ship
 {
     public:
-        OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, bool SART, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
+        OtherShip (const std::string& name, const std::string& internalName, const unsigned int& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, bool SART, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         ~OtherShip();
 
         float getHeight() const;
@@ -49,7 +49,7 @@ class OtherShip : public Ship
         void resetLegs(float course, float speedKts, float distanceNm, float scenarioTime);
         void offsetLegTimes(float deltaTime);
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
-        void update(float deltaTime, float scenarioTime, float tideHeight, irr::u32 lightLevel);
+        void update(float deltaTime, float scenarioTime, float tideHeight, unsigned int lightLevel);
         void enableTriangleSelector(bool selectorEnabled);
         void setRateOfTurn(float rateOfTurn); // This could be moved to Ship.hpp
         void setSARTtimeStamp(uint64_t timeStamp);

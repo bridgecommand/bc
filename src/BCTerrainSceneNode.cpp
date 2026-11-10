@@ -528,8 +528,8 @@ namespace scene
 		//Find if the input vector is square and 2^n+1 in size, if not, find the next biggest size to fit
 		u32 inputWidth = heightMapData.at(0).size();
 		u32 inputHeight = heightMapData.size();
-		s32 scaledWidth = (irr::s32)inputWidth-1;
-        s32 scaledHeight = (irr::s32)inputHeight-1;
+		s32 scaledWidth = (signed int)inputWidth-1;
+        s32 scaledHeight = (signed int)inputHeight-1;
         scaledWidth = pow(2.0,ceil(log2(scaledWidth))) + 1;
         scaledHeight = pow(2.0,ceil(log2(scaledHeight))) + 1;
         //find largest to make square

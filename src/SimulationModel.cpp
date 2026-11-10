@@ -70,9 +70,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         worldName = scenarioData.worldName;
         float startTime = scenarioData.startTime;
-        irr::u32 startDay=scenarioData.startDay;
-        irr::u32 startMonth=scenarioData.startMonth;
-        irr::u32 startYear=scenarioData.startYear;
+        unsigned int startDay=scenarioData.startDay;
+        unsigned int startMonth=scenarioData.startMonth;
+        unsigned int startYear=scenarioData.startYear;
 
         //load the sun times
         float sunRise = scenarioData.sunRise;
@@ -227,17 +227,17 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //make radar image - one for the background render, and one with any 2d drawing on top
         //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
-        irr::u32 radarTextureSize = driver->getScreenSize().Height*0.4; // Optimised for the small radar screen (Where 0.6*screen height is used for the 3d view). We should have a higher resolution for full radar view
-        irr::u32 largeRadarTextureSize = driver->getScreenSize().Height; // Optimised for the large radar screen
+        unsigned int radarTextureSize = driver->getScreenSize().Height*0.4; // Optimised for the small radar screen (Where 0.6*screen height is used for the 3d view). We should have a higher resolution for full radar view
+        unsigned int largeRadarTextureSize = driver->getScreenSize().Height; // Optimised for the large radar screen
         //Find next power of 2 size
         radarTextureSize = std::pow(2,std::ceil(std::log2(radarTextureSize)));
         largeRadarTextureSize = std::pow(2,std::ceil(std::log2(largeRadarTextureSize)));
 
         //In simulationModel, keep track of the used size, and pass this to gui etc.
-        radarImage = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
-        radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
-        radarImageLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
-        radarImageOverlaidLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
+        radarImage = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<unsigned int>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<unsigned int>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImageLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<unsigned int>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
+        radarImageOverlaidLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<unsigned int>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
         //Images will be filled with background colour in RadarCalculation
 
         //make radar camera
@@ -379,11 +379,11 @@ SimulationModel::~SimulationModel()
         return scenarioTime;
     }
 
-    irr::u32 SimulationModel::getNumberOfOtherShips() const {
+    unsigned int SimulationModel::getNumberOfOtherShips() const {
         return otherShips.getNumber();
     }
 
-    irr::u32 SimulationModel::getNumberOfBuoys() const {
+    unsigned int SimulationModel::getNumberOfBuoys() const {
         return buoys.getNumber();
     }
 
@@ -415,7 +415,7 @@ SimulationModel::~SimulationModel()
         return otherShips.getSpeed(number);
     }
 
-    irr::u32 SimulationModel::getOtherShipMMSI(int number) const{
+    unsigned int SimulationModel::getOtherShipMMSI(int number) const{
         return otherShips.getMMSI(number);
     }
 
@@ -429,7 +429,7 @@ SimulationModel::~SimulationModel()
         otherShips.setSARTOn(number, sartState);
     }
 
-    void SimulationModel::setOtherShipMMSI(int number, irr::u32 mmsi) {
+    void SimulationModel::setOtherShipMMSI(int number, unsigned int mmsi) {
         otherShips.setMMSI(number,mmsi);
     }
 
@@ -1127,7 +1127,7 @@ SimulationModel::~SimulationModel()
         camera.setVerticalPanSpeed(verticalPanSpeed);
     }
 
-    void SimulationModel::changeLookPx(irr::s32 deltaX, irr::s32 deltaY)
+    void SimulationModel::changeLookPx(signed int deltaX, signed int deltaY)
     {
         float proportionalX = deltaX/(float)driver->getScreenSize().Width;
         float proportionalY = deltaY/(float)driver->getScreenSize().Width;
@@ -1180,13 +1180,13 @@ SimulationModel::~SimulationModel()
         ownShip.setViewVisibility(camera.getView());
     }
 
-    void SimulationModel::setView(irr::u32 view)
+    void SimulationModel::setView(unsigned int view)
     {
         camera.setView(view);
         ownShip.setViewVisibility(camera.getView());
     }
 
-    irr::u32 SimulationModel::getCameraView() const
+    unsigned int SimulationModel::getCameraView() const
     {
         return camera.getView();
     }
@@ -1290,17 +1290,17 @@ SimulationModel::~SimulationModel()
         radarCalculation.decreaseRainClutter(value);
     }
     
-    void SimulationModel::setPIData(irr::s32 PIid, float PIbearing, float PIrange)
+    void SimulationModel::setPIData(signed int PIid, float PIbearing, float PIrange)
     {
         radarCalculation.setPIData(PIid, PIbearing, PIrange);
     }
 
-    float SimulationModel::getPIbearing(irr::s32 PIid) const
+    float SimulationModel::getPIbearing(signed int PIid) const
     {
         return radarCalculation.getPIbearing(PIid);
     }
 
-    float SimulationModel::getPIrange(irr::s32 PIid) const
+    float SimulationModel::getPIrange(signed int PIid) const
     {
         return radarCalculation.getPIrange(PIid);
     }
@@ -1345,7 +1345,7 @@ SimulationModel::~SimulationModel()
         radarCalculation.setArpaMode(mode);
     }
 
-    void SimulationModel::setArpaListSelection(irr::s32 selection)
+    void SimulationModel::setArpaListSelection(signed int selection)
     {
         radarCalculation.setArpaListSelection(selection);
     }
@@ -1365,7 +1365,7 @@ SimulationModel::~SimulationModel()
         radarCalculation.setRadarARPAVectors(vectorMinutes);
     }
 
-    void SimulationModel::setRadarDisplayRadius(irr::u32 radiusPx)
+    void SimulationModel::setRadarDisplayRadius(unsigned int radiusPx)
     {
         radarCalculation.setRadarDisplayRadius(radiusPx);
         radarScreen.setRadarDisplayRadius(radiusPx);
@@ -1391,12 +1391,12 @@ SimulationModel::~SimulationModel()
         radarCalculation.clearTargetFromCursor();
     }
 
-    irr::u32 SimulationModel::getARPATracksSize() const
+    unsigned int SimulationModel::getARPATracksSize() const
     {
         return radarCalculation.getARPATracksSize();
     }
 
-    ARPAContact SimulationModel::getARPAContactFromTrackIndex(irr::u32 index) const
+    ARPAContact SimulationModel::getARPAContactFromTrackIndex(unsigned int index) const
     {
         return radarCalculation.getARPAContactFromTrackIndex(index);
     }
@@ -1458,7 +1458,7 @@ SimulationModel::~SimulationModel()
         camera.updateViewport(aspect);
     }
 
-    irr::u32 SimulationModel::getLoopNumber() const
+    unsigned int SimulationModel::getLoopNumber() const
     {
         return loopNumber;
     }
@@ -1720,7 +1720,7 @@ SimulationModel::~SimulationModel()
         return modelParameters.lineDampingFactor;
     }
 
-    irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<float> ray, irr::s32 linesMode) {
+    irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<float> ray, signed int linesMode) {
 
         // Temporarily enable all required triangle selectors
         if (linesMode == 1) {
@@ -1857,7 +1857,7 @@ SimulationModel::~SimulationModel()
 // DEE vvvv debug I think that this is effectively the cycle
 
         //Declare here, so scope added as part of profiling isn't a problem
-        irr::u32 lightLevel;
+        unsigned int lightLevel;
         float elevAngle;
         irr::core::vector2di cursorPositionRadar;
         std::vector<float> CPAs;
@@ -1955,8 +1955,8 @@ SimulationModel::~SimulationModel()
         //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE
         if(ownShip.getPosition().getLength() > 1000) {
             irr::core::vector3df ownShipPos = ownShip.getPosition();
-            irr::s32 deltaX = -1*(irr::s32)ownShipPos.X;
-            irr::s32 deltaZ = -1*(irr::s32)ownShipPos.Z;
+            signed int deltaX = -1*(signed int)ownShipPos.X;
+            signed int deltaZ = -1*(signed int)ownShipPos.Z;
             //Round to nearest 1000 metres - (multiple of water tile width, to avoid jumps here)
             deltaX = 500.0*Utilities::round(deltaX/500.0);
             deltaZ = 500.0*Utilities::round(deltaZ/500.0);
@@ -2032,7 +2032,7 @@ SimulationModel::~SimulationModel()
         }{ IPROF("Get radar ARPA data for GUI");
 
         //get radar ARPA data to show
-        irr::u32 numberOfARPATracks = radarCalculation.getARPATracksSize();
+        unsigned int numberOfARPATracks = radarCalculation.getARPATracksSize();
         guiData->arpaContactStates.clear();
         for(unsigned int i = 0; i<numberOfARPATracks; i++) {
 			guiData->arpaContactStates.push_back(radarCalculation.getARPAContactFromTrackIndex(i).estimate);
@@ -2124,15 +2124,15 @@ SimulationModel::~SimulationModel()
 
         /*
 
-        irr::u32 numberOfOtherShips = otherShips.getNumber();
-        irr::u32 numberOfBuoys = buoys.getNumber();
+        unsigned int numberOfOtherShips = otherShips.getNumber();
+        unsigned int numberOfBuoys = buoys.getNumber();
 
         irr::core::vector3df thisShipPosition = ownShip.getPosition();
         float thisShipLength = ownShip.getLength();
         float thisShipWidth = ownShip.getWidth();
         float thisShipHeading = ownShip.getHeading();
 
-        for (irr::u32 i = 0; i<numberOfOtherShips; i++) {
+        for (unsigned int i = 0; i<numberOfOtherShips; i++) {
             irr::core::vector3df otherPosition = otherShips.getPosition(i);
             float otherShipLength = otherShips.getLength(i);
             float otherShipWidth = otherShips.getWidth(i);
@@ -2156,7 +2156,7 @@ SimulationModel::~SimulationModel()
             }
         }
 
-        for (irr::u32 i = 0; i<numberOfBuoys; i++) { //Collision with buoy
+        for (unsigned int i = 0; i<numberOfBuoys; i++) { //Collision with buoy
             irr::core::vector3df otherPosition = buoys.getPosition(i);
 
             irr::core::vector3df relPosition = otherPosition - thisShipPosition;

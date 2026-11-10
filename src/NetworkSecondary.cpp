@@ -230,12 +230,12 @@ void NetworkSecondary::receiveMessage()
                 //Numbers of objects in record 2 (Others, buoys, MOBs, lines)
                 std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
                 if (numberData.size() == 4) {
-                    irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
+                    unsigned int numberOthers = Utilities::lexical_cast<unsigned int>(numberData.at(0));
 
                     //Update other ship data
                     std::vector<std::string> otherShipsDataString = Utilities::split(receivedData.at(3),'|');
                     if (numberOthers == otherShipsDataString.size()) {
-                        for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
+                        for (unsigned int i=0; i<otherShipsDataString.size(); i++) {
                             std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
                             if (thisShipData.size() == 9) { //9 elements for each ship
                                 //Update data
@@ -262,7 +262,7 @@ void NetworkSecondary::receiveMessage()
                     }
 
                     //Update MOB data
-                    irr::u32 numberMOB = Utilities::lexical_cast<irr::u32>(numberData.at(2));
+                    unsigned int numberMOB = Utilities::lexical_cast<unsigned int>(numberData.at(2));
                     if (numberMOB==1) {
                         //MOB should be visible, find if we have an MOB position record with two items (record 5)
                         //TODO: TEST!
@@ -276,7 +276,7 @@ void NetworkSecondary::receiveMessage()
                         model->setManOverboardVisible(false);
                     }
 
-                    irr::u32 numberLines = Utilities::lexical_cast<irr::u32>(numberData.at(3));
+                    unsigned int numberLines = Utilities::lexical_cast<unsigned int>(numberData.at(3));
                     // Update lines information
                     if (numberLines > 0) {
 
@@ -299,7 +299,7 @@ void NetworkSecondary::receiveMessage()
                         // Additional check, that the number of lines matches the number of data entries
                         if (numberLines == linesDataString.size()) {
 
-                            for (irr::u32 i=0; i<linesDataString.size(); i++) {
+                            for (unsigned int i=0; i<linesDataString.size(); i++) {
                                 std::vector<std::string> thisLineData = Utilities::split(linesDataString.at(i),',');
                                 if (thisLineData.size() == 16) { //16 elements for each line
 

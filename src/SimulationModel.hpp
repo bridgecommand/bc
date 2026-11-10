@@ -60,8 +60,8 @@ public:
         float lookAngle;
         float cameraMinDistance;
         float cameraMaxDistance;
-        irr::u32 disableShaders;
-        irr::u32 waterSegments;
+        unsigned int disableShaders;
+        unsigned int waterSegments;
         irr::core::vector3di numberOfContactPoints;
         float minContactPointSpacing;
         float contactStiffnessFactor;
@@ -70,8 +70,8 @@ public:
         float lineDampingFactor;
         float frictionCoefficient;
         float tanhFrictionFactor;
-        irr::u32 limitTerrainResolution;        
-        irr::u32 terrainLOD;       
+        unsigned int limitTerrainResolution;        
+        unsigned int terrainLOD;       
         bool secondaryControlWheel;
         bool secondaryControlPortEngine;
         bool secondaryControlStbdEngine;
@@ -184,8 +184,8 @@ public:
     float getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
     void     setTimeDelta(float scenarioTime);
 
-    irr::u32 getNumberOfOtherShips() const;
-    irr::u32 getNumberOfBuoys() const;
+    unsigned int getNumberOfOtherShips() const;
+    unsigned int getNumberOfBuoys() const;
     std::string getOtherShipName(int number) const;
     float getOtherShipPosX(int number) const;
     float getOtherShipPosZ(int number) const;
@@ -193,14 +193,14 @@ public:
     float getOtherShipLong(int number) const;
     float getOtherShipHeading(int number) const;
     float getOtherShipSpeed(int number) const; //Speed in m/s
-    irr::u32 getOtherShipMMSI(int number) const;
+    unsigned int getOtherShipMMSI(int number) const;
     bool getOtherShipSARTOn(int number) const;
     void setOtherShipSARTOn(int number, bool sartState);
     void setOtherShipHeading(int number, float hdg);
     void setOtherShipPos(int number, float positionX, float positionZ);
     void setOtherShipRateOfTurn(int number, float rateOfTurn);
     void setOtherShipSpeed(int number, float speed); //Speed in m/s
-    void setOtherShipMMSI(int number, irr::u32 mmsi);
+    void setOtherShipMMSI(int number, unsigned int mmsi);
     std::vector<Leg> getOtherShipLegs(int number) const;
     float getBuoyPosX(int number) const;
     float getBuoyPosZ(int number) const;
@@ -237,7 +237,7 @@ public:
     void lookRight();
     void setPanSpeed(float horizontalPanSpeed);
     void setVerticalPanSpeed(float verticalPanSpeed);
-    void changeLookPx(irr::s32 deltaX, irr::s32 deltaY);
+    void changeLookPx(signed int deltaX, signed int deltaY);
     void lookStepLeft();
     void lookStepRight();
     void moveCameraForwards();
@@ -247,8 +247,8 @@ public:
     void lookPort();
     void lookStbd();
     void changeView();
-    void setView(irr::u32 view);
-    irr::u32 getCameraView() const;
+    void setView(unsigned int view);
+    unsigned int getCameraView() const;
     irr::core::vector3df getCameraBasePosition() const;
     irr::core::matrix4 getCameraBaseRotation() const;
     void setFrozenCamera(bool frozen);
@@ -268,9 +268,9 @@ public:
     void decreaseRadarClutter(float value);
     void increaseRadarRain(float value);
     void decreaseRadarRain(float value);
-    void setPIData(irr::s32 PIid, float PIbearing, float PIrange);
-    float getPIbearing(irr::s32 PIid) const;
-    float getPIrange(irr::s32 PIid) const;
+    void setPIData(signed int PIid, float PIbearing, float PIrange);
+    float getPIbearing(signed int PIid) const;
+    float getPIrange(signed int PIid) const;
     void increaseRadarEBLRange();
     void decreaseRadarEBLRange();
     void increaseRadarEBLBrg();
@@ -285,17 +285,17 @@ public:
     void changeRadarColourChoice();
     int getArpaMode() const;
     void setArpaMode(int mode);
-    void setArpaListSelection(irr::s32 selection);
+    void setArpaListSelection(signed int selection);
     void setRadarARPARel();
     void setRadarARPATrue();
     void setRadarARPAVectors(float vectorMinutes);
-    void setRadarDisplayRadius(irr::u32 radiusPx);
+    void setRadarDisplayRadius(unsigned int radiusPx);
     void addManualPoint(bool newContact);
     void clearManualPoints();
     void trackTargetFromCursor();
     void clearTargetFromCursor();
-    irr::u32 getARPATracksSize() const;
-    ARPAContact getARPAContactFromTrackIndex(irr::u32 index) const;
+    unsigned int getARPATracksSize() const;
+    ARPAContact getARPAContactFromTrackIndex(unsigned int index) const;
     float getBrilliance() const;
     void setBrilliance(float brilliance);
     void setMainCameraActive();
@@ -306,7 +306,7 @@ public:
     void setZoom(bool zoomOn, float zoomLevel);
     float getZoom() const;
     void setViewAngle(float viewAngle);
-    irr::u32 getLoopNumber() const;
+    unsigned int getLoopNumber() const;
     std::string getSerialisedScenario() const;
     std::string getScenarioName() const;
     std::string getWorldName() const;
@@ -356,7 +356,7 @@ public:
 	void startHorn();
 	void endHorn();
 
-    irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<float> ray, irr::s32 linesMode);
+    irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<float> ray, signed int linesMode);
     
     irr::scene::ISceneNode* getOwnShipSceneNode();
     irr::scene::ISceneNode* getOtherShipSceneNode(int number);
@@ -403,7 +403,7 @@ private:
     float streamOverrideDirection; //0-360
     float streamOverrideSpeed; //Nm
     bool streamOverride;
-    irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
+    unsigned int loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
     float currentZoom; // Zoom currently in use
     float zoomLevel; // Zoom level that should be used if binos are on
     Terrain terrain;
@@ -433,8 +433,8 @@ private:
     ManOverboard manOverboard;
 
     //Simulation time handling
-    irr::u32 currentTime; //Computer clock time
-    irr::u32 previousTime; //Computer clock time
+    unsigned int currentTime; //Computer clock time
+    unsigned int previousTime; //Computer clock time
     float deltaTime;
     float scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
     uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)

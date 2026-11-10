@@ -73,12 +73,12 @@ public:
         GUI_ID_TIMEBACKWARD_BUTTON
     };
 
-    void updateGuiData(float time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, float metresPerPx, float ownShipPosX, float ownShipPosZ, float ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, float mobPosX, float mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, float terrainLong, float terrainLongExtent, float terrainXWidth, float terrainLat, float terrainLatExtent, float terrainZWidth, float weather, float visibility, float rain, float windDirection, float windSpeed, float streamDirection, float streamSpeed, bool streamOverride);
+    void updateGuiData(float time, signed int mapOffsetX, signed int mapOffsetZ, float metresPerPx, float ownShipPosX, float ownShipPosZ, float ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, float mobPosX, float mobPosZ, irr::video::ITexture* displayMapTexture, signed int selectedShip, signed int selectedLeg, float terrainLong, float terrainLongExtent, float terrainXWidth, float terrainLat, float terrainLatExtent, float terrainZWidth, float weather, float visibility, float rain, float windDirection, float windSpeed, float streamDirection, float streamSpeed, bool streamOverride);
     void updateEditBoxes(); //Trigger an update of the edit boxes (carried out in next updateGuiData)
     float getEditBoxCourse() const;
     float getEditBoxSpeed() const;
     float getEditBoxDistance() const;
-    irr::u32 getEditBoxMMSI() const;
+    unsigned int getEditBoxMMSI() const;
     int getSelectedShip() const;
     int getSelectedLeg() const;
     irr::core::vector2df getScreenCentrePosition() const;
@@ -138,8 +138,8 @@ private:
 
     bool editBoxesNeedUpdating;
 
-    void drawInformationOnMap(const float& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const float& metresPerPx, const float& ownShipPosX, const float& ownShipPosZ, const float& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, const irr::s32& selectedShip, const irr::s32& selectedLeg, const bool& mobVisible, const float& mobPosX, const float& mobPosZ);
-    void updateDropDowns(const std::vector<OtherShipDisplayData>& otherShips, irr::s32 selectedShip, float time);
+    void drawInformationOnMap(const float& time, const signed int& mapOffsetX, const signed int& mapOffsetZ, const float& metresPerPx, const float& ownShipPosX, const float& ownShipPosZ, const float& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, const signed int& selectedShip, const signed int& selectedLeg, const bool& mobVisible, const float& mobPosX, const float& mobPosZ);
+    void updateDropDowns(const std::vector<OtherShipDisplayData>& otherShips, signed int selectedShip, float time);
     bool manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::EGUI_EVENT_TYPE eType);
     std::wstring f32To3dp(float value);
     std::wstring f32To1dp(float value);

@@ -27,10 +27,10 @@ class Light
         void load(irr::scene::ISceneManager* smgr, float sunRise, float sunSet, irr::scene::ISceneNode* parent);
         void update(float scenarioTime);
         irr::video::SColor getLightSColor() const;
-        irr::u32 getLightLevel() const;
+        unsigned int getLightLevel() const;
 
     private:
-        irr::u32 lightLevel;
+        unsigned int lightLevel;
         irr::video::SColor ambientColor;
         irr::scene::ISceneManager* smgr;
         float sunRise;

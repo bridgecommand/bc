@@ -46,7 +46,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, float scenarioS
     //Store reference to model
     this->model = model;
 
-    for(irr::u32 i=0;i<otherShipsData.size();i++)
+    for(unsigned int i=0;i<otherShipsData.size();i++)
     {
         //Get ship type and construct filename
         std::string otherShipName = otherShipsData.at(i).shipName;
@@ -55,7 +55,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, float scenarioS
         float shipZ = model->latToZ(otherShipsData.at(i).initialLat);
 
         //Set MMSI
-        irr::u32 mmsi = otherShipsData.at(i).mmsi;
+        unsigned int mmsi = otherShipsData.at(i).mmsi;
 
         //Set if it's drifting with wind/stream
         bool drifting = otherShipsData.at(i).drifting;
@@ -67,7 +67,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, float scenarioS
         std::vector<Leg> legs;
         float legStartTime = scenarioStartTime;
         if (mode==OperatingMode::Normal) { //Only load leg information in normal mode
-            for(irr::u32 j=0; j<otherShipsData.at(i).legs.size(); j++){
+            for(unsigned int j=0; j<otherShipsData.at(i).legs.size(); j++){
                 //go through each leg (if any), and load
                 Leg currentLeg;
                 currentLeg.bearing = otherShipsData.at(i).legs.at(j).bearing;
@@ -100,7 +100,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, float scenarioS
 
 }
 
-void OtherShips::update(float deltaTime, float scenarioTime, float tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength)
+void OtherShips::update(float deltaTime, float scenarioTime, float tideHeight, unsigned int lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength)
 {
     for(std::vector<OtherShip*>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
 
@@ -147,7 +147,7 @@ irr::scene::ISceneNode* OtherShips::getSceneNode(int number)
     }
 }
 
-RadarData OtherShips::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
+RadarData OtherShips::getRadarData(unsigned int number, irr::core::vector3df scannerPosition) const
 //Get data for OtherShip (number) relative to scannerPosition
 {
     RadarData radarData;
@@ -158,7 +158,7 @@ RadarData OtherShips::getRadarData(irr::u32 number, irr::core::vector3df scanner
     return radarData;
 }
 
-irr::u32 OtherShips::getNumber() const
+unsigned int OtherShips::getNumber() const
 {
     return otherShips.size();
 }
@@ -241,7 +241,7 @@ void OtherShips::setSpeed(int number, float speed)
     }
 }
 
-irr::u32 OtherShips::getMMSI(int number) const
+unsigned int OtherShips::getMMSI(int number) const
 {
     if (number < (int)otherShips.size() && number >= 0) {
         return otherShips.at(number)->getMMSI();
@@ -250,7 +250,7 @@ irr::u32 OtherShips::getMMSI(int number) const
     }
 }
 
-void OtherShips::setMMSI(int number, irr::u32 mmsi)
+void OtherShips::setMMSI(int number, unsigned int mmsi)
 {
     if (number < (int)otherShips.size() && number >= 0) {
         otherShips.at(number)->setMMSI(mmsi);

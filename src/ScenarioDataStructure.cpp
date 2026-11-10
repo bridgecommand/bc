@@ -202,9 +202,9 @@ void ScenarioData::deserialise(std::string data)
             scenarioName = splitData.at(1);
             worldName = splitData.at(2);
             startTime = Utilities::lexical_cast<float>(splitData.at(3));
-            startDay = Utilities::lexical_cast<irr::u32>(splitData.at(4));
-            startMonth = Utilities::lexical_cast<irr::u32>(splitData.at(5));
-            startYear = Utilities::lexical_cast<irr::u32>(splitData.at(6));
+            startDay = Utilities::lexical_cast<unsigned int>(splitData.at(4));
+            startMonth = Utilities::lexical_cast<unsigned int>(splitData.at(5));
+            startYear = Utilities::lexical_cast<unsigned int>(splitData.at(6));
             sunRise = Utilities::lexical_cast<float>(splitData.at(7));
             sunSet = Utilities::lexical_cast<float>(splitData.at(8));
             weather = Utilities::lexical_cast<float>(splitData.at(9));
@@ -229,9 +229,9 @@ void ScenarioData::deserialise(std::string data)
             scenarioName = splitData.at(1);
             worldName = splitData.at(2);
             startTime = Utilities::lexical_cast<float>(splitData.at(3));
-            startDay = Utilities::lexical_cast<irr::u32>(splitData.at(4));
-            startMonth = Utilities::lexical_cast<irr::u32>(splitData.at(5));
-            startYear = Utilities::lexical_cast<irr::u32>(splitData.at(6));
+            startDay = Utilities::lexical_cast<unsigned int>(splitData.at(4));
+            startMonth = Utilities::lexical_cast<unsigned int>(splitData.at(5));
+            startYear = Utilities::lexical_cast<unsigned int>(splitData.at(6));
             sunRise = Utilities::lexical_cast<float>(splitData.at(7));
             sunSet = Utilities::lexical_cast<float>(splitData.at(8));
             weather = Utilities::lexical_cast<float>(splitData.at(9));

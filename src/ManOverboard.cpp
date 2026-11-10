@@ -64,7 +64,7 @@ ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISc
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(man->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<man->getMaterialCount();mat++) {
+        for(unsigned int mat=0;mat<man->getMaterialCount();mat++) {
             man->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }

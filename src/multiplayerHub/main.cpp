@@ -149,13 +149,13 @@ int main()
 	    fontScale = 1.0;
     }
     
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    unsigned int graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    unsigned int graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    unsigned int graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     int port = IniFile::iniFileTou32(iniFilename, "udp_send_port");
 
     // How long to pause between updates
-    irr::u32 sleepTime = IniFile::iniFileTou32(iniFilename, "update_time");
+    unsigned int sleepTime = IniFile::iniFileTou32(iniFilename, "update_time");
     // Set defaults, and upper limit of 10s
     if (sleepTime==0) {
         sleepTime = 100;
@@ -165,7 +165,7 @@ int main()
     }
 
     //Sensible defaults if not set
-    irr::core::dimension2d<irr::u32> deskres;
+    irr::core::dimension2d<unsigned int> deskres;
     #ifdef _WIN32
     // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
     deskres.Width=GetSystemMetrics(SM_CXSCREEN);
@@ -195,7 +195,7 @@ int main()
     //create device
     irr::SIrrlichtCreationParameters deviceParameters;
     deviceParameters.DriverType = irr::video::EDT_OPENGL;
-    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight);
+    deviceParameters.WindowSize = irr::core::dimension2d<unsigned int>(graphicsWidth,graphicsHeight);
     deviceParameters.Bits = graphicsDepth;
     irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
     device->setWindowCaption(L"Multiplayer Hub"); //Fixme - odd conversion from char* to wchar*!
@@ -275,7 +275,7 @@ int main()
     //Load overall scenario information
     ScenarioData masterScenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName,scenarioName);
 
-    irr::u32 numberOfOtherShips; // This is the number of 'other' ships in each simulation. The total number of controllable ships is numberOfOtherShips+1
+    unsigned int numberOfOtherShips; // This is the number of 'other' ships in each simulation. The total number of controllable ships is numberOfOtherShips+1
     if (masterScenarioData.otherShipsData.size() > 0) {
         numberOfOtherShips = masterScenarioData.otherShipsData.size()-1;
     } else {
@@ -294,25 +294,25 @@ int main()
     std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
     std::chrono::time_point<std::chrono::system_clock> previousTime = currentTime;
 
-    //irr::u32 currentTime = millisecs(); //Computer clock time (ms)
-    //irr::u32 previousTime = currentTime; //Computer clock time (ms)
+    //unsigned int currentTime = millisecs(); //Computer clock time (ms)
+    //unsigned int previousTime = currentTime; //Computer clock time (ms)
     float accelerator = 1.0;
 
     //Add some simple information to the GUI, so the user knows it's running
     //Add text, which will list connected peers, and current time.
-    irr::u32 su = driver->getScreenSize().Width;
-    irr::u32 sh = driver->getScreenSize().Height;
-    irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.74*sh),true);
+    unsigned int su = driver->getScreenSize().Width;
+    unsigned int sh = driver->getScreenSize().Height;
+    irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<signed int>(0.01*su,0.01*sh,0.99*su,0.74*sh),true);
 
     // Add run, pause and time shift buttons
-    irr::s32 runButtonID = 101;
-    irr::s32 pauseButtonID = 102;
-    irr::s32 timeForwardButtonID = 103;
-    irr::s32 timeBackwardButtonID = 104;
-    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.76*sh,0.49*su,0.87*sh), 0, runButtonID, language.translate("run").c_str());
-    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.51*su,0.76*sh,0.99*su,0.87*sh), 0, pauseButtonID, language.translate("pause").c_str());
-    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01 * su, 0.88 * sh, 0.49 * su, 0.99 * sh), 0, timeForwardButtonID, language.translate("shiftTimeForward").c_str());
-    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.51 * su, 0.88 * sh, 0.99 * su, 0.99 * sh), 0, timeBackwardButtonID, language.translate("shiftTimeBackward").c_str());
+    signed int runButtonID = 101;
+    signed int pauseButtonID = 102;
+    signed int timeForwardButtonID = 103;
+    signed int timeBackwardButtonID = 104;
+    device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.01*su,0.76*sh,0.49*su,0.87*sh), 0, runButtonID, language.translate("run").c_str());
+    device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.51*su,0.76*sh,0.99*su,0.87*sh), 0, pauseButtonID, language.translate("pause").c_str());
+    device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.01 * su, 0.88 * sh, 0.49 * su, 0.99 * sh), 0, timeForwardButtonID, language.translate("shiftTimeForward").c_str());
+    device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.51 * su, 0.88 * sh, 0.99 * su, 0.99 * sh), 0, timeBackwardButtonID, language.translate("shiftTimeBackward").c_str());
 
     // Setup event receiver
     EventReceiver eventReceiver(pauseButtonID, runButtonID, timeForwardButtonID, timeBackwardButtonID, accelerator);

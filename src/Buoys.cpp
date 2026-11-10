@@ -51,9 +51,9 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
     scenarioLightFilename.append("/light.ini");
 
     //Find number of buoys
-    irr::u32 numberOfBuoys;
+    unsigned int numberOfBuoys;
     numberOfBuoys = IniFile::iniFileTou32(scenarioBuoyFilename,"Number");
-    for(irr::u32 currentBuoy=1;currentBuoy<=numberOfBuoys;currentBuoy++) {
+    for(unsigned int currentBuoy=1;currentBuoy<=numberOfBuoys;currentBuoy++) {
 
         //Get buoy type and construct filename
         std::string buoyName = IniFile::iniFileToString(scenarioBuoyFilename,IniFile::enumerate1("Type",currentBuoy));
@@ -85,19 +85,19 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //Load buoy light information from light.ini file if available
 
         //Find number of lights
-        irr::u32 numberOfLights;
+        unsigned int numberOfLights;
         numberOfLights = IniFile::iniFileTou32(scenarioLightFilename,"Number");
         //Run through lights, and check if any are associated with this buoy
-        for (irr::u32 currentLight=1;currentLight<=numberOfLights;currentLight++) {
+        for (unsigned int currentLight=1;currentLight<=numberOfLights;currentLight++) {
             if (IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Buoy",currentLight)) ==currentBuoy ) {
                 //Light on this buoy, add a light to the buoysLights vector in this location if required (FIXME: Think about response to waves?)
                 float lightHeight = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Height",currentLight));
-                irr::u32 lightR = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Red",currentLight));
-                irr::u32 lightG = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Green",currentLight));
-                irr::u32 lightB = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Blue",currentLight));
+                unsigned int lightR = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Red",currentLight));
+                unsigned int lightG = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Green",currentLight));
+                unsigned int lightB = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Blue",currentLight));
                 float lightRange = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Range",currentLight));
                 std::string lightSequence = IniFile::iniFileToString(scenarioLightFilename,IniFile::enumerate1("Sequence",currentLight));
-                irr::u32 phaseStart = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("PhaseStart",currentLight));
+                unsigned int phaseStart = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("PhaseStart",currentLight));
                 float lightStart = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("StartAngle",currentLight));
                 float lightEnd = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("EndAngle",currentLight));
                 lightRange = lightRange * M_IN_NM;
@@ -113,7 +113,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
     }
 }
 
-void Buoys::update(float deltaTime, float scenarioTime, float tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength)
+void Buoys::update(float deltaTime, float scenarioTime, float tideHeight, unsigned int lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength)
 {
     for(std::vector<Buoy>::iterator it = buoys.begin(); it != buoys.end(); ++it) {
         float xPos, yPos, zPos;
@@ -163,7 +163,7 @@ void Buoys::enableAllTriangleSelectors()
     }
 }
 
-RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
+RadarData Buoys::getRadarData(unsigned int number, irr::core::vector3df scannerPosition) const
 //Get data for Buoy (number) relative to scannerPosition
 {
     RadarData radarData;
@@ -175,7 +175,7 @@ RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosit
     return radarData;
 }
 
-irr::u32 Buoys::getNumber() const
+unsigned int Buoys::getNumber() const
 {
     return buoys.size();
 }

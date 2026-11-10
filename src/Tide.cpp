@@ -44,7 +44,7 @@ void Tide::load(const std::string& worldName, const ScenarioData& scenarioData) 
     std::string tideFilename = worldName;
     tideFilename.append("/tide.ini");
 
-    irr::u32 numberOfHarmonics = IniFile::iniFileTou32(tideFilename,"Harmonics");
+    unsigned int numberOfHarmonics = IniFile::iniFileTou32(tideFilename,"Harmonics");
 
     //If numberOfHarmonics = 0, we either have no tide file, or just a constant component. In either case, load
     //the constant component. Amplitude will be zero if no tide file
@@ -57,7 +57,7 @@ void Tide::load(const std::string& worldName, const ScenarioData& scenarioData) 
 
     //Load other components
     tidalHarmonic loadingHarmonic;
-    for(irr::u32 i=1;i<=numberOfHarmonics; i++) {
+    for(unsigned int i=1;i<=numberOfHarmonics; i++) {
         loadingHarmonic.amplitude = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Amplitude",i));
         loadingHarmonic.offset = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Offset",i));
         loadingHarmonic.speed = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Speed",i));
@@ -68,11 +68,11 @@ void Tide::load(const std::string& worldName, const ScenarioData& scenarioData) 
     tidalStreamFilename.append("/tidalstream.ini");
     meanRangeSprings = IniFile::iniFileTof32(tidalStreamFilename,"MeanRangeSprings");
     meanRangeNeaps = IniFile::iniFileTof32(tidalStreamFilename,"MeanRangeNeaps");
-    irr::u32 numberOfDiamonds = IniFile::iniFileTou32(tidalStreamFilename,"Number");
+    unsigned int numberOfDiamonds = IniFile::iniFileTou32(tidalStreamFilename,"Number");
 
     //Load other components
     tidalDiamond loadingDiamond;
-    for(irr::u32 i=1;i<=numberOfDiamonds; i++) {
+    for(unsigned int i=1;i<=numberOfDiamonds; i++) {
         loadingDiamond.longitude =  IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate1("Long",i));
         loadingDiamond.latitude =  IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate1("Lat",i));
 

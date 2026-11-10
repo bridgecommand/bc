@@ -27,7 +27,7 @@ class Terrain
     public:
         Terrain();
         virtual ~Terrain();
-        void load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device, irr::u32 terrainResolutionLimit, irr::u32 terrainLOD);
+        void load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device, unsigned int terrainResolutionLimit, unsigned int terrainLOD);
         float longToX(float longitude) const;
         float latToZ(float latitude) const;
         float xToLong(float x) const;
@@ -40,10 +40,10 @@ class Terrain
     private:
         
         std::vector<std::vector<float>> heightMapImageToVector(irr::io::IReadFile* heightMapFile, bool usesRGBEncoding, bool normaliseSize, irr::scene::ISceneManager* smgr);
-        std::vector<std::vector<float>> heightMapBinaryToVector(irr::io::IReadFile* heightMapFile, irr::u32 binaryWidth, irr::u32 binaryHeight, bool floatingPoint);
+        std::vector<std::vector<float>> heightMapBinaryToVector(irr::io::IReadFile* heightMapFile, unsigned int binaryWidth, unsigned int binaryHeight, bool floatingPoint);
         
         std::vector<std::vector<float>> transposeHeightMapVector(std::vector<std::vector<float>> inVector);
-        std::vector<std::vector<float>> limitSize(std::vector<std::vector<float>> inVector, irr::u32 maxSize);
+        std::vector<std::vector<float>> limitSize(std::vector<std::vector<float>> inVector, unsigned int maxSize);
 
         irr::IrrlichtDevice* dev;
 

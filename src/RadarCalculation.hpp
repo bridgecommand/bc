@@ -56,7 +56,7 @@ struct ARPAScan {
 };
 
 struct ARPAEstimatedState {
-    irr::u32 displayID; //User displayed ID
+    unsigned int displayID; //User displayed ID
     bool stationary; // E.g. if detected as static and a small RCS or a buoy.
     float absVectorX; //Estimated X speed (m/s)
     float absVectorZ; //Estimated Z speed (m/s)
@@ -97,7 +97,7 @@ struct ARPAContact {
     float totalZMovementEst;
     ARPA_CONTACT_TYPE contactType;
     void* contact;
-    //irr::u32 displayID;
+    //unsigned int displayID;
     ARPAEstimatedState estimate;
 
     ARPAContact() {
@@ -133,9 +133,9 @@ class RadarCalculation
         float getEBLBrg() const;
         float getCursorRangeNm() const;
         float getCursorBrg() const;
-        void setPIData(irr::s32 PIid, float PIbearing, float PIrange);
-        float getPIbearing(irr::s32 PIid) const;
-        float getPIrange(irr::s32 PIid) const;
+        void setPIData(signed int PIid, float PIbearing, float PIrange);
+        float getPIbearing(signed int PIid) const;
+        float getPIrange(signed int PIid) const;
         void increaseCursorRangeXNm();
         void decreaseCursorRangeXNm();
         void increaseCursorRangeYNm();
@@ -155,14 +155,14 @@ class RadarCalculation
         void setArpaMode(int mode);
         void setRadarARPARel();
         void setRadarARPATrue();
-        void setArpaListSelection(irr::s32 selection);
-        irr::s32 getArpaListSelection() const;
+        void setArpaListSelection(signed int selection);
+        signed int getArpaListSelection() const;
         void setRadarARPAVectors(float vectorMinutes);
-        void setRadarDisplayRadius(irr::u32 radiusPx);
+        void setRadarDisplayRadius(unsigned int radiusPx);
         void changeRadarColourChoice();
-        irr::u32 getARPATracksSize() const;
-        int getARPAContactIDFromTrackIndex(irr::u32 trackIndex) const;
-        ARPAContact getARPAContactFromTrackIndex(irr::u32 trackIndex) const;
+        unsigned int getARPATracksSize() const;
+        int getARPAContactIDFromTrackIndex(unsigned int trackIndex) const;
+        ARPAContact getARPAContactFromTrackIndex(unsigned int trackIndex) const;
         void addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime);
         void clearManualPoints();
         void trackTargetFromCursor();
@@ -182,20 +182,20 @@ class RadarCalculation
         std::vector<std::vector<float> > scanArrayToPlotPrevious;
         std::vector<bool> toReplot;
         std::vector<ARPAContact> arpaContacts;
-        std::vector<irr::u32> arpaTracks;
+        std::vector<unsigned int> arpaTracks;
         bool radarOn;
         int arpaMode; // 0: Off/Manual, 1: MARPA, 2: ARPA
-        irr::s32 arpaListSelection;
+        signed int arpaListSelection;
         float radarGain;
         float radarRainClutterReduction;
         float radarSeaClutterReduction;
         float currentScanAngle;
         float scanAngleStep;
-        irr::u32 currentScanLine; //Note that this MUST be an integer, as the scanline number is used to look up values in radar scan arrays
-        irr::u32 rangeResolution;
-        irr::u32 angularResolution;
+        unsigned int currentScanLine; //Note that this MUST be an integer, as the scanline number is used to look up values in radar scan arrays
+        unsigned int rangeResolution;
+        unsigned int angularResolution;
         float rangeSensitivity; //Used for ARPA contacts - in metres
-        irr::u32 radarRangeIndex;
+        unsigned int radarRangeIndex;
         float radarScannerHeight;
         //parameters for noise behaviour
         float radarNoiseLevel;
@@ -216,7 +216,7 @@ class RadarCalculation
         //Radar config
         bool headUp;
         bool stabilised;
-        irr::u32 radarRadiusPx;
+        unsigned int radarRadiusPx;
         bool radarScreenStale;
         bool trueVectors;
         float vectorLengthMinutes;
@@ -225,7 +225,7 @@ class RadarCalculation
         std::vector<irr::video::SColor> radarBackgroundColours;
         std::vector<irr::video::SColor> radarForegroundColours;
         std::vector<irr::video::SColor> radarSurroundColours;
-        irr::u32 currentRadarColourChoice;
+        unsigned int currentRadarColourChoice;
 
         float brilliance;
 

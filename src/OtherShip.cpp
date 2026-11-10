@@ -29,7 +29,7 @@
 
 //using namespace irr;
 
-OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, bool SART, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+OtherShip::OtherShip (const std::string& name, const std::string& internalName, const unsigned int& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, bool SART, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information
@@ -136,7 +136,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
+        for(unsigned int mat=0;mat<ship->getMaterialCount();mat++) {
             if (ship->getMaterial(mat).AmbientColor.getAlpha() != 255 || 
                 ship->getMaterial(mat).DiffuseColor.getAlpha() != 255) {
                 // Only allow rendering with transparency if required to avoid Z order problems
@@ -147,16 +147,16 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     }
 
     //get light locations:
-    irr::u32 numberOfLights = IniFile::iniFileTou32(iniFilename,"NumberOfLights");
+    unsigned int numberOfLights = IniFile::iniFileTou32(iniFilename,"NumberOfLights");
     if (numberOfLights>0) {
-        for (irr::u32 currentLight=1; currentLight<=numberOfLights; currentLight++) {
+        for (unsigned int currentLight=1; currentLight<=numberOfLights; currentLight++) {
             float lightX = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightX",currentLight));
             float lightY = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightY",currentLight));
             float lightZ = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightZ",currentLight));
 
-            irr::u32 lightR = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRed",currentLight));
-            irr::u32 lightG = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightGreen",currentLight));
-            irr::u32 lightB = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightBlue",currentLight));
+            unsigned int lightR = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRed",currentLight));
+            unsigned int lightG = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightGreen",currentLight));
+            unsigned int lightB = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightBlue",currentLight));
 
             float lightStartAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightStartAngle",currentLight)); //Degrees 0-360
             float lightEndAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightEndAngle",currentLight)); //Degrees 0-720, should be greater than LightStartAngle
@@ -164,7 +164,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
             lightRange = lightRange * M_IN_NM; //Convert to metres
 
             std::string lightSequence = IniFile::iniFileToString(iniFilename, IniFile::enumerate1("Sequence", currentLight));
-            irr::u32 phaseStart = IniFile::iniFileTou32(iniFilename, IniFile::enumerate1("PhaseStart", currentLight));
+            unsigned int phaseStart = IniFile::iniFileTou32(iniFilename, IniFile::enumerate1("PhaseStart", currentLight));
 
             //correct to local scaled coordinates
             /*
@@ -179,9 +179,9 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     }
 
     // Get dayshape locations
-    irr::u32 numberOfDayshapes = IniFile::iniFileTou32(iniFilename,"NumberOfDayShapes");
+    unsigned int numberOfDayshapes = IniFile::iniFileTou32(iniFilename,"NumberOfDayShapes");
     if (numberOfDayshapes>0) {
-        for (irr::u32 currentShape=1; currentShape<=numberOfDayshapes; currentShape++) {
+        for (unsigned int currentShape=1; currentShape<=numberOfDayshapes; currentShape++) {
             float shapeX = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("ShapeX",currentShape));
             float shapeY = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("ShapeY",currentShape));
             float shapeZ = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("ShapeZ",currentShape));
@@ -208,7 +208,7 @@ OtherShip::~OtherShip()
     navLights.clear();
 }
 
-void OtherShip::update(float deltaTime, float scenarioTime, float tideHeight, irr::u32 lightLevel)
+void OtherShip::update(float deltaTime, float scenarioTime, float tideHeight, unsigned int lightLevel)
 {
 
     //move according to leg information

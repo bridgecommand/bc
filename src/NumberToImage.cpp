@@ -22,27 +22,27 @@
 namespace NumberToImage
 {
 
-    const irr::u32 PADDING_PX = 1;
+    const unsigned int PADDING_PX = 1;
     const irr::video::SColor BG_COLOUR = irr::video::SColor(0,0,0,0);
 
-    irr::video::IImage* getImage(irr::u32 number, float brilliance, irr::IrrlichtDevice* dev)
+    irr::video::IImage* getImage(unsigned int number, float brilliance, irr::IrrlichtDevice* dev)
     {
 
         irr::core::stringc numberString = irr::core::stringc(number);
-        const irr::u32 length = numberString.size();
-        //irr::u32 imageWidth = length * CHAR_WIDTH;
-        //irr::u32 imageHeight = CHAR_HEIGHT;
+        const unsigned int length = numberString.size();
+        //unsigned int imageWidth = length * CHAR_WIDTH;
+        //unsigned int imageHeight = CHAR_HEIGHT;
 
         if (length > 0) {
 
 			std::vector<irr::video::IImage*> numberImages;
 			numberImages.resize(length);
             //video::IImage* numberImages[length];
-            irr::u32 overallWidth = 0;
-            irr::u32 maxHeight = 0;
-            //video::IImage* numberImage = dev->getVideoDriver()->createImage(video::ECF_R8G8B8, irr::core::dimension2d<irr::u32>(imageWidth, imageHeight));
+            unsigned int overallWidth = 0;
+            unsigned int maxHeight = 0;
+            //video::IImage* numberImage = dev->getVideoDriver()->createImage(video::ECF_R8G8B8, irr::core::dimension2d<unsigned int>(imageWidth, imageHeight));
 
-            for (irr::u32 character = 0; character<length; character++) {
+            for (unsigned int character = 0; character<length; character++) {
                 //Load character image from file (charName.png)
                 char thisChar = numberString.c_str()[character];
 
@@ -62,18 +62,18 @@ namespace NumberToImage
             }
 
             if (overallWidth>0) {
-            	irr::video::IImage* numberImage = dev->getVideoDriver()->createImage(irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(overallWidth, maxHeight));
+            	irr::video::IImage* numberImage = dev->getVideoDriver()->createImage(irr::video::ECF_A8R8G8B8, irr::core::dimension2d<unsigned int>(overallWidth, maxHeight));
                 if (!numberImage) {
                     return 0;
                 }
 
                 numberImage->fill(BG_COLOUR); //Transparent
                 //paste in the characters
-                irr::u32 nextXStart = 0;
-                for (irr::u32 character = 0; character<length; character++) {
+                unsigned int nextXStart = 0;
+                for (unsigned int character = 0; character<length; character++) {
                     if (numberImages[character]) {
-                        irr::core::rect<irr::s32> sourceRect = irr::core::rect<irr::s32>(0,0,numberImages[character]->getDimension().Width,numberImages[character]->getDimension().Height);
-                        numberImages[character]->copyToWithAlpha(numberImage,irr::core::vector2d<irr::s32>(nextXStart,0),sourceRect,irr::video::SColor(255,255 * brilliance,255 * brilliance,255 * brilliance));
+                        irr::core::rect<signed int> sourceRect = irr::core::rect<signed int>(0,0,numberImages[character]->getDimension().Width,numberImages[character]->getDimension().Height);
+                        numberImages[character]->copyToWithAlpha(numberImage,irr::core::vector2d<signed int>(nextXStart,0),sourceRect,irr::video::SColor(255,255 * brilliance,255 * brilliance,255 * brilliance));
                         nextXStart += numberImages[character]->getDimension().Width + PADDING_PX;
                         numberImages[character]->drop();
                     }

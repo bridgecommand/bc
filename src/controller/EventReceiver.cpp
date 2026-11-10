@@ -38,7 +38,7 @@
 
         if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
+			signed int id = event.GUIEvent.Caller->getID();
 
 
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) {

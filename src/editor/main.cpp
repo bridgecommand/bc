@@ -81,7 +81,7 @@ void getDirectoryList(irr::IrrlichtDevice* device, std::vector<std::string>&dirL
     }
 
     //List here
-    for (irr::u32 i=0;i<fileList->getFileCount();i++) {
+    for (unsigned int i=0;i<fileList->getFileCount();i++) {
         if (fileList->isDirectory(i)) {
             const irr::io::path& fileName = fileList->getFileName(i);
             if (fileName.findFirst('.')!=0) { //Check it doesn't start with '.' (., .., or hidden)
@@ -106,8 +106,8 @@ void findWhatToLoad(irr::IrrlichtDevice* device, ScenarioData* scenarioData, std
 	irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     //Get screen width
-    irr::u32 su = driver->getScreenSize().Width;
-    irr::u32 sh = driver->getScreenSize().Height;
+    unsigned int su = driver->getScreenSize().Width;
+    unsigned int sh = driver->getScreenSize().Height;
 
     //Find list of scenarios, and list of available world models
     std::string scenarioPath = "Scenarios/";
@@ -126,24 +126,24 @@ void findWhatToLoad(irr::IrrlichtDevice* device, ScenarioData* scenarioData, std
     }
 
 
-    const irr::s32 SCENARIO_BOX_ID = 101;
-    const irr::s32 WORLD_BOX_ID = 102;
-    const irr::s32 OK_SCENARIO_BUTTON_ID = 103;
-    const irr::s32 OK_WORLD_BUTTON_ID = 104;
-    const irr::s32 IMPORT_SCENARIO_BUTTON_ID = 105;
-    const irr::s32 EXPORT_SCENARIO_BUTTON_ID = 106;
-    const irr::s32 IMPORT_EXPORT_OK_BUTTON_ID = 107;
+    const signed int SCENARIO_BOX_ID = 101;
+    const signed int WORLD_BOX_ID = 102;
+    const signed int OK_SCENARIO_BUTTON_ID = 103;
+    const signed int OK_WORLD_BUTTON_ID = 104;
+    const signed int IMPORT_SCENARIO_BUTTON_ID = 105;
+    const signed int EXPORT_SCENARIO_BUTTON_ID = 106;
+    const signed int IMPORT_EXPORT_OK_BUTTON_ID = 107;
 
-    irr::gui::IGUIWindow* scnWorldChoiceWindow = device->getGUIEnvironment()->addWindow(irr::core::rect<irr::s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
-    irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(irr::core::rect<irr::s32>(0.06*su,0.200*sh,0.435*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
-    irr::gui::IGUIListBox* worldListBox =    device->getGUIEnvironment()->addListBox(irr::core::rect<irr::s32>(0.545*su,0.200*sh,0.920*su,0.60*sh),scnWorldChoiceWindow,WORLD_BOX_ID); //TODO: Set ID so we can use event receiver
-    irr::gui::IGUICheckBox* multiplayerBox = device->getGUIEnvironment()->addCheckBox(false,irr::core::rect<irr::s32>(0.545*su,0.700*sh,0.920*su,0.730*sh),scnWorldChoiceWindow,-1,language->translate("multiplayer").c_str());
-    irr::gui::IGUIStaticText* scenarioText = device->getGUIEnvironment()->addStaticText(language->translate("selectScenario").c_str(),irr::core::rect<irr::s32>(0.035*su,0.150*sh,0.485*su,0.190*sh),false,true,scnWorldChoiceWindow);
-    irr::gui::IGUIStaticText* worldText = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),irr::core::rect<irr::s32>(0.520*su,0.150*sh,0.970*su,0.190*sh),false,true,scnWorldChoiceWindow);
-    irr::gui::IGUIButton* scenarioOK = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.85*sh,0.485*su,0.90*sh),scnWorldChoiceWindow,OK_SCENARIO_BUTTON_ID,language->translate("editScenario").c_str());
-    irr::gui::IGUIButton* worldOK = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.495*su,0.85*sh,0.970*su,0.90*sh),scnWorldChoiceWindow,OK_WORLD_BUTTON_ID,language->translate("newScenario").c_str());
-    irr::gui::IGUIButton* importScenario = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.91*sh,0.485*su,0.96*sh),scnWorldChoiceWindow,IMPORT_SCENARIO_BUTTON_ID,language->translate("importScenario").c_str());
-    irr::gui::IGUIButton* exportScenario = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.495*su,0.91*sh,0.970*su,0.96*sh),scnWorldChoiceWindow,EXPORT_SCENARIO_BUTTON_ID,language->translate("exportScenario").c_str());
+    irr::gui::IGUIWindow* scnWorldChoiceWindow = device->getGUIEnvironment()->addWindow(irr::core::rect<signed int>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
+    irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(irr::core::rect<signed int>(0.06*su,0.200*sh,0.435*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUIListBox* worldListBox =    device->getGUIEnvironment()->addListBox(irr::core::rect<signed int>(0.545*su,0.200*sh,0.920*su,0.60*sh),scnWorldChoiceWindow,WORLD_BOX_ID); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUICheckBox* multiplayerBox = device->getGUIEnvironment()->addCheckBox(false,irr::core::rect<signed int>(0.545*su,0.700*sh,0.920*su,0.730*sh),scnWorldChoiceWindow,-1,language->translate("multiplayer").c_str());
+    irr::gui::IGUIStaticText* scenarioText = device->getGUIEnvironment()->addStaticText(language->translate("selectScenario").c_str(),irr::core::rect<signed int>(0.035*su,0.150*sh,0.485*su,0.190*sh),false,true,scnWorldChoiceWindow);
+    irr::gui::IGUIStaticText* worldText = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),irr::core::rect<signed int>(0.520*su,0.150*sh,0.970*su,0.190*sh),false,true,scnWorldChoiceWindow);
+    irr::gui::IGUIButton* scenarioOK = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.01*su,0.85*sh,0.485*su,0.90*sh),scnWorldChoiceWindow,OK_SCENARIO_BUTTON_ID,language->translate("editScenario").c_str());
+    irr::gui::IGUIButton* worldOK = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.495*su,0.85*sh,0.970*su,0.90*sh),scnWorldChoiceWindow,OK_WORLD_BUTTON_ID,language->translate("newScenario").c_str());
+    irr::gui::IGUIButton* importScenario = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.01*su,0.91*sh,0.485*su,0.96*sh),scnWorldChoiceWindow,IMPORT_SCENARIO_BUTTON_ID,language->translate("importScenario").c_str());
+    irr::gui::IGUIButton* exportScenario = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.495*su,0.91*sh,0.970*su,0.96*sh),scnWorldChoiceWindow,EXPORT_SCENARIO_BUTTON_ID,language->translate("exportScenario").c_str());
     scnWorldChoiceWindow->getCloseButton()->setVisible(false);
 
     //Add scenarios to list box
@@ -195,7 +195,7 @@ void findWhatToLoad(irr::IrrlichtDevice* device, ScenarioData* scenarioData, std
 
     if (scenarioData->dataPopulated == false) {
         // Normal case
-        irr::s32 selectedScenario = startupReceiver.getScenarioSelected();
+        signed int selectedScenario = startupReceiver.getScenarioSelected();
         if (selectedScenario >= 0 && selectedScenario < scenarioDirList.size()) {
             scenarioName = scenarioDirList.at(selectedScenario); //Get scenario name
 
@@ -209,7 +209,7 @@ void findWhatToLoad(irr::IrrlichtDevice* device, ScenarioData* scenarioData, std
             }
         }
 
-        irr::s32 selectedWorld = startupReceiver.getWorldSelected();
+        signed int selectedWorld = startupReceiver.getWorldSelected();
         if (selectedWorld >= 0 && selectedWorld < worldDirList.size()) {
             worldName = worldDirList.at(selectedWorld);
             multiplayer = multiplayerBox->isChecked();
@@ -240,7 +240,7 @@ void findWhatToLoad(irr::IrrlichtDevice* device, ScenarioData* scenarioData, std
     device->setEventReceiver(0);
 
     //Show patience message
-    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(language->translate("loadingMap").c_str(),irr::core::rect<irr::s32>(0.01*su,0.04*sh,0.95*su,0.95*sh),false,true,scnWorldChoiceWindow);
+    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(language->translate("loadingMap").c_str(),irr::core::rect<signed int>(0.01*su,0.04*sh,0.95*su,0.95*sh),false,true,scnWorldChoiceWindow);
     if (device->run()) {
         driver->beginScene();
         device->getGUIEnvironment()->drawAll();
@@ -335,12 +335,12 @@ int main (int argc, char ** argv)
 	    fontScale = 1.0;
     }
 
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    unsigned int graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    unsigned int graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    unsigned int graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
-    irr::core::dimension2d<irr::u32> deskres;
+    irr::core::dimension2d<unsigned int> deskres;
     #ifdef _WIN32
     // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
     deskres.Width=GetSystemMetrics(SM_CXSCREEN);
@@ -364,12 +364,12 @@ int main (int argc, char ** argv)
         }
     }
 
-	irr::u32 zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
+	unsigned int zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
 	if (zoomLevels == 0) {
 		zoomLevels = 10;
 	}
 
-    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<unsigned int>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
 
@@ -569,7 +569,7 @@ int main (int argc, char ** argv)
 
             //Load other ship information
             int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");
-            for(irr::u32 i=1;i<=numberOfOtherShips;i++) {
+            for(unsigned int i=1;i<=numberOfOtherShips;i++) {
 
                 //Temporary structure to load data
                 OtherShipData thisShip;
@@ -597,7 +597,7 @@ int main (int argc, char ** argv)
                 int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
 
                 float legStartTime = scenarioData.startTime; //Legs start at the start of the scenario
-                for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
+                for(unsigned int currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
                     //go through each leg (if any), and load
                     LegData currentLeg;
                     currentLeg.bearing = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
@@ -702,9 +702,9 @@ int main (int argc, char ** argv)
     std::string scenarioBuoyFilename = worldPath;
     scenarioBuoyFilename.append("/buoy.ini");
     //Find number of buoys
-    irr::u32 numberOfBuoys;
+    unsigned int numberOfBuoys;
     numberOfBuoys = IniFile::iniFileTou32(scenarioBuoyFilename,"Number");
-    for(irr::u32 currentBuoy=1;currentBuoy<=numberOfBuoys;currentBuoy++) {
+    for(unsigned int currentBuoy=1;currentBuoy<=numberOfBuoys;currentBuoy++) {
 
         PositionData thisBuoy;
         //Get buoy position
@@ -716,9 +716,9 @@ int main (int argc, char ** argv)
     std::string scenarioLandObjectFilename = worldPath;
     scenarioLandObjectFilename.append("/landobject.ini");
     //Find number of land objects
-    irr::u32 numberOfLandObjects;
+    unsigned int numberOfLandObjects;
     numberOfLandObjects = IniFile::iniFileTou32(scenarioLandObjectFilename, "Number");
-    for (irr::u32 currentLandObject = 1; currentLandObject <= numberOfLandObjects; currentLandObject++) {
+    for (unsigned int currentLandObject = 1; currentLandObject <= numberOfLandObjects; currentLandObject++) {
 
         PositionData thisLandObject;
         //Get land object position

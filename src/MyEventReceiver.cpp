@@ -147,7 +147,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             rightMouseDown = true;
             // Force focus on right click
             irr::gui::IGUIElement *overElement;
-            overElement = device->getGUIEnvironment()->getRootGUIElement()->getElementFromPoint(irr::core::position2d<irr::s32>(event.MouseInput.X, event.MouseInput.Y));
+            overElement = device->getGUIEnvironment()->getRootGUIElement()->getElementFromPoint(irr::core::position2d<signed int>(event.MouseInput.X, event.MouseInput.Y));
             if (overElement)
             {
                 device->getGUIEnvironment()->setFocus(overElement);
@@ -167,16 +167,16 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 // Ignore click if over a gui element (getElementFromPoint will return root element if not over anything else)
                 irr::gui::IGUIElement* rootGUIElement = device->getGUIEnvironment()->getRootGUIElement();
-                irr::gui::IGUIElement* clickElement = rootGUIElement->getElementFromPoint(irr::core::position2d<irr::s32>(event.MouseInput.X, event.MouseInput.Y));
+                irr::gui::IGUIElement* clickElement = rootGUIElement->getElementFromPoint(irr::core::position2d<signed int>(event.MouseInput.X, event.MouseInput.Y));
                 if (clickElement == rootGUIElement)
                 {
                     // Scale if required because 3d view may be different
-                    irr::s32 scaledMouseY = mouseClickY;
+                    signed int scaledMouseY = mouseClickY;
                     if (gui->getShowInterface())
                     {
                         scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
                     }
-                    irr::core::line3df rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY));
+                    irr::core::line3df rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<signed int>(mouseClickX, scaledMouseY));
                     handleMooringLines(rayForLines);
                 }
             }
@@ -190,8 +190,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             focussedElement = device->getGUIEnvironment()->getFocus();
             if (!focussedElement)
             {
-                irr::s32 deltaX = event.MouseInput.X - mouseClickX;
-                irr::s32 deltaY = event.MouseInput.Y - mouseClickY;
+                signed int deltaX = event.MouseInput.X - mouseClickX;
+                signed int deltaY = event.MouseInput.Y - mouseClickY;
                 model->changeLookPx(deltaX, deltaY);
             }
             // Store for next time
@@ -215,7 +215,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
     if (event.EventType == irr::EET_GUI_EVENT)
     {
-        irr::s32 id = event.GUIEvent.Caller->getID();
+        signed int id = event.GUIEvent.Caller->getID();
 
         if (event.GUIEvent.EventType == irr::gui::EGET_LISTBOX_SELECTED_AGAIN)
         {
@@ -455,7 +455,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }   
             if (id == GUIMain::GUI_ID_MAGNIFICATION_SCROLL_BAR)
             {   
-                irr::s32 rawZoomLevel = ((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+                signed int rawZoomLevel = ((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
                 float zoomLevel = (float)rawZoomLevel / 10.0;
                 if (rawZoomLevel > 10) {
                     gui->zoomOn();
@@ -785,7 +785,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if ((id == GUIMain::GUI_ID_ARPA_ON_BOX || id == GUIMain::GUI_ID_BIG_ARPA_ON_BOX))
             {
                 // ARPA on/off options
-                irr::s32 boxState = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
+                signed int boxState = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
                 model->setArpaMode(boxState);
 
                 // Set the linked checkbox (big/small radar window)
@@ -794,7 +794,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_ARPA_TRUE_REL_BOX || id == GUIMain::GUI_ID_BIG_ARPA_TRUE_REL_BOX)
             {
-                irr::s32 selected = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
+                signed int selected = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
                 if (selected == 0)
                 {
                     model->setRadarARPATrue();
@@ -873,7 +873,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 }
 
                 // Get PI data for the newly selected PI
-                irr::s32 selectedPI = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected(); //(-1 or 0-9)
+                signed int selectedPI = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected(); //(-1 or 0-9)
                 // TODO: Use this to get data from model, and set fields
                 irr::gui::IGUIElement *piBrg = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_BEARING_BOX, true);
                 irr::gui::IGUIElement *piRng = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_RANGE_BOX, true);
@@ -937,7 +937,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     irr::gui::IGUIElement *piRng = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_RANGE_BOX, true);
                     if (piCombo && piBrg && piRng)
                     {
-                        irr::s32 selectedPI = ((irr::gui::IGUIComboBox *)piCombo)->getSelected(); //(0-9)
+                        signed int selectedPI = ((irr::gui::IGUIComboBox *)piCombo)->getSelected(); //(0-9)
 
                         std::wstring brgWString = std::wstring(piBrg->getText());
                         std::string brgString(brgWString.begin(), brgWString.end());
@@ -1651,8 +1651,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             joystickPreviousButtonStates.push_back(0); // All zeros equivalent to no buttons pressed
         }
 
-        irr::u32 thisButtonState = event.JoystickEvent.ButtonStates;
-        irr::u32 previousButtonState = joystickPreviousButtonStates.at(thisJoystick);
+        unsigned int thisButtonState = event.JoystickEvent.ButtonStates;
+        unsigned int previousButtonState = joystickPreviousButtonStates.at(thisJoystick);
 
         // Horn
         if (thisJoystick == joystickSetup.joystickNoHorn)
@@ -2147,7 +2147,7 @@ std::wstring MyEventReceiver::f32To3dp(float value, bool stripZeros)
     return outputWstring;
 }
 
-bool MyEventReceiver::IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) const
+bool MyEventReceiver::IsButtonPressed(unsigned int button, unsigned int buttonBitmap) const
 {
     if (button >= 32)
         return false;
@@ -2195,7 +2195,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 std::vector<std::string> splitName = Utilities::split(nodeName, '_');
                 if (splitName.size() == 2)
                 {
-                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                    nodeID = Utilities::lexical_cast<signed int>(splitName.at(1));
                 }
             }
             else if (nodeName.find("Buoy") == 0)
@@ -2205,7 +2205,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 std::vector<std::string> splitName = Utilities::split(nodeName, '_');
                 if (splitName.size() == 2)
                 {
-                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                    nodeID = Utilities::lexical_cast<signed int>(splitName.at(1));
                 }
             }
             else if (nodeName.find("LandObject") == 0)
@@ -2215,7 +2215,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 std::vector<std::string> splitName = Utilities::split(nodeName, '_');
                 if (splitName.size() == 2)
                 {
-                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                    nodeID = Utilities::lexical_cast<signed int>(splitName.at(1));
                 }
             }
             else if (nodeName.find("Terrain") == 0)
@@ -2225,7 +2225,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 std::vector<std::string> splitName = Utilities::split(nodeName, '_');
                 if (splitName.size() == 2)
                 {
-                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                    nodeID = Utilities::lexical_cast<signed int>(splitName.at(1));
                 }
             }
             // std::cout << "Node name: " << nodeName << " nodeType: " << nodeType << " nodeID: " << nodeID << std::endl;
@@ -2289,12 +2289,12 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
 }
 
 /*
-    irr::s32 MyEventReceiver::GetScrollBarPosSpeed() const
+    signed int MyEventReceiver::GetScrollBarPosSpeed() const
     {
         return scrollBarPosSpeed;
     }
 
-    irr::s32 MyEventReceiver::GetScrollBarPosHeading() const
+    signed int MyEventReceiver::GetScrollBarPosHeading() const
     {
         return scrollBarPosHeading;
     }

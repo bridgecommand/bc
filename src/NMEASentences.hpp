@@ -31,7 +31,7 @@ inline float parseNmeaLat(std::string latitude, char direction)
     // hhmm.mm [N/S] to [+/-]x.xxxxx
     if (latitude.length() != 7 || (direction != 'N' && direction != 'S')) return INVALID_LAT;
 
-    irr::s32 mod = 1;
+    signed int mod = 1;
     if (direction == 'S') mod = -1;
 
     try 
@@ -51,7 +51,7 @@ inline float parseNmeaLong(std::string longitude, char direction)
     // hhhmm.mm [N/S] to [+/-]x.xxxxx
     if (longitude.length() != 8 || (direction != 'W' && direction != 'E')) return INVALID_LONG;
 
-    irr::s32 mod = 1;
+    signed int mod = 1;
     if (direction == 'W') mod = -1;
 
     try 

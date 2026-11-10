@@ -44,10 +44,10 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
     std::string scenarioLightFilename = worldName;
     scenarioLightFilename.append("/light.ini");
 
-    irr::u32 numberOfLights;
+    unsigned int numberOfLights;
     numberOfLights = IniFile::iniFileTou32(scenarioLightFilename,"Number");
     //Run through lights, and check if any are not buoy lights
-    for (irr::u32 currentLight=1;currentLight<=numberOfLights;currentLight++) {
+    for (unsigned int currentLight=1;currentLight<=numberOfLights;currentLight++) {
         if (IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Buoy",currentLight)) == 0 ) {
             //If not a buoy light
             float lightX = model->longToX(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Long",currentLight)));
@@ -64,7 +64,7 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
             float lightB = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Blue",currentLight));
             float lightRange = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Range",currentLight));
             std::string lightSequence = IniFile::iniFileToString(scenarioLightFilename,IniFile::enumerate1("Sequence",currentLight));
-            irr::u32 phaseStart = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("PhaseStart",currentLight));
+            unsigned int phaseStart = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("PhaseStart",currentLight));
             float lightStart = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("StartAngle",currentLight));
             float lightEnd = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("EndAngle",currentLight));
             lightRange = lightRange * M_IN_NM;
@@ -76,14 +76,14 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
 
 }
 
-void LandLights::update(float deltaTime, float scenarioTime, irr::u32 lightLevel)
+void LandLights::update(float deltaTime, float scenarioTime, unsigned int lightLevel)
 {
     for(std::vector<NavLight*>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
         (*it)->update(scenarioTime, lightLevel);
     }
 }
 
-irr::u32 LandLights::getNumber() const
+unsigned int LandLights::getNumber() const
 {
     return landLights.size();
 }

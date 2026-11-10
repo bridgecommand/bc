@@ -36,14 +36,14 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, irr::u32 _zoomLevels);
+    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, unsigned int _zoomLevels);
     ~ControllerModel();
     float longToX(float longitude) const;
     float latToZ(float latitude) const;
     void update(const float& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const float& weather, const float& visibility, const float& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const float& windDirection, const float& windSpeed, const float& streamDirection, const float& streamSpeed, const bool& streamOverride);
     void resetOffset(); //Re-centre the map on the own-ship
-    void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
-    void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
+    void updateSelectedShip(signed int index); //To be called from eventReceiver, where index is from the combo box
+    void updateSelectedLeg(signed int index); //To be called from eventReceiver, where index is from the combo box
     void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.
     void increaseZoom();
     void decreaseZoom();
@@ -55,12 +55,12 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
 
-	irr::u32 zoomLevels;
+	unsigned int zoomLevels;
 
     irr::video::IImage* unscaledMap;
     std::vector<irr::video::IImage*> scaledMap;
 
-    irr::u32 currentZoom;
+    unsigned int currentZoom;
 
     float terrainLong;
     float terrainLat;
@@ -73,15 +73,15 @@ private:
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;
-    irr::core::position2d<irr::s32> mouseLastPosition;
+    irr::core::position2d<signed int> mouseLastPosition;
 
-    irr::s32 mapOffsetX; //Pixel offset of maps, to allow click and drag.
-    irr::s32 mapOffsetZ;
+    signed int mapOffsetX; //Pixel offset of maps, to allow click and drag.
+    signed int mapOffsetZ;
 
     std::vector<AISData> aisShips;
 
-    irr::s32 selectedShip; //Own ship as -1, other ships as 0 upwards
-    irr::s32 selectedLeg; //No leg as -1, legs as 0 upwards
+    signed int selectedShip; //Own ship as -1, other ships as 0 upwards
+    signed int selectedLeg; //No leg as -1, legs as 0 upwards
 
 };
 

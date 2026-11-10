@@ -23,7 +23,7 @@
 #define MAX_PX_IN_MAP 160000000
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, irr::u32 _zoomLevels)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, unsigned int _zoomLevels)
 {
 
     this->gui = gui;
@@ -75,7 +75,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
             irr::io::IFileList* fileList = fileSystem->createFileList();
             if (fileList!=0) {
                 //List here
-                for (irr::u32 i=0;i<fileList->getFileCount();i++) {
+                for (unsigned int i=0;i<fileList->getFileCount();i++) {
                     if (fileList->isDirectory(i)==false) {
                         const irr::io::path& fileName = fileList->getFileName(i);
                         if (irr::core::hasFileExtension(fileName,"hdr")) {
@@ -170,18 +170,18 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
         std::cout << "Zero map width or height. Please check world model." << std::endl;
         exit(EXIT_FAILURE);
     }
-    irr::core::dimension2d<irr::u32> loadedSize = unscaledMap->getDimension();
+    irr::core::dimension2d<unsigned int> loadedSize = unscaledMap->getDimension();
 
     //Calculate scaling needed
-    //irr::u32 widthFromHeight = loadedSize.Height * widthToHeight;
-    //irr::u32 heightFromWidth = loadedSize.Width / widthToHeight;
+    //unsigned int widthFromHeight = loadedSize.Height * widthToHeight;
+    //unsigned int heightFromWidth = loadedSize.Width / widthToHeight;
     //Always scale bigger if needed
     //std::cout << terrainXWidth <<  " " << terrainZWidth << std::endl;
     for (unsigned int i = 0; i<zoomLevels; i++) {
 		float scaling = 0.00625 * pow(2, i);
 
-        irr::u32 requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
-        irr::u32 requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
+        unsigned int requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
+        unsigned int requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
 
         //Avoid zero sized map
         if (requiredWidth < 1) {
@@ -195,7 +195,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
 
 			//Create scaled map with the same image format of the size required
 			std::cout << "About to create empty scaled map " << i << std::endl;
-			scaledMap.at(i) = driver->createImage(unscaledMap->getColorFormat(), irr::core::dimension2d<irr::u32>(requiredWidth, requiredHeight));
+			scaledMap.at(i) = driver->createImage(unscaledMap->getColorFormat(), irr::core::dimension2d<unsigned int>(requiredWidth, requiredHeight));
 			//Copy and scale image
 			std::cout << "About to copy in for " << i << std::endl;
 			//TODO: Check if empty scaled map has been created
@@ -255,9 +255,9 @@ void ControllerModel::update(const float& time, const ShipData& ownShipData, con
 
     //Find mouse position change if clicked, and clicked last time
     if (mouseClickedLastUpdate && mouseDown) {
-        irr::core::position2d<irr::s32> mouseNow = device->getCursorControl()->getPosition();
-        irr::s32 mouseDeltaX = mouseNow.X - mouseLastPosition.X;
-        irr::s32 mouseDeltaY = mouseNow.Y - mouseLastPosition.Y;
+        irr::core::position2d<signed int> mouseNow = device->getCursorControl()->getPosition();
+        signed int mouseDeltaX = mouseNow.X - mouseLastPosition.X;
+        signed int mouseDeltaY = mouseNow.Y - mouseLastPosition.Y;
 
         //Change offset
         mapOffsetX += mouseDeltaX;
@@ -269,16 +269,16 @@ void ControllerModel::update(const float& time, const ShipData& ownShipData, con
 
 
     //TODO: Work out the required area of the map image, and create this as a texture to go to the gui
-    irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
+    irr::core::dimension2d<unsigned int> screenSize = device->getVideoDriver()->getScreenSize();
     //grab an area this size from the scaled map
     irr::video::IImage* tempImage = driver->createImage(scaledMap.at(currentZoom)->getColorFormat(),screenSize); //Empty image
     tempImage->fill(irr::video::SColor(255,0,0,32)); //Initialise background
 
     //Copy in data
-    irr::s32 topLeftX = -1*ownShipData.X/metresPerPx.at(currentZoom) + driver->getScreenSize().Width/2 + mapOffsetX;
-    irr::s32 topLeftZ = ownShipData.Z/metresPerPx.at(currentZoom)    + driver->getScreenSize().Height/2 - scaledMap.at(currentZoom)->getDimension().Height + mapOffsetZ;
+    signed int topLeftX = -1*ownShipData.X/metresPerPx.at(currentZoom) + driver->getScreenSize().Width/2 + mapOffsetX;
+    signed int topLeftZ = ownShipData.Z/metresPerPx.at(currentZoom)    + driver->getScreenSize().Height/2 - scaledMap.at(currentZoom)->getDimension().Height + mapOffsetZ;
 
-    scaledMap.at(currentZoom)->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
+    scaledMap.at(currentZoom)->copyTo(tempImage,irr::core::position2d<signed int>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
     // Scale tempImage brightness if needed
     float brightnessScaling = gui->getBrightnessScaling();
@@ -293,7 +293,7 @@ void ControllerModel::update(const float& time, const ShipData& ownShipData, con
     }
 
     //Drop any previous textures
-    for(irr::u32 i = 0; i < driver->getTextureCount(); i++) {
+    for(unsigned int i = 0; i < driver->getTextureCount(); i++) {
         if (driver->getTextureByIndex(i)->getName().getPath()=="DisplayTexture") {
             driver->removeTexture(driver->getTextureByIndex(i));
         }
@@ -392,7 +392,7 @@ void ControllerModel::resetOffset()
     mapOffsetZ = 0;
 }
 
-void ControllerModel::updateSelectedShip(irr::s32 index) //To be called from eventReceiver, where index is from the combo box
+void ControllerModel::updateSelectedShip(signed int index) //To be called from eventReceiver, where index is from the combo box
 {
     if(index < 1) { //If 0 or -1
         selectedShip = -1; //Own ship
@@ -403,7 +403,7 @@ void ControllerModel::updateSelectedShip(irr::s32 index) //To be called from eve
     //No guarantee from this that the selected ship is valid
 }
 
-void ControllerModel::updateSelectedLeg(irr::s32 index) //To be called from eventReceiver, where index is from the combo box. -1 if nothing selected, 0 upwards for leg
+void ControllerModel::updateSelectedLeg(signed int index) //To be called from eventReceiver, where index is from the combo box. -1 if nothing selected, 0 upwards for leg
 {
     selectedLeg = index;
     //No guarantee from this that the selected leg is valid

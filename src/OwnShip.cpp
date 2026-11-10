@@ -187,13 +187,13 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     angleCorrectionPitch = IniFile::iniFileTof32(shipIniFilename, "AngleCorrectionPitch");
     // DEE_DEC22 ^^^^
     // camera offset (in unscaled and uncorrected ship coords)
-    irr::u32 numberOfViews = IniFile::iniFileTof32(shipIniFilename, "Views");
+    unsigned int numberOfViews = IniFile::iniFileTof32(shipIniFilename, "Views");
     if (numberOfViews == 0)
     {
         std::cerr << "Own ship: View positions can't be loaded. Please check ini file " << shipIniFilename << std::endl;
         exit(EXIT_FAILURE);
     }
-    for (irr::u32 i = 1; i <= numberOfViews; i++)
+    for (unsigned int i = 1; i <= numberOfViews; i++)
     {
         float camOffsetX = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("ViewX", i));
         float camOffsetY = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("ViewY", i));
@@ -287,7 +287,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             // Set lighting to use diffuse and ambient, so lighting of untextured models works
             if (viewNode->getMaterialCount() > 0)
             {
-                for (irr::u32 mat = 0; mat < viewNode->getMaterialCount(); mat++)
+                for (unsigned int mat = 0; mat < viewNode->getMaterialCount(); mat++)
                 {
                     viewNode->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
                     viewNode->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
@@ -314,7 +314,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         // If any part is partially transparent, make it fully transparent (for bridge windows etc!)
         if (IniFile::iniFileTou32(shipIniFilename, "MakeTransparent") == 1)
         {
-            for (irr::u32 mb = 0; mb < shipMesh->getMeshBufferCount(); mb++)
+            for (unsigned int mb = 0; mb < shipMesh->getMeshBufferCount(); mb++)
             {
                 if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255)
                 {
@@ -326,7 +326,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
         // For testing, make wireframe
         /*
-        for (irr::u32 i=0; i<shipMesh->getMeshBufferCount(); ++i)
+        for (unsigned int i=0; i<shipMesh->getMeshBufferCount(); ++i)
         {
             irr::scene::IMeshBuffer* mb = shipMesh->getMeshBuffer(i);
             if (mb)
@@ -350,7 +350,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         // Set lighting to use diffuse and ambient, so lighting of untextured models works
         if (ship->getMaterialCount() > 0)
         {
-            for (irr::u32 mat = 0; mat < ship->getMaterialCount(); mat++)
+            for (unsigned int mat = 0; mat < ship->getMaterialCount(); mat++)
             {
                 ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
                 ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
@@ -2535,12 +2535,12 @@ void OwnShip::collisionDetectAndRespond(float &reaction, float &lateralReaction,
             {
                 otherShipCollision = true;
 
-                irr::s32 otherShipID = -1;
+                signed int otherShipID = -1;
                 // Find other ship ID from name (should be OtherShip_#)
                 std::vector<std::string> splitName = Utilities::split(std::string(selectedSceneNode->getName()), '_');
                 if (splitName.size() == 2)
                 {
-                    otherShipID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                    otherShipID = Utilities::lexical_cast<signed int>(splitName.at(1));
                 }
                 // std::cout << "In contact with " << std::string(selectedSceneNode->getName()) << " Length of split: " << splitName.size() << std::endl;
 
@@ -2632,9 +2632,9 @@ void OwnShip::collisionDetectAndRespond(float &reaction, float &lateralReaction,
                 if (showDebugData)
                 {
                     // Show points in contact in red
-                    irr::core::position2d<irr::s32> contactPoint2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+                    irr::core::position2d<signed int> contactPoint2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
                         pointPosition, device->getSceneManager()->getActiveCamera(), false);
-                    irr::core::position2d<irr::s32> contactPoint2dNormal = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+                    irr::core::position2d<signed int> contactPoint2dNormal = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
                         pointPositionForNormal, device->getSceneManager()->getActiveCamera(), false);
                     device->getVideoDriver()->draw2DPolygon(contactPoint2d, 10, irr::video::SColor(100, 255, 0, 0));
                     device->getVideoDriver()->draw2DLine(contactPoint2d, contactPoint2dNormal, irr::video::SColor(100, 255, 0, 0));
@@ -2656,9 +2656,9 @@ void OwnShip::collisionDetectAndRespond(float &reaction, float &lateralReaction,
                         pointColour = irr::video::SColor(100, 0, 0, 255);
                     }
 
-                    irr::core::position2d<irr::s32> contactPoint2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+                    irr::core::position2d<signed int> contactPoint2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
                         pointPosition, device->getSceneManager()->getActiveCamera(), false);
-                    irr::core::position2d<irr::s32> contactPoint2dNormal = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+                    irr::core::position2d<signed int> contactPoint2dNormal = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
                         pointPositionForNormal, device->getSceneManager()->getActiveCamera(), false);
                     device->getVideoDriver()->draw2DPolygon(contactPoint2d, 10, pointColour);
                     device->getVideoDriver()->draw2DLine(contactPoint2d, contactPoint2dNormal, pointColour);
@@ -2671,7 +2671,7 @@ void OwnShip::collisionDetectAndRespond(float &reaction, float &lateralReaction,
         // If showing debug data, draw a big circle series for the model centre
         if (showDebugData)
         {
-            irr::core::position2d<irr::s32> centrePosition2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+            irr::core::position2d<signed int> centrePosition2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
                 ship->getAbsolutePosition(), device->getSceneManager()->getActiveCamera(), false);
             device->getVideoDriver()->draw2DPolygon(centrePosition2d, 5, irr::video::SColor(100, 0, 255, 0));
             device->getVideoDriver()->draw2DPolygon(centrePosition2d, 10, irr::video::SColor(100, 0, 255, 0));
@@ -2728,7 +2728,7 @@ std::vector<bool> OwnShip::getCameraIsHighView() const
     return isHighView;
 }
 
-void OwnShip::setViewVisibility(irr::u32 view)
+void OwnShip::setViewVisibility(unsigned int view)
 {
     if (is360textureShip)
     {

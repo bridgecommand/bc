@@ -30,21 +30,21 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, irr::core::stringw
     guienv = device->getGUIEnvironment();
 
     irr::video::IVideoDriver* driver = device->getVideoDriver();
-    irr::u32 su = driver->getScreenSize().Width;
-    irr::u32 sh = driver->getScreenSize().Height;
+    unsigned int su = driver->getScreenSize().Width;
+    unsigned int sh = driver->getScreenSize().Height;
 
     this->language = language;
 
     //gui
 
-    messageText = guienv->addStaticText(message.c_str(),irr::core::rect<irr::s32>(su*0.0,sh*0.0,su*0.9,sh*0.1));
+    messageText = guienv->addStaticText(message.c_str(),irr::core::rect<signed int>(su*0.0,sh*0.0,su*0.9,sh*0.1));
 
     //choice buttons
-    headingButton = guienv->addButton(irr::core::rect<irr::s32>(su*0.1,sh*0.1,su*0.9,sh*0.5),0,GUI_ID_HEADING_CHOICE,language->translate("headingIndicator").c_str());
-    repeaterButton = guienv->addButton(irr::core::rect<irr::s32>(su*0.1,sh*0.5,su*0.9,sh*0.9),0,GUI_ID_REPEATER_CHOICE,language->translate("repeater").c_str());
+    headingButton = guienv->addButton(irr::core::rect<signed int>(su*0.1,sh*0.1,su*0.9,sh*0.5),0,GUI_ID_HEADING_CHOICE,language->translate("headingIndicator").c_str());
+    repeaterButton = guienv->addButton(irr::core::rect<signed int>(su*0.1,sh*0.5,su*0.9,sh*0.9),0,GUI_ID_REPEATER_CHOICE,language->translate("repeater").c_str());
 
     //Heading indicator
-    heading = new irr::gui::HeadingIndicator(guienv, guienv->getRootGUIElement(), irr::core::rect<irr::s32>(10,10,su-10,10+(su-20)/4));
+    heading = new irr::gui::HeadingIndicator(guienv, guienv->getRootGUIElement(), irr::core::rect<signed int>(10,10,su-10,10+(su-20)/4));
     heading->setVisible(false);
 
     //User hasn't selected what mode to use
@@ -57,7 +57,7 @@ GUIMain::~GUIMain()
     heading->drop();
 }
 
-void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle, float wheelAngle, irr::s32 portEngineRPM, irr::s32 stbdEngineRPM)
+void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle, float wheelAngle, signed int portEngineRPM, signed int stbdEngineRPM)
 {
 
     if(!modeChosen) {
@@ -81,13 +81,13 @@ void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle,
 
         //Draw rudder angle
         irr::video::IVideoDriver* driver = device->getVideoDriver();
-        irr::u32 su = driver->getScreenSize().Width;
-        irr::u32 sh = driver->getScreenSize().Height;
-        irr::core::vector2d<irr::s32> rudderIndicatorCentre = irr::core::vector2d<irr::s32>(0.5*su,0.5*sh);
-        irr::core::vector2d<irr::s32> rudderAngleVectorHead = irr::core::vector2d<irr::s32> (        0,  0.240*sh);
-        irr::core::vector2d<irr::s32> wheelAngleVectorHead = irr::core::vector2d<irr::s32> (        0,  0.240*sh);
-        irr::core::vector2d<irr::s32> rudderAngleVectorBack1 = irr::core::vector2d<irr::s32>(-0.040*sh,  -0.040*sh);
-        irr::core::vector2d<irr::s32> rudderAngleVectorBack2 = irr::core::vector2d<irr::s32>( 0.040*sh,  -0.040*sh);
+        unsigned int su = driver->getScreenSize().Width;
+        unsigned int sh = driver->getScreenSize().Height;
+        irr::core::vector2d<signed int> rudderIndicatorCentre = irr::core::vector2d<signed int>(0.5*su,0.5*sh);
+        irr::core::vector2d<signed int> rudderAngleVectorHead = irr::core::vector2d<signed int> (        0,  0.240*sh);
+        irr::core::vector2d<signed int> wheelAngleVectorHead = irr::core::vector2d<signed int> (        0,  0.240*sh);
+        irr::core::vector2d<signed int> rudderAngleVectorBack1 = irr::core::vector2d<signed int>(-0.040*sh,  -0.040*sh);
+        irr::core::vector2d<signed int> rudderAngleVectorBack2 = irr::core::vector2d<signed int>( 0.040*sh,  -0.040*sh);
         rudderAngleVectorHead.rotateBy(-1*rudderAngle*angleScale);
         wheelAngleVectorHead.rotateBy(-1*wheelAngle*angleScale);
         rudderAngleVectorBack1.rotateBy(-1*rudderAngle*angleScale);
@@ -101,9 +101,9 @@ void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle,
         //Draw scale
         for(int i = -30; i<=30; i+=5) {
 
-            irr::s32 centreX = rudderIndicatorCentre.X;
-            irr::s32 centreY = rudderIndicatorCentre.Y;
-            irr::s32 radius = 0.25*sh;
+            signed int centreX = rudderIndicatorCentre.X;
+            signed int centreY = rudderIndicatorCentre.Y;
+            signed int radius = 0.25*sh;
 
             //Draw compass bearings
             float xVector = sin(i*irr::core::DEGTORAD*angleScale);
@@ -119,10 +119,10 @@ void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle,
                 lineEnd = 1.05;
             }
 
-            irr::s32 startX = centreX + xVector*radius;
-            irr::s32 endX = centreX + lineEnd*xVector*radius;
-            irr::s32 startY = centreY + yVector*radius;
-            irr::s32 endY = centreY + lineEnd*yVector*radius;
+            signed int startX = centreX + xVector*radius;
+            signed int endX = centreX + lineEnd*xVector*radius;
+            signed int startY = centreY + yVector*radius;
+            signed int endY = centreY + lineEnd*yVector*radius;
 
             //Set colour
             irr::video::SColor indicatorColour;
@@ -134,19 +134,19 @@ void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle,
                 indicatorColour = irr::video::SColor(255,0,0,0);
             }
 
-            driver->draw2DLine(irr::core::vector2d<irr::s32>(startX,startY),irr::core::vector2d<irr::s32>(endX,endY),indicatorColour);
+            driver->draw2DLine(irr::core::vector2d<signed int>(startX,startY),irr::core::vector2d<signed int>(endX,endY),indicatorColour);
             if (printAngle) {
 
                 irr::core::stringw text;
                 text = irr::core::stringw(abs(i));
 
-                irr::s32 textWidth = guienv->getSkin()->getFont()->getDimension(text.c_str()).Width;
-                irr::s32 textHeight = guienv->getSkin()->getFont()->getDimension(text.c_str()).Height;
-                irr::s32 textStartX = centreX + 1.2*xVector*radius-0.5*textWidth;
-                irr::s32 textEndX = textStartX+textWidth;
-                irr::s32 textStartY = centreY + 1.2*yVector*radius-0.5*textHeight;
-                irr::s32 textEndY = textStartY+textHeight;
-                guienv->getSkin()->getFont()->draw(text,irr::core::rect<irr::s32>(textStartX,textStartY,textEndX,textEndY),indicatorColour);
+                signed int textWidth = guienv->getSkin()->getFont()->getDimension(text.c_str()).Width;
+                signed int textHeight = guienv->getSkin()->getFont()->getDimension(text.c_str()).Height;
+                signed int textStartX = centreX + 1.2*xVector*radius-0.5*textWidth;
+                signed int textEndX = textStartX+textWidth;
+                signed int textStartY = centreY + 1.2*yVector*radius-0.5*textHeight;
+                signed int textEndY = textStartY+textHeight;
+                guienv->getSkin()->getFont()->draw(text,irr::core::rect<signed int>(textStartX,textStartY,textEndX,textEndY),indicatorColour);
             }
         }
         //End of draw scale
@@ -154,8 +154,8 @@ void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle,
         //Show engine RPM
         irr::core::stringw portRPM(portEngineRPM);
         irr::core::stringw stbdRPM(stbdEngineRPM);
-        guienv->getSkin()->getFont()->draw(portRPM,irr::core::rect<irr::s32>(0.25*su,0.515*sh,0.5*su,0.55*sh),irr::video::SColor(255,0,0,0));
-        guienv->getSkin()->getFont()->draw(stbdRPM,irr::core::rect<irr::s32>(0.75*su,0.515*sh,1.0*su,0.55*sh),irr::video::SColor(255,0,0,0));
+        guienv->getSkin()->getFont()->draw(portRPM,irr::core::rect<signed int>(0.25*su,0.515*sh,0.5*su,0.55*sh),irr::video::SColor(255,0,0,0));
+        guienv->getSkin()->getFont()->draw(stbdRPM,irr::core::rect<signed int>(0.75*su,0.515*sh,1.0*su,0.55*sh),irr::video::SColor(255,0,0,0));
 
 
 
@@ -167,13 +167,13 @@ void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle,
         messageText->setVisible(false);
 
         //draw compass rose
-        irr::s32 centreX = device->getVideoDriver()->getScreenSize().Width/2;
-        irr::s32 centreY = device->getVideoDriver()->getScreenSize().Height/2;
-        irr::s32 radius = device->getVideoDriver()->getScreenSize().Height*0.45;
+        signed int centreX = device->getVideoDriver()->getScreenSize().Width/2;
+        signed int centreY = device->getVideoDriver()->getScreenSize().Height/2;
+        signed int radius = device->getVideoDriver()->getScreenSize().Height*0.45;
 
         irr::video::IVideoDriver* driver = device->getVideoDriver();
 
-        driver->draw2DPolygon(irr::core::vector2d<irr::s32>(centreX,centreY),radius,irr::video::SColor(255,255,255,255),60);
+        driver->draw2DPolygon(irr::core::vector2d<signed int>(centreX,centreY),radius,irr::video::SColor(255,255,255,255),60);
 
         for(unsigned int i = 0; i<360; i++) {
             //Draw compass bearings
@@ -196,12 +196,12 @@ void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle,
                 lineStart = 0.9;
             }
 
-            irr::s32 startX = centreX + lineStart*xVector*radius;
-            irr::s32 endX = centreX + 1.0*xVector*radius;
-            irr::s32 startY = centreY + lineStart*yVector*radius;
-            irr::s32 endY = centreY + 1.0*yVector*radius;
+            signed int startX = centreX + lineStart*xVector*radius;
+            signed int endX = centreX + 1.0*xVector*radius;
+            signed int startY = centreY + lineStart*yVector*radius;
+            signed int endY = centreY + 1.0*yVector*radius;
 
-            driver->draw2DLine(irr::core::vector2d<irr::s32>(startX,startY),irr::core::vector2d<irr::s32>(endX,endY),irr::video::SColor(255,255,255,255));
+            driver->draw2DLine(irr::core::vector2d<signed int>(startX,startY),irr::core::vector2d<signed int>(endX,endY),irr::video::SColor(255,255,255,255));
             if (printAngle || printText) {
 
                 irr::core::stringw text;
@@ -222,19 +222,19 @@ void GUIMain::updateGuiData(float time, float ownShipHeading, float rudderAngle,
                     }
                 }
 
-                irr::s32 textWidth = guienv->getSkin()->getFont()->getDimension(text.c_str()).Width;
-                irr::s32 textHeight = guienv->getSkin()->getFont()->getDimension(text.c_str()).Height;
-                irr::s32 textStartX = centreX + 0.8*xVector*radius-0.5*textWidth;
-                irr::s32 textEndX = textStartX+textWidth;
-                irr::s32 textStartY = centreY + 0.8*yVector*radius-0.5*textHeight;
-                irr::s32 textEndY = textStartY+textHeight;
-                guienv->getSkin()->getFont()->draw(text,irr::core::rect<irr::s32>(textStartX,textStartY,textEndX,textEndY),irr::video::SColor(255,255,255,255));
+                signed int textWidth = guienv->getSkin()->getFont()->getDimension(text.c_str()).Width;
+                signed int textHeight = guienv->getSkin()->getFont()->getDimension(text.c_str()).Height;
+                signed int textStartX = centreX + 0.8*xVector*radius-0.5*textWidth;
+                signed int textEndX = textStartX+textWidth;
+                signed int textStartY = centreY + 0.8*yVector*radius-0.5*textHeight;
+                signed int textEndY = textStartY+textHeight;
+                guienv->getSkin()->getFont()->draw(text,irr::core::rect<signed int>(textStartX,textStartY,textEndX,textEndY),irr::video::SColor(255,255,255,255));
             }
         }
 
 
         //Draw heading indicator
-        driver->draw2DLine(irr::core::vector2d<irr::s32>(centreX,centreY),irr::core::vector2d<irr::s32>(centreX,centreY-1.1*radius),irr::video::SColor(255,255,255,255));
+        driver->draw2DLine(irr::core::vector2d<signed int>(centreX,centreY),irr::core::vector2d<signed int>(centreX,centreY-1.1*radius),irr::video::SColor(255,255,255,255));
     }
     guienv->drawAll();
 

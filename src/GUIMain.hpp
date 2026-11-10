@@ -70,7 +70,7 @@ struct GUIData {
     float guiRadarEBLRangeNm;
     float guiRadarCursorBrg;
     float guiRadarCursorRangeNm;
-    irr::s32 arpaListSelection;
+    signed int arpaListSelection;
     std::vector<ARPAEstimatedState> arpaContactStates;
 	std::string currentTime;
     bool paused;
@@ -230,12 +230,12 @@ public:
     void hideBearings();
     void setLargeRadar(bool radarState);
     bool getLargeRadar() const;
-    void setARPAComboboxes(irr::s32 arpaState);
+    void setARPAComboboxes(signed int arpaState);
     void setARPAList(int arpaSelected);
-    irr::u32 getRadarPixelRadius() const;
+    unsigned int getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
-    irr::core::rect<irr::s32> getSmallRadarRect() const;
-    irr::core::rect<irr::s32> getLargeRadarRect() const;
+    irr::core::rect<signed int> getSmallRadarRect() const;
+    irr::core::rect<signed int> getLargeRadarRect() const;
     bool isNFUActive() const;
     void setSingleEngine(); //Used for single engine operation
     void hideEngineAndRudder(); //Used for secondary mode
@@ -370,11 +370,11 @@ private:
     irr::gui::IGUIWindow* extraControlsWindow;
     irr::gui::IGUIWindow* linesControlsWindow;
 
-    irr::u32 su;
-    irr::u32 sh;
+    unsigned int su;
+    unsigned int sh;
 
-    irr::s32 azimuthGUIOffsetL;
-    irr::s32 azimuthGUIOffsetR;
+    signed int azimuthGUIOffsetL;
+    signed int azimuthGUIOffsetR;
 
     float guiLat;
     float guiLong;
@@ -396,13 +396,13 @@ private:
     bool radarHeadUp;
     bool radarStabilised;
     bool radarLarge;
-    irr::core::rect<irr::s32> radarLargeRect;
-    irr::s32 largeRadarScreenCentreX;
-    irr::s32 largeRadarScreenCentreY;
-    irr::s32 largeRadarScreenRadius;
-    irr::s32 smallRadarScreenCentreX;
-    irr::s32 smallRadarScreenCentreY;
-    irr::s32 smallRadarScreenRadius;
+    irr::core::rect<signed int> radarLargeRect;
+    signed int largeRadarScreenCentreX;
+    signed int largeRadarScreenCentreY;
+    signed int largeRadarScreenRadius;
+    signed int smallRadarScreenCentreX;
+    signed int smallRadarScreenCentreY;
+    signed int smallRadarScreenRadius;
     std::vector<ARPAEstimatedState> arpaContactStates;
     std::string guiTime;
     bool singleEngine;
@@ -426,18 +426,18 @@ private:
     SimulationModel* model;
 
     //Different locations for heading indicator depending on GUI visibility
-    irr::core::rect<irr::s32> stdHdgIndicatorPos;
-    irr::core::rect<irr::s32> radHdgIndicatorPos;
-    irr::core::rect<irr::s32> maxHdgIndicatorPos;
+    irr::core::rect<signed int> stdHdgIndicatorPos;
+    irr::core::rect<signed int> radHdgIndicatorPos;
+    irr::core::rect<signed int> maxHdgIndicatorPos;
 
-    irr::core::rect<irr::s32> stdDataDisplayPos;
-    irr::core::rect<irr::s32> radDataDisplayPos;
-    irr::core::rect<irr::s32> altDataDisplayPos;
+    irr::core::rect<signed int> stdDataDisplayPos;
+    irr::core::rect<signed int> radDataDisplayPos;
+    irr::core::rect<signed int> altDataDisplayPos;
     irr::video::SColor stdDataDisplayBG;
     irr::video::SColor altDataDisplayBG;
     irr::video::SColor radDataDisplayBG;
 
-    irr::core::rect<irr::s32> stdRateOfTurnIndicatorPos;
+    irr::core::rect<signed int> stdRateOfTurnIndicatorPos;
 
     bool nfuPortDown;
     bool nfuStbdDown;

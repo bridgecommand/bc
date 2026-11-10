@@ -23,7 +23,7 @@
 
 //using namespace irr;
 
-NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::vector3df position, irr::video::SColor colour, float lightStartAngle, float lightEndAngle, float lightRange, std::string lightSequence, irr::u32 phaseStart) {
+NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::vector3df position, irr::video::SColor colour, float lightStartAngle, float lightEndAngle, float lightRange, std::string lightSequence, unsigned int phaseStart) {
 
     //Store the scene manager, so we can find the active camera
     this->smgr = smgr;
@@ -80,7 +80,7 @@ void NavLight::setPosition(irr::core::vector3df position)
     lightNode->setPosition(position);
 }
 
-void NavLight::update(float scenarioTime, irr::u32 lightLevel) {
+void NavLight::update(float scenarioTime, unsigned int lightLevel) {
 
     //FIXME: Remove viewPosition being passed in (now from Camera), and check if camera is null.
 
@@ -124,7 +124,7 @@ void NavLight::update(float scenarioTime, irr::u32 lightLevel) {
     std::string::size_type sequenceLength = sequence.length();
     if (sequenceLength > 0) {
         float timeInSequence = std::fmod(((scenarioTime+timeOffset) / charTime),sequenceLength);
-        irr::u32 positionInSequence = timeInSequence;
+        unsigned int positionInSequence = timeInSequence;
         if (positionInSequence>=sequenceLength) {positionInSequence = sequenceLength-1;} //Should not be required, but double check we're not off the end of the sequence
         if (sequence[positionInSequence] == 'D' || sequence[positionInSequence] == 'd') {
             lightNode->setVisible(false);
@@ -152,9 +152,9 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 		return false;
 	};
 
-	irr::u32 size = tex->getSize().Width*tex->getSize().Height;  // get Texture Size
-	irr::u32 width = tex->getSize().Width;
-	irr::u32 height = tex->getSize().Height;
+	unsigned int size = tex->getSize().Width*tex->getSize().Height;  // get Texture Size
+	unsigned int width = tex->getSize().Width;
+	unsigned int height = tex->getSize().Height;
 
 	
 
@@ -164,11 +164,11 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 	{
 		//  printf("16BIT\n");
 		irr::u16* Data = (irr::u16*)tex->lock(); //get Data for 16-bit Texture
-		for (irr::u32 i = 0; i < width; i++) {
-			for (irr::u32 j = 0; j < height; j++) {
+		for (unsigned int i = 0; i < width; i++) {
+			for (unsigned int j = 0; j < height; j++) {
 				
-				float x = (irr::s32)i - (irr::s32)width / 2;
-				float y = (irr::s32)j - (irr::s32)height / 2;
+				float x = (signed int)i - (signed int)width / 2;
+				float y = (signed int)j - (signed int)height / 2;
 				float radSq = x*x + y*y;
 				if (radSq <= width*width / 4) {
 					Data[i + j*width] = irr::video::RGBA16(255, 255, 255, alpha);
@@ -184,15 +184,15 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 	};
 	case irr::video::ECF_A8R8G8B8:
 	{
-		irr::u32* Data = (irr::u32*)tex->lock();
+		unsigned int* Data = (unsigned int*)tex->lock();
 		
 		irr::video::SColor pixelColor;
 
-		for (irr::u32 i = 0; i < width; i++) {
-			for (irr::u32 j = 0; j < height; j++) {
+		for (unsigned int i = 0; i < width; i++) {
+			for (unsigned int j = 0; j < height; j++) {
 				
-				float x = (irr::s32)i - (irr::s32)width / 2;
-				float y = (irr::s32)j - (irr::s32)height / 2;
+				float x = (signed int)i - (signed int)width / 2;
+				float y = (signed int)j - (signed int)height / 2;
 				float radSq = x*x + y*y;
 				if (radSq <= width*width / 4) {
 					pixelColor.set(alpha, 255, 255, 255);

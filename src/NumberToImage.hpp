@@ -22,7 +22,7 @@
 namespace NumberToImage
 {
 
-    irr::video::IImage* getImage(irr::u32 number, float brilliance, irr::IrrlichtDevice* dev);
+    irr::video::IImage* getImage(unsigned int number, float brilliance, irr::IrrlichtDevice* dev);
 
 }
 

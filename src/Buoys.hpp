@@ -34,9 +34,9 @@ class Buoys
         Buoys();
         virtual ~Buoys();
         void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
-        void update(float deltaTime, float scenarioTime, float tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength);
-        RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
-        irr::u32 getNumber() const;
+        void update(float deltaTime, float scenarioTime, float tideHeight, unsigned int lightLevel, irr::core::vector3df ownShipPosition, float ownShipLength);
+        RadarData getRadarData(unsigned int number, irr::core::vector3df scannerPosition) const;
+        unsigned int getNumber() const;
         irr::core::vector3df getPosition(int number) const;
         void moveNode(float deltaX, float deltaY, float deltaZ);
         void enableAllTriangleSelectors();

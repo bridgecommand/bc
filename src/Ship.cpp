@@ -104,12 +104,12 @@ float Ship::getSpeed() const
     return axialSpd;
 }
 
-irr::u32 Ship::getMMSI() const
+unsigned int Ship::getMMSI() const
 {
     return mmsi;
 }
 
-void Ship::setMMSI(irr::u32 mmsi)
+void Ship::setMMSI(unsigned int mmsi)
 {
     this->mmsi = mmsi;
 }

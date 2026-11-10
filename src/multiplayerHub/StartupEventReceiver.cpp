@@ -20,7 +20,7 @@
 
 //using namespace irr;
 
-    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::s32 listBoxID, irr::s32 okButtonID) //Constructor
+    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, signed int listBoxID, signed int okButtonID) //Constructor
 	{
 		this->scenarioListBox = scenarioListBox;
 		this->listBoxID = listBoxID;
@@ -32,7 +32,7 @@
 	{
         if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
+			signed int id = event.GUIEvent.Caller->getID();
 			//If OK button, or double click on list
             if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN  )
             {
@@ -54,7 +54,7 @@
         return false;
     }
 
-    irr::s32 StartupEventReceiver::getScenarioSelected() const
+    signed int StartupEventReceiver::getScenarioSelected() const
     {
         return scenarioSelected;
     }

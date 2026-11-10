@@ -29,13 +29,13 @@ public:
     GUIImportExport(
         irr::IrrlichtDevice* device, 
         Lang* language, 
-        irr::u32 su, 
-        irr::u32 sh,
-        irr::s32 importExportOKButtonID);
-    void setVisible(bool isVisible, irr::u32 importExportMode); //importExportMode: 0 = export, 1 = import
+        unsigned int su, 
+        unsigned int sh,
+        signed int importExportOKButtonID);
+    void setVisible(bool isVisible, unsigned int importExportMode); //importExportMode: 0 = export, 1 = import
     void setText(std::string text);
     std::string getText() const;
-    irr::u32 getMode() const;
+    unsigned int getMode() const;
 private:
 
     Lang* language;
@@ -48,7 +48,7 @@ private:
     irr::gui::IGUIStaticText* importDescriptionText;
     irr::gui::IGUIStaticText* exportDescriptionText;
 
-    irr::u32 importExportMode; // 0 = export, 1 = import
+    unsigned int importExportMode; // 0 = export, 1 = import
     
 };
 

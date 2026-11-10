@@ -25,8 +25,8 @@ class Water
     public:
         Water();
         virtual ~Water();
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, float weather, irr::u32 disableShaders, bool withReflection, irr::u32 segments);
-        void update(float tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, float weather);
+        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, float weather, unsigned int disableShaders, bool withReflection, unsigned int segments);
+        void update(float tideHeight, irr::core::vector3df viewPosition, unsigned int lightLevel, float weather);
         float getWaveHeight(float relPosX, float relPosZ) const;
         irr::core::vector2df getLocalNormals(float relPosX, float relPosZ) const;
         irr::core::vector3df getPosition() const;

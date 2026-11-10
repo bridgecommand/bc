@@ -50,7 +50,7 @@ void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* 
 	this->tilt = tilt;
 }
 
-void RadarScreen::setRadarDisplayRadius(irr::u32 radiusPx)
+void RadarScreen::setRadarDisplayRadius(unsigned int radiusPx)
 {
     radarRadiusPx = radiusPx;
 }

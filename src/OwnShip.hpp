@@ -44,7 +44,7 @@ public:
         void update(float deltaTime, float scenarioTime, float tideHeight, float weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque);
         std::vector<irr::core::vector3df> getCameraViews() const;
         std::vector<bool> getCameraIsHighView() const;
-        void setViewVisibility(irr::u32 view);
+        void setViewVisibility(unsigned int view);
         std::string getRadarConfigFile() const;
         float getDepth() const;
         float getAngleCorrection() const;

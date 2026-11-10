@@ -31,7 +31,7 @@ class NMEA {
 
 public:
 
-    NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev);
+    NMEA(SimulationModel* model, std::string serialPortName, unsigned int serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev);
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();
@@ -47,8 +47,8 @@ private:
     irr::IrrlichtDevice* device;
     SimulationModel* model;
     serial::Serial mySerialPort;
-    irr::u32 lastSendEvent; // when was the last time an NMEA message was sent
-    static const irr::u32 sensorReportInterval = 100; // milliseconds between sensor reports
+    unsigned int lastSendEvent; // when was the last time an NMEA message was sent
+    static const unsigned int sensorReportInterval = 100; // milliseconds between sensor reports
     std::vector<std::string> messageQueue;
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
@@ -61,7 +61,7 @@ private:
     asio::ip::udp::endpoint receiver_endpoint;
     asio::ip::udp::socket* socket;
 
-    irr::u32 terminateNmeaReceive;
+    unsigned int terminateNmeaReceive;
     std::mutex terminateNmeaReceiveMutex;
     std::vector<std::string> receivedNmeaMessages;
     std::mutex receivedNmeaMessagesMutex;

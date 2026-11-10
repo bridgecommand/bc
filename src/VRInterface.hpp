@@ -61,7 +61,7 @@
 
 class VRInterface {
 public:
-    VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, irr::u32 suGUI, irr::u32 shGUI);
+    VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, unsigned int suGUI, unsigned int shGUI);
     ~VRInterface();
     int load(SimulationModel* model);
     void unload();
@@ -176,13 +176,13 @@ private:
     irr::scene::ISceneNode* hudScreenTopLeft;
     irr::scene::ISceneNode* hudScreenBottomRight;
     irr::video::ITexture* hudTexture;
-    irr::u32 suGUI;
-    irr::u32 shGUI;
+    unsigned int suGUI;
+    unsigned int shGUI;
     bool showHUD;
     bool selectState[HAND_COUNT];
     bool previousSelectState[HAND_COUNT];
-    irr::s32 raySelectScreenX;
-    irr::s32 raySelectScreenY;
+    signed int raySelectScreenX;
+    signed int raySelectScreenY;
 
     // --- MSAA ---
     static const int MSAA_SAMPLES = 4;

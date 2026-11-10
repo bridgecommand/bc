@@ -312,7 +312,7 @@ void NetworkPrimary::receiveNetwork()
                                         //'MO', Man overboard
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==2) {
-                                            irr::s32 mobMode = Utilities::lexical_cast<irr::s32>(parts.at(1));
+                                            signed int mobMode = Utilities::lexical_cast<signed int>(parts.at(1));
                                             if (mobMode==1) {
                                                 model->releaseManOverboard();
                                             } else if (mobMode==-1) {
@@ -324,15 +324,15 @@ void NetworkPrimary::receiveNetwork()
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==3) {
                                             int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                            irr::u32 mmsi = Utilities::lexical_cast<irr::u32>(parts.at(2));
+                                            unsigned int mmsi = Utilities::lexical_cast<unsigned int>(parts.at(2));
                                             model->setOtherShipMMSI(shipNo,mmsi);
                                         }
                                     } else if (thisCommand.substr(0,2).compare("RW") == 0) {
                                         //'RW', How rudder actuation is working (which pump, is it working?)
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==3) {
-                                            irr::s32 whichPump = Utilities::lexical_cast<irr::s32>(parts.at(1));
-                                            irr::s32 rudderFunction = Utilities::lexical_cast<irr::s32>(parts.at(2));
+                                            signed int whichPump = Utilities::lexical_cast<signed int>(parts.at(1));
+                                            signed int rudderFunction = Utilities::lexical_cast<signed int>(parts.at(2));
                                             if (whichPump==1) {
                                                 if (rudderFunction==0) {
                                                     model->setRudderPumpState(1,false);
@@ -359,7 +359,7 @@ void NetworkPrimary::receiveNetwork()
                                         //'RF', How rudder follow up is working (0, or 1)
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==2) {
-                                            irr::s32 rudderFunction = Utilities::lexical_cast<irr::s32>(parts.at(1));
+                                            signed int rudderFunction = Utilities::lexical_cast<signed int>(parts.at(1));
                                             if (rudderFunction==1) {
                                                 //Follow up rudder working
                                                 model->setFollowUpRudderWorking(true);
@@ -372,7 +372,7 @@ void NetworkPrimary::receiveNetwork()
                                         //'CO', controls override
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==3) {
-                                            irr::u32 overrideMode = Utilities::lexical_cast<irr::u32>(parts.at(1)); // 0 for wheel, 1 for port engine, 2 for starboard engine
+                                            unsigned int overrideMode = Utilities::lexical_cast<unsigned int>(parts.at(1)); // 0 for wheel, 1 for port engine, 2 for starboard engine
                                             float overrideData = Utilities::lexical_cast<float>(parts.at(2)); // angle for wheel, -1->+1 for engines
                                             if (overrideMode == 0) {
                                                 // Wheel
