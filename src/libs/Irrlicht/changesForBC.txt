@@ -61,4 +61,4 @@ Below activeJoystick.axisValid[5]= (info.lRz!=0) ? 1 : 0;
 
 Irrlicht-gcc.cbp: Added options to include directx compilation
 
-Irrlicht.xcodeproj: Set all MACOSX_DEPLOYMENT_TARGET to 10.13
+Irrlicht.xcodeproj: Set all MACOSX_DEPLOYMENT_TARGET to 12.0
