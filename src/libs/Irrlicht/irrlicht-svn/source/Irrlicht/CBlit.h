@@ -5,10 +5,15 @@
 #ifndef _C_BLIT_H_INCLUDED_
 #define _C_BLIT_H_INCLUDED_
 
-#include "SoftwareDriver2_helper.h"
+#include "IImage.h"
 
 namespace irr
 {
+namespace video
+{
+
+//! align_next - align to next upper 2^n
+#define CBLIT_ALIGN_NEXT(num,to) (((num) + (to-1)) & (~(to-1)))
 
 //! f18 - fixpoint 14.18 limit to 16k Textures
 #define CBLIT_USE_FIXPOINT18
@@ -31,6 +36,25 @@ namespace irr
 	#define f18_floor(x) ((int)(x))
 	#define f18_round(x) ((int)(x+0.5f))
 #endif
+
+	// 2D Region closed [x0;x1]
+	struct AbsRectangle
+	{
+		s32 x0;
+		s32 y0;
+		s32 x1;
+		s32 y1;
+
+		//! 2D Intersection test
+		static inline bool intersect(AbsRectangle& dest, const AbsRectangle& a, const AbsRectangle& b)
+		{
+			dest.x0 = core::s32_max(a.x0, b.x0);
+			dest.y0 = core::s32_max(a.y0, b.y0);
+			dest.x1 = core::s32_min(a.x1, b.x1);
+			dest.y1 = core::s32_min(a.y1, b.y1);
+			return dest.x0 < dest.x1 && dest.y0 < dest.y1;
+		}
+	};
 
 	struct SBlitJob
 	{
@@ -226,262 +250,66 @@ inline u32 PixelLerp32(const u32 source, const u32 value)
 }
 
 
-/*
+
+/*!
+	Pixel = dest * ( 1 - alpha ) + source * alpha
+	alpha [0;256]
 */
-static void RenderLine32_Decal(video::IImage *t,
-				const core::position2d<s32> &p0,
-				const core::position2d<s32> &p1,
-				u32 argb )
+inline u32 PixelBlend32(const u32 c2, const u32 c1, const u32 alpha)
 {
-	s32 dx = p1.X - p0.X;
-	s32 dy = p1.Y - p0.Y;
+	u32 srcRB = c1 & 0x00FF00FF;
+	u32 srcXG = c1 & 0x0000FF00;
 
-	s32 c;
-	s32 m;
-	s32 d = 0;
-	s32 run;
+	u32 dstRB = c2 & 0x00FF00FF;
+	u32 dstXG = c2 & 0x0000FF00;
 
-	s32 xInc = 4;
-	s32 yInc = (s32) t->getPitch();
 
-	if ( dx < 0 )
-	{
-		xInc = -xInc;
-		dx = -dx;
-	}
+	u32 rb = srcRB - dstRB;
+	u32 xg = srcXG - dstXG;
 
-	if ( dy < 0 )
-	{
-		yInc = -yInc;
-		dy = -dy;
-	}
+	rb *= alpha;
+	xg *= alpha;
+	rb >>= 8;
+	xg >>= 8;
 
-	u32 *dst;
-	dst = (u32*) ( (u8*) t->getData() + ( p0.Y * t->getPitch() ) + ( p0.X * 4 ) );
+	rb += dstRB;
+	xg += dstXG;
 
-	if ( dy > dx )
-	{
-		s32 tmp;
-		tmp = dx;
-		dx = dy;
-		dy = tmp;
-		tmp = xInc;
-		xInc = yInc;
-		yInc = tmp;
-	}
+	rb &= 0x00FF00FF;
+	xg &= 0x0000FF00;
 
-	c = dx << 1;
-	m = dy << 1;
-
-	run = dx;
-	do
-	{
-		*dst = argb;
-
-		dst = (u32*) ( (u8*) dst + xInc );	// x += xInc
-		d += m;
-		if ( d > dx )
-		{
-			dst = (u32*) ( (u8*) dst + yInc );	// y += yInc
-			d -= c;
-		}
-		run -= 1;
-	} while (run>=0);
+	return rb | xg;
 }
 
 
-/*
+/*!
+	Pixel = dest * ( 1 - alpha ) + source * alpha
+	alpha [0;32]
 */
-static void RenderLine32_Blend(video::IImage *t,
-				const core::position2d<s32> &p0,
-				const core::position2d<s32> &p1,
-				u32 argb, u32 alpha)
+inline u16 PixelBlend16(const u16 c2, const u16 c1, const u16 alpha)
 {
-	s32 dx = p1.X - p0.X;
-	s32 dy = p1.Y - p0.Y;
+	const u16 srcRB = c1 & 0x7C1F;
+	const u16 srcXG = c1 & 0x03E0;
 
-	s32 c;
-	s32 m;
-	s32 d = 0;
-	s32 run;
+	const u16 dstRB = c2 & 0x7C1F;
+	const u16 dstXG = c2 & 0x03E0;
 
-	s32 xInc = 4;
-	s32 yInc = (s32) t->getPitch();
+	u32 rb = srcRB - dstRB;
+	u32 xg = srcXG - dstXG;
 
-	if ( dx < 0 )
-	{
-		xInc = -xInc;
-		dx = -dx;
-	}
+	rb *= alpha;
+	xg *= alpha;
+	rb >>= 5;
+	xg >>= 5;
 
-	if ( dy < 0 )
-	{
-		yInc = -yInc;
-		dy = -dy;
-	}
+	rb += dstRB;
+	xg += dstXG;
 
-	u32 *dst;
-	dst = (u32*) ( (u8*) t->getData() + ( p0.Y * t->getPitch() ) + ( p0.X * 4 ) );
+	rb &= 0x7C1F;
+	xg &= 0x03E0;
 
-	if ( dy > dx )
-	{
-		s32 tmp;
-		tmp = dx;
-		dx = dy;
-		dy = tmp;
-		tmp = xInc;
-		xInc = yInc;
-		yInc = tmp;
-	}
-
-	c = dx << 1;
-	m = dy << 1;
-
-	run = dx;
-	const u32 packA = packAlpha ( alpha );
-	do
-	{
-		*dst = packA | PixelBlend32( *dst, argb, alpha );
-
-		dst = (u32*) ( (u8*) dst + xInc );	// x += xInc
-		d += m;
-		if ( d > dx )
-		{
-			dst = (u32*) ( (u8*) dst + yInc );	// y += yInc
-			d -= c;
-		}
-		run -= 1;
-	} while (run>=0);
+	return (u16)(rb | xg);
 }
-
-/*
-*/
-static void RenderLine16_Decal(video::IImage *t,
-				const core::position2d<s32> &p0,
-				const core::position2d<s32> &p1,
-				u32 argb )
-{
-	s32 dx = p1.X - p0.X;
-	s32 dy = p1.Y - p0.Y;
-
-	s32 c;
-	s32 m;
-	s32 d = 0;
-	s32 run;
-
-	s32 xInc = 2;
-	s32 yInc = (s32) t->getPitch();
-
-	if ( dx < 0 )
-	{
-		xInc = -xInc;
-		dx = -dx;
-	}
-
-	if ( dy < 0 )
-	{
-		yInc = -yInc;
-		dy = -dy;
-	}
-
-	u16 *dst;
-	dst = (u16*) ( (u8*) t->getData() + ( p0.Y * t->getPitch() ) + ( p0.X * 2 ) );
-
-	if ( dy > dx )
-	{
-		s32 tmp;
-		tmp = dx;
-		dx = dy;
-		dy = tmp;
-		tmp = xInc;
-		xInc = yInc;
-		yInc = tmp;
-	}
-
-	c = dx << 1;
-	m = dy << 1;
-
-	run = dx;
-	do
-	{
-		*dst = (u16)argb;
-
-		dst = (u16*) ( (u8*) dst + xInc );	// x += xInc
-		d += m;
-		if ( d > dx )
-		{
-			dst = (u16*) ( (u8*) dst + yInc );	// y += yInc
-			d -= c;
-		}
-		run -= 1;
-	} while (run>=0);
-}
-
-/*
-*/
-static void RenderLine16_Blend(video::IImage *t,
-				const core::position2d<s32> &p0,
-				const core::position2d<s32> &p1,
-				u16 argb,
-				u16 alpha)
-{
-	s32 dx = p1.X - p0.X;
-	s32 dy = p1.Y - p0.Y;
-
-	s32 c;
-	s32 m;
-	s32 d = 0;
-	s32 run;
-
-	s32 xInc = 2;
-	s32 yInc = (s32) t->getPitch();
-
-	if ( dx < 0 )
-	{
-		xInc = -xInc;
-		dx = -dx;
-	}
-
-	if ( dy < 0 )
-	{
-		yInc = -yInc;
-		dy = -dy;
-	}
-
-	u16 *dst;
-	dst = (u16*) ( (u8*) t->getData() + ( p0.Y * t->getPitch() ) + ( p0.X * 2 ) );
-
-	if ( dy > dx )
-	{
-		s32 tmp;
-		tmp = dx;
-		dx = dy;
-		dy = tmp;
-		tmp = xInc;
-		xInc = yInc;
-		yInc = tmp;
-	}
-
-	c = dx << 1;
-	m = dy << 1;
-
-	run = dx;
-	const u16 packA = alpha ? 0x8000 : 0;
-	do
-	{
-		*dst = packA | PixelBlend16( *dst, argb, alpha );
-
-		dst = (u16*) ( (u8*) dst + xInc );	// x += xInc
-		d += m;
-		if ( d > dx )
-		{
-			dst = (u16*) ( (u8*) dst + yInc );	// y += yInc
-			d -= c;
-		}
-		run -= 1;
-	} while (run>=0);
-}
-
 
 /*!
 */
@@ -817,6 +645,14 @@ static void executeBlit_TextureCopy_32_to_24( const SBlitJob * job )
 	}
 }
 
+
+// 1 - Bit Alpha Blending
+inline u16 PixelBlend16(const u16 c2, const u16 c1)
+{
+	u16 mask = ((c1 & 0x8000) >> 15) + 0x7fff;
+	return (c2 & mask) | (c1 & ~mask);
+}
+
 /*!
 */
 static void executeBlit_TextureBlend_16_to_16( const SBlitJob * job )
@@ -840,6 +676,50 @@ static void executeBlit_TextureBlend_16_to_16( const SBlitJob * job )
 }
 
 /*!
+	Pixel = dest * ( 1 - SourceAlpha ) + source * SourceAlpha (OpenGL blending)
+*/
+inline u32 PixelBlend32(const u32 c2, const u32 c1)
+{
+	// alpha test
+	u32 alpha = c1 & 0xFF000000;
+
+	if (0 == alpha)
+		return c2;
+	if (0xFF000000 == alpha)
+	{
+		return c1;
+	}
+
+	alpha >>= 24;
+
+	// add highbit alpha, if ( alpha > 127 ) alpha += 1;
+	alpha += (alpha >> 7);
+
+	u32 srcRB = c1 & 0x00FF00FF;
+	u32 srcXG = c1 & 0x0000FF00;
+
+	u32 dstRB = c2 & 0x00FF00FF;
+	u32 dstXG = c2 & 0x0000FF00;
+
+
+	u32 rb = srcRB - dstRB;
+	u32 xg = srcXG - dstXG;
+
+	rb *= alpha;
+	xg *= alpha;
+	rb >>= 8;
+	xg >>= 8;
+
+	rb += dstRB;
+	xg += dstXG;
+
+	rb &= 0x00FF00FF;
+	xg &= 0x0000FF00;
+
+	return (c1 & 0xFF000000) | rb | xg;
+}
+
+/*!
 */
 static void executeBlit_TextureBlend_32_to_32( const SBlitJob * job )
 {
@@ -859,6 +739,17 @@ static void executeBlit_TextureBlend_32_to_32( const SBlitJob * job )
 		}
 		dst = (u32*)((u8*)(dst)+job->dstPitch);
 	}
+}
+
+/*
+	Pixel = c0 * (c1/31).
+*/
+inline u16 PixelMul16_2(const u16 c0, const u16 c1)
+{
+	return	(u16)((((c0 & 0x7C00) * (c1 & 0x7C00)) & 0x3E000000) >> 15 |
+		(((c0 & 0x03E0) * (c1 & 0x03E0)) & 0x000F8000) >> 10 |
+		(((c0 & 0x001F) * (c1 & 0x001F)) & 0x000003E0) >> 5 |
+		(c0 & c1 & 0x8000));
 }
 
 /*!
@@ -888,6 +779,16 @@ static void executeBlit_TextureBlendColor_16_to_16( const SBlitJob * job )
 	}
 }
 
+/*
+	Pixel = c0 * (c1/255).
+*/
+REALINLINE u32 PixelMul32_2(const u32 c0, const u32 c1)
+{
+	return	((((c0 & 0xFF000000) >> 16) * ((c1 & 0xFF000000) >> 16)) & 0xFF000000) |
+		((((c0 & 0x00FF0000) >> 12) * ((c1 & 0x00FF0000) >> 12)) & 0x00FF0000) |
+		((((c0 & 0x0000FF00) * (c1 & 0x0000FF00)) >> 16) & 0x0000FF00) |
+		((((c0 & 0x000000FF) * (c1 & 0x000000FF)) >> 8) & 0x000000FF);
+}
 
 /*!
 */
@@ -911,6 +812,41 @@ static void executeBlit_TextureBlendColor_32_to_32( const SBlitJob * job )
 	}
 }
 
+//! a more useful memset for pixel. dest must be aligned at least to 2 byte
+// (standard memset only works with 8-bit values)
+static inline void memset16(void* dest, const u16 value, size_t bytesize)
+{
+	u16* d = (u16*)dest;
+
+	size_t i;
+
+	// loops unrolled to reduce the number of increments by factor ~8.
+	i = bytesize >> (1 + 3);
+	while (i)
+	{
+		d[0] = value;
+		d[1] = value;
+		d[2] = value;
+		d[3] = value;
+
+		d[4] = value;
+		d[5] = value;
+		d[6] = value;
+		d[7] = value;
+
+		d += 8;
+		--i;
+	}
+
+	i = (bytesize >> 1) & 7;
+	while (i)
+	{
+		d[0] = value;
+		++d;
+		--i;
+	}
+}
+
 /*!
 */
 static void executeBlit_Color_16_to_16( const SBlitJob * job )
@@ -925,6 +861,41 @@ static void executeBlit_Color_16_to_16( const SBlitJob * job )
 	}
 }
 
+//! a more useful memset for pixel. dest must be aligned at least to 4 byte
+// (standard memset only works with 8-bit values)
+static inline void blit_memset32(void* dest, const u32 value, size_t bytesize)
+{
+	u32* d = (u32*)dest;
+
+	size_t i;
+
+	// loops unrolled to reduce the number of increments by factor ~8.
+	i = bytesize >> (2 + 3);
+	while (i)
+	{
+		d[0] = value;
+		d[1] = value;
+		d[2] = value;
+		d[3] = value;
+
+		d[4] = value;
+		d[5] = value;
+		d[6] = value;
+		d[7] = value;
+
+		d += 8;
+		i -= 1;
+	}
+
+	i = (bytesize >> 2) & 7;
+	while (i)
+	{
+		d[0] = value;
+		d += 1;
+		i -= 1;
+	}
+}
+
 /*!
 */
 static void executeBlit_Color_32_to_32( const SBlitJob * job )
@@ -933,7 +904,7 @@ static void executeBlit_Color_32_to_32( const SBlitJob * job )
 
 	for ( u32 dy = 0; dy < job->height; ++dy )
 	{
-		memset32( dst, job->argb, job->srcPitch );
+		blit_memset32( dst, job->argb, job->srcPitch );
 		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
 	}
 }
@@ -1366,7 +1337,7 @@ static s32 Blit(eBlitter operation,
 	v.x1 = v.x0 + ( sourceClip.x1 - sourceClip.x0 );
 	v.y1 = v.y0 + ( sourceClip.y1 - sourceClip.y0 );
 
-	if ( !intersect( job.Dest, destClip, v ) )
+	if ( !AbsRectangle::intersect( job.Dest, destClip, v ) )
 		return 0;
 
 	job.width = job.Dest.x1 - job.Dest.x0;
@@ -1422,7 +1393,7 @@ static s32 StretchBlit(eBlitter operation,
 	AbsRectangle v;
 	setClip(destClip, destClipping, dest, 0, 0);
 	setClip(v, destRect, 0, 1, 0);
-	if (!intersect(job.Dest, destClip, v))
+	if (!AbsRectangle::intersect(job.Dest, destClip, v))
 		return 0;
 
 	// Clipping
@@ -1479,6 +1450,264 @@ static inline void drawRectangle(video::IImage* img, const core::rect<s32>& rect
 			img, 0, &rect.UpperLeftCorner, 0, &rect, color.color);
 }
 
+// 2D Line Drawing
+
+/*
+*/
+static void RenderLine16_Replace(video::IImage* t,
+	const core::position2d<s32>& p0,
+	const core::position2d<s32>& p1,
+	u32 argb)
+{
+	s32 dx = p1.X - p0.X;
+	s32 dy = p1.Y - p0.Y;
+
+	s32 c;
+	s32 m;
+	s32 d = 0;
+	s32 run;
+
+	s32 xInc = 2;
+	s32 yInc = (s32)t->getPitch();
+
+	if (dx < 0)
+	{
+		xInc = -xInc;
+		dx = -dx;
+	}
+
+	if (dy < 0)
+	{
+		yInc = -yInc;
+		dy = -dy;
+	}
+
+	u16* dst;
+	dst = (u16*)((u8*)t->getData() + (p0.Y * t->getPitch()) + (p0.X * 2));
+
+	if (dy > dx)
+	{
+		s32 tmp;
+		tmp = dx;
+		dx = dy;
+		dy = tmp;
+		tmp = xInc;
+		xInc = yInc;
+		yInc = tmp;
+	}
+
+	c = dx << 1;
+	m = dy << 1;
+
+	run = dx;
+	do
+	{
+		*dst = (u16)argb;
+
+		dst = (u16*)((u8*)dst + xInc);	// x += xInc
+		d += m;
+		if (d > dx)
+		{
+			dst = (u16*)((u8*)dst + yInc);	// y += yInc
+			d -= c;
+		}
+		run -= 1;
+	} while (run >= 0);
+}
+
+/*
+*/
+static void RenderLine16_Blend(video::IImage* t,
+	const core::position2d<s32>& p0,
+	const core::position2d<s32>& p1,
+	u16 argb,
+	u16 alpha)
+{
+	s32 dx = p1.X - p0.X;
+	s32 dy = p1.Y - p0.Y;
+
+	s32 c;
+	s32 m;
+	s32 d = 0;
+	s32 run;
+
+	s32 xInc = 2;
+	s32 yInc = (s32)t->getPitch();
+
+	if (dx < 0)
+	{
+		xInc = -xInc;
+		dx = -dx;
+	}
+
+	if (dy < 0)
+	{
+		yInc = -yInc;
+		dy = -dy;
+	}
+
+	u16* dst;
+	dst = (u16*)((u8*)t->getData() + (p0.Y * t->getPitch()) + (p0.X * 2));
+
+	if (dy > dx)
+	{
+		s32 tmp;
+		tmp = dx;
+		dx = dy;
+		dy = tmp;
+		tmp = xInc;
+		xInc = yInc;
+		yInc = tmp;
+	}
+
+	c = dx << 1;
+	m = dy << 1;
+
+	run = dx;
+	const u16 packA = alpha ? 0x8000 : 0;
+	do
+	{
+		*dst = packA | PixelBlend16(*dst, argb, alpha);
+
+		dst = (u16*)((u8*)dst + xInc);	// x += xInc
+		d += m;
+		if (d > dx)
+		{
+			dst = (u16*)((u8*)dst + yInc);	// y += yInc
+			d -= c;
+		}
+		run -= 1;
+	} while (run >= 0);
+}
+
+/*
+*/
+static void RenderLine32_Replace(video::IImage* t,
+	const core::position2d<s32>& p0,
+	const core::position2d<s32>& p1,
+	u32 argb)
+{
+	s32 dx = p1.X - p0.X;
+	s32 dy = p1.Y - p0.Y;
+
+	s32 c;
+	s32 m;
+	s32 d = 0;
+	s32 run;
+
+	s32 xInc = 4;
+	s32 yInc = (s32)t->getPitch();
+
+	if (dx < 0)
+	{
+		xInc = -xInc;
+		dx = -dx;
+	}
+
+	if (dy < 0)
+	{
+		yInc = -yInc;
+		dy = -dy;
+	}
+
+	u32* dst;
+	dst = (u32*)((u8*)t->getData() + (p0.Y * t->getPitch()) + (p0.X * 4));
+
+	if (dy > dx)
+	{
+		s32 tmp;
+		tmp = dx;
+		dx = dy;
+		dy = tmp;
+		tmp = xInc;
+		xInc = yInc;
+		yInc = tmp;
+	}
+
+	c = dx << 1;
+	m = dy << 1;
+
+	run = dx;
+	do
+	{
+		*dst = argb;
+
+		dst = (u32*)((u8*)dst + xInc);	// x += xInc
+		d += m;
+		if (d > dx)
+		{
+			dst = (u32*)((u8*)dst + yInc);	// y += yInc
+			d -= c;
+		}
+		run -= 1;
+	} while (run >= 0);
+}
+
+/*
+*/
+static void RenderLine32_Blend(video::IImage* t,
+	const core::position2d<s32>& p0,
+	const core::position2d<s32>& p1,
+	u32 argb, u32 alpha)
+{
+	s32 dx = p1.X - p0.X;
+	s32 dy = p1.Y - p0.Y;
+
+	s32 c;
+	s32 m;
+	s32 d = 0;
+	s32 run;
+
+	s32 xInc = 4;
+	s32 yInc = (s32)t->getPitch();
+
+	if (dx < 0)
+	{
+		xInc = -xInc;
+		dx = -dx;
+	}
+
+	if (dy < 0)
+	{
+		yInc = -yInc;
+		dy = -dy;
+	}
+
+	u32* dst;
+	dst = (u32*)((u8*)t->getData() + (p0.Y * t->getPitch()) + (p0.X * 4));
+
+	if (dy > dx)
+	{
+		s32 tmp;
+		tmp = dx;
+		dx = dy;
+		dy = tmp;
+		tmp = xInc;
+		xInc = yInc;
+		yInc = tmp;
+	}
+
+	c = dx << 1;
+	m = dy << 1;
+
+	run = dx;
+	const u32 packA = packAlpha(alpha);
+	do
+	{
+		*dst = packA | PixelBlend32(*dst, argb, alpha);
+
+		dst = (u32*)((u8*)dst + xInc);	// x += xInc
+		d += m;
+		if (d > dx)
+		{
+			dst = (u32*)((u8*)dst + yInc);	// y += yInc
+			d -= c;
+		}
+		run -= 1;
+	} while (run >= 0);
+}
+
+
 
 //! draws a line from to with color
 static inline void drawLine(video::IImage* img, const core::position2d<s32>& from,
@@ -1490,38 +1719,38 @@ static inline void drawLine(video::IImage* img, const core::position2d<s32>& fro
 	core::position2d<s32> p[2];
 	if (ClipLine( clip, p[0], p[1], from, to))
 	{
-		u32 alpha = extractAlpha(color.color);
+		const u32 alpha = extractAlpha(color.color);
 
 		switch(img->getColorFormat())
 		{
 		case video::ECF_A1R5G5B5:
-				if (alpha == 256)
-				{
-					RenderLine16_Decal(img, p[0], p[1], video::A8R8G8B8toA1R5G5B5(color.color));
-				}
-				else
-				{
-					RenderLine16_Blend(img, p[0], p[1], video::A8R8G8B8toA1R5G5B5(color.color), alpha >> 3);
-				}
-				break;
+			if (alpha == 256)
+			{
+				RenderLine16_Replace(img, p[0], p[1], video::A8R8G8B8toA1R5G5B5(color.color));
+			}
+			else
+			{
+				RenderLine16_Blend(img, p[0], p[1], video::A8R8G8B8toA1R5G5B5(color.color), alpha >> 3);
+			}
+			break;
 		case video::ECF_A8R8G8B8:
-				if (alpha == 256)
-				{
-					RenderLine32_Decal(img, p[0], p[1], color.color);
-				}
-				else
-				{
-					RenderLine32_Blend(img, p[0], p[1], color.color, alpha);
-				}
-				break;
+			if (alpha == 256)
+			{
+				RenderLine32_Replace(img, p[0], p[1], color.color);
+			}
+			else
+			{
+				RenderLine32_Blend(img, p[0], p[1], color.color, alpha);
+			}
+			break;
 		default:
-				break;
+			break;
 		}
 	}
 }
 
-
-}
+} // namespace video
+} // namespace irr
 
 #endif
 

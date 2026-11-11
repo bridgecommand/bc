@@ -1835,22 +1835,10 @@
     <ClCompile Include="CD3D9Texture.cpp">
       <Filter>Irrlicht\video\Direct3D9</Filter>
     </ClCompile>
-    <ClCompile Include="CBurningShader_Raster_Reference.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
-    <ClCompile Include="CDepthBuffer.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
     <ClCompile Include="CSoftwareDriver2.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
     <ClCompile Include="CSoftwareTexture2.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
-    <ClCompile Include="CTRGouraud2.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
-    <ClCompile Include="CTRGouraudAlphaNoZ2.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
     <ClCompile Include="CTRNormalMap.cpp">
@@ -2391,9 +2379,6 @@
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>	
     <ClCompile Include="CTR_transparent_reflection_2_layer.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
-    <ClCompile Include="CTRGouraudNoZ2.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
   </ItemGroup>

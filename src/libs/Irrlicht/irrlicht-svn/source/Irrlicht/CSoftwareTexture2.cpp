@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -9,13 +9,23 @@
 #include "SoftwareDriver2_helper.h"
 #include "CSoftwareTexture2.h"
 #include "CSoftwareDriver2.h"
-#include "CBlit.h"
 #include "os.h"
 
 burning_namespace_start
 
+enum eBlitter2
+{
+	BLITTER_INVALID = 0,
+	//BLITTER_COLOR,
+	//BLITTER_COLOR_ALPHA,
+	BLITTER_TEXTURE,
+	BLITTER_TEXTURE_ALPHA_BLEND,
+	BLITTER_TEXTURE_ALPHA_COLOR_BLEND,
+	//BLITTER_TEXTURE_COMBINE_ALPHA,
+};
+
 //! stretches srcRect src to dstRect dst, applying a sliding window box filter in linear color space (sRGB->linear->sRGB)
-void Resample_subSampling(eBlitter op, video::IImage* dst, const core::rect<s32>* dstRect, const video::IImage* src, const core::rect<s32>* srcRect, size_t flags);
+void Resample_subSampling(eBlitter2 op, video::IImage* dst, const core::rect<s32>* dstRect, const video::IImage* src, const core::rect<s32>* srcRect, size_t flags);
 
 //nearest pow of 2 ( 257 will be 256 not 512 )
 static inline core::dimension2d<u32> getOptimalSize(const core::dimension2d<u32>& original,
@@ -38,7 +48,7 @@ static inline core::dimension2d<u32> getOptimalSize(const core::dimension2d<u32>
 			while (h < original.Height) h *= 2;
 		}
 	*/
-	else if (interlace.bypass)
+	else if (interlace.m.bypass)
 	{
 		w = 1;
 		while (w * 2 < original.Width) w *= 2;
@@ -50,8 +60,8 @@ static inline core::dimension2d<u32> getOptimalSize(const core::dimension2d<u32>
 	}
 	else
 	{
-		u32 dw = original.Width / (interlace.tex_scalex + 1);
-		u32 dh = original.Height / (interlace.tex_scaley + 1);
+		u32 dw = original.Width / (interlace.m.tex_scalex + 1);
+		u32 dh = original.Height / (interlace.m.tex_scaley + 1);
 
 		w = 1;
 		while (w < dw) w *= 2;
@@ -69,11 +79,12 @@ static inline core::dimension2d<u32> getOptimalSize(const core::dimension2d<u32>
 const IImage* CSoftwareTexture2::original_mip0 = 0;
 
 //! constructor
-CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 flags, CBurningVideoDriver* driver)
+CSoftwareTexture2::CSoftwareTexture2(const io::path& name, const core::array<IImage*>& images, E_TEXTURE_TYPE type,
+	u32 flags /*eTex2Flags*/, CBurningVideoDriver* driver)
 #if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
-	: ITexture(name),Type(ETT_2D)
+	: ITexture(name),Type(type)
 #else
-	: ITexture(name, ETT_2D)
+	: ITexture(name, type)
 #endif
 	, MipMapLOD(0), Flags(flags), Driver(driver)
 {
@@ -84,30 +95,11 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 fl
 #if SOFTWARE_DRIVER_2_MIPMAPPING_MAX <= 1
 	Flags &= ~(GEN_MIPMAP | GEN_MIPMAP_AUTO);
 #endif
-	//set baseclass properties
-	DriverType = EDT_BURNINGSVIDEO;
-	ColorFormat = (Flags & IS_RENDERTARGET) ? SOFTWARE_DRIVER_2_RENDERTARGET_COLOR_FORMAT : SOFTWARE_DRIVER_2_TEXTURE_COLOR_FORMAT;
-	IsRenderTarget = (Flags & IS_RENDERTARGET) != 0;
-	HasMipMaps = (Flags & GEN_MIPMAP) != 0;
 
-	for (size_t i = 0; i < array_size(MipMap); ++i) MipMap[i] = 0;
-	if (!image)
-	{
-		calcDerivative();
-		return;
-	}
-
-	OriginalSize = image->getDimension();
-	OriginalColorFormat = image->getColorFormat();
-
-
-#if defined(IRRLICHT_sRGB)
-	if (Flags & IMAGE_IS_LINEAR) image->set_sRGB(0);
-#else
-
+#if !defined(IRRLICHT_sRGB)
 	//compatible means all texture are linear
 	//Flags |= TEXTURE_IS_LINEAR | IMAGE_IS_LINEAR;
-
+#if 0
 	//guessing linear image, everything else degamma
 	if (name.find("light") >= 0 ||
 		name.find("bump") >= 0 ||
@@ -117,77 +109,19 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 fl
 	{
 		Flags |= TEXTURE_IS_LINEAR | IMAGE_IS_LINEAR;
 	}
-
-
+#endif
 #endif
 
-	bool isCompressed = IImage::isCompressedFormat(OriginalColorFormat);
-	if (isCompressed)
-	{
-		os::Printer::log("Texture compression not available.", ELL_ERROR);
-	}
+	//set baseclass properties
+	DriverType = EDT_BURNINGSVIDEO;
+	ColorFormat = (Flags & IS_RENDERTARGET) ? SOFTWARE_DRIVER_2_RENDERTARGET_COLOR_FORMAT : SOFTWARE_DRIVER_2_TEXTURE_COLOR_FORMAT;
+	IsRenderTarget = (Flags & IS_RENDERTARGET) != 0;
+	HasMipMaps = (Flags & GEN_MIPMAP) != 0;
 
-	//visual studio code warning
-	u32 maxTexSize = SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE;
+	// init mipmap
+	for (size_t i = 0; i < array_size(MipMap); ++i) MipMap[i] = 0;
 
-#if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
-	if (IsRenderTarget && name.find("RaceGUI::markers") >= 0)
-	{
-		maxTexSize = 0;
-	}
-#endif
-
-	//thread-local storage if needed
-	original_mip0 = 0;
-
-	const interlaced_control& interlaced = Driver->getInterlace();
-	core::dimension2d<u32> optSize(getOptimalSize(OriginalSize, Flags & ALLOW_NPOT, maxTexSize, interlaced));
-	if (OriginalSize == optSize)
-	{
-		MipMap[0] = new CImage(ColorFormat, image->getDimension());
-#if defined(IRRLICHT_sRGB)
-		MipMap[0]->set_sRGB((Flags & TEXTURE_IS_LINEAR) ? 0 : image->get_sRGB());
-#endif
-		if (!isCompressed && image->getData())
-			image->copyTo(MipMap[0]);
-	}
-	else
-	{
-		MipMap[0] = new CImage(ColorFormat, optSize);
-#if defined(IRRLICHT_sRGB)
-		MipMap[0]->set_sRGB((Flags & TEXTURE_IS_LINEAR) ? 0 : image->get_sRGB());
-#endif
-		if (!isCompressed)
-		{
-			//image->copyToScalingBoxFilter ( MipMap[0],0, false );
-			Resample_subSampling(BLITTER_TEXTURE, MipMap[0], 0, image, 0, Flags);
-			original_mip0 = image;
-		}
-		// if Original Size is used for calculation ( 2D position, font) it will be wrong
-		//OriginalSize = optSize;
-	}
-
-	// Show Information about resizing
-	if ((OriginalSize != optSize && interlaced.tex_scalex == 0) ||
-		(OriginalColorFormat != ColorFormat &&
-			!((OriginalColorFormat == ECF_R8G8B8 || OriginalColorFormat == ECF_A1R5G5B5) && ColorFormat == ECF_A8R8G8B8)
-			)
-		)
-	{
-		char buf[256];
-		core::stringw showName(name);
-		snprintf_irr(buf, sizeof(buf), "Burningvideo: Texture '%ls' reformat %ux%u,%s -> %ux%u,%s",
-			showName.c_str(),
-			OriginalSize.Width, OriginalSize.Height, ColorFormatNames[OriginalColorFormat],
-			optSize.Width, optSize.Height, ColorFormatNames[ColorFormat]
-		);
-		os::Printer::log(buf, ELL_DEBUG);
-	}
-
-
-	//select highest mipmap 0
-	regenerateMipMapLevels(image->getMipMapsData());
-	original_mip0 = 0;
+	regenerateImageLevels(name, images);
 }
 
 
@@ -204,6 +138,99 @@ CSoftwareTexture2::~CSoftwareTexture2()
 	}
 }
 
+void CSoftwareTexture2::regenerateImageLevels(const io::path& name, const core::array<IImage*>& images)
+{
+	const interlaced_control& interlaced = Driver->getRenderTarget().interlaced;
+
+	//visual studio code warning
+	u32 maxTexSize = SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE;
+
+#if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
+	if (IsRenderTarget && name.find("RaceGUI::markers") >= 0)
+	{
+		maxTexSize = 0;
+	}
+#endif
+
+	for (u32 i = 0; i < images.size(); ++i)
+	{
+		if (MipMap[i])
+		{
+			MipMap[i]->drop();
+			MipMap[i] = 0;
+		}
+
+		IImage* image = images[i];
+		if (!image) continue;
+
+#if defined(IRRLICHT_sRGB)
+		if (Flags & IMAGE_IS_LINEAR) image->set_sRGB(0);
+#endif
+
+		core::dimension2d<u32> originalSize = image->getDimension();;
+		ECOLOR_FORMAT originalColorFormat = image->getColorFormat();
+		if (i == 0)
+		{
+			OriginalSize = originalSize;
+			OriginalColorFormat = originalColorFormat;
+		}
+		const bool isCompressed = IImage::isCompressedFormat(originalColorFormat);
+		if (isCompressed)
+		{
+			os::Printer::log("Texture compression not available.", ELL_ERROR);
+		}
+
+		original_mip0 = 0;
+		core::dimension2d<u32> optSize(getOptimalSize(originalSize, Flags & ALLOW_NPOT, maxTexSize, interlaced));
+		if (originalSize == optSize)
+		{
+			MipMap[i] = new CImage(ColorFormat, image->getDimension());
+#if defined(IRRLICHT_sRGB)
+			MipMap[i]->set_sRGB((Flags & TEXTURE_IS_LINEAR) ? 0 : image->get_sRGB());
+#endif
+			if (!isCompressed && image->getData())
+				image->copyTo(MipMap[i]);
+		}
+		else
+		{
+			MipMap[i] = new CImage(ColorFormat, optSize);
+#if defined(IRRLICHT_sRGB)
+			MipMap[0]->set_sRGB((Flags & TEXTURE_IS_LINEAR) ? 0 : image->get_sRGB());
+#endif
+			if (!isCompressed)
+			{
+				//image->copyToScalingBoxFilter ( MipMap[i],0, false );
+				Resample_subSampling(BLITTER_TEXTURE, MipMap[i], 0, image, 0, Flags);
+				original_mip0 = image;
+			}
+			// if Original Size is used for calculation ( 2D position, font) it will be wrong
+			//OriginalSize = optSize;
+		}
+
+		// Show Information about resizing
+		if ((originalSize != optSize && interlaced.m.tex_scalex == 0) ||
+			(originalColorFormat != ColorFormat &&
+				!((originalColorFormat == ECF_R8G8B8 || originalColorFormat == ECF_A1R5G5B5) && ColorFormat == ECF_A8R8G8B8)
+				)
+			)
+		{
+			char buf[256];
+			core::stringw showName(name);
+			snprintf_irr(buf, array_size(buf), "Burningvideo: Texture '%ls' %u reformat %ux%u,%s -> %ux%u,%s",
+				showName.c_str(), (u32)i,
+				originalSize.Width, originalSize.Height, ColorFormatNames[originalColorFormat],
+				optSize.Width, optSize.Height, ColorFormatNames[ColorFormat]
+			);
+			os::Printer::log(buf, ELL_DEBUG);
+		}
+
+		if (Type == ETT_2D) regenerateMipMapLevels(image->getMipMapsData());
+		original_mip0 = 0;
+	}
+	if (Type == ETT_CUBEMAP) calcDerivative();
+	original_mip0 = 0;
+}
+
 
 //! Regenerates the mip map levels of the texture. Useful after locking and
 //! modifying the texture
@@ -213,6 +240,13 @@ void CSoftwareTexture2::regenerateMipMapLevels(void* data, u32 layer)
 void CSoftwareTexture2::regenerateMipMapLevels(void* data)
 #endif
 {
+	// do nothing until cubemaps has mipmaps
+	if (Type == ETT_CUBEMAP)
+	{
+		calcDerivative();
+		return;
+	}
+
 	size_t i;
 
 	// release
@@ -353,7 +387,7 @@ void CSoftwareTexture2::regenerateMipMapLevels(void* data)
 		}
 		if (original_mip0)
 		{
-			snprintf_irr(buf, sizeof(buf), "mip/%s_org.png", name + filename);
+			snprintf_irr(buf, sprintf_countof(buf), "mip/%s_org.png", name + filename);
 			Driver->writeImageToFile((IImage*)original_mip0, buf);
 		}
 		if (array_size(MipMap) >= 1 && MipMap[1])
@@ -361,7 +395,7 @@ void CSoftwareTexture2::regenerateMipMapLevels(void* data)
 			{
 				if (MipMap[i])
 				{
-					snprintf_irr(buf, sizeof(buf), "mip/%s_%02d.png", name + filename, (s32)i);
+					snprintf_irr(buf, sprintf_countof(buf), "mip/%s_%02d.png", name + filename, (s32)i);
 					Driver->writeImageToFile(MipMap[i], buf);
 				}
 			}
@@ -369,6 +403,7 @@ void CSoftwareTexture2::regenerateMipMapLevels(void* data)
 #endif
 	calcDerivative();
 }
+
 
 void CSoftwareTexture2::calcDerivative()
 {
@@ -381,24 +416,37 @@ void CSoftwareTexture2::calcDerivative()
 	}
 
 	//preCalc mipmap texel center boundaries
-
+	
 	for (size_t i = 0; i < array_size(MipMap); ++i)
 	{
 		CSoftwareTexture2_Bound& b = TexBound[i];
 
 		core::dimension2du dim(0, 0);
-		if (MipMap[i] && MipMap[i]->getData()) dim = MipMap[i]->getDimension();
+		b.data = MipMap[i] ? (const u8*) MipMap[i]->getData() : 0;
+		if (b.data)
+		{
+			dim = MipMap[i]->getDimension();
+			//internal texture clone
+			b.pitch = MipMap[i]->getPitch();
+		}
+		b.pitchlog2 = s32_log2_s32((u32)b.pitch);
 
-		b.area = dim.Width * dim.Height;
-		if (b.area < 1)
+		b.pix_area = dim.Width * dim.Height;
+		if (b.pix_area < 1)
 		{
 			b.mat[0] = 0.f;
 			b.mat[1] = 0.f;
 			b.mat[2] = 0.f;
 			b.mat[3] = 0.f;
+
+			b.textureXMask = 0;
+			b.textureYMask = 0;
 		}
 		else
 		{
+			b.textureXMask = s32_to_fixPoint(dim.Width - 1) & FIX_POINT_UNSIGNED_MASK;
+			b.textureYMask = s32_to_fixPoint(dim.Height - 1) & FIX_POINT_UNSIGNED_MASK;
+
 #if 0
 			const f32 nu = 0.5f / dim.Width;
 			const f32 nv = 0.5f / dim.Height;
@@ -423,10 +471,125 @@ void CSoftwareTexture2::calcDerivative()
 
 }
 
+/* Depth and Stencil */
+
+
+//! constructor
+CDepthBuffer::CDepthBuffer(const core::dimension2d<u32>& size)
+	: Buffer(0), BufferAllocSize(0), Size(0, 0), Pitch(0)
+{
+#ifdef _DEBUG
+	setDebugName("CDepthBuffer");
+#endif
+
+	setSize(size);
+}
+
+
+//! destructor
+CDepthBuffer::~CDepthBuffer()
+{
+	if (Buffer)
+	{
+		delete[] Buffer;
+		Buffer = 0;
+	}
+}
+
+
+
+//! clears the zbuffer
+void CDepthBuffer::clear(f32 value, const interlaced_control interlaced)
+{
+	ieee754 zMaxValue;
+
+#ifdef SOFTWARE_DRIVER_2_USE_WBUFFER
+	zMaxValue.f = 1.f - value;
+#else
+	zMaxValue.f = value;
+#endif
+
+	memset32_interlaced(Buffer, zMaxValue.u, Pitch, Size.Height, interlaced);
+}
+
+
+
+//! sets the new size of the buffer
+void CDepthBuffer::setSize(const core::dimension2d<u32>& size)
+{
+	if (size == Size)
+		return;
+
+	// shared depth buffer
+	Size = size;
+	Pitch = size.Width * sizeof(fp24);
+	size_t newTotalSize = align_next(Pitch * size.Height,16);
+	if (newTotalSize > BufferAllocSize)
+	{
+		if (Buffer) delete[] Buffer;
+		Buffer = new u8[newTotalSize];
+		BufferAllocSize = newTotalSize;
+	}
+	//clear(1.f, interlaced_disabled());
+}
+
+
+// -----------------------------------------------------------------
+
+//! constructor
+CStencilBuffer::CStencilBuffer(const core::dimension2d<u32>& size, unsigned bit)
+	: Buffer(0), BufferAllocSize(0), Size(0, 0), Pitch(0), Bit(bit)
+{
+#ifdef _DEBUG
+	setDebugName("CStencilBuffer");
+#endif
+
+	setSize(size);
+}
+
+//! destructor
+CStencilBuffer::~CStencilBuffer()
+{
+	if (Buffer)
+	{
+		delete[] Buffer;
+		Buffer = 0;
+	}
+}
+
+//! clears the buffer
+void CStencilBuffer::clear(u32 value, const interlaced_control interlaced)
+{
+	u32 set = value;
+	if (Bit == 8)
+	{
+		set |= set << 8;
+		set |= set << 16;
+	}
+	memset32_interlaced(Buffer, set, Pitch, Size.Height, interlaced);
+}
+
+//! sets the new size of the buffer
+void CStencilBuffer::setSize(const core::dimension2d<u32>& size)
+{
+	if (size == Size)
+		return;
+
+	Size = size;
+	Pitch = size.Width * sizeof(tStencilSample);
+	size_t newTotalSize = align_next(Pitch * size.Height, 16);
+	if (newTotalSize > BufferAllocSize)
+	{
+		if (Buffer) delete[] Buffer;
+		Buffer = new u8[newTotalSize];
+		BufferAllocSize = newTotalSize;
+	}
+}
+
 
 /* Software Render Target 2 */
 
-CSoftwareRenderTarget2::CSoftwareRenderTarget2(CBurningVideoDriver* driver) :
+CSoftwareRenderTarget2::CSoftwareRenderTarget2(CBurningVideoDriver* driver) : 
 #if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
 IRenderTarget(0), DepthStencil(0),
 #endif
@@ -434,14 +597,18 @@ Driver(driver)
 {
 	DriverType = EDT_BURNINGSVIDEO;
 
+	//compatible PATCH_SUPERTUX_8_0_1_with_1_9_0
 	Textures.set_used(1);
 	Textures[0] = 0;
 }
 
 CSoftwareRenderTarget2::~CSoftwareRenderTarget2()
 {
-	if (Textures[0])
-		Textures[0]->drop();
+	for (u32 i = 0; i < Textures.size(); ++i)
+	{
+		if (Textures[i])
+			Textures[i]->drop();
+	}
 
 	if (DepthStencil)
 		DepthStencil->drop();
@@ -450,29 +617,34 @@ CSoftwareRenderTarget2::~CSoftwareRenderTarget2()
 
 void CSoftwareRenderTarget2::setTextures(ITexture* const* textures, u32 numTextures, ITexture* depthStencil, const E_CUBE_SURFACE* cubeSurfaces, u32 numCubeSurfaces)
 {
-	if (!Textures.equals(textures, numTextures))
+	// Set color attachments.
+	if (!Textures.equals(textures, numTextures) || !CubeSurfaces.equals(cubeSurfaces, numCubeSurfaces))
 	{
-		ITexture* prevTexture = Textures[0];
+		CubeSurfaces.set_data(cubeSurfaces, numCubeSurfaces);
 
-		bool textureDetected = false;
+		core::array<ITexture*> prevTextures(Textures);
+		Textures.set_used(numTextures);
 
 		for (u32 i = 0; i < numTextures; ++i)
 		{
-			if (textures[i] && textures[i]->getDriverType() == EDT_BURNINGSVIDEO)
-			{
-				Textures[0] = textures[i];
-				Textures[0]->grab();
-				textureDetected = true;
+			CSoftwareTexture2* currentTexture = (textures[i] && textures[i]->getDriverType() == DriverType) ? static_cast<CSoftwareTexture2*>(textures[i]) : 0;
 
-				break;
+			Textures[i] = currentTexture;
+			if (currentTexture)
+			{
+				currentTexture->grab();
+
+				//todo: better reset mipmap/layer
+				//currentTexture->lock(video::ETLM_WRITE_ONLY, 0, i < numCubeSurfaces ? cubeSurfaces[i] : 0);
 			}
 		}
+		 
+		for (u32 i = 0; i < prevTextures.size(); ++i)
+		{
+			if (prevTextures[i])
+				prevTextures[i]->drop();
+		}
 
-		if (prevTexture)
-			prevTexture->drop();
-
-		if (!textureDetected)
-			Textures[0] = 0;
 	}
 
 	// Set depth and stencil attachments.
@@ -510,6 +682,8 @@ void CSoftwareRenderTarget2::setTextures(ITexture* const* textures, u32 numTextu
 
 }
 
+
+// Resample
 static const float srgb_8bit_to_linear_float[1 << 8] = {
 	0.0f, 3.03527e-4f, 6.07054e-4f, 9.10581e-4f,
 	0.001214108f, 0.001517635f, 0.001821162f, 0.0021246888f,
@@ -667,7 +841,7 @@ static inline int clipTest(absrect2& o, const core::rect<s32>* a, const absrect2
 
 //! stretches srcRect src to dstRect dst, applying a sliding window box filter in linear color space (sRGB->linear->sRGB)
 // todo: texture jumps (mip selection problem)
-void Resample_subSampling(eBlitter op, video::IImage* dst, const core::rect<s32>* dstRect,
+void Resample_subSampling(eBlitter2 op, video::IImage* dst, const core::rect<s32>* dstRect,
 	const video::IImage* src, const core::rect<s32>* srcRect, size_t flags)
 {
 	u8* dstData = (u8*)dst->getData();
@@ -751,9 +925,9 @@ void Resample_subSampling(eBlitter op, video::IImage* dst, const core::rect<s32>
 
 					switch (srcFormat)
 					{
-					case video::ECF_A1R5G5B5: sbgra = video::A1R5G5B5toA8R8G8B8(*(const u16*)(srcData + (fy * src_clip.x1) * 2 + (fx * 2))); break;
-					case video::ECF_R5G6B5: sbgra = video::R5G6B5toA8R8G8B8(*(const u16*)(srcData + (fy * src_clip.x1) * 2 + (fx * 2))); break;
-					case video::ECF_A8R8G8B8: sbgra = *(const u32*)(srcData + (fy * src_clip.x1) * 4 + (fx * 4)); break;
+					case video::ECF_A1R5G5B5: sbgra = video::A1R5G5B5toA8R8G8B8(*(u16*)(srcData + (fy * src_clip.x1) * 2 + (fx * 2))); break;
+					case video::ECF_R5G6B5: sbgra = video::R5G6B5toA8R8G8B8(*(u16*)(srcData + (fy * src_clip.x1) * 2 + (fx * 2))); break;
+					case video::ECF_A8R8G8B8: sbgra = *(u32*)(srcData + (fy * src_clip.x1) * 4 + (fx * 4)); break;
 					case video::ECF_R8G8B8:
 					{
 						const u8* p = srcData + (fy * src_clip.x1) * 3 + (fx * 3);

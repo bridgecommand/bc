@@ -6,7 +6,7 @@ void burning_shader_class::burning_shader_fragment()
 {
 #ifdef burning_shader_colormask
 #else
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 #endif
 
 #ifdef USE_ZBUFFER
@@ -28,10 +28,10 @@ void burning_shader_class::burning_shader_fragment()
 	fp24 slopeW;
 #endif
 #ifdef IPOL_C0
-	sVec4 slopeC[BURNING_MATERIAL_MAX_COLORS];
+	sVec4 slopeC[BURNING_MATERIAL_MAX_COLORS_USED];
 #endif
 #ifdef IPOL_T0
-	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES_USED];
 #endif
 
 	// apply top-left fill-convention, left
@@ -89,11 +89,11 @@ void burning_shader_class::burning_shader_fragment()
 	SOFTWARE_DRIVER_2_CLIPCHECK;
 #ifdef burning_shader_colormask
 #else
-	dst = (tVideoSample*)RenderTarget->getData() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 #endif
 
 #ifdef USE_ZBUFFER
-	z = (fp24*)DepthBuffer->lock() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 #endif
 
 #ifdef burning_shader_colormask

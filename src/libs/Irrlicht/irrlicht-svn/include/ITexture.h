@@ -11,6 +11,7 @@
 #include "EDriverTypes.h"
 #include "path.h"
 #include "matrix4.h"
+#include "SExposedTextureData.h"
 
 namespace irr
 {
@@ -191,7 +192,7 @@ public:
 
 	//! constructor
 	ITexture(const io::path& name, E_TEXTURE_TYPE type) : NamedPath(name), DriverType(EDT_NULL), OriginalColorFormat(ECF_UNKNOWN),
-		ColorFormat(ECF_UNKNOWN), Pitch(0), HasMipMaps(false), IsRenderTarget(false), Source(ETS_UNKNOWN), Type(type)
+		ColorFormat(ECF_UNKNOWN), Pitch(0), HasMipMaps(false), IsRenderTarget(false), MultiSamples(0), Source(ETS_UNKNOWN), Type(type)
 	{
 	}
 
@@ -288,6 +289,9 @@ public:
 	\return True if this is a render target, otherwise false. */
 	bool isRenderTarget() const { return IsRenderTarget; }
 
+	//! If a texture has multisamples return the amount of them
+	u32 getNumMultiSamples() const { return MultiSamples; }
+
 	//! Get name of texture (in most cases this is the filename)
 	const io::SNamedPath& getName() const { return NamedPath; }
 
@@ -325,6 +329,19 @@ public:
 	//! Returns the type of texture
 	E_TEXTURE_TYPE getType() const { return Type; }
 
+	//! Returns driver specific data about the ITexture
+	/** This can be useful when interacting with other libraries
+	or working with low level driver functions directly.
+	Note that not all drivers will return anything useful.
+	Also use with care - Irrlicht has for example some internal 
+	state caches for textures (mainly the active texture) which 
+	can get messed up if you work on textures outside the engine.
+	\return Collection of drive specific texture data */
+	virtual SExposedTextureData getExposedTextureData() const
+	{
+		return SExposedTextureData();	// dummy without any useful data
+	}
+
 protected:
 
 	//! Helper function, helps to get the desired texture creation format from the flags.
@@ -352,6 +369,7 @@ protected:
 	u32 Pitch;
 	bool HasMipMaps;
 	bool IsRenderTarget;
+	u32 MultiSamples;
 	E_TEXTURE_SOURCE Source;
 	E_TEXTURE_TYPE Type;
 };

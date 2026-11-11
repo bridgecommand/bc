@@ -688,7 +688,7 @@ video::ITexture* CMY3DMeshFileLoader::readEmbeddedLightmap(io::IReadFile* file, 
 	strcpy(texDataHeader.Name, namebuf);
 
 	char LightMapName[255];
-	sprintf(LightMapName,"My3D.Lightmap.%d",++LightMapIndex);
+	snprintf_irr(LightMapName, sizeof(LightMapName), "My3D.Lightmap.%d",++LightMapIndex);
 
 	core::stringc pixFormatStr;
 	if (texDataHeader.PixelFormat == MY3D_PIXEL_FORMAT_24)

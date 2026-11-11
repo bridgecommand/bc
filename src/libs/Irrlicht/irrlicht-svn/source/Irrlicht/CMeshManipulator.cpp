@@ -68,6 +68,7 @@ void CMeshManipulator::flipSurfaces(scene::IMesh* mesh) const
 				idx[i+2] = tmp;
 			}
 		}
+		buffer->setDirty(EBT_INDEX);
 	}
 }
 
@@ -120,6 +121,7 @@ void recalculateNormalsT(IMeshBuffer* buffer, bool smooth, bool angleWeighted)
 		for ( i = 0; i!= vtxcnt; ++i )
 			buffer->getNormal(i).normalize();
 	}
+	buffer->setDirty(EBT_VERTEX);
 }
 }
 
@@ -403,6 +405,7 @@ void recalculateTangentsT(IMeshBuffer* buffer, bool recalculateNormals, bool smo
 				v[idx[i+2]].Normal=localNormal;
 		}
 	}
+	buffer->setDirty(EBT_VERTEX);
 }
 }
 
@@ -477,6 +480,7 @@ void makePlanarTextureMappingT(scene::IMeshBuffer* buffer, f32 resolution)
 			}
 		}
 	}
+	buffer->setDirty(EBT_VERTEX);
 }
 }
 
@@ -545,6 +549,7 @@ void makePlanarTextureMappingT(scene::IMeshBuffer* buffer, f32 resolutionS, f32 
 			}
 		}
 	}
+	buffer->setDirty(EBT_VERTEX);
 }
 }
 
@@ -1275,6 +1280,7 @@ donehere:
 		free(accel[i]);
 	}
 	free(accel);
+	mb->setDirty(EBT_VERTEX_AND_INDEX);
 }
 
 //! Creates a copy of the mesh, which will only consist of S3DVertex2TCoords vertices.
@@ -1431,12 +1437,12 @@ s32 CMeshManipulator::getPolyCount(const scene::IMesh* mesh) const
 	if (!mesh)
 		return 0;
 
-	s32 trianglecount = 0;
+	s32 polycount = 0;
 
 	for (u32 g=0; g<mesh->getMeshBufferCount(); ++g)
-		trianglecount += mesh->getMeshBuffer(g)->getIndexCount() / 3;
+		polycount += mesh->getMeshBuffer(g)->getPrimitiveCount();
 
-	return trianglecount;
+	return polycount;
 }
 
 

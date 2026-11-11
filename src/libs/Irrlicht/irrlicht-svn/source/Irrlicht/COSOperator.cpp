@@ -190,6 +190,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 	{
 		char buffer[1024];
 		size_t r = fread(buffer, 1, 1023, file);
+		fclose(file);
 		buffer[r] = 0;
 		buffer[1023]=0;
 		core::stringc str(buffer);
@@ -200,12 +201,17 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 			if (pos != -1)
 			{
 				while ( str[++pos] == ' ' );
-				*MHz = core::fast_atof(str.c_str()+pos);
+				float speed = core::fast_atof(str.c_str()+pos);
+				if ( speed >= 0.f )
+				{
+					if ( MHz )
+						*MHz = (u32)speed;
+					return true;
+				}
 			}
 		}
-		fclose(file);
 	}
-	return (MHz && *MHz != 0);
+	return false;
 #endif
 }
 

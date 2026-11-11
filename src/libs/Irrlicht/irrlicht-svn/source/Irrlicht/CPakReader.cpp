@@ -90,7 +90,8 @@ bool CArchiveLoaderPAK::isALoadableFileFormat(io::IReadFile* file) const
 {
 	SPAKFileHeader header;
 
-	file->read(&header, sizeof(header));
+	if ( file->read(&header, sizeof(header)) != sizeof(header) )
+		return false;
 
 	return isHeaderValid(header);
 }
@@ -132,7 +133,8 @@ bool CPakReader::scanLocalHeader()
 	SPAKFileHeader header;
 
 	// Read and validate the header
-	File->read(&header, sizeof(header));
+	if ( File->read(&header, sizeof(header)) != sizeof(header) )
+		return false;
 	if (!isHeaderValid(header))
 		return false;
 
@@ -141,7 +143,11 @@ bool CPakReader::scanLocalHeader()
 	header.offset = os::Byteswap::byteswap(header.offset);
 	header.length = os::Byteswap::byteswap(header.length);
 #endif
-	File->seek(header.offset);
+	if ( !File->seek(header.offset) )
+	{
+		os::Printer::log("header.offset outside of file", ELL_WARNING);
+		return false;
+	}
 
 	const int numberOfFiles = header.length / sizeof(SPAKFileEntry);
 
@@ -150,7 +156,11 @@ bool CPakReader::scanLocalHeader()
 	{
 		// read an entry
 		SPAKFileEntry entry;
-		File->read(&entry, sizeof(entry));
+		if ( File->read(&entry, sizeof(entry)) != sizeof(entry) )
+		{
+			os::Printer::log("Could not read all entries", ELL_WARNING);
+			break;
+		}
 
 #ifdef _DEBUG
 		os::Printer::log(entry.name);

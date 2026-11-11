@@ -267,11 +267,11 @@ namespace video
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) IRR_OVERRIDE;
+				const io::path& name, const ECOLOR_FORMAT format, u32 multiSamples, bool mipmap) IRR_OVERRIDE;
 
 		//! Creates a render target texture for a cubemap
 		ITexture* addRenderTargetTextureCubemap(const irr::u32 sideLen,
-				const io::path& name, const ECOLOR_FORMAT format) IRR_OVERRIDE;
+				const io::path& name, const ECOLOR_FORMAT format, bool mipmap) IRR_OVERRIDE;
 
 		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) IRR_OVERRIDE;
 

@@ -80,6 +80,9 @@ namespace irr
 		//! Returns true if the window is resizable, false if not
 		virtual bool isResizable() const;
 
+		//! Returns true if the window is in fullscreen mode
+		virtual bool isFullscreen() const IRR_OVERRIDE;
+
 		//! Minimizes the window if possible
 		virtual void minimizeWindow() IRR_OVERRIDE;
 
@@ -91,6 +94,9 @@ namespace irr
 
         //! Get the position of this window on screen
         virtual core::position2di getWindowPosition() IRR_OVERRIDE;
+
+		//! Set the size of the window in windowed mode
+		virtual void setWindowSize(const irr::core::dimension2d<u32>& size) IRR_OVERRIDE;
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo) IRR_OVERRIDE;
@@ -249,7 +255,6 @@ namespace irr
 		int ScreenHeight;
 		u32 MouseButtonStates;
         u32 SoftwareRendererType;
-        bool IsFullscreen;
 		bool IsActive;
 		bool IsShiftDown;
 		bool IsControlDown;

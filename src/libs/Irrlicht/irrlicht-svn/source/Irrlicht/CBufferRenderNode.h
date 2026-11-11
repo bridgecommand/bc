@@ -50,7 +50,15 @@ public:
 		RenderPass = pass;
 		ParentDoesRender = parentDoesRender;
 		if ( !ParentDoesRender )
-			return SceneManager->registerNodeForRendering(this, pass);
+		{
+			u32 registered = SceneManager->registerNodeForRendering(this, pass);
+			if (!registered)
+			{	// reset
+				RenderPass = ESNRP_NONE;
+				ParentDoesRender = true;
+			}
+			return registered;
+		}
 		return 0;
 	}
 

@@ -26,6 +26,27 @@ namespace video
 		ECS_NEGZ
 	};
 
+	//! Structure for render target data internally used by drivers
+	/** This data can be retrieved by IRenderTarget::getExposedRenderTargetData(). 
+	Note that this structure does not contain any valid data if the driver 
+	does not return any exposed data.
+	*/
+	struct SExposedRenderTargetData
+	{
+		SExposedRenderTargetData() {OpenGL.FramebufferName = 0;}
+
+		// For OpenGL driver types
+		struct SOpenGL
+		{
+			unsigned int FramebufferName;	// GLuint: Name of the framebuffer object name for the render target
+		};
+
+		union // union as more types my be useful in future (same as in similar exposed data structures)
+		{
+			SOpenGL OpenGL;
+		};
+	};
+
 	//! Interface of a Render Target.
 	class IRenderTarget : public virtual IReferenceCounted
 	{
@@ -98,6 +119,17 @@ namespace video
 		{
 			return DriverType;
 		}
+
+		//! Returns driver specific data about the IRenderTarget
+		/** This can be useful when interacting with other libraries
+		or working with low level driver functions directly.
+		Note that not all drivers will return anything useful.
+		\return Collection of drive specific texture data */
+		virtual SExposedRenderTargetData getExposedRenderTargetData() const
+		{
+			return SExposedRenderTargetData();	// dummy without any useful data
+		}
+
 
 	protected:
 

@@ -20,7 +20,9 @@ namespace core
 	method for collision detection with other rectangles and points.
 
 	Coordinates are (0,0) for top-left corner, and increasing to the right
-	and to the bottom.
+	and to the bottom. 
+	For a single pixel a rectangle goes for example from 0,0 to 1,1
+	The lower-right corner is not inside the rectangle itself.
 	*/
 	template <class T>
 	class rect
@@ -106,13 +108,16 @@ namespace core
 
 		//! Returns if a 2d point is within this rectangle.
 		/** \param pos Position to test if it lies within this rectangle.
+		 Note: Since Irrlicht 1.9 Upper-left point is inside, lower right point is not
+		       In older versions both were considered inside which was usually wrong 
+			   especially when used with pixels.
 		\return True if the position is within the rectangle, false if not. */
 		bool isPointInside(const position2d<T>& pos) const
 		{
 			return (UpperLeftCorner.X <= pos.X &&
 				UpperLeftCorner.Y <= pos.Y &&
-				LowerRightCorner.X >= pos.X &&
-				LowerRightCorner.Y >= pos.Y);
+				LowerRightCorner.X > pos.X &&
+				LowerRightCorner.Y > pos.Y);
 		}
 
 		//! Check if the rectangle collides with another rectangle.

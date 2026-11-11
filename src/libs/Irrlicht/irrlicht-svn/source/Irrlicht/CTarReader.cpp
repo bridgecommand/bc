@@ -85,7 +85,8 @@ bool CArchiveLoaderTAR::isALoadableFileFormat(io::IReadFile* file) const
 
 	// read header of first file
 	STarHeader fHead;
-	file->read(&fHead, sizeof(STarHeader));
+	if ( file->read(&fHead, sizeof(STarHeader)) != sizeof(STarHeader) )
+		return false;
 
 	u32 checksum = 0;
 	sscanf(fHead.Checksum, "%o", &checksum);
@@ -166,7 +167,8 @@ u32 CTarReader::populateFileList()
 		File->seek(pos);
 
 		// read the header
-		File->read(&fHead, sizeof(fHead));
+		if ( File->read(&fHead, sizeof(fHead)) != sizeof(fHead) )
+			break;
 
 		// only add standard files for now
 		if (fHead.Link == ETLI_REGULAR_FILE || ETLI_REGULAR_FILE_OLD)

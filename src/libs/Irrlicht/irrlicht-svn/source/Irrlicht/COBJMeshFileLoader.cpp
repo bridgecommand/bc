@@ -340,23 +340,26 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	// Combine all the groups (meshbuffers) into the mesh
 	for ( u32 m = 0; m < Materials.size(); ++m )
 	{
-		if ( Materials[m]->Meshbuffer->getIndexCount() > 0 )
+		scene::CDynamicMeshBuffer * mb = Materials[m]->Meshbuffer;
+		mb->setName(Materials[m]->Group);
+		
+		if ( mb->getIndexCount() > 0 )
 		{
 			if ( getIndexTypeHint() == EITH_OPTIMAL
-				&& Materials[m]->Meshbuffer->getVertexCount() <= 65536 )
+				&& mb->getVertexCount() <= 65536 )
 			{
-				Materials[m]->Meshbuffer->getIndexBuffer().setType(video::EIT_16BIT);
+				mb->getIndexBuffer().setType(video::EIT_16BIT);
 			}
 
 
-			Materials[m]->Meshbuffer->recalculateBoundingBox();
+			mb->recalculateBoundingBox();
 			if (Materials[m]->RecalculateNormals)
-				SceneManager->getMeshManipulator()->recalculateNormals(Materials[m]->Meshbuffer);
-			if (Materials[m]->Meshbuffer->Material.MaterialType == video::EMT_PARALLAX_MAP_SOLID)
+				SceneManager->getMeshManipulator()->recalculateNormals(mb);
+			if (mb->Material.MaterialType == video::EMT_PARALLAX_MAP_SOLID)
 			{
-				Materials[m]->Meshbuffer->getVertexBuffer().setType(video::EVT_TANGENTS);
+				mb->getVertexBuffer().setType(video::EVT_TANGENTS);
 			}
-			mesh->addMeshBuffer( Materials[m]->Meshbuffer );
+			mesh->addMeshBuffer( mb );
 		}
 	}
 

@@ -145,12 +145,18 @@ namespace scene
 
 
 		//! Returns the name of the node.
-		/** \return Name as character string. */
+		/** \return Name as c-string. */
 		virtual const c8* getName() const
 		{
 			return Name.c_str();
 		}
 
+		//! Returns the name of the node.
+		/** \return Name as Irrlicht string. */
+		virtual const core::stringc& getNameStr() const
+		{
+			return Name;
+		}
 
 		//! Sets the name of the node.
 		/** \param name New name of the scene node. */
@@ -158,7 +164,6 @@ namespace scene
 		{
 			Name = name;
 		}
-
 
 		//! Sets the name of the node.
 		/** \param name New name of the scene node. */

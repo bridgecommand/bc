@@ -457,6 +457,7 @@ protected:
 						bufferbox.addInternalPoint(buffer->getPosition(i));
 				}
 			}
+			buffer->setDirty(EBT_VERTEX);
 			if (boundingBoxUpdate)
 				buffer->setBoundingBox(bufferbox);
 			return true;

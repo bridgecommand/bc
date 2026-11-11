@@ -193,11 +193,10 @@ public:
 					if (textureID != 0)
 					{
 						AssignedTextures[i] = GL_COLOR_ATTACHMENT0 + i;
-						GLenum textarget = currentTexture->getType() == ETT_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP_POSITIVE_X + (int)CubeSurfaces[i];
+
+						GLenum textarget = currentTexture->getOpenGLTextureTarget(CubeSurfaces.empty() ? 0 : (u32)CubeSurfaces[i]);
 						Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, AssignedTextures[i], textarget, textureID, 0);
-#ifdef _DEBUG
-						Driver->testGLError(__LINE__);
-#endif
+						// Driver->testGLError(__LINE__);
 					}
 					else if (AssignedTextures[i] != GL_NONE)
 					{
@@ -230,13 +229,15 @@ public:
 
 				if (IImage::isDepthFormat(textureFormat))
 				{
-					GLuint textureID = static_cast<TOpenGLTexture*>(DepthStencil)->getOpenGLTextureName();
+					TOpenGLTexture* currentDepthStencil = static_cast<TOpenGLTexture*>(DepthStencil);
+					GLenum depthStencilTexTarget = currentDepthStencil->getOpenGLTextureTarget();
+					GLuint textureID = currentDepthStencil->getOpenGLTextureName();
 
-					Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
+					Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthStencilTexTarget, textureID, 0);
 
 					if (textureFormat == ECF_D24S8)
 					{
-						Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
+						Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, depthStencilTexTarget, textureID, 0);
 
 						AssignedStencil = true;
 					}
@@ -261,9 +262,7 @@ public:
 					AssignedDepth = false;
 					AssignedStencil = false;
 				}
-#ifdef _DEBUG
-				Driver->testGLError(__LINE__);
-#endif
+				// Driver->testGLError(__LINE__);
 
 				RequestDepthStencilUpdate = false;
 			}
@@ -285,10 +284,7 @@ public:
 					Driver->irrGlDrawBuffers(bufferCount, AssignedTextures.pointer());
 				}
 
-#ifdef _DEBUG
-				Driver->testGLError(__LINE__);
-#endif
-
+				// Driver->testGLError(__LINE__);
 			}
 
 #ifdef _DEBUG
@@ -316,6 +312,13 @@ public:
 		}
 
 		return 0;
+	}
+
+	virtual SExposedRenderTargetData getExposedRenderTargetData() const IRR_OVERRIDE
+	{
+		SExposedRenderTargetData data;
+		data.OpenGL.FramebufferName = BufferID;
+		return data;
 	}
 
 protected:

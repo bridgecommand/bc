@@ -5,7 +5,7 @@ vec4_to_fix(a0, r0, g0, b0, line.c[0][0], inversew);
 #ifdef IPOL_A0
 if (a0 > AlphaRef)
 {
-	color_to_fix(r1, g1, b1, dst[i]);
+	sample_to_fix(r1, g1, b1, dst[i]);
 
 	fix_color_norm(a0);
 	r0 = r1 + imulFix(a0, r0 - r1);

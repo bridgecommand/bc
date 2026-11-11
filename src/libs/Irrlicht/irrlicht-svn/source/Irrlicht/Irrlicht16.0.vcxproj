@@ -919,12 +919,10 @@
     <ClInclude Include="CD3D9ParallaxMapRenderer.h" />
     <ClInclude Include="CD3D9ShaderMaterialRenderer.h" />
     <ClInclude Include="CD3D9Texture.h" />
-    <ClInclude Include="CDepthBuffer.h" />
     <ClInclude Include="CSoftware2MaterialRenderer.h" />
     <ClInclude Include="CSoftwareDriver2.h" />
     <ClInclude Include="CSoftwareTexture2.h" />
     <ClInclude Include="IBurningShader.h" />
-    <ClInclude Include="IDepthBuffer.h" />
     <ClInclude Include="S4DVertex.h" />
     <ClInclude Include="SoftwareDriver2_compile_config.h" />
     <ClInclude Include="SoftwareDriver2_helper.h" />
@@ -1069,7 +1067,6 @@
     <ClCompile Include="CQ3LevelMesh.cpp" />
     <ClCompile Include="CSkinnedMesh.cpp" />
     <ClCompile Include="CSTLMeshFileLoader.cpp" />
-    <ClCompile Include="CTRGouraudNoZ2.cpp" />
     <ClCompile Include="CTRParallaxMap.cpp" />
     <ClCompile Include="CTR_transparent_reflection_2_layer.cpp" />
     <ClCompile Include="CWGLManager.cpp" />
@@ -1169,12 +1166,8 @@
     <ClCompile Include="CD3D9ParallaxMapRenderer.cpp" />
     <ClCompile Include="CD3D9ShaderMaterialRenderer.cpp" />
     <ClCompile Include="CD3D9Texture.cpp" />
-    <ClCompile Include="CBurningShader_Raster_Reference.cpp" />
-    <ClCompile Include="CDepthBuffer.cpp" />
     <ClCompile Include="CSoftwareDriver2.cpp" />
     <ClCompile Include="CSoftwareTexture2.cpp" />
-    <ClCompile Include="CTRGouraud2.cpp" />
-    <ClCompile Include="CTRGouraudAlphaNoZ2.cpp" />
     <ClCompile Include="CTRNormalMap.cpp" />
     <ClCompile Include="CTRStencilShadow.cpp" />
     <ClCompile Include="CTRTextureBlend.cpp" />

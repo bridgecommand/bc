@@ -73,7 +73,8 @@ bool CArchiveLoaderWAD::isALoadableFileFormat(io::IReadFile* file) const
 	SWADFileHeader header;
 	memset(&header, 0, sizeof(header));
 
-	file->read( &header.tag, 4 );
+	if ( file->read( &header.tag, 4 ) != 4 )
+		return false;
 
 	return !strncmp ( header.tag, "WAD2", 4 ) || !strncmp ( header.tag, "WAD3", 4 );
 }
@@ -180,11 +181,15 @@ bool CWADReader::scanLocalHeader()
 
 	File->seek ( Header.infotableofs );
 
-	c8 buf[16];
+	c8 buf[16] = {0};
 	for ( u32 i = 0; i < Header.numlumps; ++i )
 	{
 		// read entry
-		File->read(&entry, sizeof ( SWADFileEntryOriginal ));
+		if ( File->read(&entry, sizeof (SWADFileEntryOriginal)) != sizeof (SWADFileEntryOriginal) )
+		{
+			os::Printer::log("Could not read all entries", ELL_WARNING);
+			break;
+		}
 		entry.name[ sizeof ( entry.name ) - 1 ] = 0;
 
 		save.header = entry;

@@ -5,9 +5,10 @@
 #ifndef IRR_C_VIDEO_2_SOFTWARE_H_INCLUDED
 #define IRR_C_VIDEO_2_SOFTWARE_H_INCLUDED
 
+#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 #include "SoftwareDriver2_compile_config.h"
-#include "IBurningShader.h"
 #include "IImagePresenter.h"
+#include "IBurningShader.h"
 #include "CNullDriver.h"
 #include "CImage.h"
 #include "os.h"
@@ -61,32 +62,18 @@ namespace video
 			f32 clearDepth, u8 clearStencil) IRR_OVERRIDE;
 
 		//! sets a viewport
-		virtual void setViewPort(const core::rect<s32>& area, bool clipToRenderTarget=true) IRR_OVERRIDE;
+		virtual void setViewPort(const core::rect<s32>& area, bool clipToRenderTarget = true) IRR_OVERRIDE;
 		virtual void setScissor(int x, int y, int width, int height);
 
 		virtual bool beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil,
 			const SExposedVideoData& videoData, core::rect<s32>* sourceRect) IRR_OVERRIDE;
 
-#if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color,
-			const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
-		{
-			u16 flag = 0;
-			if (backBuffer)	flag |= ECBF_COLOR;
-			if (zBuffer) flag |= ECBF_DEPTH;
-			return beginScene(flag, color, 1.f, 0, videoData, sourceRect);
-		}
-		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color);
-#endif
 
 		virtual bool endScene() IRR_OVERRIDE;
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
 		virtual void OnResize(const core::dimension2d<u32>& size) IRR_OVERRIDE;
-
-		//! returns size of the current render target
-		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const IRR_OVERRIDE;
 
 		//! deletes all dynamic lights there are
 		virtual void deleteAllDynamicLights() IRR_OVERRIDE;
@@ -181,12 +168,15 @@ namespace video
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-			const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN
+			const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN, u32 multiSamples=0, bool mipmap=false
 #if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
 			, const bool useStencil = false
 #endif
 		) IRR_OVERRIDE;
 
+		//! Creates a render target texture for a cubemap
+		ITexture* addRenderTargetTextureCubemap(const irr::u32 sideLen,
+			const io::path& name, const ECOLOR_FORMAT format, bool mipmap) IRR_OVERRIDE;
 
 		virtual void clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil) IRR_OVERRIDE;
 
@@ -229,9 +219,6 @@ namespace video
 		virtual bool needsTransparentRenderPass(const irr::video::SMaterial& material) const IRR_OVERRIDE;
 #endif
 
-		IDepthBuffer * getDepthBuffer () { return DepthBuffer; }
-		IStencilBuffer * getStencilBuffer () { return StencilBuffer; }
-
 		//! Adds a new material renderer to the VideoDriver, using pixel and/or
 		//! vertex shaders to render geometry.
 		virtual s32 addShaderMaterial(const c8* vertexShaderProgram,
@@ -271,7 +258,7 @@ namespace video
 
 		//pass BaseMaterialID
 		void setFallback_Material(E_MATERIAL_TYPE fallback_MaterialType
-			, eBurningVertexShader vertexShader);
+			,const BVCompiledShader& vertexShader, const BVCompiledShader& fragmentshader);
 
 		//! Return an index constant for the vertex shader based on a name.
 		virtual s32 getVertexShaderConstantID(const c8* name) IRR_OVERRIDE;
@@ -287,6 +274,10 @@ namespace video
 		virtual bool setPixelShaderConstant(s32 index, const u32* ints, int count) IRR_OVERRIDE;
 		
 		virtual void setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount) IRR_OVERRIDE;
+
+		//! Get pointer to the IVideoDriver interface
+		/** \return Pointer to the IVideoDriver interface */
+		virtual IVideoDriver* getVideoDriver() IRR_OVERRIDE;
 
 #if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
 		virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count)
@@ -314,17 +305,25 @@ namespace video
 		{
 			return setPixelShaderConstant(getPixelShaderConstantID(name), ints, count);
 		}
+
+		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color,
+			const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
+		{
+			u16 flag = 0;
+			if (backBuffer)	flag |= ECBF_COLOR;
+			if (zBuffer) flag |= ECBF_DEPTH;
+			return beginScene(flag, color, 1.f, 0, videoData, sourceRect);
+		}
+		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color);
+
+		//! returns size of the current render target
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const IRR_OVERRIDE;
 #endif
-		//! Get pointer to the IVideoDriver interface
-		/** \return Pointer to the IVideoDriver interface */
-		virtual IVideoDriver* getVideoDriver() IRR_OVERRIDE;
 
 	protected:
 
-		void saveBuffer();
-
 		//! sets a render target
-		void setRenderTargetImage2(video::IImage* color, video::IImage* depth=0, video::IImage* stencil=0);
+		void setRenderTargetImage2(video::CImage* color, video::IImage* depth=0, video::IImage* stencil=0);
 
 		//! sets the current Texture
 		//bool setTexture(u32 stage, video::ITexture* texture);
@@ -332,25 +331,28 @@ namespace video
 		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image) IRR_OVERRIDE;
 		virtual ITexture* createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image) IRR_OVERRIDE;
 
-		video::CImage* BackBuffer;
+		sBurningRenderTarget RenderTarget;
+	public:
+		// access from shader
+		sBurningRenderTarget& getRenderTarget() { return RenderTarget; }
+		//const interlaced_control& getInterlace() { return Interlaced; }
+	protected:
+
 		video::IImagePresenter* Presenter;
 
 		void* WindowId;
 		core::rect<s32>* SceneSourceRect;
 
-		video::ITexture* RenderTargetTexture;
-		video::IImage* RenderTargetSurface;
-		core::dimension2d<u32> RenderTargetSize;
-		sVec4 RatioRenderTargetScreen; // Smaller Render Target
+		//video::ITexture* RenderTargetTexture;
+		//video::IImage* RenderTargetSurface;
+		//core::dimension2d<u32> RenderTargetSize;
+		//sVec2 RatioRenderTargetScreen; // Smaller Render Target
 
 		IBurningShader* CurrentShader;
 		IBurningShader* BurningShader[ETR2_COUNT];
 
 		PushShaderData PushShader;
 		void pushShader(scene::E_PRIMITIVE_TYPE pType, int testCurrent);
-
-		IDepthBuffer* DepthBuffer;
-		IStencilBuffer* StencilBuffer;
 
 
 		/*
@@ -401,7 +403,7 @@ namespace video
 		void transform_calc(E_TRANSFORMATION_STATE_BURNING_VIDEO state);
 
 		//core::recti ViewPort;
-		AbsRectangle Scissor;
+		AbsRectangle2 Scissor;
 
 		// Vertex Cache
 		SVertexShader VertexShader;
@@ -419,8 +421,8 @@ namespace video
 		//size_t inline clipToHyperPlane (s4DVertexPair* burning_restrict dest, const s4DVertexPair* burning_restrict source, const size_t inCount, const sVec4 &plane );
 		//size_t inline clipToFrustumTest ( const s4DVertex * v  ) const;
 		public:
-		void VertexCache_fill(const u32 sourceIndex, const u32 destIndex);
-		u32 clipToFrustum( const u32 vIn /*, const size_t clipmask_for_face*/ );
+		void VertexCache_fill(const tCacheIndex sourceIndex, const tCacheIndex destIndex);
+		u32 clipToFrustum( const u32 vIn /*, const size_t clipmask_for_face*/ ) const;
 		protected:
 
 		// holds transformed, clipped vertices for a triangle. triangle expands on clipping
@@ -438,32 +440,19 @@ namespace video
 			f32 end, f32 density, bool pixelFog, bool rangeFog) IRR_OVERRIDE;
 
 
-		//void ndc_2_dc_and_project (s4DVertexPair* dest,const s4DVertexPair* source, const size_t vIn ) const;
-
-		//const is misleading. **v is const that true, but not *v..
-		//f32 screenarea_inside (const s4DVertexPair* burning_restrict const face[] ) const;
-		//s32 lodFactor_inside ( const s4DVertexPair* burning_restrict const face[], const size_t tex, const f32 dc_area, const f32 lod_bias ) const;
-		//void select_polygon_mipmap_inside (s4DVertexPair* burning_restrict face[], const size_t tex, const CSoftwareTexture2_Bound& b ) const;
-
-		//void getCameraPosWorldSpace();
 		void assignHardwareLight(SBurningShaderLight& l, const SLight& dl);
 		SBurningShaderEyeSpace EyeSpace;
 		SBurningShaderMaterial Material;
 
-		//static const sVec4 NDCPlane[6+2];
-
 		//! Built-in 2D quad for 2D rendering.
 		S3DVertex Quad2DVertices[4];
-		interlaced_control Interlaced;
-		f32 TexBias[2];
-public:
-		const interlaced_control& getInterlace() { return Interlaced; }
-protected:
 
-		u32 samples_passed;
+		f32 TexBias[2];
+		u32 fragment_passed;
 
 #if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
 		core::array<IRenderTarget*> RenderTargets;
+		core::dimension2d<u32> CurrentRenderTargetSize;
 
 		inline bool getWriteZBuffer(const SMaterial& material) const
 		{
@@ -480,5 +469,7 @@ protected:
 } // end namespace video
 } // end namespace irr
 
+
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
 #endif

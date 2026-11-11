@@ -1,31 +1,14 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#include "IBurningShader.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#include "IBurningShader.h"
 
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
-
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_C1
-#undef IPOL_C2
-#undef IPOL_T0
-#undef IPOL_T1
-#undef IPOL_L0
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
 // define render case
 #define SUBTEXEL
@@ -43,56 +26,7 @@
 //#define IPOL_T1
 //#define IPOL_L0
 
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-	#undef INVERSE_W
-#endif
-
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-	#undef SUBTEXEL
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 1
-	#undef IPOL_C0
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 2
-	#undef IPOL_C1
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 3
-#undef IPOL_C2
-#endif
-
-#if BURNING_MATERIAL_MAX_LIGHT_TANGENT < 1
-	#undef IPOL_L0
-#endif
-
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-	#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-		#undef IPOL_W
-	#endif
-	#define IPOL_Z
-
-	#ifdef CMP_W
-		#undef CMP_W
-		#define CMP_Z
-	#endif
-
-	#ifdef WRITE_W
-		#undef WRITE_W
-		#define WRITE_Z
-	#endif
-
-#endif
-
-
-namespace irr
-{
-
-namespace video
-{
+#include "burning_shader_compile_verify.h"
 
 class CTRTextureGouraud2 : public IBurningShader
 {
@@ -103,32 +37,83 @@ public:
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
-	virtual bool canWireFrame () IRR_OVERRIDE { return true; }
+	virtual bool canWireFrame() IRR_OVERRIDE { return true; }
 
+	virtual void OnSetMaterial_BL(const SBurningShaderMaterial& material) IRR_OVERRIDE;
+	virtual void OnRender_BL(IMaterialRendererServices* service) IRR_OVERRIDE;
 
 private:
-	void fragmentShader ();
+
+	// fragment shader
+	typedef void (CTRTextureGouraud2::* tFragmentShader) ();
+	tFragmentShader fragmentShader;
+
+	void fragment_linear();
+
+	void frag_BFT_IRR_0225_0x3bf0d5a1();
+	tFixPoint mEmissive_fix[4];
+
+	void frag_BFT_IRR_0342_0x11b0394b();
+	glslEmu::samplerCube cubeTex;
+	f32 Roughness;
+
 };
 
 //! constructor
 CTRTextureGouraud2::CTRTextureGouraud2(CBurningVideoDriver* driver)
-: IBurningShader(driver,EMT_SOLID)
+	: IBurningShader(driver, EMT_SOLID)
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	setDebugName("CTRTextureGouraud2");
-	#endif
+#endif
+	fragmentShader = &CTRTextureGouraud2::fragment_linear;
+
+	//frag_BFT_IRR_0225_0x3bf0d5a1
+	mEmissive_fix[0] = 0;
+	mEmissive_fix[1] = 0;
+	mEmissive_fix[2] = 0;
+	mEmissive_fix[3] = 0;
+
+	//frag_BFT_IRR_0342_0x11b0394b
+	cubeTex = 0;
+	Roughness = 0.f;
 }
 
+/*!
+*/
+void CTRTextureGouraud2::OnSetMaterial_BL(const SBurningShaderMaterial& material)
+{
+	if (material.FragmentShader.id == BFT_IRR_0225_0x3bf0d5a1) fragmentShader = &CTRTextureGouraud2::frag_BFT_IRR_0225_0x3bf0d5a1;
+	else if (material.FragmentShader.id == BFT_IRR_0342_0x11b0394b) fragmentShader = &CTRTextureGouraud2::frag_BFT_IRR_0342_0x11b0394b;
+	else fragmentShader = &CTRTextureGouraud2::fragment_linear;
+}
+
+void CTRTextureGouraud2::OnRender_BL(IMaterialRendererServices* service)
+{
+	if (glsl.MaterialLink->FragmentShader.id == BFT_IRR_0225_0x3bf0d5a1)
+	{
+		const f32* mEmissive = bl_uniform_p(f32, "mEmissive");
+		mEmissive_fix[0] = tofix(mEmissive[0], FIX_POINT_F32_MUL * COLOR_MAX);
+		mEmissive_fix[1] = tofix(mEmissive[1], FIX_POINT_F32_MUL * COLOR_MAX);
+		mEmissive_fix[2] = tofix(mEmissive[2], FIX_POINT_F32_MUL * COLOR_MAX);
+		mEmissive_fix[3] = tofix(mEmissive[3], FIX_POINT_F32_MUL * COLOR_MAX);
+	}
+	else if (glsl.MaterialLink->FragmentShader.id == BFT_IRR_0342_0x11b0394b)
+	{
+		cubeTex = *bl_uniform_p(glslEmu::samplerCube, "cubeTex");
+		Roughness = *bl_uniform_p(f32, "Roughness");
+	}
+}
 
 
 /*!
 */
-void CTRTextureGouraud2::fragmentShader ()
+void CTRTextureGouraud2::fragment_linear()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample* dst;
 
 #ifdef USE_ZBUFFER
-	fp24 *z;
+	fp24* z;
 #endif
 
 	s32 xStart;
@@ -147,10 +132,10 @@ void CTRTextureGouraud2::fragmentShader ()
 	fp24 slopeW;
 #endif
 #ifdef IPOL_C0
-	sVec4 slopeC[BURNING_MATERIAL_MAX_COLORS];
+	sVec4 slopeC[BURNING_MATERIAL_MAX_COLORS_USED];
 #endif
 #ifdef IPOL_T0
-	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES_USED];
 #endif
 
 #ifdef IPOL_L0
@@ -158,16 +143,16 @@ void CTRTextureGouraud2::fragmentShader ()
 #endif
 
 	// apply top-left fill-convention, left
-	xStart = fill_convention_left( line.x[0] );
-	xEnd = fill_convention_right( line.x[1] );
+	xStart = fill_convention_left(line.x[0]);
+	xEnd = fill_convention_right(line.x[1]);
 
 	dx = xEnd - xStart;
 
-	if ( dx < 0 )
+	if (dx < 0)
 		return;
 
 	// slopes
-	const f32 invDeltaX = fill_step_x( line.x[1] - line.x[0] );
+	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
 
 #ifdef IPOL_Z
 	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
@@ -196,7 +181,7 @@ void CTRTextureGouraud2::fragmentShader ()
 
 
 #ifdef SUBTEXEL
-	subPixel = ( (f32) xStart ) - line.x[0];
+	subPixel = ((f32)xStart) - line.x[0];
 #ifdef IPOL_Z
 	line.z[0] += slopeZ * subPixel;
 #endif
@@ -224,14 +209,14 @@ void CTRTextureGouraud2::fragmentShader ()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 #endif
 
 
-	f32 inversew = FIX_POINT_F32_MUL;
+	f32 inversew = INVERSE_W_RANGE;
 
 	tFixPoint tx0;
 	tFixPoint ty0;
@@ -251,19 +236,19 @@ void CTRTextureGouraud2::fragmentShader ()
 #endif
 
 #if defined(BURNINGVIDEO_RENDERER_FAST) && COLOR_MAX==0xff
-	u32 dIndex = ( line.y & 3 ) << 2;
+	u32 dIndex = (line.y & 3) << 2;
 #endif
 
-	for ( s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
+	for (s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
 	{
 		//if test active only first pixel
 		if ((0 == EdgeTestPass) & (i > line.x_edgetest)) break;
 
 #ifdef CMP_Z
-		if ( line.z[0] < z[i] )
+		if (line.z[0] < z[i])
 #endif
 #ifdef CMP_W
-		if ( line.w[0] >= z[i] )
+		if (line.w[0] >= z[i])
 #endif
 		{
 #ifdef WRITE_Z
@@ -274,7 +259,7 @@ void CTRTextureGouraud2::fragmentShader ()
 #endif
 
 #ifdef INVERSE_W
-			inversew = fix_inverse32 ( line.w[0] );
+			inversew = fix_inverse32(line.w[0]);
 #endif
 
 #ifdef IPOL_C1
@@ -289,13 +274,12 @@ void CTRTextureGouraud2::fragmentShader ()
 				}
 			}
 #endif
-			tx0 = tofix ( line.t[0][0].x, inversew);
-			ty0 = tofix ( line.t[0][0].y, inversew);
-
+			tx0 = tofix(line.t[0][0].x, inversew);
+			ty0 = tofix(line.t[0][0].y, inversew);
 
 #ifdef IPOL_C0
 
-			getSample_texture(r0, g0, b0, &IT[0], tx0, ty0);
+			getSample_texture(r0, g0, b0, IT + 0, tx0, ty0);
 			vec4_to_fix(r1, g1, b1, line.c[0][0], inversew);
 
 			r0 = imulFix_simple(r0, r1);
@@ -307,7 +291,7 @@ void CTRTextureGouraud2::fragmentShader ()
 			//specular highlight
 			if (TL_Flag & TL_SPECULAR)
 			{
-				vec4_to_fix(r1, g1, b1, line.c[1][0], inversew*COLOR_MAX);
+				vec4_to_fix(r1, g1, b1, line.c[1][0], inversew * COLOR_MAX);
 				r0 = clampfix_maxcolor(r1 + r0);
 				g0 = clampfix_maxcolor(g1 + g0);
 				b0 = clampfix_maxcolor(b1 + b0);
@@ -319,7 +303,7 @@ void CTRTextureGouraud2::fragmentShader ()
 				g0 = fog_color[2] + imulFix(aFog, g0 - fog_color[2]);
 				b0 = fog_color[3] + imulFix(aFog, b0 - fog_color[3]);
 			}
-			dst[i] = fix_to_sample(r0, g0, b0);
+			dst[i] = fix_to_sample_nearest(r0, g0, b0);
 
 #else
 			dst[i] = fix_to_sample(
@@ -332,11 +316,11 @@ void CTRTextureGouraud2::fragmentShader ()
 #else
 
 #if defined(BURNINGVIDEO_RENDERER_FAST) && COLOR_MAX==0xff
-			const tFixPointu d = dithermask [ dIndex | ( i ) & 3 ];
-			dst[i] = getTexel_plain ( &IT[0], d + tx0, d + ty0 );
+			const tFixPointu d = dithermask[dIndex | (i) & 3];
+			dst[i] = texelFetch(&IT[0], d + tx0, d + ty0);
 #else
-			getSample_texture ( r0, g0, b0, &IT[0], tx0,ty0 );
-			dst[i] = fix_to_sample( r0, g0, b0 );
+			getSample_texture(r0, g0, b0, &IT[0], tx0, ty0);
+			dst[i] = fix_to_sample(r0, g0, b0);
 #endif
 
 #endif
@@ -374,19 +358,19 @@ void CTRTextureGouraud2::fragmentShader ()
 void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
+	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(b, c);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;
 	const f32 cb = c->Pos.y - b->Pos.y;
 	// calculate delta y of the edges
-	scan.invDeltaY[0] = fill_step_y( ca );
-	scan.invDeltaY[1] = fill_step_y( ba );
-	scan.invDeltaY[2] = fill_step_y( cb );
+	scan.invDeltaY[0] = fill_step_y(ca);
+	scan.invDeltaY[1] = fill_step_y(ba);
+	scan.invDeltaY[2] = fill_step_y(cb);
 
-	if ( F32_LOWER_EQUAL_0 ( scan.invDeltaY[0] ) )
+	if (F32_LOWER_EQUAL_0(scan.invDeltaY[0]))
 		return;
 
 	// find if the major edge is left or right aligned
@@ -399,6 +383,7 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 
 	scan.left = (temp[0] * temp[3] - temp[1] * temp[2]) < 0.f ? 1 : 0;
 	scan.right = 1 - scan.left;
+
 
 	// calculate slopes for the major edge
 	scan.slopeX[0] = (c->Pos.x - a->Pos.x) * scan.invDeltaY[0];
@@ -453,7 +438,7 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 #endif
 
 	// rasterize upper sub-triangle
-	if ( F32_GREATER_0(scan.invDeltaY[1])  )
+	if (F32_GREATER_0(scan.invDeltaY[1]))
 	{
 		// calculate slopes for top edge
 		scan.slopeX[1] = (b->Pos.x - a->Pos.x) * scan.invDeltaY[1];
@@ -500,11 +485,11 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_top( a->Pos.y );
-		yEnd = fill_convention_down( b->Pos.y );
+		yStart = fill_convention_top(a->Pos.y);
+		yEnd = fill_convention_down(b->Pos.y);
 
 #ifdef SUBTEXEL
-		subPixel = ( (f32) yStart ) - a->Pos.y;
+		subPixel = ((f32)yStart) - a->Pos.y;
 
 		// correct to pixel center
 		scan.x[0] += scan.slopeX[0] * subPixel;
@@ -555,7 +540,7 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 		// rasterize the edge scanlines
 		line.x_edgetest = fill_convention_edge(scan.slopeX[scan.left]);
 
-		for( line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
+		for (line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -601,8 +586,9 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 #endif
 
 			// render a scanline
-			if_interlace_scanline fragmentShader ();
-			if ( EdgeTestPass & edge_test_first_line ) break;
+			if_interlace_scanline
+			(this->*fragmentShader) ();
+			if (EdgeTestPass & edge_test_first_line) break;
 
 
 			scan.x[0] += scan.slopeX[0];
@@ -652,10 +638,10 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 	}
 
 	// rasterize lower sub-triangle
-	if (F32_GREATER_0(scan.invDeltaY[2]) )
+	if (F32_GREATER_0(scan.invDeltaY[2]))
 	{
 		// advance to middle point
-		if(F32_GREATER_0(scan.invDeltaY[1]) )
+		if (F32_GREATER_0(scan.invDeltaY[1]))
 		{
 			temp[0] = b->Pos.y - a->Pos.y;	// dy
 
@@ -732,11 +718,11 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_top( b->Pos.y );
-		yEnd = fill_convention_down( c->Pos.y );
+		yStart = fill_convention_top(b->Pos.y);
+		yEnd = fill_convention_down(c->Pos.y);
 
 #ifdef SUBTEXEL
-		subPixel = ( (f32) yStart ) - b->Pos.y;
+		subPixel = ((f32)yStart) - b->Pos.y;
 
 		// correct to pixel center
 		scan.x[0] += scan.slopeX[0] * subPixel;
@@ -785,8 +771,8 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 #endif
 		// rasterize the edge scanlines
 		line.x_edgetest = fill_convention_edge(scan.slopeX[scan.left]);
-		
-		for( line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
+
+		for (line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -832,8 +818,9 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 #endif
 
 			// render a scanline
-			if_interlace_scanline fragmentShader ();
-			if ( EdgeTestPass & edge_test_first_line ) break;
+			if_interlace_scanline
+			(this->*fragmentShader) ();
+			if (EdgeTestPass & edge_test_first_line) break;
 
 
 			scan.x[0] += scan.slopeX[0];
@@ -884,28 +871,443 @@ void CTRTextureGouraud2::drawTriangle(const s4DVertex* burning_restrict a, const
 
 }
 
-} // end namespace video
-} // end namespace irr
 
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
+/*!
+uniform sampler2D myTexture;
+uniform vec4 mEmissive;
 
-namespace irr
+void main (void)
 {
-namespace video
+	vec4 col = texture2D(myTexture, vec2(gl_TexCoord[0]));
+	col *= gl_Color;
+	gl_FragColor = col * 4.0;
+	gl_FragColor += mEmissive;
+}
+*/
+#undef IPOL_C1
+#include "burning_shader_compile_verify.h"
+
+void CTRTextureGouraud2::frag_BFT_IRR_0225_0x3bf0d5a1()
 {
+	tRenderTargetColorSample* dst;
+
+#ifdef USE_ZBUFFER
+	fp24* z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[BURNING_MATERIAL_MAX_COLORS_USED];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES_USED];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = fill_convention_left(line.x[0]);
+	xEnd = fill_convention_right(line.x[1]);
+
+	dx = xEnd - xStart;
+
+	if (dx < 0)
+		return;
+
+	// slopes
+	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ((f32)xStart) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+
+#endif
+
+	SOFTWARE_DRIVER_2_CLIPCHECK;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*)RenderTarget.depth->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+#endif
+
+	f32 inversew = INVERSE_W_RANGE;
+
+#include "burning_shader_glsl_emu_define.h"
+
+#define burning_shader_fixpoint
+
+#ifdef burning_shader_fixpoint
+	tFixPoint r0, g0, b0;
+	tFixPoint r2, g2, b2;
+
+#else
+	uniform(sampler2D, myTexture);
+#endif
+
+	for (s32 _sx = 0; _sx <= dx; _sx += SOFTWARE_DRIVER_2_STEP_X)
+	{
+
+#ifdef CMP_Z
+		if (line.z[0] > z[_sx]) discard;
+#endif
+#ifdef CMP_W
+		if (line.w[0] < z[_sx]) discard;
+#endif
+		{
+#ifdef WRITE_Z
+			z[_sx] = line.z[0];
+#endif
+#ifdef WRITE_W
+			z[_sx] = line.w[0];
+#endif
+
+#ifdef burning_shader_fixpoint
+
+#ifdef INVERSE_W
+			inversew = fix_inverse32(line.w[0]);
+#endif
+			getSample_texture(r0, g0, b0, IT + 0, tofix(line.t[0][0].x, inversew), tofix(line.t[0][0].y, inversew));
+
+			vec4_to_fix(r2, g2, b2, line.c[0][0], inversew);
+			r0 = clampfix_maxcolor(imulFix4(r0, r2) + mEmissive_fix[0]);
+			g0 = clampfix_maxcolor(imulFix4(g0, g2) + mEmissive_fix[1]);
+			b0 = clampfix_maxcolor(imulFix4(b0, b2) + mEmissive_fix[2]);
+			gl_FragColor = fix_to_sample_nearest(r0, g0, b0);
+#else
+			//inversew = fix_inverse32(line.w[0]);
+			inversew = reciprocal_zero_no(line.w[0]);
+
+			gl_TexCoord[0] = line.t[0][0] * inversew;
+			gl_Color = line.c[0][0] * inversew;
+
+			vec4 col = texture2D(myTexture, vec2(gl_TexCoord[0]));
+			col *= gl_Color;
+			gl_FragColor = col * 4.f;
+#endif
+		}
+
+	BL_shader_return:
+#ifdef IPOL_Z
+		line.z[0] += slopeZ;
+#endif
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+#ifdef IPOL_C1
+		line.c[1][0] += slopeC[1];
+#endif
+#ifdef IPOL_C2
+		line.c[2][0] += slopeC[2];
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_T1
+		line.t[1][0] += slopeT[1];
+#endif
+#ifdef IPOL_L0
+		line.l[0][0] += slopeL[0];
+#endif
+	}
+#include "burning_shader_glsl_emu_undefine.h"
+}
+
+
+void cubeProject(
+	E_CUBE_SURFACE& face,
+	sVec2& uv,
+	const sVec4& in,
+	const f32 inversew
+)
+{
+	sVec4 d;
+	d.x = in.x * inversew;
+	d.y = in.y * inversew;
+	d.z = in.z * inversew;
+	d.w = 0.f;
+	//d.normalize_dir_xyz();
+
+	//dominant axis
+	sVec4 a(fabsf(d.x), fabsf(d.y), fabsf(d.z));
+
+	f32 inv;
+	if (a.x >= a.y && a.x >= a.z) {
+		inv = reciprocal_zero_pos_underflow(a.x);
+		if (d.x > 0) { // +X
+			face = ECS_POSX;
+			uv.x = -d.z * inv;
+			uv.y = -d.y * inv;
+		}
+		else {       // -X
+			face = ECS_NEGX;
+			uv.x = d.z * inv;
+			uv.y = -d.y * inv;
+		}
+	}
+	else if (a.y >= a.x && a.y >= a.z) {
+		inv = reciprocal_zero_pos_underflow(a.y);
+		if (d.y > 0) { // +Y
+			face = ECS_POSY;
+			uv.x = d.x * inv;
+			uv.y = d.z * inv;
+		}
+		else {       // -Y
+			face = ECS_NEGY;
+			uv.x = d.x * inv;
+			uv.y = -d.z * inv;
+		}
+	}
+	else {
+		inv = reciprocal_zero_pos_underflow(a.z);
+		if (d.z > 0) { // +Z
+			face = ECS_POSZ;
+			uv.x = d.x * inv;
+			uv.y = -d.y * inv;
+		}
+		else {       // -Z
+			face = ECS_NEGZ;
+			uv.x = -d.x * inv;
+			uv.y = -d.y * inv;
+		}
+	}
+
+	// [-1,1] -> [0,1]
+	uv.x = uv.x * 0.5f + 0.5f;
+	uv.y = uv.y * 0.5f + 0.5f;
+
+	//BL_textureWrap(uv, texObj);
+	if (uv.x < 0.f) uv.x = 0;
+	else if (uv.x > 1.f) uv.x = 1.f;
+
+	if (uv.y < 0.f) uv.y = 0;
+	else if (uv.y > 1.f) uv.y = 1.f;
+
+}
+
+/*
+// cubeMapReflection.frag
+#version 130
+uniform samplerCube cubeTex;
+uniform float Roughness;
+
+void main( void )
+{
+//	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	vec3 uvw = vec3(gl_TexCoord[0]);
+	//gl_FragColor = textureCube( cubeTex, uvw );
+	gl_FragColor = textureLod( cubeTex, uvw, Roughness );
+	//gl_FragColor = textureCube( cubeTex, uvw, Roughness );
+}
+*/
+#undef IPOL_T0
+#undef IPOL_C1
+#include "burning_shader_compile_verify.h"
+
+void CTRTextureGouraud2::frag_BFT_IRR_0342_0x11b0394b()
+{
+	tRenderTargetColorSample* dst;
+
+#ifdef USE_ZBUFFER
+	fp24* z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[BURNING_MATERIAL_MAX_COLORS_USED];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES_USED];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = fill_convention_left(line.x[0]);
+	xEnd = fill_convention_right(line.x[1]);
+
+	dx = xEnd - xStart;
+	if (dx < 0)
+		return;
+
+	// slopes
+	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_C1
+	slopeC[1] = (line.c[1][1] - line.c[1][0]) * invDeltaX;
+#endif
+
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ((f32)xStart) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_C1
+	line.c[1][0] += slopeC[1] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+
+#endif
+
+	SOFTWARE_DRIVER_2_CLIPCHECK;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*)RenderTarget.depth->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+#endif
+
+	f32 inversew = INVERSE_W_RANGE;
+
+#define burning_shader_fragment_fix
+#include "burning_shader_glsl_emu_define.h"
+irr_unreferenced_parameter(gl_Color);
+
+
+	const CSoftwareTexture2_Bound* cubeTex_b = IT[cubeTex].Texture->getTexBound_index();
+	E_CUBE_SURFACE face;
+	sVec2 uv;
+
+	for (s32 _sx = 0; _sx <= dx; _sx += SOFTWARE_DRIVER_2_STEP_X)
+	{
+
+#ifdef CMP_Z
+		if (line.z[0] > z[_sx]) discard;
+#endif
+#ifdef CMP_W
+		if (line.w[0] < z[_sx]) discard;
+#endif
+		{
+#ifdef WRITE_Z
+			z[_sx] = line.z[0];
+#endif
+#ifdef WRITE_W
+			z[_sx] = line.w[0];
+#endif
+#ifdef INVERSE_W
+			inversew = reciprocal_zero_no(line.w[0]);
+#endif
+			// cubeProject
+			cubeProject(face, uv, line.c[0][0], inversew);
+			gl_TexCoord[0] = tofix(uv.x * cubeTex_b[face].mat[0], FIX_POINT_F32_MUL);
+			gl_TexCoord[1] = tofix(uv.y * cubeTex_b[face].mat[2], FIX_POINT_F32_MUL);
+
+			IT[cubeTex].setFace(face);
+			gl_FragColor = texelFetch(IT + cubeTex, gl_TexCoord[0], gl_TexCoord[1]);
+
+		}
+
+	BL_shader_return:
+#ifdef IPOL_Z
+		line.z[0] += slopeZ;
+#endif
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+#ifdef IPOL_C1
+		line.c[1][0] += slopeC[1];
+#endif
+#ifdef IPOL_C2
+		line.c[2][0] += slopeC[2];
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_T1
+		line.t[1][0] += slopeT[1];
+#endif
+#ifdef IPOL_L0
+		line.l[0][0] += slopeL[0];
+#endif
+	}
+#include "burning_shader_glsl_emu_undefine.h"
+}
+
+
+
 
 //! creates a flat triangle renderer
 IBurningShader* createTriangleRendererTextureGouraud2(CBurningVideoDriver* driver)
 {
 	// ETR_TEXTURE_GOURAUD
-	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CTRTextureGouraud2(driver);
-	#else
-	return 0;
-	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
 
+burning_namespace_end
 
-} // end namespace video
-} // end namespace irr
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 

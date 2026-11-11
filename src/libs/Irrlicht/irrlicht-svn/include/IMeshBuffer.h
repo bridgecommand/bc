@@ -8,6 +8,7 @@
 #include "IReferenceCounted.h"
 #include "SMaterial.h"
 #include "aabbox3d.h"
+#include "irrString.h"
 #include "S3DVertex.h"
 #include "SVertexIndex.h"
 #include "EHardwareBufferFlags.h"
@@ -193,6 +194,34 @@ s		\param updateBoundingBox When true update boundingbox by the added vertices *
 			return 0;
 		}
 
+		//! Returns the name of the mesh buffer
+		/** \return Name as c-string. */
+		virtual const c8* getName() const
+		{
+			return Name.c_str();
+		}
+
+		//! Returns the name of the mesh buffer
+		/** \return Name as Irrlicht string. */
+		virtual const core::stringc& getNameStr() const
+		{
+			return Name;
+		}
+
+		//! Sets the name of the mesh buffer
+		/** \param name New name of the scene node. */
+		virtual void setName(const c8* name)
+		{
+			Name = name;
+		}
+
+		//! Sets the name of the mesh buffer
+		/** \param name New name of the scene node. */
+		virtual void setName(const core::stringc& name)
+		{
+			Name = name;
+		}
+
 		//! Returns type of the class implementing the IMeshBuffer
 		/** \return The class type of this meshbuffer. */
 		virtual EMESH_BUFFER_TYPE getType() const
@@ -211,6 +240,9 @@ s		\param updateBoundingBox When true update boundingbox by the added vertices *
 		//\param cloneFlags A combination of ECloneFlags
 		virtual IMeshBuffer* createClone(int cloneFlags=ECF_VERTICES|ECF_INDICES) const = 0;
 
+	protected:
+		//! can be used for identification
+		core::stringc Name;
 	};
 
 } // end namespace scene

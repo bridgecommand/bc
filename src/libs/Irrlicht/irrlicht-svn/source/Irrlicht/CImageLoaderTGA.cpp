@@ -126,7 +126,7 @@ IImage* CImageLoaderTGA::loadImage(io::IReadFile* file) const
 	header.ImageHeight = os::Byteswap::byteswap(header.ImageHeight);
 #endif
 
-	if (!IImage::checkDataSizeLimit((size_t)header.ImageWidth* header.ImageHeight * (header.PixelDepth/8)))
+	if (!IImage::checkDataSizeLimit((u64)header.ImageWidth* header.ImageHeight * (header.PixelDepth/8), header.ImageWidth, header.ImageHeight))
 	{
 		os::Printer::log("Image dimensions too large in file", file->getFileName(), ELL_ERROR);
 		return 0;

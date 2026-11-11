@@ -180,14 +180,14 @@ private:
 			const core::vector3df& vt1, const core::vector3df& vt2, const core::vector3df& vt3,
 			const core::vector2df& tc1, const core::vector2df& tc2, const core::vector2df& tc3);
 
-		core::array<SSkinMeshBuffer*> *SkinningBuffers; //Meshbuffer to skin, default is to skin localBuffers
+		core::array<SSkinMeshBuffer*> *SkinningBuffers; //Meshbuffers to skin (currently always points to localBuffers, was probably meant for some future feature)
 
 		core::array<SSkinMeshBuffer*> LocalBuffers;
 
 		core::array<SJoint*> AllJoints;
 		core::array<SJoint*> RootJoints;
 
-		core::array< core::array<bool> > Vertices_Moved;
+		core::array< core::array<bool> > Vertices_Moved; // Weights check this array to see if they are the first to move a vertex in a skinning frame
 
 		core::aabbox3d<f32> BoundingBox;
 

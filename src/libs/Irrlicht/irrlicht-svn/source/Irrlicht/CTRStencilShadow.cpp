@@ -1,31 +1,15 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#include "IBurningShader.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#include "IBurningShader.h"
 
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef USE_SBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_T0
-#undef IPOL_T1
-#undef IPOL_T2
-#undef IPOL_L0
 
 // define render case
 #define SUBTEXEL
@@ -37,44 +21,8 @@
 #define CMP_W
 //#define WRITE_W
 
+#include "burning_shader_compile_verify.h"
 
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-	#undef INVERSE_W
-#endif
-
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-	#undef SUBTEXEL
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 1
-	#undef IPOL_C0
-#endif
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-	#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-		#undef IPOL_W
-	#endif
-	#define IPOL_Z
-
-	#ifdef CMP_W
-		#undef CMP_W
-		#define CMP_Z
-	#endif
-
-	#ifdef WRITE_W
-		#undef WRITE_W
-		#define WRITE_Z
-	#endif
-
-#endif
-
-
-namespace irr
-{
-
-namespace video
-{
 
 class CTRStencilShadow : public IBurningShader
 {
@@ -158,14 +106,14 @@ void CTRStencilShadow::fragmentShader()
 #endif
 #endif
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	//dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	//dst = (tRenderTargetColorSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 #ifdef USE_SBUFFER
-	stencil = (tStencilSample*) Stencil->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	stencil = (tStencilSample*)RenderTarget.stencil->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -180,7 +128,7 @@ void CTRStencilShadow::fragmentShader()
 		if (line.z[0] < z[i])
 #endif
 #ifdef CMP_W
-		if (line.w[0] > z[i])
+		if (line.w[0] >= z[i])
 #endif
 		{
 			// zpass
@@ -218,9 +166,9 @@ void CTRStencilShadow::fragmentShader()
 void CTRStencilShadow::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(a, b);
+	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(b, c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(a, b);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;
@@ -674,32 +622,14 @@ void CTRStencilShadow::drawTriangle(const s4DVertex* burning_restrict a, const s
 
 }
 
-
-} // end namespace video
-} // end namespace irr
-
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-namespace irr
-{
-namespace video
-{
-
-
 //! creates a triangle renderer
 IBurningShader* createTRStencilShadow(CBurningVideoDriver* driver)
 {
 	//ETR_STENCIL_SHADOW
-	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CTRStencilShadow(driver);
-	#else
-	return 0;
-	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
 
 
-} // end namespace video
-} // end namespace irr
+burning_namespace_end
 
-
-
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_

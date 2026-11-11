@@ -43,8 +43,8 @@ namespace io
 		s16 LastModFileTime;
 		s16 LastModFileDate;
 		SZIPFileDataDescriptor DataDescriptor;
-		s16 FilenameLength;
-		s16 ExtraFieldLength;
+		u16 FilenameLength;
+		u16 ExtraFieldLength;
 		// filename (variable size)
 		// extra field (variable size )
 	} PACK_STRUCT;
@@ -91,7 +91,7 @@ namespace io
 	struct SZipFileExtraHeader
 	{
 		s16 ID;
-		s16 Size;
+		u16 Size;
 	} PACK_STRUCT;
 
 	struct SZipFileAESExtraData
@@ -128,7 +128,7 @@ namespace io
 	struct SZipFileEntry
 	{
 		//! Position of data in the archive file
-		s32 Offset;
+		u32 Offset;
 
 		//! The header for this file containing compression info etc
 		SZIPFileHeader header;

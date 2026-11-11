@@ -559,14 +559,13 @@ namespace irr
 {
 //! constructor
 CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
-	: CIrrDeviceStub(param), Window(NULL), Display(NULL),
+	: CIrrDeviceStub(param), Window(NULL), Display(0),
 	DeviceWidth(0), DeviceHeight(0),
 	ScreenWidth(0), ScreenHeight(0), MouseButtonStates(0),
-	IsActive(true), IsFullscreen(false), IsShiftDown(false), IsControlDown(false), IsResizable(false),
+	IsActive(true), IsShiftDown(false), IsControlDown(false), IsResizable(false),
 	SoftwareDriverTarget(nil),SoftwareRendererType(0)
 {
 	struct utsname name;
-	NSString *path;
 
 #ifdef _DEBUG
 	setDebugName("CIrrDeviceMacOSX");
@@ -579,12 +578,15 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 		if (!CreationParams.WindowId)
 		{
 			[[NSAutoreleasePool alloc] init];
+			[[NSApplication sharedApplication] setActivationPolicy:NSApplicationActivationPolicyRegular];
 			[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
 			[[NSApplication sharedApplication] setDelegate:[[[CIrrDelegateOSX alloc] initWithDevice:this] autorelease]];
             
             // Create menu
             
             NSString* bundleName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+            if (!bundleName)
+                bundleName = @"Irrlicht";
             
             NSMenu* mainMenu = [[[NSMenu alloc] initWithTitle:@"MainMenu"] autorelease];
             NSMenu* menu = [[[NSMenu alloc] initWithTitle:bundleName] autorelease];
@@ -598,10 +600,11 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
             [NSApp finishLaunching];
 		}
 
-		path = [[NSBundle mainBundle] bundlePath];
-        path = [path stringByAppendingString:@"/Contents/Resources"];
-		chdir([path fileSystemRepresentation]);
-        [path release];
+        NSString* bundlePath = [[NSBundle mainBundle] bundlePath];
+        if ([[bundlePath lowercaseString] hasSuffix:@".app"]) {
+            NSString* path = [bundlePath stringByAppendingString:@"/Contents/Resources"];
+            chdir([path fileSystemRepresentation]);
+        }
 	}
 
 	uname(&name);
@@ -661,10 +664,9 @@ void CIrrDeviceMacOSX::closeDevice()
 		Window = nil;
 	}
     
-    if (IsFullscreen)
+    if (CreationParams.Fullscreen)
         CGReleaseAllDisplays();
 
-	IsFullscreen = false;
 	IsActive = false;
 }
 
@@ -720,8 +722,6 @@ bool CIrrDeviceMacOSX::createWindow()
     }
     else
     {
-        IsFullscreen = true;
-        
 #ifdef __MAC_10_6
         displaymode = CGDisplayCopyDisplayMode(Display);
         
@@ -801,7 +801,7 @@ bool CIrrDeviceMacOSX::createWindow()
             [Window makeKeyAndOrderFront:nil];
         }
         
-        if (IsFullscreen) //hide menus in fullscreen mode only
+        if (isFullscreen()) //hide menus in fullscreen mode only
         {
 #ifdef __MAC_10_6
             [NSApp setPresentationOptions:(NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar)];
@@ -996,7 +996,18 @@ bool CIrrDeviceMacOSX::run()
 
 			case NSLeftMouseDown:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-				ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
+				switch ([(NSEvent *)event clickCount])
+				{
+					case 2:
+						ievent.MouseInput.Event = irr::EMIE_LMOUSE_DOUBLE_CLICK;
+						break;
+					case 3:
+						ievent.MouseInput.Event = irr::EMIE_LMOUSE_TRIPLE_CLICK;
+						break;
+					default:
+						ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
+						break;
+				}
 				MouseButtonStates |= irr::EMBSM_LEFT;
 				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				postMouseEvent(event,ievent);
@@ -1073,7 +1084,7 @@ bool CIrrDeviceMacOSX::run()
 
 	[Pool release];
 
-	return (![[NSApp delegate] isQuit] && IsActive);
+	return (![(CIrrDelegateOSX *)[NSApp delegate] isQuit] && IsActive);
 }
 
 
@@ -1168,7 +1179,11 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 		mkey = mchar = 0;
 		skipCommand = false;
 		c = [str characterAtIndex:0];
-		mchar = c;
+		// Apple uses 0xF700-0xF8FF for navigation/function keys (Private Use Area).
+		// These are not text characters; keep mchar as 0 so CGUIEditBox routes them
+		// to the special-key branch (which checks Char == 0) instead of inputChar().
+		if (c < 0xF700)
+			mchar = c;
 
 		iter = KeyCodes.find([(NSEvent *)event keyCode]);
 		if (iter != KeyCodes.end())
@@ -1190,15 +1205,19 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 				{
 					mchar = cStr[0];
 					mkey = toupper(mchar);
-					if ([(NSEvent *)event modifierFlags] & NSCommandKeyMask)
-					{
-						if (mkey == 'C' || mkey == 'V' || mkey == 'X')
-						{
-							mchar = 0;
-							skipCommand = true;
-						}
-					}
 				}
+			}
+		}
+
+		// Handle Command+C/V/X/A as Control+C/V/X/A regardless of how mkey was resolved.
+		// Previously this check only ran in the fallback path, so keys found via
+		// KeyCodes (the common case) never triggered it.
+		if ([(NSEvent *)event modifierFlags] & NSCommandKeyMask)
+		{
+			if (mkey == 'C' || mkey == 'V' || mkey == 'X' || mkey == 'A')
+			{
+				mchar = 0;
+				skipCommand = true;
 			}
 		}
 
@@ -1414,7 +1433,6 @@ void CIrrDeviceMacOSX::initKeycodes()
 	KeyCodes[kVK_ANSI_V] = irr::KEY_KEY_V;
 	KeyCodes[kVK_ANSI_W] = irr::KEY_KEY_W;
 	KeyCodes[kVK_ANSI_X] = irr::KEY_KEY_X;
-	KeyCodes[kVK_ANSI_X] = irr::KEY_KEY_X;
 	KeyCodes[kVK_ANSI_Y] = irr::KEY_KEY_Y;
 	KeyCodes[kVK_ANSI_Z] = irr::KEY_KEY_Z;
 
@@ -1479,9 +1497,32 @@ bool CIrrDeviceMacOSX::isResizable() const
 }
 
 
+bool CIrrDeviceMacOSX::isFullscreen() const
+{
+	// Check for CGDisplayCapture fullscreen mode.
+	// In this mode, the user can't interact with the system menu bar, and we don't provide a way to exit fullscreen,
+	// so the display mode is locked to fullscreen.
+	if (CreationParams.Fullscreen)
+		return true;
+
+	if (Window != NULL)
+	{
+#ifdef __MAC_10_7
+		// Check for macOS Lion fullscreen mode.
+		// This mode is entered via the green window button by user.
+		// In this mode, the user can interact with the system menu bar and exit fullscreen via the green window button.
+		if ([Window styleMask] & NSFullScreenWindowMask)
+			return true;
+#endif
+	}
+
+	return false;
+}
+
+
 void CIrrDeviceMacOSX::minimizeWindow()
 {
-	if (Window != NULL)
+	if (Window != NULL && !isFullscreen())
 		[Window miniaturize:[NSApp self]];
 }
 
@@ -1489,16 +1530,43 @@ void CIrrDeviceMacOSX::minimizeWindow()
 //! Maximizes the window if possible.
 void CIrrDeviceMacOSX::maximizeWindow()
 {
-	// todo: implement
+	if (Window != NULL && !isFullscreen() && ![Window isZoomed])
+		[Window zoom:nil];
 }
 
 
-//! get the window to normal size if possible.
+//! Sets the window to normal size if possible.
 void CIrrDeviceMacOSX::restoreWindow()
 {
-	[Window deminiaturize:[NSApp self]];
+	if (Window != NULL && !isFullscreen())
+	{
+		if ([Window isMiniaturized])
+			[Window deminiaturize:[NSApp self]];
+		if ([Window isZoomed])
+			[Window zoom:nil];
+	}
 }
-    
+
+
+//! Sets the size of the window in windowed mode.
+void CIrrDeviceMacOSX::setWindowSize(const irr::core::dimension2d<u32>& size)
+{
+	if (!Window || isFullscreen() || [Window isZoomed] || CreationParams.DriverType == video::EDT_NULL)
+		return;
+
+	// Compute the frame rect that yields the requested client (content) area.
+	NSRect contentRect = NSMakeRect(0, 0, (CGFloat)size.Width, (CGFloat)size.Height);
+	NSRect frameRect   = [Window frameRectForContentRect:contentRect];
+
+	// Keep the current top-left corner fixed.
+	NSRect currentFrame = [Window frame];
+	frameRect.origin.x = currentFrame.origin.x;
+	frameRect.origin.y = currentFrame.origin.y + currentFrame.size.height - frameRect.size.height;
+
+	[Window setFrame:frameRect display:YES animate:NO];
+}
+
+
 //! Get the position of this window on screen
 core::position2di CIrrDeviceMacOSX::getWindowPosition()
 {

@@ -31,29 +31,17 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 		Device->AddRef();
 
 	DriverType = Driver->getDriverType();
-	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
-	HardwareMipMaps = Driver->getTextureCreationFlag(ETCF_AUTO_GENERATE_MIP_MAPS) && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE);
+	checkTextureCreationFlags();
 
 	getImageValues(image[0]);
 
-	DWORD flags = 0;
+	checkDeviceFormatFlags();
 
-	LPDIRECT3D9 intf = Driver->getExposedVideoData().D3D9.D3D9;
-	D3DDISPLAYMODE d3ddm;
-	intf->GetAdapterDisplayMode(Driver->Params.DisplayAdapter, &d3ddm);
-	if (HasMipMaps && HardwareMipMaps)
-	{
-		if (D3D_OK == intf->CheckDeviceFormat(Driver->Params.DisplayAdapter, D3DDEVTYPE_HAL, d3ddm.Format, D3DUSAGE_AUTOGENMIPMAP, D3DRTYPE_TEXTURE, InternalFormat))
-			flags = D3DUSAGE_AUTOGENMIPMAP;
-		else
-			HardwareMipMaps = false;
-	}
-	
-	VertexTextureSupport = Driver->getTextureCreationFlag(ETCF_SUPPORT_VERTEXT_TEXTURE) 
-	                       && (D3D_OK == intf->CheckDeviceFormat(Driver->Params.DisplayAdapter, D3DDEVTYPE_HAL, d3ddm.Format, D3DUSAGE_QUERY_VERTEXTEXTURE, D3DRTYPE_TEXTURE, InternalFormat));
+	DWORD flags = 0;
+	if ( HasMipMaps && HardwareMipMaps )
+		flags |= D3DUSAGE_AUTOGENMIPMAP;
 
 	HRESULT hr = 0;
-	
 	switch (Type)
 	{
 	case ETT_2D:
@@ -166,7 +154,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 		Device->AddRef();
 
 	DriverType = Driver->getDriverType();
-	HasMipMaps = false;
+	checkTextureCreationFlags();
 	IsRenderTarget = true;
 
 	OriginalColorFormat = format;
@@ -214,7 +202,7 @@ void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel, u32 layer, E
 	LockReadOnly = (mode == ETLM_READ_ONLY);
 	LockLayer = layer;
 
-	HRESULT hr;
+	HRESULT hr = 0;
 	D3DLOCKED_RECT rect;
 
 	if (!IsRenderTarget)
@@ -576,19 +564,24 @@ void CD3D9Texture::releaseTexture()
 
 void CD3D9Texture::generateRenderTarget()
 {
+	checkDeviceFormatFlags();
+
 	DWORD flags = (IImage::isDepthFormat(ColorFormat)) ? D3DUSAGE_DEPTHSTENCIL : D3DUSAGE_RENDERTARGET;
 
+	if ( HasMipMaps && HardwareMipMaps )
+		flags |= D3DUSAGE_AUTOGENMIPMAP;
+		
 	HRESULT hr = 0;
 
 	switch (Type)
 	{
 		case ETT_2D:
 			if (!Texture )
-				hr = Device->CreateTexture(Size.Width, Size.Height, 1, flags, InternalFormat, D3DPOOL_DEFAULT, &Texture, NULL);
+				hr = Device->CreateTexture(Size.Width, Size.Height, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_DEFAULT, &Texture, NULL);
 			break;
 		case ETT_CUBEMAP:
 			if (!CubeTexture)
-				hr = Device->CreateCubeTexture(Size.Width, 1, flags, InternalFormat, D3DPOOL_DEFAULT, &CubeTexture, NULL);
+				hr = Device->CreateCubeTexture(Size.Width, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_DEFAULT, &CubeTexture, NULL);
 			break;
 		default:
 			IRR_DEBUG_BREAK_IF(true)
@@ -617,6 +610,27 @@ void CD3D9Texture::generateRenderTarget()
 		params += (unsigned int)Type;
 		os::Printer::log(params.c_str(), irr::ELL_ERROR);
 	}
+}
+
+void CD3D9Texture::checkTextureCreationFlags()
+{
+	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
+	HardwareMipMaps = Driver->getTextureCreationFlag(ETCF_AUTO_GENERATE_MIP_MAPS) && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE);
+	VertexTextureSupport = Driver->getTextureCreationFlag(ETCF_SUPPORT_VERTEXT_TEXTURE);
+}
+
+void CD3D9Texture::checkDeviceFormatFlags()
+{
+	LPDIRECT3D9 intf = Driver->getExposedVideoData().D3D9.D3D9;
+	D3DDISPLAYMODE d3ddm;
+	intf->GetAdapterDisplayMode(Driver->Params.DisplayAdapter, &d3ddm);
+	if (HasMipMaps && HardwareMipMaps)
+	{
+		HardwareMipMaps = (D3D_OK == intf->CheckDeviceFormat(Driver->Params.DisplayAdapter, D3DDEVTYPE_HAL, d3ddm.Format, D3DUSAGE_AUTOGENMIPMAP, D3DRTYPE_TEXTURE, InternalFormat));
+	}
+	
+	if ( VertexTextureSupport )
+		VertexTextureSupport = (D3D_OK == intf->CheckDeviceFormat(Driver->Params.DisplayAdapter, D3DDEVTYPE_HAL, d3ddm.Format, D3DUSAGE_QUERY_VERTEXTEXTURE, D3DRTYPE_TEXTURE, InternalFormat));
 }
 
 ECOLOR_FORMAT CD3D9Texture::getBestColorFormat(ECOLOR_FORMAT format)

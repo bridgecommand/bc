@@ -1,34 +1,15 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 #include "IBurningShader.h"
 #include "CSoftwareDriver2.h"
 
-#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
-
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_C1
-#undef IPOL_C2
-#undef IPOL_C3
-#undef IPOL_T0
-#undef IPOL_T1
-#undef IPOL_T2
-#undef IPOL_L0
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
 // define render case
 #define SUBTEXEL
@@ -47,55 +28,7 @@
 #define IPOL_T1
 #define IPOL_L0
 
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef INVERSE_W
-#endif
-
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-#undef SUBTEXEL
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 1
-#undef IPOL_C0
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 2
-#undef IPOL_C1
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 3
-#undef IPOL_C2
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 4
-#undef IPOL_C3
-#endif
-
-#if BURNING_MATERIAL_MAX_LIGHT_TANGENT < 1
-#undef IPOL_L0
-#endif
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef IPOL_W
-#endif
-#define IPOL_Z
-
-#ifdef CMP_W
-#undef CMP_W
-#define CMP_Z
-#endif
-
-#ifdef WRITE_W
-#undef WRITE_W
-#define WRITE_Z
-#endif
-
-#endif
-
-
-burning_namespace_start
+#include "burning_shader_compile_verify.h"
 
 
 class CBurningParallaxMap : public IBurningShader
@@ -108,7 +41,7 @@ public:
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
-	virtual void OnSetMaterialBurning(const SBurningShaderMaterial& material) IRR_OVERRIDE;
+	virtual void OnSetMaterial_BL(const SBurningShaderMaterial& material) IRR_OVERRIDE;
 	virtual void OnSetMaterial(const video::SMaterial& material,
 		const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services) IRR_OVERRIDE;
@@ -138,7 +71,7 @@ CBurningParallaxMap::~CBurningParallaxMap()
 		CallBack = 0;
 }
 
-void CBurningParallaxMap::OnSetMaterialBurning(const SBurningShaderMaterial& material)
+void CBurningParallaxMap::OnSetMaterial_BL(const SBurningShaderMaterial& material)
 {
 	CurrentScale = material.org.MaterialTypeParam;
 }
@@ -153,11 +86,13 @@ void CBurningParallaxMap::OnSetMaterial(const video::SMaterial& material,
 	CurrentScale = material.MaterialTypeParam;
 }
 
+//#define USE_NORMALIZE
+
 /*!
 */
 void CBurningParallaxMap::fragmentShader()
 {
-	tVideoSample* dst;
+	tRenderTargetColorSample* dst;
 
 #ifdef USE_ZBUFFER
 	fp24* z;
@@ -179,13 +114,13 @@ void CBurningParallaxMap::fragmentShader()
 	fp24 slopeW;
 #endif
 #ifdef IPOL_C0
-	sVec4 slopeC[BURNING_MATERIAL_MAX_COLORS];
+	sVec4 slopeC[BURNING_MATERIAL_MAX_COLORS_USED];
 #endif
 #ifdef IPOL_T0
-	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES_USED];
 #endif
 #ifdef IPOL_L0
-	sVec3Pack_unpack slopeL[BURNING_MATERIAL_MAX_LIGHT_TANGENT];
+	sVec3Pack_unpack slopeL[BURNING_MATERIAL_MAX_LIGHT_TANGENT_USED];
 #endif
 
 	// apply top-left fill-convention, left
@@ -266,10 +201,10 @@ void CBurningParallaxMap::fragmentShader()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*)DepthBuffer->lock() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 #endif
 
 
@@ -307,148 +242,167 @@ void CBurningParallaxMap::fragmentShader()
 		if (line.z[0] < z[i])
 #endif
 #ifdef CMP_W
-			if (line.w[0] >= z[i])
+		if (line.w[0] >= z[i])
 #endif
-			{
+		{
 #ifdef INVERSE_W
-				inversew = fix_inverse32(line.w[0]);
+			inversew = fix_inverse32(line.w[0]);
 #endif
 
 #ifdef IPOL_C0
-				//vertex alpha blend ( and omit depthwrite ,hacky..)
-				a3 = tofix(line.c[0][0].a, inversew);
-				if (a3 + 2 >= FIX_POINT_ONE)
-				{
+			//vertex alpha blend ( and omit depthwrite ,hacky..)
+			a3 = tofix(line.c[0][0].a, inversew);
+			if (a3 + 2 >= FIX_POINT_ONE)
+			{
 #ifdef WRITE_Z
-					z[i] = line.z[0];
+				z[i] = line.z[0];
 #endif
 #ifdef WRITE_W
-					z[i] = line.w[0];
+				z[i] = line.w[0];
 #endif
-				}
+			}
 #endif
 
 #ifdef IPOL_C1
-				//complete inside fog
-				if (TL_Flag & TL_FOG)
+			//complete inside fog
+			if (TL_Flag & TL_FOG)
+			{
+				aFog = tofix(line.c[1][0].a, inversew);
+				if (aFog <= 0)
 				{
-					aFog = tofix(line.c[1][0].a, inversew);
-					if (aFog <= 0)
-					{
-						dst[i] = fog_color_sample;
-						continue;
-					}
+					dst[i] = fog_color_sample;
+					continue;
 				}
+			}
 #endif
 
-				tx1 = tofix(line.t[1][0].x, inversew);
-				ty1 = tofix(line.t[1][0].y, inversew);
+			tx1 = tofix(line.t[1][0].x, inversew);
+			ty1 = tofix(line.t[1][0].y, inversew);
 
-				// normal map height
-				getSample_texture(a1, &IT[1], tx1, ty1);
+			// normal map height
+			getSample_texture(a1, &IT[1], tx1, ty1);
 
-				// xyz * 2 - 1
-				a1 = (a1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2 - 1);
-				tFixPoint ofs = imulFix_simple(a1,CurrentScaleFix[0]);
-				//eyevector
+			// xyz * 2 - 1
+			a1 = (a1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2 - 1);
+			tFixPoint ofs = imulFix_simple(a1,CurrentScaleFix[0]);
+			//eyevector
 #ifdef IPOL_L0
-#if 0
-				norm.x = line.l[0][0].x * inversew;
-				norm.y = line.l[0][0].y * inversew;
-				norm.z = line.l[0][0].z * inversew;
-				norm.normalize_dir_xyz_zero();
+#ifdef USE_NORMALIZE
+			norm.x = line.l[0][0].x * inversew;
+			norm.y = line.l[0][0].y * inversew;
+			norm.z = line.l[0][0].z * inversew;
+			norm.normalize_dir_xyz_zero();
 
-				lx = tofix(norm.x, FIX_POINT_F32_MUL);
-				ly = tofix(norm.y, FIX_POINT_F32_MUL);
+			lx = tofix(norm.x, FIX_POINT_F32_MUL);
+			ly = tofix(norm.y, FIX_POINT_F32_MUL);
 #else
-				lx = tofix(line.l[0][0].x, inversew);
-				ly = tofix(line.l[0][0].y, inversew);
+			lx = tofix(line.l[0][0].x, inversew);
+			ly = tofix(line.l[0][0].y, inversew);
 #endif
-				//lz = tofix(line.l[0][0].z, inversew);
+			//lz = tofix(line.l[0][0].z, inversew);
 
 #endif
-				// vec2 TexCoord = EyeVector.xy * TempFetch.w + vTexCoord;
-				tx0 = tofix(line.t[0][0].x, inversew) + imulFix_simple(lx, ofs);
-				ty0 = tofix(line.t[0][0].y, inversew) + imulFix_simple(ly, ofs);
+			// vec2 TexCoord = EyeVector.xy * TempFetch.w + vTexCoord;
+			tx0 = tofix(line.t[0][0].x, inversew) + imulFix_simple(lx, ofs);
+			ty0 = tofix(line.t[0][0].y, inversew) + imulFix_simple(ly, ofs);
 				
-				// diffuse map
-				getSample_texture(r0, g0, b0, &IT[0], tx0, ty0);
+			// diffuse map
+			getSample_texture(r0, g0, b0, &IT[0], tx0, ty0);
 
-				ofs = imulFix_simple(a1, CurrentScaleFix[1]);
-				tx1 += imulFix_simple(lx, ofs);
-				ty1 += imulFix_simple(ly, ofs);
+			ofs = imulFix_simple(a1, CurrentScaleFix[1]);
+			tx1 += imulFix_simple(lx, ofs);
+			ty1 += imulFix_simple(ly, ofs);
 
-				// normal map ( same texcoord0 but different mipmapping)
-				getSample_texture(r1, g1, b1, &IT[1], tx1, ty1);
-
-
-				// normal: xyz * 2 - 1
-				r1 = (r1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2 - 1);
-				g1 = (g1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2 - 1);
-				b1 = (b1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2 - 1);
+			// normal map ( same texcoord0 but different mipmapping/interpolator)
+			getSample_texture(r1, g1, b1, &IT[1], tx1, ty1);
 
 
-				//lightvector
-				lx = tofix(line.c[2][0].x, inversew);
-				ly = tofix(line.c[2][0].y, inversew);
-				lz = tofix(line.c[2][0].z, inversew);
-				//omit normalize
-				//max(dot(LightVector, Normal), 0.0);
-				ndotl = clampfix_mincolor((imulFix_simple(r1, lx) + imulFix_simple(g1, ly) + imulFix_simple(b1, lz)));
+			// normal: xyz * 2 - 1
+			r1 = (r1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2 - 1);
+			g1 = (g1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2 - 1);
+			b1 = (b1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2 - 1);
+
+
+			//lightvector
+#ifdef USE_NORMALIZE
+			norm.x = line.c[2][0].x * inversew;
+			norm.y = line.c[2][0].y * inversew;
+			norm.z = line.c[2][0].z * inversew;
+			norm.normalize_dir_xyz_zero();
+
+			lx = tofix(norm.x, FIX_POINT_F32_MUL);
+			ly = tofix(norm.y, FIX_POINT_F32_MUL);
+			lz = tofix(norm.z, FIX_POINT_F32_MUL);
+#else
+			lx = tofix(line.c[2][0].x, inversew);
+			ly = tofix(line.c[2][0].y, inversew);
+			lz = tofix(line.c[2][0].z, inversew);
+#endif
+			//max(dot(LightVector, Normal), 0.0);
+			ndotl = clampfix_mincolor((imulFix_simple(r1, lx) + imulFix_simple(g1, ly) + imulFix_simple(b1, lz)));
 
 #ifdef IPOL_C0
 
-				//LightColor[0] * lambert
-				r3 = imulFix_simple(tofix(line.c[0][0].r, inversew), ndotl);
-				g3 = imulFix_simple(tofix(line.c[0][0].g, inversew), ndotl);
-				b3 = imulFix_simple(tofix(line.c[0][0].b, inversew), ndotl);
+			//LightColor[0] * lambert
+			r3 = imulFix_simple(tofix(line.c[0][0].r, inversew), ndotl);
+			g3 = imulFix_simple(tofix(line.c[0][0].g, inversew), ndotl);
+			b3 = imulFix_simple(tofix(line.c[0][0].b, inversew), ndotl);
 
-				//lightvector1
-				lx = tofix(line.c[3][0].x, inversew);
-				ly = tofix(line.c[3][0].y, inversew);
-				lz = tofix(line.c[3][0].z, inversew);
-				//omit normalize
-				ndotl = clampfix_mincolor((imulFix_simple(r1, lx) + imulFix_simple(g1, ly) + imulFix_simple(b1, lz)));
+			//lightvector1
+#ifdef USE_NORMALIZE
+			norm.x = line.c[3][0].x * inversew;
+			norm.y = line.c[3][0].y * inversew;
+			norm.z = line.c[3][0].z * inversew;
+			norm.normalize_dir_xyz_zero();
 
-				//LightColor[1] * lambert
-				r3 += imulFix_simple(tofix(line.c[1][0].r, inversew), ndotl);
-				g3 += imulFix_simple(tofix(line.c[1][0].g, inversew), ndotl);
-				b3 += imulFix_simple(tofix(line.c[1][0].b, inversew), ndotl);
+			lx = tofix(norm.x, FIX_POINT_F32_MUL);
+			ly = tofix(norm.y, FIX_POINT_F32_MUL);
+			lz = tofix(norm.z, FIX_POINT_F32_MUL);
+#else
+			lx = tofix(line.c[3][0].x, inversew);
+			ly = tofix(line.c[3][0].y, inversew);
+			lz = tofix(line.c[3][0].z, inversew);
+#endif
+			ndotl = clampfix_mincolor((imulFix_simple(r1, lx) + imulFix_simple(g1, ly) + imulFix_simple(b1, lz)));
 
-				// (Lambert0 * LightColor[0] + Lambert1 * LightColor[1]) *  Diffuse Texture;
-				r2 = clampfix_maxcolor(imulFix_simple(r3, r0));
-				g2 = clampfix_maxcolor(imulFix_simple(g3, g0));
-				b2 = clampfix_maxcolor(imulFix_simple(b3, b0));
+			//LightColor[1] * lambert
+			r3 += imulFix_simple(tofix(line.c[1][0].r, inversew), ndotl);
+			g3 += imulFix_simple(tofix(line.c[1][0].g, inversew), ndotl);
+			b3 += imulFix_simple(tofix(line.c[1][0].b, inversew), ndotl);
 
-				//vertex alpha blend ( and omit depthwrite ,hacky..)
-				if (a3 + 2 < FIX_POINT_ONE)
-				{
-					color_to_fix(r1, g1, b1, dst[i]);
-					r2 = r1 + imulFix(a3, r2 - r1);
-					g2 = g1 + imulFix(a3, g2 - g1);
-					b2 = b1 + imulFix(a3, b2 - b1);
-				}
+			// (Lambert0 * LightColor[0] + Lambert1 * LightColor[1]) *  Diffuse Texture;
+			r2 = clampfix_maxcolor(imulFix_simple(r3, r0));
+			g2 = clampfix_maxcolor(imulFix_simple(g3, g0));
+			b2 = clampfix_maxcolor(imulFix_simple(b3, b0));
+
+			//vertex alpha blend ( and omit depthwrite ,hacky..)
+			if (a3 + 2 < FIX_POINT_ONE)
+			{
+				sample_to_fix(r1, g1, b1, dst[i]);
+				r2 = r1 + imulFix(a3, r2 - r1);
+				g2 = g1 + imulFix(a3, g2 - g1);
+				b2 = b1 + imulFix(a3, b2 - b1);
+			}
 
 #ifdef IPOL_C1
-				//mix with distance
-				if (aFog < FIX_POINT_ONE) //TL_Flag & TL_FOG)
-				{
-					r2 = fog_color[1] + imulFix(aFog, r2 - fog_color[1]);
-					g2 = fog_color[2] + imulFix(aFog, g2 - fog_color[2]);
-					b2 = fog_color[3] + imulFix(aFog, b2 - fog_color[3]);
-				}
+			//mix with distance
+			if (aFog < FIX_POINT_ONE) //TL_Flag & TL_FOG)
+			{
+				r2 = fog_color[1] + imulFix(aFog, r2 - fog_color[1]);
+				g2 = fog_color[2] + imulFix(aFog, g2 - fog_color[2]);
+				b2 = fog_color[3] + imulFix(aFog, b2 - fog_color[3]);
+			}
 #endif
-				dst[i] = fix_to_sample(r2, g2, b2);
-
+			dst[i] = fix_to_sample_nearest(r2, g2, b2);
 
 #else
-				r2 = imulFix_tex4(r0, r1);
-				g2 = imulFix_tex4(g0, g1);
-				b2 = imulFix_tex4(b0, b1);
-				dst[i] = fix_to_sample(r2, g2, b2);
+			r2 = imulFix_tex4(r0, r1);
+			g2 = imulFix_tex4(g0, g1);
+			b2 = imulFix_tex4(b0, b1);
+			dst[i] = fix_to_sample(r2, g2, b2);
 #endif
 
-			}
+		}
 
 #ifdef IPOL_Z
 		line.z[0] += slopeZ;
@@ -484,12 +438,14 @@ void CBurningParallaxMap::fragmentShader()
 
 }
 
+#undef USE_NORMALIZE
+
 void CBurningParallaxMap::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
-	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(&b, &c);
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
+	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(b, c);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;
@@ -502,8 +458,8 @@ void CBurningParallaxMap::drawTriangle(const s4DVertex* burning_restrict a, cons
 	if (F32_LOWER_EQUAL_0(scan.invDeltaY[0]))
 		return;
 
-	CurrentScaleFix[0] = tofix(CurrentScale, FIX_POINT_F32_MUL) << (IT[0].pitchlog2- SOFTWARE_DRIVER_2_TEXTURE_GRANULARITY);
-	CurrentScaleFix[1] = tofix(CurrentScale, FIX_POINT_F32_MUL) << (IT[1].pitchlog2 - SOFTWARE_DRIVER_2_TEXTURE_GRANULARITY);
+	CurrentScaleFix[0] = tofix(CurrentScale, FIX_POINT_F32_MUL) << (IT[0].pitchlog2- BV_TEXTURE_LOG2_STEP);
+	CurrentScaleFix[1] = tofix(CurrentScale, FIX_POINT_F32_MUL) << (IT[1].pitchlog2 - BV_TEXTURE_LOG2_STEP);
 
 	// find if the major edge is left or right aligned
 	f32 temp[4];
@@ -1161,20 +1117,11 @@ void CBurningParallaxMap::OnSetConstants(IMaterialRendererServices* services, s3
 #endif
 }
 
-burning_namespace_end
-
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-burning_namespace_start
-
-
 IBurningShader* createTRParallaxMap(CBurningVideoDriver* driver, s32& outMaterialTypeNr, E_MATERIAL_TYPE baseMaterial)
 {
-#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CBurningParallaxMap(driver, outMaterialTypeNr, baseMaterial);
-#else
-	return 0;
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
 
 burning_namespace_end
+
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_

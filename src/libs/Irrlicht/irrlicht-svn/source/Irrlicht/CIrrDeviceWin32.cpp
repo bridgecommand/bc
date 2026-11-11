@@ -12,10 +12,7 @@
 
 #include "CIrrDeviceWin32.h"
 #include "IEventReceiver.h"
-#include "irrList.h"
 #include "os.h"
-
-#include "CTimer.h"
 #include "irrString.h"
 #include "COSOperator.h"
 #include "dimension2d.h"
@@ -135,7 +132,7 @@ namespace irr
 	}
 	void SJoystickWin32Control::directInputAddJoystick(LPCDIDEVICEINSTANCE lpddi)
 	{
-		//Get the GUID of the joystuck
+		//Get the GUID of the joystick
 		const GUID guid = lpddi->guidInstance;
 
 		JoystickInfo activeJoystick;
@@ -350,23 +347,23 @@ void SJoystickWin32Control::pollJoysticks()
 			case 6:
 				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_V] =
 					(s16)((65535 * (info.dwVpos - caps.wVmin)) / (caps.wVmax - caps.wVmin) - 32768);
-
+                /* fallthrough */
 			case 5:
 				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_U] =
 					(s16)((65535 * (info.dwUpos - caps.wUmin)) / (caps.wUmax - caps.wUmin) - 32768);
-
+                /* fallthrough */
 			case 4:
 				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_R] =
 					(s16)((65535 * (info.dwRpos - caps.wRmin)) / (caps.wRmax - caps.wRmin) - 32768);
-
+                /* fallthrough */
 			case 3:
 				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Z] =
 					(s16)((65535 * (info.dwZpos - caps.wZmin)) / (caps.wZmax - caps.wZmin) - 32768);
-
+                /* fallthrough */
 			case 2:
 				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Y] =
 					(s16)((65535 * (info.dwYpos - caps.wYmin)) / (caps.wYmax - caps.wYmin) - 32768);
-
+                /* fallthrough */
 			case 1:
 				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_X] =
 					(s16)((65535 * (info.dwXpos - caps.wXmin)) / (caps.wXmax - caps.wXmin) - 32768);
@@ -422,17 +419,19 @@ irr::core::stringc SJoystickWin32Control::findJoystickName(int index, const JOYC
                                  NULL, &regsize);
     if (regresult == ERROR_SUCCESS)
     {
-        char *name;
         /* allocate enough memory for the OEM name text ... */
-        name = new char[regsize];
+        char *name = new char[regsize];
         if (name)
         {
             /* ... and read it from the registry */
             regresult = RegQueryValueEx(hKey, REGSTR_VAL_JOYOEMNAME, 0, 0,
                                          (LPBYTE)name, &regsize );
-            result = name;
+			if (regresult == ERROR_SUCCESS)
+			{
+				result = name;
+			}
+			delete[] name;
         }
-        delete[] name;
     }
     RegCloseKey(hKey);
 
@@ -504,7 +503,7 @@ bool SJoystickWin32Control::activateJoysticks(core::array<SJoystickInfo> & joyst
 	for(joystick = 0; joystick < joystickInfo.size(); ++joystick)
 	{
 		char logString[256];
-		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
+		(void)snprintf_irr(logString, sizeof(logString), "Found joystick %d, %d axes, %d buttons '%s'",
 			joystick, joystickInfo[joystick].Axes,
 			joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
 		os::Printer::log(logString, ELL_INFORMATION);
@@ -680,7 +679,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			event.KeyInput.Key = (irr::EKEY_CODE)wParam;
 			event.KeyInput.PressedDown = (message==WM_KEYDOWN || message == WM_SYSKEYDOWN);
 
-			const UINT MY_MAPVK_VSC_TO_VK_EX = 3; // MAPVK_VSC_TO_VK_EX should be in SDK according to MSDN, but isn't in mine.
+#ifdef MAPVK_VSC_TO_VK_EX
+			const UINT MY_MAPVK_VSC_TO_VK_EX = MAPVK_VSC_TO_VK_EX;
+#else
+ 			const UINT MY_MAPVK_VSC_TO_VK_EX = 3; // MAPVK_VSC_TO_VK_EX was missing in older SDK's
+#endif
 			if ( event.KeyInput.Key == irr::KEY_SHIFT )
 			{
 				// this will fail on systems before windows NT/2000/XP, not sure _what_ will return there instead.
@@ -1094,12 +1097,12 @@ void CIrrDeviceWin32::resizeIfNecessary()
 
 	if (r.right < 2 || r.bottom < 2)
 	{
-		sprintf(tmp, "Ignoring resize operation to (%ld %ld)", r.right, r.bottom);
+		snprintf_irr(tmp, sizeof(tmp), "Ignoring resize operation to (%ld %ld)", r.right, r.bottom);
 		os::Printer::log(tmp);
 	}
 	else
 	{
-		sprintf(tmp, "Resizing window (%ld %ld)", r.right, r.bottom);
+		snprintf_irr(tmp, sizeof(tmp), "Resizing window (%ld %ld)", r.right, r.bottom);
 		os::Printer::log(tmp);
 
 		getVideoDriver()->OnResize(irr::core::dimension2du((u32)r.right, (u32)r.bottom));
@@ -1511,7 +1514,7 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 
 		if (osvi.dwMajorVersion <= 4 )
 		{
-			sprintf(tmp, "version %lu.%lu %s (Build %lu)",
+			snprintf_irr(tmp, sizeof(tmp), "version %lu.%lu %s (Build %lu)",
 					osvi.dwMajorVersion,
 					osvi.dwMinorVersion,
 					irr::core::stringc(osvi.szCSDVersion).c_str(),
@@ -1519,7 +1522,7 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 		}
 		else
 		{
-			sprintf(tmp, "%s (Build %lu)", irr::core::stringc(osvi.szCSDVersion).c_str(),
+			snprintf_irr(tmp, sizeof(tmp), "%s (Build %lu)", irr::core::stringc(osvi.szCSDVersion).c_str(),
 			osvi.dwBuildNumber & 0xFFFF);
 		}
 
@@ -1680,7 +1683,12 @@ bool CIrrDeviceWin32::setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness
 	calculateGammaRamp( ramp[1], green, brightness, contrast );
 	calculateGammaRamp( ramp[2], blue, brightness, contrast );
 
-	HDC dc = GetDC(0);
+	HDC dc = GetDC(HWnd);
+	if ( !dc )
+	{
+		os::Printer::log("Could not get device context for setGammaRamp.", ELL_WARNING);
+		return false;
+	}
 	r = SetDeviceGammaRamp ( dc, ramp ) == TRUE;
 	ReleaseDC(HWnd, dc);
 	return r;
@@ -1692,7 +1700,12 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 	bool r;
 	u16 ramp[3][256];
 
-	HDC dc = GetDC(0);
+	HDC dc = GetDC(HWnd);
+	if ( !dc )
+	{
+		os::Printer::log("Could not get device context for getGammaRamp.", ELL_WARNING);
+		return false;
+	}
 	r = GetDeviceGammaRamp ( dc, ramp ) == TRUE;
 	ReleaseDC(HWnd, dc);
 

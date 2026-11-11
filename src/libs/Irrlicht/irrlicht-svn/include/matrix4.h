@@ -11,7 +11,7 @@
 #include "plane3d.h"
 #include "aabbox3d.h"
 #include "rect.h"
-#include "irrString.h"
+#include <string.h> // for memset
 
 // enable this to keep track of changes to the matrix
 // and make simpler identity check for seldom changing matrices

@@ -302,7 +302,7 @@ void CAnimatedMeshSceneNode::render()
 	if (DebugDataVisible && PassCount==1)
 	{
 		// overwrite half transparency
-		if (DebugDataVisible & scene::EDS_HALF_TRANSPARENCY)
+		if (m && DebugDataVisible & scene::EDS_HALF_TRANSPARENCY)
 		{
 
 			for (u32 i=0; i<m->getMeshBufferCount(); ++i)
@@ -323,7 +323,7 @@ void CAnimatedMeshSceneNode::render()
 	}
 
 	// render original meshes
-	if (renderMeshes)
+	if (m && renderMeshes)
 	{
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
@@ -356,7 +356,7 @@ void CAnimatedMeshSceneNode::render()
 		debug_mat.AntiAliasing=0;
 		driver->setMaterial(debug_mat);
 		// show normals
-		if (DebugDataVisible & scene::EDS_NORMALS)
+		if (m && DebugDataVisible & scene::EDS_NORMALS)
 		{
 			const f32 debugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
 			const video::SColor debugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
@@ -383,7 +383,7 @@ void CAnimatedMeshSceneNode::render()
 			driver->draw3DBox(Box, video::SColor(255,255,255,255));
 
 		// show bounding box
-		if (DebugDataVisible & scene::EDS_BBOX_BUFFERS)
+		if (m && DebugDataVisible & scene::EDS_BBOX_BUFFERS)
 		{
 			for (u32 g=0; g< m->getMeshBufferCount(); ++g)
 			{
@@ -451,7 +451,7 @@ void CAnimatedMeshSceneNode::render()
 		}
 
 		// show mesh
-		if (DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY)
+		if (m && DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY)
 		{
 			debug_mat.Lighting = false;
 			debug_mat.Wireframe = true;

@@ -44,7 +44,7 @@ namespace scene
 		\return Name of joint and null if an error happened. */
 		virtual const c8* getJointName(u32 number) const = 0;
 
-		//! Gets a joint number from its name
+		//! Gets a joint number (index) from its name
 		/** \param name: Name of the joint.
 		\return Number of the joint or -1 if not found. */
 		virtual s32 getJointNumber(const c8* name) const = 0;
@@ -69,7 +69,7 @@ namespace scene
 		//! Animates this mesh's joints based on frame input
 		virtual void animateMesh(f32 frame, f32 blend)=0;
 
-		//! Preforms a software skin on this mesh based of joint positions
+		//! Performs a software skin on this mesh based of joint positions
 		virtual void skinMesh() = 0;
 
 		//! converts the vertex type of all meshbuffers to tangents.
@@ -95,9 +95,13 @@ namespace scene
 		private:
 			//! Internal members used by CSkinnedMesh
 			friend class CSkinnedMesh;
-			bool *Moved;
-			core::vector3df StaticPos;
-			core::vector3df StaticNormal;
+
+			bool *Moved; // pointer to a global array which knows if the target vertex already got weight applied in this skinning frame
+
+			// Note: Not sure why pos, normal are remembered per weight instead of keeping a copy of the original mesh around somewhere
+			//       Maybe for speed or memory reasons
+			core::vector3df StaticPos;		// original unchanged vertex position
+			core::vector3df StaticNormal;	// original unchanged vertex normal
 		};
 
 
@@ -141,6 +145,10 @@ namespace scene
 			core::array<SJoint*> Children;
 
 			//! List of attached meshes
+			/** The Transformation matrix of those SSkinMeshBuffers is set to the GlobalAnimatedMatrix of this joint.
+			Meant for doing rigid animations (like moving a ball around). If there's more than one joint 
+			having the same meshes attached they will conflict (last joint applied wins). 
+			For typical skeletal animations	this array is empty. */
 			core::array<u32> AttachedMeshes;
 
 			//! Animation keys causing translation change
@@ -169,9 +177,10 @@ namespace scene
 			//! Internal members used by CSkinnedMesh
 			friend class CSkinnedMesh;
 
-			SJoint *UseAnimationFrom;
+			SJoint *UseAnimationFrom; // by default set to this, but it's possible to replace animation keys with those from another joint
 			bool GlobalSkinningSpace;
 
+			// hints are indices to the keys likely to be needed next
 			s32 positionHint;
 			s32 scaleHint;
 			s32 rotationHint;

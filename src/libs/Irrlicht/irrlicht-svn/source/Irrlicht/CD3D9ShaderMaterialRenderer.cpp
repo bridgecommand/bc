@@ -185,7 +185,7 @@ bool CD3D9ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 		static int irr_dbg_file_nr = 0;
 		++irr_dbg_file_nr;
 		char tmp[32];
-		sprintf(tmp, "irr_d3d9_dbg_shader_%d.psh", irr_dbg_file_nr);
+		snprintf_irr(tmp, sizeof(tmp), "irr_d3d9_dbg_shader_%d.psh", irr_dbg_file_nr);
 
 		FILE* f = fopen(tmp, "wb");
 		fwrite(pxsh, strlen(pxsh), 1, f);
@@ -245,7 +245,7 @@ bool CD3D9ShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 		static int irr_dbg_file_nr = 0;
 		++irr_dbg_file_nr;
 		char tmp[32];
-		sprintf(tmp, "irr_d3d9_dbg_shader_%d.vsh", irr_dbg_file_nr);
+		snprintf_irr(tmp, sizeof(tmp), "irr_d3d9_dbg_shader_%d.vsh", irr_dbg_file_nr);
 
 		FILE* f = fopen(tmp, "wb");
 		fwrite(vtxsh, strlen(vtxsh), 1, f);

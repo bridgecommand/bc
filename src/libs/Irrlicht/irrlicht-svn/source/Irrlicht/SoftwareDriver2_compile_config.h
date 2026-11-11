@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -6,6 +6,19 @@
 #define S_VIDEO_2_SOFTWARE_COMPILE_CONFIG_H_INCLUDED
 
 #include "IrrCompileConfig.h"
+
+//! ignore c++ core guidelines checkers
+/** The Microsoft compiler */
+#if defined(_MSC_VER) && (_MSC_VER >= 1929)
+#pragma warning(disable : 26446) // Warning C26446 Prefer to use gsl::at() instead of unchecked subscript operator (bounds.4).
+#pragma warning(disable : 26481) // Warning C26481 Don't use pointer arithmetic. Use span instead (bounds.1).
+#pragma warning(disable : 26485) // Warning C26485 Expression '': No array to pointer decay (bounds.3).
+#pragma warning(disable : 26493) // Warning C26493 Don't use C-style casts. (bounds.4).
+#endif
+
+// don't want intend on namespaces (autoformat)
+#define burning_namespace_start namespace irr { namespace video {
+#define burning_namespace_end } /* end namespace video*/ } /* end namespace irr */
 
 // Generic Render Flags for burning's video rasterizer
 // defined now in irrlicht compile config
@@ -148,7 +161,7 @@ union interlaced_control
 
 		unsigned tex_scalex : 2; // 0 means 1
 		unsigned tex_scaley : 2;
-	};
+	} m;
 	unsigned raw;
 };
 struct interlace_scanline_data { unsigned int y; };
@@ -157,22 +170,13 @@ static inline interlaced_control interlaced_disabled()
 {
 	interlaced_control v;
 	v.raw = 0;
-	v.bypass = 1;
-/*
-	v.enable = 0;
-	v.bypass = 1;
-	v.nr = 0;
-	v.target_scalex = 0;
-	v.target_scaley = 0;
-	v.tex_scalex = 0;
-	v.tex_scaley = 0;
-*/
+	v.m.bypass = 1;
 	return v;
 }
 #if defined(SOFTWARE_DRIVER_2_INTERLACED)
-#define interlace_scanline_active ((line.y & interlace_control_mask) == Interlaced.nr)
+#define interlace_scanline_active ((((unsigned)line.y) & interlace_control_mask) == RenderTarget.interlaced.m.nr)
 #define if_interlace_scanline_active if (interlace_scanline_active)
-#define if_interlace_scanline if ( Interlaced.bypass || interlace_scanline_active )
+#define if_interlace_scanline if ( RenderTarget.interlaced.m.bypass || interlace_scanline_active )
 #else
 #define if_interlace_scanline_active
 #define if_interlace_scanline
@@ -182,16 +186,18 @@ static inline interlaced_control interlaced_disabled()
 #define if_scissor_test_x if ((~TL_Flag & TL_SCISSOR) || ((i+xStart >= Scissor.x0) & (i+xStart <= Scissor.x1)))
 
 // https://inst.eecs.berkeley.edu/~cs184/sp04/as/as2/assgn-02_faqs.html
-//#define fill_convention_top_left(x) (s32) ceilf(x)
-//#define fill_convention_right(x) (s32) floorf(x)
-//#define fill_convention_right(x) (((s32) ceilf(x))-1)
+#define fill_convention_top(y) (s32) ceilf(y)
+#define fill_convention_down(y) (((s32) ceilf(y))-1)
+#define fill_convention_left(x) (s32) ceilf(x)
+#define fill_convention_right(x) (((s32) ceilf(x-1.f)))
 
+#if 0
 // http://www.chrishecker.com/images/9/97/Gdmtex2.pdf
 #define fill_convention_top(y) (s32) ceilf(y)
 #define fill_convention_down(y) (((s32) ceilf(y))-1)
 #define fill_convention_left(x) (s32) ceilf(x)
 #define fill_convention_right(x) (((s32) ceilf(x))-1)
-
+#endif
 
 #define fill_convention_none(x) (s32) (x)
 #define fill_convention_edge(x) (s32) floorf(fabsf(x))
@@ -252,7 +258,7 @@ enum edge_test_flag
 #endif
 
 // Check GCC
-#if __GNUC__
+#if defined(__GNUC__)
 #if __x86_64__ || __ppc64__
 #define ENV64BIT
 #else
@@ -270,7 +276,7 @@ typedef float ipoltype;
 #define	ipol_lower_0(n)			((n) <  (ipoltype)0.0)
 #define	ipol_greater_0(n)		((n) >  (ipoltype)0.0)
 
-#if	(_MSC_VER > 1700 )
+#if	(_MSC_VER > 1700 ) && !defined(__clang__)
 #define burning_restrict __restrict
 #else
 #define burning_restrict
@@ -287,10 +293,6 @@ typedef float ipoltype;
 #define burning_create_indirect(s) create_##s
 #define burning_create(s) burning_create_indirect(s)
 
-// don't want intend on namespaces (autoformat)
-#define burning_namespace_start namespace irr { namespace video {
-#define burning_namespace_end } /* end namespace video*/ } /* end namespace irr */
-
 #if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
 
 #if defined(_MSC_VER) && _MSC_VER > 1310 && !defined (_WIN32_WCE)
@@ -302,13 +304,25 @@ typedef float ipoltype;
 #define snprintf_irr _snprintf
 #endif
 
+#define sprintf_countof(x) ((sizeof(x) / sizeof(x[0]))-1)
+
 
 //#define EVDF_DEPTH_CLAMP (video::E_VIDEO_DRIVER_FEATURE) 43
-#define E_CUBE_SURFACE int
-#define ECFN_DISABLED 0
+// #define ECFN_DISABLED 0
 
 namespace irr {
 	namespace video {
+
+		//! Enumeration of cube texture surfaces
+		enum E_CUBE_SURFACE
+		{
+			ECS_POSX = 0,
+			ECS_NEGX,
+			ECS_POSY,
+			ECS_NEGY,
+			ECS_POSZ,
+			ECS_NEGZ
+		};
 
 		//! Enum for the flags of clear buffer
 		enum E_CLEAR_BUFFER_FLAG
@@ -318,14 +332,6 @@ namespace irr {
 			ECBF_DEPTH = 2,
 			ECBF_STENCIL = 4,
 			ECBF_ALL = ECBF_COLOR | ECBF_DEPTH | ECBF_STENCIL
-		};
-
-		//! For SMaterial.ZWriteEnable
-		enum E_ZWRITE
-		{
-			EZW_OFF = 0,
-			EZW_AUTO,
-			EZW_ON
 		};
 	}
 }
@@ -339,7 +345,7 @@ namespace irr {
 #if defined(ENV64BIT)
 #define ALIGN(x) __declspec(align(x))
 #else
-// ALIGN(16) not working
+// ALIGN(16) not working in 32Bit Compiler
 #define ALIGN(x) __declspec(align(8))
 #endif
 #elif defined(__GNUC__)
@@ -347,5 +353,22 @@ namespace irr {
 #else
 #define ALIGN(x)
 #endif
+
+#if !defined(irr_unreferenced_parameter)
+#define irr_unreferenced_parameter(P) (void)(P)
+#endif
+
+// Burning Shader Language
+#define bl_uniform_p(var,name) ((const var*)glsl.MaterialLink->shader->getUniform(name,BL_UNIFORM_FLOAT))
+#define bl_uniform(var,name) const var& name = *bl_uniform_p(var,#name)
+
+//! Testing Burning Video GLSL Emulation
+//#define burning_glsl_emu_test
+
+// testing STK Shader
+#if !defined(PATCH_SUPERTUX_8_0_1_with_1_9_0_Shader)
+//#define PATCH_SUPERTUX_8_0_1_with_1_9_0_Shader
+#endif
+
 
 #endif // S_VIDEO_2_SOFTWARE_COMPILE_CONFIG_H_INCLUDED

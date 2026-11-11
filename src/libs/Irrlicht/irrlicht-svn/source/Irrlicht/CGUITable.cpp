@@ -185,7 +185,7 @@ bool CGUITable::setActiveColumn(s32 idx, bool doOrder )
 		orderRows(getActiveColumn(), CurrentOrdering);
 	}
 
-	if (changed)
+	if (changed && Parent)
 	{
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;

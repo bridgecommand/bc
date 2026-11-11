@@ -97,16 +97,15 @@ public:
 
 	//! Default constructor
 	string()
-	: array(0), allocated(1), used(1)
+	: array(smallString()), used(1)
 	{
-		array = allocator.allocate(1); // new T[1];
 		array[0] = 0;
 	}
 
 
 	//! Constructor
 	string(const string<T,TAlloc>& other)
-	: array(0), allocated(0), used(0)
+	: array(smallString()), used(0)
 	{
 		*this = other;
 	}
@@ -114,7 +113,7 @@ public:
 	//! Constructor from other string types
 	template <class B, class A>
 	string(const string<B, A>& other)
-	: array(0), allocated(0), used(0)
+	: array(smallString()), used(0)
 	{
 		*this = other;
 	}
@@ -122,7 +121,7 @@ public:
 
 	//! Constructs a string from a float
 	explicit string(const double number)
-	: array(0), allocated(0), used(0)
+	: array(smallString()), used(0)
 	{
 		c8 tmpbuf[255];
 		snprintf_irr(tmpbuf, 255, "%0.6f", number);
@@ -132,7 +131,7 @@ public:
 
 	//! Constructs a string from an int
 	explicit string(int number)
-	: array(0), allocated(0), used(0)
+	: array(smallString()), used(0)
 	{
 		// store if negative and make positive
 
@@ -180,7 +179,7 @@ public:
 
 	//! Constructs a string from an unsigned int
 	explicit string(unsigned int number)
-	: array(0), allocated(0), used(0)
+	: array(smallString()), used(0)
 	{
 		// temporary buffer for 16 numbers
 
@@ -211,7 +210,7 @@ public:
 
 	//! Constructs a string from a long
 	explicit string(long number)
-	: array(0), allocated(0), used(0)
+	: array(smallString()), used(0)
 	{
 		// store if negative and make positive
 
@@ -259,7 +258,7 @@ public:
 
 	//! Constructs a string from an unsigned long
 	explicit string(unsigned long number)
-	: array(0), allocated(0), used(0)
+	: array(smallString()), used(0)
 	{
 		// temporary buffer for 16 numbers
 
@@ -291,7 +290,7 @@ public:
 	//! Constructor for copying a string from a pointer with a given length
 	template <class B>
 	string(const B* const c, u32 length)
-	: array(0), allocated(0), used(0)
+	: array(smallString()), used(0)
 	{
 		if (!c)
 		{
@@ -300,8 +299,12 @@ public:
 			return;
 		}
 
-		allocated = used = length+1;
-		array = allocator.allocate(used); // new T[used];
+		used = length+1;
+		if ( used > SMALL_STR_SIZE )
+		{
+			storage.dynamicAllocated = used;
+			array = allocator.allocate(used); // new T[used];
+		}
 
 		for (u32 l = 0; l<length; ++l)
 			array[l] = (T)c[l];
@@ -313,7 +316,7 @@ public:
 	//! Constructor for Unicode and ASCII strings
 	template <class B>
 	string(const B* const c)
-	: array(0), allocated(0), used(0)
+	: array(smallString()), used(0)
 	{
 		*this = c;
 	}
@@ -322,7 +325,8 @@ public:
 	//! Destructor
 	~string()
 	{
-		allocator.deallocate(array); // delete [] array;
+		if ( array != smallString() )
+			allocator.deallocate(array); // delete [] array;
 	}
 
 
@@ -333,10 +337,12 @@ public:
 			return *this;
 
 		used = other.size()+1;
-		if (used>allocated)
+		if ( used > getAllocated())
 		{
-			allocator.deallocate(array); // delete [] array;
-			allocated = used;
+			if ( array != smallString() )
+				allocator.deallocate(array); // delete [] array;
+
+			storage.dynamicAllocated = used;
 			array = allocator.allocate(used); //new T[used];
 		}
 
@@ -362,11 +368,6 @@ public:
 	{
 		if (!c)
 		{
-			if (!array)
-			{
-				array = allocator.allocate(1); //new T[1];
-				allocated = 1;
-			}
 			used = 1;
 			array[0] = 0x0;
 			return *this;
@@ -387,16 +388,20 @@ public:
 		T* oldArray = array;
 
 		used = len;
-		if (used>allocated)
+		u32 mem_size = getAllocated();
+		if (used > mem_size)
 		{
-			allocated = used;
+			mem_size = used;
 			array = allocator.allocate(used); //new T[used];
 		}
 
 		for (u32 l = 0; l<len; ++l)
 			array[l] = (T)c[l];
 
-		if (oldArray != array)
+		if ( mem_size > SMALL_STR_SIZE )
+			storage.dynamicAllocated = mem_size;
+
+		if (oldArray != array && oldArray != smallString())
 			allocator.deallocate(oldArray); // delete [] oldArray;
 
 		return *this;
@@ -496,9 +501,10 @@ public:
 
 	//! Returns length of the string's content
 	/** \return Length of the string's content in characters, excluding
-	the trailing NUL. */
+	the null terminator. */
 	u32 size() const
 	{
+		IRR_DEBUG_BREAK_IF(used==0) // should be impossible
 		return used-1;
 	}
 
@@ -519,8 +525,29 @@ public:
 		used = 1;
 	}
 
+	//! Returns the number of characters for which we have memory reserved
+	//! Null terminator excluded, so capacity() is >= size()
+	u32 capacity() const
+	{
+		return getAllocated()-1;
+	}
+
+	//! Reserves memory capacity for given amount of characters
+	/** Only increases memory, never releases.
+	\param count: Amount of characters to reserve. Null terminator excluded. 
+		    Note: Up to Irrlicht 1.8 count needed to include the null terminator.
+			Since 1.9 it's usually reserve(strlen). Old code might reserve 1 more 
+			character now, but that's usually no problem. */
+	void reserve(u32 count)
+	{
+		if (count <= capacity())
+			return;
+
+		reallocate(count+1);
+	}
+
 	//! Returns character string
-	/** \return pointer to C-style NUL terminated string. */
+	/** \return pointer to C-style null terminated string. */
 	const T* c_str() const
 	{
 		return array;
@@ -631,13 +658,17 @@ public:
 	/** \param character: Character to append. */
 	string<T,TAlloc>& append(T character)
 	{
-		if (used + 1 > allocated)
-			reallocate(used + 1);
+		const u32 newUsed = used + 1;
+		if ( newUsed < used ) // avoid u32 overflow
+			return *this;
+			
+		if (newUsed > getAllocated())
+			reallocate(newUsed);
 
-		++used;
+		array[newUsed-2] = character;
+		array[newUsed-1] = 0;
 
-		array[used-2] = character;
-		array[used-1] = 0;
+		used = newUsed;
 
 		return *this;
 	}
@@ -653,24 +684,27 @@ public:
 
 		u32 len = 0;
 		const T* p = other;
-		while(*p)
+		while(*p && len < length)
 		{
 			++len;
 			++p;
 		}
-		if (len > length)
-			len = length;
+		if ( len == 0 )
+			return *this;
 
-		if (used + len > allocated)
-			reallocate(used + len);
+		const u32 newUsed = used + len;
+		if ( newUsed < used ) // avoid u32 overflow
+			return *this;
 
-		--used;
-		++len;
+		if (newUsed > getAllocated())
+			reallocate(newUsed);
 
+		const u32 start = used-1;
 		for (u32 l=0; l<len; ++l)
-			array[l+used] = *(other+l);
+			array[l+start] = *(other+l);
+		array[newUsed-1] = 0;
 
-		used += len;
+		used = newUsed;
 
 		return *this;
 	}
@@ -680,19 +714,23 @@ public:
 	/** \param other: String to append. */
 	string<T,TAlloc>& append(const string<T,TAlloc>& other)
 	{
-		if (other.size() == 0)
+		const u32 otherSize = other.size();
+		if (otherSize == 0)
 			return *this;
 
-		--used;
-		const u32 len = other.size()+1;
+		const irr::u32 newUsed = used + otherSize; // at least 2
+		if ( newUsed < used ) // avoid u32 overflow
+			return *this;
 
-		if (used + len > allocated)
-			reallocate(used + len);
+		if (newUsed > getAllocated())
+			reallocate(newUsed);
 
-		for (u32 l=0; l<len; ++l)
-			array[used+l] = other[l];
+		const u32 start = used-1;
+		for (u32 l=0; l<otherSize; ++l)
+			array[start+l] = other[l];
+		array[newUsed-1] = 0;
 
-		used += len;
+		used = newUsed;
 
 		return *this;
 	}
@@ -703,27 +741,29 @@ public:
 	\param length: How much characters of the other string to add to this one. */
 	string<T,TAlloc>& append(const string<T,TAlloc>& other, u32 length)
 	{
-		if (other.size() == 0)
+		const u32 otherSize = other.size();
+		if (otherSize == 0 || length == 0)
 			return *this;
 
-		if (other.size() < length)
+		if (otherSize < length)
 		{
 			append(other);
 			return *this;
 		}
 
-		if (used + length > allocated)
-			reallocate(used + length);
+		const irr::u32 newUsed = used + length;
+		if ( newUsed < used ) // avoid u32 overflow
+			return *this;
 
-		--used;
+		if (newUsed > getAllocated())
+			reallocate(newUsed);
 
-		for (u32 l=0; l<length; ++l)
-			array[l+used] = other[l];
-		used += length;
-
-		// ensure proper termination
-		array[used]=0;
-		++used;
+		const u32 start = used-1;
+		for (u32 l=0; l<length; ++l)	
+			array[l+start] = other[l];
+		array[newUsed-1] = 0;
+		
+		used = newUsed;
 
 		return *this;
 	}
@@ -736,10 +776,13 @@ public:
 	{
 		if ( pos < used )
 		{
-			reserve(used+n);
+			const u32 end = used+n-1;
+			if (end < used) // avoid u32 overflow or n==0
+				return *this;
+
+			reserve(end);
 
 			// move stuff behind insert point
-			const u32 end = used+n-1;
 			for (u32 i=0; i<used-pos; ++i)
 			{
 				array[end-i] = array[end-(i+n)];
@@ -755,24 +798,14 @@ public:
 		return *this;
 	}
 
-	//! Reserves some memory.
-	/** \param count: Amount of characters to reserve. */
-	void reserve(u32 count)
-	{
-		if (count < allocated)
-			return;
-
-		reallocate(count);
-	}
-
-
 	//! finds first occurrence of character in string
 	/** \param c: Character to search for.
+	* \param startPos: Position in string to start searching.
 	\return Position where the character has been found,
 	or -1 if not found. */
-	s32 findFirst(T c) const
+	s32 findFirst(T c, u32 startPos=0) const
 	{
-		for (u32 i=0; i<used-1; ++i)
+		for (u32 i=startPos; i<used-1; ++i)
 			if (array[i] == c)
 				return i;
 
@@ -784,14 +817,15 @@ public:
 	should find the first occurrence of 'a' or 'b', this parameter should be "ab".
 	\param count: Amount of characters in the list. Usually,
 	this should be strlen(c)
+	* \param startPos: Position in string to start searching.
 	\return Position where one of the characters has been found,
 	or -1 if not found. */
-	s32 findFirstChar(const T* const c, u32 count=1) const
+	s32 findFirstChar(const T* const c, u32 count=1, u32 startPos=0) const
 	{
 		if (!c || !count)
 			return -1;
 
-		for (u32 i=0; i<used-1; ++i)
+		for (u32 i=startPos; i<used-1; ++i)
 			for (u32 j=0; j<count; ++j)
 				if (array[i] == c[j])
 					return i;
@@ -854,6 +888,7 @@ public:
 		return -1;
 	}
 
+	//! Deprecated, can always use findFirst
 	//! finds next occurrence of character in string
 	/** \param c: Character to search for.
 	\param startPos: Position in string to start searching.
@@ -861,13 +896,8 @@ public:
 	or -1 if not found. */
 	s32 findNext(T c, u32 startPos) const
 	{
-		for (u32 i=startPos; i<used-1; ++i)
-			if (array[i] == c)
-				return i;
-
-		return -1;
+		return findFirst(c, startPos);
 	}
-
 
 	//! finds last occurrence of character in string
 	/** \param c: Character to search for.
@@ -954,7 +984,7 @@ public:
 			return string<T>("");
 
 		string<T> o;
-		o.reserve(length+1);
+		o.reserve(length);
 
 		if ( !make_lower )
 		{
@@ -1072,7 +1102,7 @@ public:
 	\param replaceWith The string replacing the old one. */
 	string<T,TAlloc>& replace(const string<T,TAlloc>& toReplace, const string<T,TAlloc>& replaceWith)
 	{
-		if (toReplace.size() == 0)
+		if (empty() || toReplace.empty())
 			return *this;
 
 		const T* other = toReplace.c_str();
@@ -1145,7 +1175,7 @@ public:
 
 		// Re-allocate the string now, if needed.
 		u32 len = delta * find_count;
-		if (used + len > allocated)
+		if (used + len > getAllocated())
 			reallocate(used + len);
 
 		// Start replacing.
@@ -1198,12 +1228,12 @@ public:
 	}
 
 
-	//! Removes a string from the string.
+	//! Removes all instances of given string from the original string.
 	/** \param toRemove: String to remove. */
 	string<T,TAlloc>& remove(const string<T,TAlloc>& toRemove)
 	{
 		u32 size = toRemove.size();
-		if ( size == 0 )
+		if ( size == 0 || empty() )
 			return *this;
 		u32 pos = 0;
 		u32 found = 0;
@@ -1235,7 +1265,7 @@ public:
 	/** \param characters: Characters to remove. */
 	string<T,TAlloc>& removeChars(const string<T,TAlloc> & characters)
 	{
-		if (characters.size() == 0)
+		if (empty() || characters.empty())
 			return *this;
 
 		u32 pos = 0;
@@ -1292,7 +1322,7 @@ public:
 	*/
 	string<T,TAlloc>& eraseTrailingFloatZeros(char decimalPoint='.')
 	{
-		s32 i=findLastCharNotInList("0", 1);
+		s32 i=findLastCharNotInList("0", 1); // find character before the 0's
 		if ( i > 0 && (u32)i < used-2 )	// non 0 must be found and not last char (also used is at least 2 when i > 0)
 		{
 			u32 eraseStart=i+1;
@@ -1323,7 +1353,7 @@ public:
 	\param index: Index of element to be erased. */
 	string<T,TAlloc>& erase(u32 index)
 	{
-		IRR_DEBUG_BREAK_IF(index>=used) // access violation
+		IRR_DEBUG_BREAK_IF(index>=size()) // access violation
 
 		for (u32 i=index+1; i<used; ++i)
 			array[i-1] = array[i];
@@ -1336,6 +1366,7 @@ public:
 	string<T,TAlloc>& validate()
 	{
 		// terminate on existing null
+		const u32 allocated = getAllocated();
 		for (u32 i=0; i<allocated; ++i)
 		{
 			if (array[i] == 0)
@@ -1426,28 +1457,73 @@ public:
 private:
 
 	//! Reallocate the array, make it bigger or smaller
+	//! Keep as much of the existing string intact as still fits after reallocation
+	//\param new_size Amount of characters _including_ null terminator
 	void reallocate(u32 new_size)
 	{
+		if ( new_size <= SMALL_STR_SIZE && array == smallString() )	// small string before and after reallocation
+			return;
+
 		T* old_array = array;
 
-		array = allocator.allocate(new_size); //new T[new_size];
-		allocated = new_size;
+		if ( new_size > SMALL_STR_SIZE )
+		{
+			array = allocator.allocate(new_size); //new T[new_size];
+		}
+		else
+		{
+			array = smallString();
+			if ( new_size < SMALL_STR_SIZE )
+			{
+				new_size = SMALL_STR_SIZE;
+			}
+		}
+		
+		if ( used > new_size )
+		{
+			used = new_size;
+		}
+		if ( used > 1 )
+		{
+			const u32 amount = used-1;
+			for (u32 i=0; i<amount; ++i)
+				array[i] = old_array[i];
+		}
+		array[used-1] = 0;
 
-		const u32 amount = used < new_size ? used : new_size;
-		for (u32 i=0; i<amount; ++i)
-			array[i] = old_array[i];
+		if ( new_size > SMALL_STR_SIZE )
+			storage.dynamicAllocated = new_size;
 
-		if (allocated < used)
-			used = allocated;
-
-		allocator.deallocate(old_array); // delete [] old_array;
+		if ( old_array != smallString() )
+			allocator.deallocate(old_array); // delete [] old_array;
 	}
 
-	//--- member variables
+	// return amount of available memory in characters _including_ null terminator
+	u32 getAllocated() const
+	{
+		if ( array == smallString() )
+			return SMALL_STR_SIZE;
 
+		return storage.dynamicAllocated;
+	}
+
+	T* smallString() { return storage.smallString; }
+	const T* smallString() const { return storage.smallString; }
+
+	//--- member variables
+	static const u32 SMALL_STR_SIZE = 16 / sizeof(T); // size of buffer in characters for small string optimization
 	T* array;
-	u32 allocated;
-	u32 used;
+	// TODO: With c++ 98 we can't easily use union instead of struct for Storage
+	// We have to either give up on allowing struct char types with constructor (like xmlChar) or have to start using raw memory instead of T for the array and cast around
+	// So for now we just going to live with 4 byte extra per string :-(
+	// But usually you would only need one or the other (if you compile with c++11 you could already replace struct by union)
+	struct Storage
+	{
+		Storage() : dynamicAllocated(0) {}	// With union have a constructor allows compiling T char types which have one non-trivial constructor from c++11 on. Doesn't work with c++98
+		u32 dynamicAllocated;	// characters (not bytes) of allocated dynamic memory including null terminator
+		T smallString[SMALL_STR_SIZE]; 
+	} storage;
+	u32 used;		// characters including null terminator
 	TAlloc allocator;
 };
 
@@ -1486,7 +1562,7 @@ static size_t multibyteToWString(string<wchar_t>& destination, const char* sourc
 {
 	if ( sourceSize )
 	{
-		destination.reserve(sourceSize+1);
+		destination.reserve(sourceSize);
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable: 4996)	// 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead.
@@ -1520,4 +1596,3 @@ static size_t multibyteToWString(string<wchar_t>& destination, const char* sourc
 } // end namespace irr
 
 #endif
-

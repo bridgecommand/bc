@@ -403,7 +403,7 @@ IImage* CImageLoaderBMP::loadImage(io::IReadFile* file) const
 
 	IImage* image = 0;
 
-	if ( !IImage::checkDataSizeLimit( (size_t)header.Width*header.Height*header.BPP) )
+	if ( !IImage::checkDataSizeLimit( (u64)header.Width*header.Height*header.BPP, header.Width, header.Height) )
 	{
 		os::Printer::log("Image dimensions too large for file", file->getFileName(), ELL_WARNING);
 		goto cleanup;
