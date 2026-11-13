@@ -250,6 +250,7 @@ namespace scene
 			clone->IndexBuffer->setHardwareMappingHint(clone->IndexBuffer->getHardwareMappingHint());
 			clone->Material = Material;
 			clone->PrimitiveType = PrimitiveType;
+			clone->Name = Name;
 
 			return clone;
 		}

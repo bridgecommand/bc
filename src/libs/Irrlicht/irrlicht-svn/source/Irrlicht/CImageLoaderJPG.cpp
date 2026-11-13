@@ -233,7 +233,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 	u32 height = cinfo.image_height;
 
 	if (	width > JPEG_MAX_DIMENSION || height > JPEG_MAX_DIMENSION 
-		|| !IImage::checkDataSizeLimit(IImage::getDataSizeFromFormat(ECF_R8G8B8, width, height))
+		|| !IImage::checkDataSizeLimit(IImage::getDataSizeFromFormat(ECF_R8G8B8, width, height), width, height)
 		)
 	{
 		os::Printer::log("Image dimensions too large in file", filename, ELL_ERROR);
@@ -279,13 +279,11 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 		{
 			for (u32 i=0,j=0; i<size; i+=3, j+=4)
 			{
-				// Also works without K, but has more contrast with K multiplied in
-//				data[i+0] = output[j+2];
-//				data[i+1] = output[j+1];
-//				data[i+2] = output[j+0];
-				data[i+0] = (char)(output[j+2]*(output[j+3]/255.f));
-				data[i+1] = (char)(output[j+1]*(output[j+3]/255.f));
-				data[i+2] = (char)(output[j+0]*(output[j+3]/255.f));
+				// Assume CMYK is in Adobe inverted convention, convert to RGB by multiplying by K.
+				// This is a very rough conversion, because we don't use a color profile
+				data[i+0] = (u8)(output[j+0]*output[j+3]/255);
+				data[i+1] = (u8)(output[j+1]*output[j+3]/255);
+				data[i+2] = (u8)(output[j+2]*output[j+3]/255);
 			}
 		}
 		delete [] output;

@@ -161,7 +161,7 @@ namespace gui
 		};
 
 		void recalculateItemHeight(bool forceRecalculation=false);
-		void selectNew(s32 ypos, bool onlyHover=false);
+		void selectNew(s32 itemIndex, bool onlyHover=false);
 		void recalculateScrollPos();
 		void updateScrollBarSize(s32 size);
 

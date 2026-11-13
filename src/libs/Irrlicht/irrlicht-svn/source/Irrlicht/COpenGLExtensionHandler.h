@@ -1074,6 +1074,8 @@ class COpenGLExtensionHandler
 	void irrGlCompressedTexSubImage2D(GLenum target, GLint level,
 		GLint xoffset, GLint yoffset, GLsizei width, GLsizei height,
 		GLenum format, GLsizei imageSize, const void* data);
+	void irrGlTexImage2DMultisample( GLenum target,	GLsizei samples, 
+		GLenum internalformat,	GLsizei width,	GLsizei height, GLboolean fixedsamplelocations);
 
 	// shader programming
 	void extGlGenPrograms(GLsizei n, GLuint *programs);
@@ -1295,6 +1297,7 @@ class COpenGLExtensionHandler
 		PFNGLSTENCILOPSEPARATEATIPROC pGlStencilOpSeparateATI;
 		PFNGLCOMPRESSEDTEXIMAGE2DPROC pGlCompressedTexImage2D;
 		PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC pGlCompressedTexSubImage2D;
+		PFNGLTEXIMAGE2DMULTISAMPLEPROC pGlTexImage2DMultisample;
 		// ARB framebuffer object
 		PFNGLBINDFRAMEBUFFERPROC pGlBindFramebuffer;
 		PFNGLDELETEFRAMEBUFFERSPROC pGlDeleteFramebuffers;
@@ -2208,6 +2211,17 @@ inline void COpenGLExtensionHandler::irrGlCompressedTexSubImage2D(GLenum target,
 	glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
 #else
 	os::Printer::log("glCompressedTexSubImage2D not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::irrGlTexImage2DMultisample( GLenum target,	GLsizei samples, 
+	GLenum internalformat,	GLsizei width,	GLsizei height, GLboolean fixedsamplelocations)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlTexImage2DMultisample)
+		pGlTexImage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
+#else
+	os::Printer::log("glTexImage2DMultisample not supported", ELL_ERROR);
 #endif
 }
 

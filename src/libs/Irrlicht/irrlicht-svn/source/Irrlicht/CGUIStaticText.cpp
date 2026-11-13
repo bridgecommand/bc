@@ -348,7 +348,7 @@ void CGUIStaticText::breakText()
 			if (c == L'\r') // Mac or Windows breaks
 			{
 				lineBreak = true;
-				if (Text[i+1] == L'\n') // Windows breaks
+				if (Text[i+1] == L'\n') // Windows breaks (+1 safe as text is 0 terminated)
 				{
 					Text.erase(i+1);
 					--size;
@@ -380,13 +380,14 @@ void CGUIStaticText::breakText()
 					if (wordlgth > elWidth)
 					{
 						// This word is too long to fit in the available space, look for
-						// the Unicode Soft HYphen (SHY / 00AD) character for a place to
+						// the Unicode soft hyphen  (SHY / 00AD) character for a place to
 						// break the word at
-						int where = word.findFirst( wchar_t(0x00AD) );
-						if (where != -1)
+						const wchar_t hyphen = wchar_t(0x00AD);
+						int idxHyphen = word.findNext(hyphen, 1); // look for first one beyond index 0 (which would be pointless)
+						if (idxHyphen != -1) // found one
 						{
-							core::stringw first  = word.subString(0, where);
-							core::stringw second = word.subString(where, word.size() - where);
+							core::stringw first  = word.subString(0, idxHyphen);
+							core::stringw second = word.subString(idxHyphen+1, word.size() - idxHyphen - 1);
 							BrokenText.push_back(line + first + L"-");
 							const s32 secondLength = font->getDimension(second.c_str()).Width;
 
@@ -422,7 +423,7 @@ void CGUIStaticText::breakText()
 					whitespace = L"";
 				}
 
-				if ( isWhitespace )
+				if ( isWhitespace && c != 0 )
 				{
 					whitespace += c;
 				}
@@ -447,29 +448,38 @@ void CGUIStaticText::breakText()
 	}
 	else
 	{
-		// right-to-left
-		for (s32 i=size; i>=0; --i)
+		// right-to-left (Note: no hyphen checks in this direction so far)
+		for (s32 i=size-1; i>=0; --i)
 		{
 			c = Text[i];
 			bool lineBreak = false;
 
-			if (c == L'\r') // Mac or Windows breaks
+			if (c == L'\n') // Unix or Windows breaks
 			{
 				lineBreak = true;
-				if ((i>0) && Text[i-1] == L'\n') // Windows breaks
+				if (i > 0 && Text[i-1] == L'\r') // Windows breaks
 				{
 					Text.erase(i-1);
 					--size;
+					--i; // skip erased \r, only necessary for right-to-left path
 				}
 				c = '\0';
 			}
-			else if (c == L'\n') // Unix breaks
+			else if (c == L'\r') // Mac breaks
 			{
 				lineBreak = true;
 				c = '\0';
 			}
 
-			if (c==L' ' || c==0 || i==0)
+			bool isWhitespace = (c == L' ' || c == 0);
+
+			if (!isWhitespace)
+			{
+				// yippee this is a word..
+				word = core::stringw(&c, 1) + word;
+			}
+
+			if (isWhitespace || i == 0)
 			{
 				if (word.size())
 				{
@@ -497,8 +507,10 @@ void CGUIStaticText::breakText()
 					whitespace = L"";
 				}
 
-				if (c != 0)
+				if (isWhitespace && c != 0)
+				{
 					whitespace = core::stringw(&c, 1) + whitespace;
+				}
 
 				// compute line break
 				if (lineBreak)
@@ -511,11 +523,6 @@ void CGUIStaticText::breakText()
 					whitespace = L"";
 					length = 0;
 				}
-			}
-			else
-			{
-				// yippee this is a word..
-				word = core::stringw(&c, 1) + word;
 			}
 		}
 

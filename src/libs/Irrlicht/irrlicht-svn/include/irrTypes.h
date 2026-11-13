@@ -116,23 +116,36 @@ typedef double				f64;
 } // end namespace irr
 
 
-#include <wchar.h>
+//! Defines for s{w,n}printf because these methods do not match the ISO C
+//! standard on old Microsoft Visual C++, but it does on all others.
+//! These should be int snprintf(char *str, size_t size, const char *format, ...);
+//! and int swprintf(wchar_t *wcs, size_t maxlen, const wchar_t *format, ...);
+// Default we assume they exist
+#define swprintf_irr swprintf
+#define snprintf_irr snprintf
+
 #ifdef _IRR_WINDOWS_API_
-//! Defines for s{w,n}printf_irr because s{w,n}printf methods do not match the ISO C
-//! standard on Windows platforms.
-//! We want int snprintf_irr(char *str, size_t size, const char *format, ...);
-//! and int swprintf_irr(wchar_t *wcs, size_t maxlen, const wchar_t *format, ...);
-#if defined(_MSC_VER) && _MSC_VER > 1310 && !defined (_WIN32_WCE)
+#if defined(_MSC_VER) && _MSC_VER >= 1900
+// Starting from Visual Studio 2015, the standard compliant versions of these
+// methods are available, so we don't need to redefine them.
+#elif defined(_MSC_VER) && _MSC_VER > 1310 && !defined (_WIN32_WCE)
+#undef swprintf_irr
+#undef snprintf_irr
 #define swprintf_irr swprintf_s
 #define snprintf_irr sprintf_s
-#elif !defined(__CYGWIN__)
+#elif !defined(__CYGWIN__)	// MinGW
+#undef swprintf_irr
+#undef snprintf_irr
 #define swprintf_irr _snwprintf
 #define snprintf_irr _snprintf
 #endif
+#endif // _IRR_WINDOWS_API_
 
 // define the wchar_t type if not already built in.
 // It's usually set when VS compiler sets /Zc:wchar_t
-#ifdef _MSC_VER
+#include <wchar.h>
+#ifdef _IRR_WINDOWS_API_
+#ifdef _MSC_VER	// microsoft compiler
 #ifndef _WCHAR_T_DEFINED
 //! A 16 bit wide character type.
 /**
@@ -145,10 +158,8 @@ typedef double				f64;
 typedef unsigned short wchar_t;
 #define _WCHAR_T_DEFINED
 #endif // wchar is not defined
-#endif // microsoft compiler
-#else
-#define swprintf_irr swprintf
-#define snprintf_irr snprintf
+#endif // _MSC_VER
+
 #endif // _IRR_WINDOWS_API_
 
 namespace irr
@@ -157,7 +168,7 @@ namespace irr
 //! Type name for character type used by the filesystem.
 /** Should the wide character version of the filesystem be used it is a
 16 bit character variable. Used for Unicode filesystem and Unicode strings.
-Else it is a 8 bit character variable. Used for ansi filesystem and non-unicode
+Else it is a 8 bit character variable. Used for ANSI filesystem and non-unicode
 strings
 */
 #if defined(_IRR_WCHAR_FILESYSTEM)

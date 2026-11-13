@@ -6,6 +6,7 @@
 #define S_OVERRIDE_MATERIAL_H_INCLUDED
 
 #include "SMaterial.h"
+#include "irrArray.h"
 
 namespace irr
 {

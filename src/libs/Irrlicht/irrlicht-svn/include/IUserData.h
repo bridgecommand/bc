@@ -18,15 +18,15 @@ namespace io
 	class IUserData
 	{
 		public:
-			//! To identify the class type.
-			//! You can for example use MAKE_IRR_ID to create four CC codes
-			virtual irr::u32 getType() const { return 0; }	
-			
+		
 			//! To be overloaded if comparisons matter
-			//! You can then cast other to your derived class
+			//! For example in SMaterial you can trigger a material change by returning false
+			//! Remember you can cast 'other' inside to your derived class.
+			//! Like when you have class MyData : public IUserData you'll 
+			//! probably do: const MyData& otherM = static_cast<const MyData&>(other);
 			virtual bool compare(const IUserData& other) const
 			{
-				return getType() == other.getType();
+				return true;
 			}
 			
 			//! Used internally by Irrlicht to check if data has changed

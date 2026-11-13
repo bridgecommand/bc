@@ -4,9 +4,9 @@
 void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if (a->Pos.y > b->Pos.y) swapVertexPointer(&a, &b);
-	if (a->Pos.y > c->Pos.y) swapVertexPointer(&a, &c);
-	if (b->Pos.y > c->Pos.y) swapVertexPointer(&b, &c);
+	if (a->Pos.y > b->Pos.y) swapVertexPointer(a, b);
+	if (a->Pos.y > c->Pos.y) swapVertexPointer(a, c);
+	if (b->Pos.y > c->Pos.y) swapVertexPointer(b, c);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;

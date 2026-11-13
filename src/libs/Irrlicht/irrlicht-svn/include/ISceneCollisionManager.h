@@ -169,7 +169,7 @@ namespace scene
 		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32>& pos,
 				s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0) =0;
 
-		//! Returns the nearest scene node which collides with a 3d ray and whose id matches a bitmask.
+		//! Returns the nearest scene node which has it's bounding-box collide the ray and the node id matches a bitmask.
 		/** The collision tests are done using a bounding box for each
 		scene node. The recursive search can be limited be specifying a scene node.
 		\param ray Line with which collisions are tested.
@@ -179,11 +179,14 @@ namespace scene
 		\param bNoDebugObjects: Doesn't take debug objects into account when true. These
 		are scene nodes with IsDebugObject() = true.
 		\param root If different from 0, the search is limited to the children of this node.
+		\param nearestHitDist Can return the distance to nearest hit, but also acts as limit to max distance.
+		So if you want all nodes, either don't set this (0), or set the variable you pass to FLT_MAX.
 		\return Scene node nearest to ray.start, which collides with
 		the ray and matches the idBitMask, if the mask is not null. If
 		no scene node is found, 0 is returned. */
 		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32>& ray,
-							s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0) =0;
+							s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0, 
+							f32* nearestHitDist=0) =0;
 
 		//! Get the scene node, which the given camera is looking at and whose id matches the bitmask.
 		/** A ray is simply cast from the position of the camera to

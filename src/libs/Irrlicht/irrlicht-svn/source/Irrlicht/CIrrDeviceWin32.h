@@ -419,7 +419,7 @@ namespace irr
 
 			struct CursorW32
 			{
-				CursorW32() {}
+				CursorW32() : FrameTime(0) {}
 				explicit CursorW32(HCURSOR iconHw, u32 frameTime=0) : FrameTime(frameTime)
 				{
 					Frames.push_back( CursorFrameW32(iconHw) );

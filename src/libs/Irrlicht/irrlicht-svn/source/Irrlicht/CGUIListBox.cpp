@@ -128,7 +128,7 @@ s32 CGUIListBox::getItemAt(s32 xpos, s32 ypos) const
 	if ( ItemHeight == 0 )
 		return -1;
 
-	s32 item = ((ypos - AbsoluteRect.UpperLeftCorner.Y - 1) + ScrollBar->getPos()) / ItemHeight;
+	s32 item = ((ypos - AbsoluteRect.UpperLeftCorner.Y) + ScrollBar->getPos()) / ItemHeight;
 	if ( item < 0 || item >= (s32)Items.size())
 		return -1;
 
@@ -324,12 +324,11 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 				}
 				return true;
 			}
-			else if (event.KeyInput.Key == KEY_TAB )
-			{
-				return false;
-			}
 			else if (event.KeyInput.PressedDown && event.KeyInput.Char)
 			{
+				if ( event.KeyInput.Char < 32 )	// ignore control characters
+					break;
+
 				// change selection based on text as it is typed.
 				u32 now = os::Timer::getTime();
 
@@ -350,7 +349,7 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 				LastKeyTime = now;
 
 				// find the selected item, starting at the current selection
-				s32 start = Selected;
+				const s32 start = Selected;
 				// dont change selection if the key buffer matches the current item
 				if (Selected > -1 && KeyBuffer.size() > 1)
 				{
@@ -366,7 +365,8 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 					{
 						if (KeyBuffer.equals_ignore_case(Items[current].Text.subString(0,KeyBuffer.size())))
 						{
-							if (Parent && Selected != current && !Selecting && !MoveOverSelect)
+							setSelected(current);
+							if (Parent && start != current && !Selecting && !MoveOverSelect)
 							{
 								SEvent e;
 								e.EventType = EET_GUI_EVENT;
@@ -375,7 +375,6 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 								e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
 								Parent->OnEvent(e);
 							}
-							setSelected(current);
 							return true;
 						}
 					}
@@ -386,9 +385,9 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 					{
 						if (KeyBuffer.equals_ignore_case(Items[current].Text.subString(0,KeyBuffer.size())))
 						{
-							if (Parent && Selected != current && !Selecting && !MoveOverSelect)
+							setSelected(current);
+							if (Parent && start != current && !Selecting && !MoveOverSelect)
 							{
-								Selected = current;
 								SEvent e;
 								e.EventType = EET_GUI_EVENT;
 								e.GUIEvent.Caller = this;
@@ -396,7 +395,6 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 								e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
 								Parent->OnEvent(e);
 							}
-							setSelected(current);
 							return true;
 						}
 					}
@@ -416,7 +414,10 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 			case gui::EGET_ELEMENT_FOCUS_LOST:
 				{
 					if (event.GUIEvent.Caller == this)
+					{
 						Selecting = false;
+						HoverSelected = -1;
+					}
 				}
 			default:
 			break;
@@ -436,6 +437,8 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 				case EMIE_LMOUSE_PRESSED_DOWN:
 				{
 					Selecting = true;
+					if (isPointInside(p))
+						selectNew(getItemAt(AbsoluteRect.UpperLeftCorner.X, event.MouseInput.Y), true);
 					return true;
 				}
 
@@ -444,7 +447,9 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 					Selecting = false;
 
 					if (isPointInside(p))
-						selectNew(event.MouseInput.Y);
+						selectNew(getItemAt(AbsoluteRect.UpperLeftCorner.X, event.MouseInput.Y));
+					else if ( HoverSelected >= 0 )
+						selectNew(HoverSelected);
 
 					return true;
 				}
@@ -452,9 +457,9 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 				case EMIE_MOUSE_MOVED:
 					if (Selecting || MoveOverSelect)
 					{
-						if (isPointInside(p))
+						if (isPointInside(p) && (!ScrollBar->isVisible() || !ScrollBar->isPointInside(p)))
 						{
-							selectNew(event.MouseInput.Y, true);
+							selectNew(getItemAt(AbsoluteRect.UpperLeftCorner.X, event.MouseInput.Y), true);
 							return true;
 						}
 					}
@@ -472,12 +477,12 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 }
 
 
-void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
+void CGUIListBox::selectNew(s32 itemIndex, bool onlyHover)
 {
 	u32 now = os::Timer::getTime();
 	s32 oldSelected = Selected;
 
-	HoverSelected = getItemAt(AbsoluteRect.UpperLeftCorner.X, ypos);
+	HoverSelected = itemIndex;
 	if (HoverSelected<0 && !Items.empty())
 		HoverSelected = 0;
 	if  (!onlyHover)
@@ -489,7 +494,10 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 	recalculateScrollPos();
 
 	gui::EGUI_EVENT_TYPE eventType = (Selected == oldSelected && now < SelectTime + 500) ? EGET_LISTBOX_SELECTED_AGAIN : EGET_LISTBOX_CHANGED;
-	SelectTime = now;
+
+	if (!onlyHover)
+		SelectTime = now;
+
 	// post the news
 	if (Parent && !onlyHover)
 	{

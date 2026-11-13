@@ -222,7 +222,7 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 
 	ECOLOR_FORMAT colorFormat = ColorType==PNG_COLOR_TYPE_RGB_ALPHA ? ECF_A8R8G8B8  : ECF_R8G8B8;
 	
-	if (!IImage::checkDataSizeLimit(IImage::getDataSizeFromFormat(colorFormat, Width, Height)))
+	if (!IImage::checkDataSizeLimit(IImage::getDataSizeFromFormat(colorFormat, Width, Height), Width, Height))
 		png_cpexcept_error(png_ptr, "Image dimensions too large");
 
 	// Create the image structure to be filled by png data

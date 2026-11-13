@@ -345,11 +345,11 @@ namespace video
 		virtual u32 getMaximalPrimitiveCount() const IRR_OVERRIDE;
 
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) IRR_OVERRIDE;
+				const io::path& name, const ECOLOR_FORMAT format, u32 multiSamples, bool mipmap) IRR_OVERRIDE;
 
 		//! Creates a render target texture for a cubemap
 		ITexture* addRenderTargetTextureCubemap(const irr::u32 sideLen,
-				const io::path& name, const ECOLOR_FORMAT format) IRR_OVERRIDE;
+				const io::path& name, const ECOLOR_FORMAT format, bool mipmap) IRR_OVERRIDE;
 
 		virtual bool setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
 			f32 clearDepth = 1.f, u8 clearStencil = 0) IRR_OVERRIDE;

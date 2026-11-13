@@ -45,8 +45,9 @@ private:
 
 	struct ChunkHeader
 	{
+		ChunkHeader() : id(0), length(0) {}
 		u16 id;
-		s32 length;
+		u32 length;
 	} PACK_STRUCT;
 
 // Default alignment
@@ -57,7 +58,7 @@ private:
 		ChunkData() : read(0) {}
 
 		ChunkHeader header;
-		s32 read;
+		u32 read;
 	};
 
 	struct SCurrentMaterial
@@ -127,7 +128,7 @@ private:
 	bool readPercentageChunk(io::IReadFile* file, ChunkData* chunk, f32& percentage);
 	bool readColorChunk(io::IReadFile* file, ChunkData* chunk, video::SColor& out);
 
-	void readChunkData(io::IReadFile* file, ChunkData& data);
+	bool readChunkData(io::IReadFile* file, ChunkData& data);
 	void readString(io::IReadFile* file, ChunkData& data, core::stringc& out);
 	void readVertices(io::IReadFile* file, ChunkData& data);
 	void readIndices(io::IReadFile* file, ChunkData& data);

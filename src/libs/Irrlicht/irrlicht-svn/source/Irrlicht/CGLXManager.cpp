@@ -8,20 +8,7 @@
 
 #include "os.h"
 
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-	#define GL_GLEXT_LEGACY 1
-	#define GLX_GLXEXT_LEGACY 1
-#else
-	#define GL_GLEXT_PROTOTYPES 1
-	#define GLX_GLXEXT_PROTOTYPES 1
-#endif
-#include <GL/gl.h>
-#include <GL/glx.h>
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-#include "glext.h"
-#undef GLX_ARB_get_proc_address // avoid problems with local glxext.h
-#include "glxext.h"
-#endif
+#include "COpenGLCommon.h"
 
 namespace irr
 {

@@ -28,7 +28,7 @@ IXMLWriterUTF8* createIXMLWriterUTF8(IWriteFile* file)
 
 //! Constructor
 CXMLWriter::CXMLWriter(IWriteFile* file)
-: CXMLWriterCommon(file) 
+: CXMLWriterCommon<wchar_t>(file) 
 {
 	#ifdef _DEBUG
 	setDebugName("CXMLWriter");
@@ -252,7 +252,7 @@ void CXMLWriter::writeLineBreak()
 
 //! Constructor
 CXMLWriterUTF8::CXMLWriterUTF8(IWriteFile* file)
-: CXMLWriterCommon(file) 
+: CXMLWriterCommon<c8>(file) 
 {
 	#ifdef _DEBUG
 	setDebugName("CXMLWriter");

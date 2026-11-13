@@ -2754,6 +2754,10 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 			}
 
 			const GLenum tmpType = tmpTexture->getOpenGLTextureType();
+#ifdef GL_VERSION_3_2
+			if ( tmpType == GL_TEXTURE_2D_MULTISAMPLE ) // those states are not useable by multisample textures
+					continue;
+#endif
 
 			COpenGLTexture::SStatesCache& statesCache = tmpTexture->getStatesCache();
 
@@ -3802,14 +3806,14 @@ IVideoDriver* COpenGLDriver::getVideoDriver()
 
 
 ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-	const io::path& name, const ECOLOR_FORMAT format)
+	const io::path& name, const ECOLOR_FORMAT format, u32 multiSamples, bool mipmap)
 {
 	if ( IImage::isCompressedFormat(format) )
 		return 0;
 
-	//disable mip-mapping
+	// set mip-mapping flags
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
-	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, mipmap);
 
 	bool supportForFBO = (Feature.ColorAttachment > 0);
 
@@ -3821,7 +3825,7 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& si
 		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
 	}
 
-	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, destSize, ETT_2D, format, this);
+	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, destSize, ETT_2D, format, multiSamples, this);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 
@@ -3832,14 +3836,14 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& si
 }
 
 //! Creates a render target texture for a cubemap
-ITexture* COpenGLDriver::addRenderTargetTextureCubemap(const irr::u32 sideLen, const io::path& name, const ECOLOR_FORMAT format)
+ITexture* COpenGLDriver::addRenderTargetTextureCubemap(const irr::u32 sideLen, const io::path& name, const ECOLOR_FORMAT format, bool mipmap)
 {
 	if ( IImage::isCompressedFormat(format) )
 		return 0;
 
-	//disable mip-mapping
+	// set mip-mapping flags
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
-	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, mipmap);
 
 	bool supportForFBO = (Feature.ColorAttachment > 0);
 
@@ -3852,7 +3856,7 @@ ITexture* COpenGLDriver::addRenderTargetTextureCubemap(const irr::u32 sideLen, c
 		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
 	}
 
-	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, destSize, ETT_CUBEMAP, format, this);
+	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, destSize, ETT_CUBEMAP, format, 0, this);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 

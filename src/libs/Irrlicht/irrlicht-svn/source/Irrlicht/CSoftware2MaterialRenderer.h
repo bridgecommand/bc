@@ -29,8 +29,17 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
+		irr_unreferenced_parameter(lastMaterial);
+		irr_unreferenced_parameter(resetAllRenderstates);
+		irr_unreferenced_parameter(services);
 		if (Driver)
-			Driver->setFallback_Material(material.MaterialType, BVT_Fix);
+		{
+			BVCompiledShader vertexShader;
+			BVCompiledShader fragmentshader;
+			vertexShader.id = BVT_Fix;
+			fragmentshader.id = BVT_Fix;
+			Driver->setFallback_Material(material.MaterialType, vertexShader, fragmentshader);
+		}
 	}
 
 protected:

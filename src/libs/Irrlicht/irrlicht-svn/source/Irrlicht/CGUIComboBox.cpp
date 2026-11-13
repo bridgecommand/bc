@@ -313,6 +313,7 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 							ListBox->getAbsolutePosition().isPointInside(p) &&
 							ListBox->OnEvent(event)))
 					{
+						// TODO: when it's closed (for example pressing ESC or selecting item with ENTER) this re-opens the menu
 						openCloseMenu();
 					}
 					return true;

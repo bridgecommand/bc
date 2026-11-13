@@ -1,28 +1,15 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#include "IBurningShader.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#include "IBurningShader.h"
 
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_T0
-#undef IPOL_T1
 
 // define render case
 #define SUBTEXEL
@@ -33,43 +20,7 @@
 #define CMP_W
 #define WRITE_W
 
-
-#define IPOL_C0
-//#define IPOL_T0
-//#define IPOL_T1
-
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef INVERSE_W
-#endif
-
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-#undef SUBTEXEL
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 1
-#undef IPOL_C0
-#endif
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef IPOL_W
-#endif
-#define IPOL_Z
-
-#ifdef CMP_W
-#undef CMP_W
-#define CMP_Z
-#endif
-
-#ifdef WRITE_W
-#undef WRITE_W
-#define WRITE_Z
-#endif
-
-#endif
-
-burning_namespace_start
+#include "burning_shader_compile_verify.h"
 
 class CTRTextureWire2 : public IBurningShader
 {
@@ -78,7 +29,7 @@ public:
 	//! constructor
 	CTRTextureWire2(CBurningVideoDriver* driver);
 
-	virtual void OnSetMaterialBurning(const SBurningShaderMaterial& material) IRR_OVERRIDE;
+	virtual void OnSetMaterial_BL(const SBurningShaderMaterial& material) IRR_OVERRIDE;
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
@@ -108,7 +59,7 @@ CTRTextureWire2::CTRTextureWire2(CBurningVideoDriver* driver)
 	depth_write = 0;
 }
 
-void CTRTextureWire2::OnSetMaterialBurning(const SBurningShaderMaterial& material)
+void CTRTextureWire2::OnSetMaterial_BL(const SBurningShaderMaterial& material)
 {
 	depth_pass = material.depth_test == 0;
 	depth_write = material.depth_write;
@@ -118,11 +69,13 @@ void CTRTextureWire2::OnSetMaterialBurning(const SBurningShaderMaterial& materia
 /*!
 	2d line
 */
+//TODO: rewrite
+#define BV_TARGET_COLOR_LOG2_STEP	BV_TEXTURE_LOG2_STEP
 void CTRTextureWire2::renderLine(const s4DVertex* a, const s4DVertex* b) const
 {
-	const int pitch0 = RenderTarget->getDimension().Width << SOFTWARE_DRIVER_2_RENDERTARGET_GRANULARITY;
+	const int pitch0 = RenderTarget.color->getDimension().Width << BV_TARGET_COLOR_LOG2_STEP;
 #ifdef USE_ZBUFFER
-	const int pitch1 = RenderTarget->getDimension().Width * sizeof(fp24);
+	const int pitch1 = RenderTarget.color->getDimension().Width * sizeof(fp24);
 #endif
 
 	//todo: fill_convention_none!
@@ -139,12 +92,12 @@ void CTRTextureWire2::renderLine(const s4DVertex* a, const s4DVertex* b) const
 	int d = 0;
 	int run;
 
-	tVideoSample* dst;
+	tRenderTargetColorSample* dst;
 #ifdef USE_ZBUFFER
 	fp24* z;
 #endif
 
-	int xInc0 = 1 << SOFTWARE_DRIVER_2_RENDERTARGET_GRANULARITY;
+	int xInc0 = 1 << BV_TARGET_COLOR_LOG2_STEP;
 	int yInc0 = pitch0;
 
 #ifdef USE_ZBUFFER
@@ -179,10 +132,10 @@ void CTRTextureWire2::renderLine(const s4DVertex* a, const s4DVertex* b) const
 	}
 
 	SOFTWARE_DRIVER_2_CLIPCHECK_WIRE;
-	dst = (tVideoSample*)((u8*)RenderTarget->getData() + (aposy * pitch0) + (aposx << SOFTWARE_DRIVER_2_RENDERTARGET_GRANULARITY));
+	dst = (tRenderTargetColorSample*)((u8*)RenderTarget.color->getData() + (aposy * pitch0) + (aposx << BV_TARGET_COLOR_LOG2_STEP));
 
 #ifdef USE_ZBUFFER
-	z = (fp24*)((u8*)DepthBuffer->lock() + (aposy * pitch1) + (aposx << 2));
+	z = (fp24*)((u8*)RenderTarget.depth->getData() + (aposy * pitch1) + (aposx << 2));
 #endif
 
 	c = dx << 1;
@@ -203,7 +156,7 @@ void CTRTextureWire2::renderLine(const s4DVertex* a, const s4DVertex* b) const
 
 	f32 inversew = FIX_POINT_F32_MUL;
 
-	tVideoSample color;
+	tRenderTargetColorSample color;
 #if BURNING_MATERIAL_MAX_COLORS > 0
 	tFixPoint r0, g0, b0;
 #ifdef IPOL_C0
@@ -218,10 +171,10 @@ void CTRTextureWire2::renderLine(const s4DVertex* a, const s4DVertex* b) const
 #endif
 
 	vec4_to_fix(r0, g0, b0, a->Color[0], inversew);
-	color = fix_to_sample(r0, g0, b0);
+	color = fix_to_sample_nearest(r0, g0, b0);
 
 #else
-	color = (tVideoSample)0xFFFFFFFF;
+	color = (tRenderTargetColorSample)0xFFFFFFFF;
 #endif
 
 
@@ -247,13 +200,13 @@ void CTRTextureWire2::renderLine(const s4DVertex* a, const s4DVertex* b) const
 			inversew = fix_inverse32_color(dataW);
 #endif
 			vec4_to_fix(r0, g0, b0, C, inversew);
-			color = fix_to_sample(r0, g0, b0);
+			color = fix_to_sample_nearest(r0, g0, b0);
 #endif
 			* dst = color;
 
 		}
 
-		dst = (tVideoSample*)((u8*)dst + xInc0);	// x += xInc
+		dst = (tRenderTargetColorSample*)((u8*)dst + xInc0);	// x += xInc
 #ifdef CMP_Z
 		z = (fp24*)((u8*)z + xInc1);
 #endif
@@ -264,7 +217,7 @@ void CTRTextureWire2::renderLine(const s4DVertex* a, const s4DVertex* b) const
 		d += m;
 		if (d > dx)
 		{
-			dst = (tVideoSample*)((u8*)dst + yInc0);	// y += yInc
+			dst = (tRenderTargetColorSample*)((u8*)dst + yInc0);	// y += yInc
 #ifdef CMP_Z
 			z = (fp24*)((u8*)z + yInc1);
 #endif
@@ -286,15 +239,15 @@ void CTRTextureWire2::renderLine(const s4DVertex* a, const s4DVertex* b) const
 #endif
 
 	}
-
 }
+#undef BV_TARGET_COLOR_LOG2_STEP
 
 void CTRTextureWire2::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
-	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(&b, &c);
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
+	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(b, c);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
 
 	renderLine(a, b);
 	renderLine(b, c);
@@ -308,14 +261,14 @@ void CTRTextureWire2::drawLine(const s4DVertex* a, const s4DVertex* b)
 	// query access to TexMaps
 
 	// sort on height, y
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
 
 	renderLine(a, b);
 }
 
 void CTRTextureWire2::drawPoint(const s4DVertex* a)
 {
-	if ((a->flag & VERTEX4D_CLIPMASK) == VERTEX4D_INSIDE)
+	if ((a->flag.raw & VERTEX4D_CLIPMASK) == VERTEX4D_INSIDE)
 	{
 		renderZero = 1;
 		renderLine(a, a);
@@ -323,23 +276,13 @@ void CTRTextureWire2::drawPoint(const s4DVertex* a)
 	}
 }
 
-burning_namespace_end
-
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-burning_namespace_start
-
 //! creates a flat triangle renderer
 IBurningShader* createTriangleRendererTextureGouraudWire2(CBurningVideoDriver* driver)
 {
 	//ETR_TEXTURE_GOURAUD_WIRE
-#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CTRTextureWire2(driver);
-#else
-	return 0;
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
-
 
 burning_namespace_end
 
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_

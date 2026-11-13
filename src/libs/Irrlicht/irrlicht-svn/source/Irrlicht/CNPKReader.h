@@ -33,6 +33,7 @@ namespace io
 	//! An entry in the NPK file's table of contents.
 	struct SNPKFileEntry
 	{
+		SNPKFileEntry() : Offset(0), Length(0) {}
 		core::stringc Name;
 		u32 Offset;
 		u32 Length;

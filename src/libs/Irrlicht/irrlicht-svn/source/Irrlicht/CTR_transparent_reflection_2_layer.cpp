@@ -1,30 +1,15 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#include "IBurningShader.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#include "IBurningShader.h"
 
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_C1
-#undef IPOL_C1_FOG
-#undef IPOL_T0
-#undef IPOL_T1
 
 // define render case
 #define SUBTEXEL
@@ -40,43 +25,7 @@
 #define IPOL_T0
 #define IPOL_T1
 
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef INVERSE_W
-#endif
-
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-#undef SUBTEXEL
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 1
-#undef IPOL_C0
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 2
-#undef IPOL_C1
-#endif
-
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef IPOL_W
-#endif
-#define IPOL_Z
-
-#ifdef CMP_W
-#undef CMP_W
-#define CMP_Z
-#endif
-
-#ifdef WRITE_W
-#undef WRITE_W
-#define WRITE_Z
-#endif
-
-#endif
-
-burning_namespace_start
+#include "burning_shader_compile_verify.h"
 
 class CTR_transparent_reflection_2_layer : public IBurningShader
 {
@@ -87,7 +36,7 @@ public:
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
-	virtual void OnSetMaterialBurning(const SBurningShaderMaterial& material) IRR_OVERRIDE;
+	virtual void OnSetMaterial_BL(const SBurningShaderMaterial& material) IRR_OVERRIDE;
 
 private:
 	void fragmentShader();
@@ -105,17 +54,16 @@ CTR_transparent_reflection_2_layer::CTR_transparent_reflection_2_layer(CBurningV
 #endif
 }
 
-void CTR_transparent_reflection_2_layer::OnSetMaterialBurning(const SBurningShaderMaterial& material)
+void CTR_transparent_reflection_2_layer::OnSetMaterial_BL(const SBurningShaderMaterial& material)
 {
 	MaterialType = material.org.MaterialType;
-
 }
 
 /*!
 */
 void CTR_transparent_reflection_2_layer::fragmentShader()
 {
-	tVideoSample* dst;
+	tRenderTargetColorSample* dst;
 
 #ifdef USE_ZBUFFER
 	fp24* z;
@@ -197,10 +145,10 @@ void CTR_transparent_reflection_2_layer::fragmentShader()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*)DepthBuffer->lock() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 #endif
 
 
@@ -282,8 +230,7 @@ void CTR_transparent_reflection_2_layer::fragmentShader()
 					}
 #endif
 
-
-					dst[i] = fix_to_sample(r0, g0, b0);
+					dst[i] = fix_to_sample_nearest(r0, g0, b0);
 
 #ifdef WRITE_Z
 					z[i] = line.z[0];
@@ -345,7 +292,7 @@ void CTR_transparent_reflection_2_layer::fragmentShader()
 					//vertex alpha blend EMT_TRANSPARENT_REFLECTION_2_LAYER
 					if (a1 + 2 < FIX_POINT_ONE)
 					{
-						color_to_fix(r1, g1, b1, dst[i]);
+						sample_to_fix(r1, g1, b1, dst[i]);
 						r0 = r1 + imulFix(a1, r0 - r1);
 						g0 = g1 + imulFix(a1, g0 - g1);
 						b0 = b1 + imulFix(a1, b0 - b1);
@@ -391,9 +338,9 @@ void CTR_transparent_reflection_2_layer::fragmentShader()
 void CTR_transparent_reflection_2_layer::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
-	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(&b, &c);
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
+	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(b, c);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;
@@ -801,13 +748,6 @@ void CTR_transparent_reflection_2_layer::drawTriangle(const s4DVertex* burning_r
 
 }
 
-
-burning_namespace_end
-
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-burning_namespace_start
-
 //! creates a flat triangle renderer
 IBurningShader* createTriangleRendererTexture_transparent_reflection_2_layer(CBurningVideoDriver* driver)
 {
@@ -815,14 +755,10 @@ IBurningShader* createTriangleRendererTexture_transparent_reflection_2_layer(CBu
 	ETR_TRANSPARENT_REFLECTION_2_LAYER
 	Irrlicht EMT_REFLECTION_2_LAYER,EMT_TRANSPARENT_REFLECTION_2_LAYER
 	*/
-#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CTR_transparent_reflection_2_layer(driver);
-#else
-	return 0;
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
-
 
 burning_namespace_end
 
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 

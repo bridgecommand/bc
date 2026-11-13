@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -31,7 +31,15 @@ struct CSoftwareTexture2_Bound
 	//int dim[2];
 	f32 mat[4];
 
-	u32 area;	// width * height
+	u32 pix_area;	// width * height
+	u32 _pad[3];
+
+	// sInternalTexture clone
+	const u8* data;
+	u32 pitch;
+	u32 pitchlog2;
+	u32 textureXMask;  // tFixPointu
+	u32 textureYMask;  // tFixPointu
 };
 
 #if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
@@ -56,15 +64,17 @@ public:
 		GEN_MIPMAP			= 1,		// has mipmaps
 		GEN_MIPMAP_AUTO		= 2,		// automatic mipmap generation
 		IS_RENDERTARGET		= 4,
-		ALLOW_NPOT			= 8,		//allow non power of two
+		ALLOW_NPOT			= 8,		// allow non power of two
 		IMAGE_IS_LINEAR		= 16,
 		TEXTURE_IS_LINEAR	= 32,
 	};
-	CSoftwareTexture2(IImage* surface, const io::path& name, u32 flags /*eTex2Flags*/, CBurningVideoDriver* driver);
-
+	CSoftwareTexture2(const io::path& name, const core::array<IImage*>& images, E_TEXTURE_TYPE type,
+			u32 flags /*eTex2Flags*/, CBurningVideoDriver* driver);
+	
 	//! destructor
 	virtual ~CSoftwareTexture2();
 
+	// mipmaplevel: < 0 means i want level 0, so signed integer
 	u32 getMipmapLevel(s32 newLevel) const
 	{
 		if ( newLevel < 0 ) newLevel = 0;
@@ -72,22 +82,37 @@ public:
 
 		while ( newLevel > 0 && MipMap[newLevel] == 0 )
 			newLevel -= 1;
-		return newLevel;
+		return (u32) newLevel;
 	}
 
 	//! lock function
 #if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
 	virtual void* lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
+	{
+		irr_unreferenced_parameter(mode);
 #else
 	virtual void* lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel, u32 layer, E_TEXTURE_LOCK_FLAGS lockFlags = ETLF_FLIP_Y_UP_RTT) IRR_OVERRIDE
-#endif
 	{
-		if (Flags & GEN_MIPMAP)
+		irr_unreferenced_parameter(mode);
+		irr_unreferenced_parameter(lockFlags);
+
+		if (Type == ETT_CUBEMAP)
 		{
-			//called from outside. must test
-			MipMapLOD = getMipmapLevel(mipmapLevel);
+			//has no mipmaps
+			MipMapLOD = getMipmapLevel((s32)layer);
 			Size = MipMap[MipMapLOD]->getDimension();
 			Pitch = MipMap[MipMapLOD]->getPitch();
+		}
+		else
+#endif
+		{
+			if (Flags & GEN_MIPMAP)
+			{
+				//called from outside. must test
+				MipMapLOD = getMipmapLevel((s32)mipmapLevel);
+				Size = MipMap[MipMapLOD]->getDimension();
+				Pitch = MipMap[MipMapLOD]->getPitch();
+			}
 		}
 
 		return MipMap[MipMapLOD]->getData();
@@ -151,6 +176,7 @@ public:
 #endif
 
 private:
+	void regenerateImageLevels(const io::path& name, const core::array<IImage*>& images);
 	void calcDerivative();
 
 	//! controls MipmapSelection. relation between drawn area and image size
@@ -164,6 +190,67 @@ private:
 	//Helper pointer for regenerateMipMapLevels (do not store per texture)
 	static const IImage* original_mip0;
 
+};
+
+
+
+class CDepthBuffer : public virtual IReferenceCounted
+{
+public:
+
+	//! constructor
+	CDepthBuffer(const core::dimension2d<u32>& size);
+
+	//! destructor
+	virtual ~CDepthBuffer();
+
+	//! clears the zbuffer
+	void clear(f32 value, const interlaced_control interlaced);
+
+	//! sets the new size of the zbuffer
+	void setSize(const core::dimension2d<u32>& size);
+
+	//! locks the zbuffer
+	void* getData() const  { return (void*)Buffer; }
+
+
+private:
+
+	u8* Buffer;
+	size_t BufferAllocSize;
+
+	core::dimension2d<u32> Size;
+	u32 Pitch;
+};
+
+
+class CStencilBuffer : public virtual IReferenceCounted
+{
+public:
+
+	//! constructor
+	CStencilBuffer(const core::dimension2d<u32>& size, unsigned bit);
+
+	//! destructor
+	virtual ~CStencilBuffer();
+
+	//! clears the stencilbuffer
+	void clear(u32 value, const interlaced_control interlaced);
+
+	//! sets the new size of the stencilbuffer
+	void setSize(const core::dimension2d<u32>& size);
+
+	//! locks the stencilbuffer
+	void* getData() const { return (void*)Buffer; }
+
+
+private:
+	u8* Buffer;
+	size_t BufferAllocSize;
+
+	core::dimension2d<u32> Size;
+	u32 Pitch;
+	u32 Bit;
 };
 
 /*!
@@ -182,6 +269,7 @@ public:
 	E_DRIVER_TYPE DriverType;
 	core::array<ITexture*> Textures;
 	ITexture* DepthStencil;
+	core::array<E_CUBE_SURFACE> CubeSurfaces;
 #endif
 
 protected:

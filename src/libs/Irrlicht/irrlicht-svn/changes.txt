@@ -1,6 +1,43 @@
 --------------------------
 Changes in 1.9 (not yet released)
-
+- obj format reader/writer now pass through the group names for mesh buffers when available (otherwise writer has old behaviour)
+- Add setName/getName interface to IMeshBuffer
+- Add getNameStr functions to IGUIElement and ISceneNode to allow getting name without a conversion to c-string
+- strings have now small string optimization. Empty and short strings no longer allocate heap memory.
+  The cost is 16 exta bytes per string object.
+  Note: breaks binary compatibility for dll's (again).
+- string::reserve from now on expects size without null terminator, so it will allocate memory for 1 more character
+- Add function string::capacity
+- Escape key in ComboBox now working (not sure since when it was broken... 1.8 already didn't, but probably some earlier version was OK)
+- Fix: CMeshManipulator::getPolyCount no longer assumes every mesh is made of triangles
+- Listbox now ensures HoverSelected is applied on lmouse-up and reset when losing focus.
+  Previously it could show a changed selection which was never applied, so getSelected() returned old values.
+  Thanks @Mercury233 for reporting that problem in patch (#335) discussion.
+- Listbox now updates HoverSelection on lmouse-down (only did on first mouse-move previously)
+- MeshManipulator now sets dirty flags for meshbuffers after modifying them 
+- irr::string::findFirst and findFirstChar functions now take a startPos parameter. findNext can be fully deprecated in future.
+- Bugfix: core::string::append(const T* const other, u32 length) now ensures string stays 0-terminated
+  Also it doesn't try to find out the string length of the passed string first anymore (which may not be 0-terminated at all)
+- ISceneCollisionManager::getSceneNodeFromRayBB can now return the distance to the nearest hit
+- Several fixes & changes in CGUIStaticText::breakText(). Thanks @Mercury233 for patch (#335)
+- Add support for render target textures with mipmaps (on OpenGL and D3D9)
+- Update macOS fullscreen handling. Thanks @Mercury233 for patch (#333 - 3)
+- Implement CIrrDeviceMacOSX::maximizeWindow. Thanks @Mercury233 for patch (#333 - 2)
+- Fix CIrrDeviceMacOSX::restoreWindow. Thanks @Mercury233 for patch (#333 - 2)
+- Add CIrrDeviceMacOSX::setWindowSize. Thanks @Mercury233 for patch (#333 - 1)
+- Add support to create multisample render target textures in OpenGL (>= 3.2)
+- Fix loading JCS_CMYK/JCS_YCCK jpg's switching red/blue. Thanks @Mercury233 for patch (#332 - 5)
+- Fix compiling on devc++ 4.9.9.2. Thanks @ Noiecity for patch: https://irrlicht.sourceforge.io/forum/viewtopic.php?p=308983
+- Fix macOS special keys and Command shortcuts handling. Thanks @Mercury233 for patch (#331 - 15)
+- Fix utf-8 parsing. Thanks @Mercury233 for patch proposal (#331 - 12)
+- Fix creating NSMenu with a null bundle name (macOS). Thanks @Mercury233 for patch (#331 - 4)
+- Use snprintf_irr instead of sprintf. Thanks @Mercury233 for patch (#331 - 3)
+- Add ITexture::getExposedTextureData which allows accessing internal OpenGL texture names and types and D3D9 texture pointers.
+- irr::core::rect::isPointInside no longer considers right-bottom point as inside. See https://irrlicht.sourceforge.io/forum//viewtopic.php?t=43914 
+  This also changes IGUIElement::isPointInside the same way.
+  It fixes some related bugs (like for example combobox often resetting position accidentally).
+  It might cause some trouble if people don't expect the changed behaviour, but it seemed old behaviour caused more bugs as the old implementation 
+  was simply not fitting the behaviour of the other functions in this class (they already excluded right-bottom elements)
 - ComboBox now marks all mouse-wheel events as handled and not just when selection changes as before
 - string::insert now expects template type instead of always char. Breaks compiling code when it was previously used with stringw's. Use wchar_t's now to insert into those.
 - Add flag irr::gui::EFF_HOVERED_HANDLES_UNFOCUSED_MOUSE_EVENTS. Keeping old behavior, but it can be disabled now.
@@ -224,7 +261,6 @@ Changes in 1.9 (not yet released)
 - No longer try to convert ECF_R5G6B5 to ECF_A1R5G5B5 on OpenGL (just made texture-loading seem to fail).
 - Add parameter SIrrlichtCreationParameters.WindowResizable. Mainly to work around troubles with SDL+OpenGL on some platforms where resizing later can be tricky/impossible.
 - Add operator[]  to vector2d and vector3d
-- Bugfix: IrrlichtDevice::isWindowMinimized no longer returns true when it's maximized on Windows.
 - Ignore degenerated faces in obj file loader when they would generate triangles where 2 vertices use identical indices.
 - Add CMatrix4::transformVec4 to transform vectors with 4 elements (thx @ devsh)
 - Add ITexture::getOriginalColorFormat to access color format of images used to create a texture
@@ -453,9 +489,52 @@ Changes in 1.9 (not yet released)
 - added x64 to vs2008 project ( buildAllExamples_v9 ) [paths: obj64, win64-visualstudio]
 - burningvideo: getMaxTextureSize adjusted [ changed meaning of SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE
 - burningvideo: mipmaplevel adjusted ( not that bad bokeh...(sometimes) )
+- BurningVideo: 0.55 (03/2026)
+  -Environmental Cube Mapping ( Example 28.Cubemapping)
+  -Render Target Update
+  -SuperTuxKart Shader Update
+  -CBlit.h Removed dependencies from BurningsVideo
+  -Files Deleted: CBurningShader_Raster_Reference.cpp,CDepthBuffer.cpp,CDepthBuffer.h,CTRGouraud2.cpp,CTRGouraudAlphaNoZ2.cpp,CTRGouraudNoZ2.cpp,IDepthBuffer.h
+  -Files Added: burning_shader_glsl_emu_define.h,burning_shader_glsl_emu_undefine.h
+  -Visual Studio Project Files, makefile updated
+
 
 --------------------------
 Changes in 1.8.6
+- Harden 3ds loader. It wasn't written with safety in mind, only use with files you trust.
+- Harden npk, pak, wad and tar archive readers.
+- Harden zip reader. Thanks @Lars Müller for reporting some of the problems. 
+  There are likely many more security problems in it as this wasn't written with safety in mind.
+  So only use with .zip files you trust.
+- Bugfix: core::string::append(const T* const other, u32 length) now ensures string stays 0-terminated
+  Also it doesn't try to find out the string length of the passed string first anymore (which may not be 0-terminated at all)
+- Bugfix: CGUITabControl can hide control buttons again when resizing element while it was scrolled already
+  Thanks @Mercury233 for the patch (#332 - 6)
+- Bugfix: IrrlichtDevice::isWindowMinimized no longer returns true when it's maximized on Windows.
+- Fix CGUIButton showing wrong pressed image when setImage was called twice with different textures.
+  Thanks @Mercury233 for the patch (#332 - 3)
+- Fix zlib decompression calling inflateEnd twice and returning OK when it failed.
+  Thanks @Mercury233 for the patch (#332 - 2)
+- Add EMIE_LMOUSE_DOUBLE_CLICK and EMIE_LMOUSE_TRIPLE_CLICK support on macOS. 
+  Thanks @Mercury233 for the patch (#332 - 1)
+- Fix event order when selecting items in a ListBox via keyboard
+  When searching for lines in a listbox by typing first character it only updated the selection before the event when 
+  the found item was before the currently selected item, but failed to do so when it came after the current selection.
+  Thanks @Mercury233 for the patch (#330 - 16)
+- Do not send EGET_EDITBOX_CHANGED in CGUIEditbox when no actual character is input
+  Thanks @Mercury233 for the patch (#330 - 12)
+- Ignore more keys in edit-box that should not trigger character input events (shift, menu, windows, num-lock/print/scroll keys)
+  Thanks @Mercury233 for the patch (#330 - 11)
+- Fix mismatched GetDC/ReleaseDC usage in CIrrDeviceWin32 gamma ramp functions
+  Thanks @Mercury233 for the patch (#330 - 17)
+- Fix forced chdir behavior in CIrrDeviceMacOSX, the working directory should not be forcibly changed when the program is not running inside an app bundle.
+  Thanks @Mercury233 for the patch (#330 - 4)
+- Avoid potential troubles with _IRR_WCHAR_FILESYSTEM in CZipReader error logging
+  Thanks @Mercury233 for the patch (#330 - 18)
+- Set Activation Policy to Regular on macOS to ensure the application appears in the Dock and has a menu bar
+  Thanks @Mercury233 for the patch (#330 - 15)
+- Fix MacOS 10.15 only rendering to quarter of window. 
+  Thanks @bridgeco for the patch: https://irrlicht.sourceforge.io/forum/viewtopic.php?f=7&t=52644
 - Update libpng to 1.6.54 (from 1.6.37)
 - Avoid compile warnings with newer compilers like gcc 14
 - Fix CGUIPanel (in Gui Editor) so horizontal scrollbar can get focus (Feature request #163). Thanks @yybbwc for reporting.

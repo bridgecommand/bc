@@ -33,7 +33,7 @@ COctreeTriangleSelector::COctreeTriangleSelector(const IMesh* mesh,
 		constructOctree(Root);
 
 		c8 tmp[256];
-		sprintf(tmp, "Needed %ums to create OctreeTriangleSelector.(%d nodes, %u polys)",
+		snprintf_irr(tmp, sizeof(tmp), "Needed %ums to create OctreeTriangleSelector.(%d nodes, %u polys)",
 			os::Timer::getRealTime() - start, NodeCount, Triangles.size());
 		os::Printer::log(tmp, ELL_INFORMATION);
 	}
@@ -58,7 +58,7 @@ COctreeTriangleSelector::COctreeTriangleSelector(const IMeshBuffer* meshBuffer, 
 		constructOctree(Root);
 
 		c8 tmp[256];
-		sprintf(tmp, "Needed %ums to create OctreeTriangleSelector.(%d nodes, %u polys)",
+		snprintf_irr(tmp, sizeof(tmp), "Needed %ums to create OctreeTriangleSelector.(%d nodes, %u polys)",
 			os::Timer::getRealTime() - start, NodeCount, Triangles.size());
 		os::Printer::log(tmp, ELL_INFORMATION);
 	}

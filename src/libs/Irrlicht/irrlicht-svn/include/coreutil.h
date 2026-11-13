@@ -20,6 +20,9 @@ namespace core
 // ----------- some basic quite often used string functions -----------------
 
 //! search if a filename has a proper extension
+//\param ext0, ext1, ext2 should be extension without dot (like "abc")
+//\return 0 when extension was not found otherwise index of first extension 
+//!	      1 = ext0, 2 = ext1, 3 = ext2
 inline s32 isFileExtension (const io::path& filename, const io::path& ext0,
 				const io::path& ext1, const io::path& ext2)
 {
@@ -38,13 +41,16 @@ inline s32 isFileExtension (const io::path& filename, const io::path& ext0,
 }
 
 //! search if a filename has a proper extension
+//\param ext0, ext1, ext2 should be extension without dot (like "abc")
+//\return true when filename has any of the given extensions
 inline bool hasFileExtension(const io::path& filename, const io::path& ext0,
 				const io::path& ext1 = "", const io::path& ext2 = "")
 {
 	return isFileExtension ( filename, ext0, ext1, ext2 ) > 0;
 }
 
-//! cut the filename extension from a source file path and store it in a dest file path
+//! get source file path without filename extension
+/** Example: If source is "path/file.abc" then dest returns "path/file" */
 inline io::path& cutFilenameExtension ( io::path &dest, const io::path &source )
 {
 	const s32 endPos = source.findLast ( '.' );
@@ -53,6 +59,7 @@ inline io::path& cutFilenameExtension ( io::path &dest, const io::path &source )
 }
 
 //! get the filename extension from a file path
+/** Example: If source is "path/file.abc" then dest returns ".abc" */
 inline io::path& getFileNameExtension ( io::path &dest, const io::path &source )
 {
 	const s32 endPos = source.findLast ( '.' );
@@ -64,6 +71,7 @@ inline io::path& getFileNameExtension ( io::path &dest, const io::path &source )
 }
 
 //! delete path from filename
+/** Example: "c:/path/subpath/file.abc" returns "file.abc" */
 inline io::path& deletePathFromFilename(io::path& filename)
 {
 	// delete path from filename
