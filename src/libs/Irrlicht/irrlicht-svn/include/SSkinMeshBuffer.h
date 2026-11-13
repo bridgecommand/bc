@@ -443,6 +443,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		clone->PrimitiveType = PrimitiveType;
 		clone->MappingHint_Vertex = MappingHint_Vertex;
 		clone->MappingHint_Index = MappingHint_Index;
+		clone->Name = Name;
 
 		return clone;
 	}

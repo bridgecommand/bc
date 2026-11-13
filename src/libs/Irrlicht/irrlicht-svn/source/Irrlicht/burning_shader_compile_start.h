@@ -12,8 +12,10 @@
 #undef INVERSE_W
 
 #undef IPOL_C0
-#undef IPOL_A0
 #undef IPOL_C1
+#undef IPOL_C2
+#undef IPOL_C3
+#undef IPOL_A0
 #undef IPOL_T0
 #undef IPOL_T1
 #undef IPOL_T2
@@ -24,3 +26,6 @@
 
 #undef INVERSE_W_RANGE
 #undef burning_shader_colormask
+
+#undef BURNING_MATERIAL_MAX_COLORS_USED
+#undef BURNING_MATERIAL_MAX_TEXTURES_USED

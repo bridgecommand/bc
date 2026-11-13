@@ -755,7 +755,7 @@ bool CNullDriver::setRenderTarget(ITexture* texture, u16 clearFlag, SColor clear
 		// create depth texture if require.
 		if (!depthTexture)
 		{
-			depthTexture = addRenderTargetTexture(texture->getSize(), "IRR_DEPTH_STENCIL", video::ECF_D24S8);
+			depthTexture = addRenderTargetTexture(texture->getSize(), "IRR_DEPTH_STENCIL", video::ECF_D24S8, 0, false);
 			SharedDepthTextures.push_back(depthTexture);
 		}
 
@@ -1413,7 +1413,7 @@ bool CNullDriver::checkPrimitiveCount(u32 prmCount) const
 	if (prmCount > m)
 	{
 		char tmp[1024];
-		sprintf(tmp,"Could not draw triangles, too many primitives(%u), maximum is %u.", prmCount, m);
+		snprintf_irr(tmp, sizeof(tmp), "Could not draw triangles, too many primitives(%u), maximum is %u.", prmCount, m);
 		os::Printer::log(tmp, ELL_ERROR);
 		return false;
 	}
@@ -2632,13 +2632,13 @@ s32 CNullDriver::addShaderMaterialFromFiles(const io::path& vertexShaderProgramF
 
 //! Creates a render target texture.
 ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-		const io::path&name, const ECOLOR_FORMAT format)
+		const io::path&name, const ECOLOR_FORMAT format, u32 multiSamples, bool mipmap)
 {
 	return 0;
 }
 
 ITexture* CNullDriver::addRenderTargetTextureCubemap(const irr::u32 sideLen,
-				const io::path& name, const ECOLOR_FORMAT format)
+				const io::path& name, const ECOLOR_FORMAT format, bool mipmap)
 {
 	return 0;
 }
@@ -2710,7 +2710,7 @@ ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<u32>& s
 		const c8* name)
 {
 	os::Printer::log("createRenderTargetTexture is deprecated, use addRenderTargetTexture instead");
-	ITexture* tex = addRenderTargetTexture(size, name);
+	ITexture* tex = addRenderTargetTexture(size, name, ECF_UNKNOWN, 0, false);
 	tex->grab();
 	return tex;
 }

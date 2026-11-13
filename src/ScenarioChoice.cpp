@@ -267,6 +267,9 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
                     catch (const std::bad_cast& e) {
                         // Don't do anything, translatedPhrase will be left unchanged
                     }
+                    catch (const std::runtime_error& e) {
+                        // Don't do anything, translatedPhrase will be left unchanged
+                    }
                     #endif
 
                     scenarioDescription.push_back(descriptionLines); //Add even if empty

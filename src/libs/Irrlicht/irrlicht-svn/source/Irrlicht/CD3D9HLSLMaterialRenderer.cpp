@@ -115,7 +115,7 @@ bool CD3D9HLSLMaterialRenderer::createHLSLVertexShader(const char* vertexShaderP
 	static int irr_dbg_hlsl_file_nr = 0;
 	++irr_dbg_hlsl_file_nr;
 	char tmp[32];
-	sprintf(tmp, "irr_d3d9_dbg_hlsl_%d.vsh", irr_dbg_hlsl_file_nr);
+	snprintf_irr(tmp, sizeof(tmp), "irr_d3d9_dbg_hlsl_%d.vsh", irr_dbg_hlsl_file_nr);
 
 	FILE* f = fopen(tmp, "wb");
 	fwrite(vertexShaderProgram, strlen(vertexShaderProgram), 1, f);
@@ -222,7 +222,7 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 	static int irr_dbg_hlsl_file_nr = 0;
 	++irr_dbg_hlsl_file_nr;
 	char tmp[32];
-	sprintf(tmp, "irr_d3d9_dbg_hlsl_%d.psh", irr_dbg_hlsl_file_nr);
+	snprintf_irr(tmp, sizeof(tmp), "irr_d3d9_dbg_hlsl_%d.psh", irr_dbg_hlsl_file_nr);
 
 	FILE* f = fopen(tmp, "wb");
 	fwrite(pixelShaderProgram, strlen(pixelShaderProgram), 1, f);

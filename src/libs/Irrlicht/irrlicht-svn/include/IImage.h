@@ -192,19 +192,17 @@ public:
 	}
 
 	//! Lock function. Use this to get a pointer to the image data.
-	/** Use getData instead.
+	/** Deprecated, use getData instead (which does the same).
 	\return Pointer to the image data. What type of data is pointed to
 	depends on the color format of the image. For example if the color
-	format is ECF_A8R8G8B8, it is of u32. Be sure to call unlock() after
-	you don't need the pointer any more. */
+	format is ECF_A8R8G8B8, it is of u32. */
 	IRR_DEPRECATED void* lock()
 	{
 		return getData();
 	}
 
 	//! Unlock function.
-	/** Should be called after the pointer received by lock() is not
-	needed anymore. */
+	/** Does nothing anymore, deprecated */
 	IRR_DEPRECATED void unlock()
 	{
 	}
@@ -493,56 +491,63 @@ public:
 	If you don't have the format yet then checking width*height*bytes_per_pixel is mostly fine, but make
 	sure to work with size_t so it doesn't clip the result to u32 too early.
 	\return true when dataSize is small enough that it should be fine. */
-	static bool checkDataSizeLimit(size_t dataSize)
+	static bool checkDataSizeLimit(irr::u64 dataSize, u32 width, u32 height)
 	{
 		// 2gb for now. Could be we could do more on some platforms, but we still will run into
 		// problems right now then for example in then color converter (which currently still uses
 		// s32 for sizes).
-		return (size_t)(s32)(dataSize) == dataSize;
+		if ( (size_t)(s32)(dataSize) != dataSize )
+			return false;
+		if ( dataSize == 0 && width > 0 && height > 0 )
+			return false;
+		return true;
 	}
 
 	//! calculate image data size in bytes for selected format, width and height.
 	static size_t getDataSizeFromFormat(ECOLOR_FORMAT format, u32 width, u32 height)
 	{
-		size_t imageSize = 0;
+		u64 imageSize = 0;
 
 		switch (format)
 		{
 		case ECF_DXT1:
-			imageSize = (size_t)((width + 3) / 4) * ((height + 3) / 4) * 8;
+			imageSize = (u64)((width + 3) / 4) * ((height + 3) / 4) * 8;
 			break;
 		case ECF_DXT2:
 		case ECF_DXT3:
 		case ECF_DXT4:
 		case ECF_DXT5:
-			imageSize = (size_t)((width + 3) / 4) * ((height + 3) / 4) * 16;
+			imageSize = (u64)((width + 3) / 4) * ((height + 3) / 4) * 16;
 			break;
 		case ECF_PVRTC_RGB2:
 		case ECF_PVRTC_ARGB2:
-			imageSize = ((size_t)core::max_<u32>(width, 16) * core::max_<u32>(height, 8) * 2 + 7) / 8;
+			imageSize = ((u64)core::max_<u32>(width, 16) * core::max_<u32>(height, 8) * 2 + 7) / 8;
 			break;
 		case ECF_PVRTC_RGB4:
 		case ECF_PVRTC_ARGB4:
-			imageSize = ((size_t)core::max_<u32>(width, 8) * core::max_<u32>(height, 8) * 4 + 7) / 8;
+			imageSize = ((u64)core::max_<u32>(width, 8) * core::max_<u32>(height, 8) * 4 + 7) / 8;
 			break;
 		case ECF_PVRTC2_ARGB2:
-			imageSize = (size_t)core::ceil32(width / 8.0f) * core::ceil32(height / 4.0f) * 8;
+			imageSize = (u64)core::ceil32(width / 8.0f) * core::ceil32(height / 4.0f) * 8;
 			break;
 		case ECF_PVRTC2_ARGB4:
 		case ECF_ETC1:
 		case ECF_ETC2_RGB:
-			imageSize = (size_t)core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 8;
+			imageSize = (u64)core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 8;
 			break;
 		case ECF_ETC2_ARGB:
-			imageSize = (size_t)core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 16;
+			imageSize = (u64)core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 16;
 			break;
 		default: // uncompressed formats
-			imageSize = (size_t)getBitsPerPixelFromFormat(format) / 8 * width;
+			imageSize = (u64)getBitsPerPixelFromFormat(format) / 8 * width;
 			imageSize *= height;
 			break;
 		}
 
-		return imageSize;
+		if ( (u64)(size_t)imageSize != imageSize )	// on 32-bit platforms size_t can already be too small
+			return 0;
+
+		return (size_t)imageSize;
 	}
 
 // Define to check for all compressed image formats cases in a switch

@@ -3,15 +3,11 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#include "IBurningShader.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#include "IBurningShader.h"
 
-namespace irr
-{
-
-namespace video
-{
+burning_namespace_start
 
 #define burning_shader_class burning_shader_color
 #define burning_shader_frag "burning_shader_color_fraq.h"
@@ -20,7 +16,7 @@ namespace video
 
 /*!
 */
-void burning_shader_class::OnSetMaterialBurning(const SBurningShaderMaterial& material)
+void burning_shader_class::OnSetMaterial_BL(const SBurningShaderMaterial& material)
 {
 	switch (material.org.MaterialType)
 	{
@@ -89,9 +85,6 @@ void burning_shader_class::OnSetMaterialBurning(const SBurningShaderMaterial& ma
 }
 
 
-
-} // end namespace video
-} // end namespace irr
+burning_namespace_end
 
 #endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-

@@ -77,11 +77,21 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 	for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		core::stringc num(i+1);
+		core::stringc groupName;
 		IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 		if (buffer && buffer->getVertexCount())
 		{
-			file->write("g grp", 5);
-			file->write(num.c_str(), num.size());
+			file->write("g ", 2);
+			u32 groupNameSize = buffer->getNameStr().size();
+			if ( groupNameSize == 0 )
+			{
+				file->write("grp", 3);
+				file->write(num.c_str(), num.size());
+			}
+			else
+			{
+				file->write(buffer->getName(), groupNameSize);
+			}
 			file->write("\n",1);
 
 			u32 j;

@@ -1,34 +1,15 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 #include "IBurningShader.h"
 #include "CSoftwareDriver2.h"
 
-#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
-
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_C1
-#undef IPOL_C2
-#undef IPOL_C3
-#undef IPOL_T0
-#undef IPOL_T1
-#undef IPOL_T2
-#undef IPOL_L0
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
 // define render case
 #define SUBTEXEL
@@ -47,57 +28,7 @@
 #define IPOL_T1
 //#define IPOL_L0
 
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef INVERSE_W
-#endif
-
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-#undef SUBTEXEL
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 1
-#undef IPOL_C0
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 2
-#undef IPOL_C1
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 3
-#define IPOL_L0
-#undef IPOL_C2
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 4
-#undef IPOL_C3
-#endif
-
-#if BURNING_MATERIAL_MAX_LIGHT_TANGENT < 1
-#undef IPOL_L0
-#endif
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef IPOL_W
-#endif
-#define IPOL_Z
-
-#ifdef CMP_W
-#undef CMP_W
-#define CMP_Z
-#endif
-
-#ifdef WRITE_W
-#undef WRITE_W
-#define WRITE_Z
-#endif
-
-#endif
-
-
-burning_namespace_start
-
+#include "burning_shader_compile_verify.h"
 
 class CTRNormalMap : public IBurningShader
 {
@@ -109,7 +40,7 @@ public:
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
-	virtual void OnSetMaterialBurning(const SBurningShaderMaterial& material) IRR_OVERRIDE;
+	virtual void OnSetMaterial_BL(const SBurningShaderMaterial& material) IRR_OVERRIDE;
 	virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData) IRR_OVERRIDE;
 private:
 	void fragmentShader();
@@ -134,7 +65,7 @@ CTRNormalMap::~CTRNormalMap()
 		CallBack = 0;
 }
 
-void CTRNormalMap::OnSetMaterialBurning(const SBurningShaderMaterial& material)
+void CTRNormalMap::OnSetMaterial_BL(const SBurningShaderMaterial& material)
 {
 }
 
@@ -142,7 +73,7 @@ void CTRNormalMap::OnSetMaterialBurning(const SBurningShaderMaterial& material)
 */
 void CTRNormalMap::fragmentShader()
 {
-	tVideoSample* dst;
+	tRenderTargetColorSample* dst;
 
 #ifdef USE_ZBUFFER
 	fp24* z;
@@ -251,10 +182,10 @@ void CTRNormalMap::fragmentShader()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*)DepthBuffer->lock() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 #endif
 
 
@@ -356,14 +287,17 @@ void CTRNormalMap::fragmentShader()
 				//max(dot(LightVector, Normal), 0.0);
 				ndotl = clampfix_mincolor((imulFix_simple(r1, lx) + imulFix_simple(g1, ly) + imulFix_simple(b1, lz)));
 #endif
+
+#if defined(IPOL_C2)
+
 				lx = tofix(line.c[2][0].x, inversew);
 				ly = tofix(line.c[2][0].y, inversew);
 				lz = tofix(line.c[2][0].z, inversew);
 				//omit normalize
 				ndotl = clampfix_mincolor((imulFix_simple(r1, lx) + imulFix_simple(g1, ly) + imulFix_simple(b1, lz)));
+#endif
 
-#ifdef IPOL_C0
-
+#if defined(IPOL_C0) && defined(IPOL_C2) && defined(IPOL_C3)
 				//LightColor[0] * lambert
 				r3 = imulFix_simple(tofix(line.c[0][0].r, inversew), ndotl);
 				g3 = imulFix_simple(tofix(line.c[0][0].g, inversew), ndotl);
@@ -389,7 +323,7 @@ void CTRNormalMap::fragmentShader()
 				//vertex alpha blend ( and omit depthwrite ,hacky..)
 				if (a3 + 2 < FIX_POINT_ONE)
 				{
-					color_to_fix(r1, g1, b1, dst[i]);
+					sample_to_fix(r1, g1, b1, dst[i]);
 					r2 = r1 + imulFix(a3, r2 - r1);
 					g2 = g1 + imulFix(a3, g2 - g1);
 					b2 = b1 + imulFix(a3, b2 - b1);
@@ -408,6 +342,10 @@ void CTRNormalMap::fragmentShader()
 
 
 #else
+				irr_unreferenced_parameter(r3);
+				irr_unreferenced_parameter(g3);
+				irr_unreferenced_parameter(b3);
+
 				r2 = imulFix_tex4(r0, r1);
 				g2 = imulFix_tex4(g0, g1);
 				b2 = imulFix_tex4(b0, b1);
@@ -453,9 +391,9 @@ void CTRNormalMap::fragmentShader()
 void CTRNormalMap::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
-	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(&b, &c);
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
+	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(b, c);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;
@@ -1104,20 +1042,14 @@ void CTRNormalMap::OnSetConstants(IMaterialRendererServices* services, s32 userD
 	}
 #endif
 }
-burning_namespace_end
-
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-burning_namespace_start
 
 //! creates a triangle renderer
 IBurningShader* createTRNormalMap(CBurningVideoDriver* driver, s32& outMaterialTypeNr, E_MATERIAL_TYPE baseMaterial)
 {
-#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-	return new CTRNormalMap(driver, outMaterialTypeNr,baseMaterial);
-#else
-	return 0;
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
+	return new CTRNormalMap(driver, outMaterialTypeNr, baseMaterial);
 }
 
 burning_namespace_end
+
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
+

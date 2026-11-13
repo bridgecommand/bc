@@ -1,28 +1,14 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#include "IBurningShader.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#include "IBurningShader.h"
 
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
-
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_T0
-#undef IPOL_T1
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
 // define render case
 #define SUBTEXEL
@@ -37,55 +23,17 @@
 #define IPOL_T0
 //#define IPOL_T1
 
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-	#undef INVERSE_W
-#endif
+#include "burning_shader_compile_verify.h"
 
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-	#undef SUBTEXEL
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 1
-	#undef IPOL_C0
-#endif
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-	#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-		#undef IPOL_W
-	#endif
-	#define IPOL_Z
-
-	#ifdef CMP_W
-		#undef CMP_W
-		#define CMP_Z
-	#endif
-
-	#ifdef WRITE_W
-		#undef WRITE_W
-		#define WRITE_Z
-	#endif
-
-#endif
-
-
-
-namespace irr
+class CTRTextureBlend : public IBurningShader
 {
+public:
+	//! constructor
+	CTRTextureBlend(CBurningVideoDriver* driver);
 
-namespace video
-{
-
-	class CTRTextureBlend : public IBurningShader
-	{
-	public:
-
-		//! constructor
-		CTRTextureBlend(CBurningVideoDriver* driver);
-
-		//! draws an indexed triangle list
-		virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
-		virtual void OnSetMaterialBurning(const SBurningShaderMaterial& material) IRR_OVERRIDE;
+	//! draws an indexed triangle list
+	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
+	virtual void OnSetMaterial_BL(const SBurningShaderMaterial& material) IRR_OVERRIDE;
 
 private:
 	// fragment shader
@@ -120,7 +68,7 @@ CTRTextureBlend::CTRTextureBlend(CBurningVideoDriver* driver)
 
 /*!
 */
-void CTRTextureBlend::OnSetMaterialBurning(const SBurningShaderMaterial& material)
+void CTRTextureBlend::OnSetMaterial_BL(const SBurningShaderMaterial& material)
 {
 	int showname = 0;
 
@@ -129,7 +77,7 @@ void CTRTextureBlend::OnSetMaterialBurning(const SBurningShaderMaterial& materia
 
 	E_BLEND_FACTOR srcFact,dstFact;
 	E_MODULATE_FUNC modulate;
-	u32 alphaSrc;
+	u32 /*E_ALPHA_SOURCE */ alphaSrc;
 	unpack_textureBlendFunc ( srcFact, dstFact, modulate, alphaSrc, material.org.MaterialTypeParam);
 
 	fragmentShader = 0;
@@ -201,7 +149,7 @@ void CTRTextureBlend::OnSetMaterialBurning(const SBurningShaderMaterial& materia
 	if ( showname && ( lsrcFact != srcFact || ldstFact != dstFact ) )
 	{
 		char buf[128];
-		snprintf_irr ( buf, 128, "missing shader: %s %s",n[srcFact], n[dstFact] );
+		snprintf_irr ( buf, array_size(buf), "missing shader: %s %s",n[srcFact], n[dstFact] );
 		os::Printer::log( buf, ELL_WARNING);
 
 		lsrcFact = srcFact;
@@ -215,7 +163,7 @@ void CTRTextureBlend::OnSetMaterialBurning(const SBurningShaderMaterial& materia
 */
 void CTRTextureBlend::fragment_dst_color_src_alpha ()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -291,10 +239,10 @@ void CTRTextureBlend::fragment_dst_color_src_alpha ()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -331,7 +279,7 @@ void CTRTextureBlend::fragment_dst_color_src_alpha ()
 							tofix(line.t[0][0].y, iw)
 						);
 
-		color_to_fix ( r1, g1, b1, dst[i] );
+		sample_to_fix ( r1, g1, b1, dst[i] );
 
 		dst[i] = fix_to_sample( clampfix_maxcolor ( imulFix_tex2 ( r0, r1 ) ),
 								clampfix_maxcolor ( imulFix_tex2 ( g0, g1 ) ),
@@ -374,7 +322,7 @@ void CTRTextureBlend::fragment_dst_color_src_alpha ()
 							tofix ( line.t[0][0].y,iw)
 						);
 
-		color_to_fix ( r1, g1, b1, dst[i] );
+		sample_to_fix ( r1, g1, b1, dst[i] );
 
 		dst[i] = fix_to_sample( clampfix_maxcolor ( imulFix_tex2 ( r0, r1 ) ),
 								clampfix_maxcolor ( imulFix_tex2 ( g0, g1 ) ),
@@ -401,7 +349,7 @@ void CTRTextureBlend::fragment_dst_color_src_alpha ()
 */
 void CTRTextureBlend::fragment_src_color_src_alpha ()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -476,10 +424,10 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -524,11 +472,12 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 		b0 = imulFix_simple(b0, b2);
 #endif
 
-		color_to_fix ( r1, g1, b1, dst[i] );
-		dst[i] = fix_to_sample( clampfix_maxcolor ( imulFix_tex1( r0, r0 ) + imulFix_tex1( r1, a0 ) ),
-								clampfix_maxcolor ( imulFix_tex1( g0, g0 ) + imulFix_tex1( g1, a0 ) ),
-								clampfix_maxcolor ( imulFix_tex1( b0, b0 ) + imulFix_tex1( b1, a0 ) )
-							);
+		sample_to_fix ( r1, g1, b1, dst[i] );
+		dst[i] = fix_to_sample_nearest(
+			clampfix_maxcolor ( imulFix_tex1( r0, r0 ) + imulFix_tex1( r1, a0 ) ),
+			clampfix_maxcolor ( imulFix_tex1( g0, g0 ) + imulFix_tex1( g1, a0 ) ),
+			clampfix_maxcolor ( imulFix_tex1( b0, b0 ) + imulFix_tex1( b1, a0 ) )
+		);
 
 		}
 
@@ -567,7 +516,7 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 							tofix ( line.t[0][0].y,iw)
 						);
 
-		color_to_fix ( r1, g1, b1, dst[i] );
+		sample_to_fix ( r1, g1, b1, dst[i] );
 
 		dst[i] = fix_to_sample( clampfix_maxcolor ( imulFix_tex2 ( r0, r1 ) ),
 								clampfix_maxcolor ( imulFix_tex2 ( g0, g1 ) ),
@@ -595,7 +544,7 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 */
 void CTRTextureBlend::fragment_one_one_minus_src_alpha()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -671,10 +620,10 @@ void CTRTextureBlend::fragment_one_one_minus_src_alpha()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -710,7 +659,7 @@ void CTRTextureBlend::fragment_one_one_minus_src_alpha()
 		getSample_texture ( a0, r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
 		a0 = FIX_POINT_ONE - a0;
 
-		color_to_fix1 ( r1, g1, b1, dst[i] );
+		sample_to_fix_one ( r1, g1, b1, dst[i] );
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
 
@@ -759,7 +708,7 @@ void CTRTextureBlend::fragment_one_one_minus_src_alpha()
 		getSample_texture ( a0, r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
 		a0 = FIX_POINT_ONE - a0;
 
-		color_to_fix1 ( r1, g1, b1, dst[i] );
+		sample_to_fix_one ( r1, g1, b1, dst[i] );
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
 
@@ -796,7 +745,7 @@ void CTRTextureBlend::fragment_one_one_minus_src_alpha()
 */
 void CTRTextureBlend::fragment_one_minus_dst_alpha_one ()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -872,10 +821,10 @@ void CTRTextureBlend::fragment_one_minus_dst_alpha_one ()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -909,7 +858,7 @@ void CTRTextureBlend::fragment_one_minus_dst_alpha_one ()
 #endif
 
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix1 ( a1, r1, g1, b1, dst[i] );
+		sample_to_fix_one ( a1, r1, g1, b1, dst[i] );
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
 
@@ -957,7 +906,7 @@ void CTRTextureBlend::fragment_one_minus_dst_alpha_one ()
 		iw = fix_inverse32 ( line.w[0] );
 #endif
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix1 ( a1, r1, g1, b1, dst[i] );
+		sample_to_fix_one ( a1, r1, g1, b1, dst[i] );
 
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
@@ -996,7 +945,7 @@ void CTRTextureBlend::fragment_one_minus_dst_alpha_one ()
 */
 void CTRTextureBlend::fragment_src_alpha_one ()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -1072,10 +1021,10 @@ void CTRTextureBlend::fragment_src_alpha_one ()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -1110,12 +1059,12 @@ void CTRTextureBlend::fragment_src_alpha_one ()
 		{
 			fix_color_norm(a0);
 
-		color_to_fix ( r1, g1, b1, dst[i] );
+		sample_to_fix ( r1, g1, b1, dst[i] );
 
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
 
-		dst[i] = fix4_to_sample( a0,
+		dst[i] = fix_to_sample( a0,
 								 clampfix_maxcolor (imulFix_simple(r0,a0) + r1),
 								 clampfix_maxcolor (imulFix_simple(g0,a0) + g1),
 								 clampfix_maxcolor (imulFix_simple(b0,a0) + b1)
@@ -1123,14 +1072,14 @@ void CTRTextureBlend::fragment_src_alpha_one ()
 
 /*
 		fix_color_norm(a0);
-		dst[i] = fix4_to_sample ( a0,
+		dst[i] = fix_to_sample ( a0,
 								imulFix ( imulFix_simple ( r0, a0 ) + r1, r2 ),
 								imulFix ( imulFix_simple ( g0, a0 ) + g1, g2 ),
 								imulFix ( imulFix_simple ( b0, a0 ) + b1, b2 )
 							);
 */
 #else
-		dst[i] = fix4_to_sample( a0,
+		dst[i] = fix_to_sample( a0,
 								 clampfix_maxcolor (imulFix_simple(r0,a0 ) + r1 ),
 								 clampfix_maxcolor (imulFix_simple(g0,a0 ) + g1 ),
 								 clampfix_maxcolor (imulFix_simple(b0,a0 ) + b1 )
@@ -1174,12 +1123,12 @@ void CTRTextureBlend::fragment_src_alpha_one ()
 		{
 			fix_color_norm(a0);
 
-		color_to_fix ( r1, g1, b1, dst[i] );
+		sample_to_fix ( r1, g1, b1, dst[i] );
 
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
 
-		dst[i] = fix4_to_sample( a0,
+		dst[i] = fix_to_sample( a0,
 								 clampfix_maxcolor ( imulFix (imulFix_simple(r0,a0 ) + r1, r2 ) ),
 								 clampfix_maxcolor ( imulFix (imulFix_simple(g0,a0 ) + g1, g2 ) ),
 								 clampfix_maxcolor ( imulFix (imulFix_simple(b0,a0 ) + b1, b2 ) )
@@ -1187,14 +1136,14 @@ void CTRTextureBlend::fragment_src_alpha_one ()
 
 /*
 		fix_color_norm(a0);
-		dst[i] = fix4_to_sample ( a0,
+		dst[i] = fix_to_sample ( a0,
 								imulFix ( imulFix_simple ( r0, a0 ) + r1, r2 ),
 								imulFix ( imulFix_simple ( g0, a0 ) + g1, g2 ),
 								imulFix ( imulFix_simple ( b0, a0 ) + b1, b2 )
 							);
 */
 #else
-		dst[i] = fix4_to_sample( a0,
+		dst[i] = fix_to_sample( a0,
 								 clampfix_maxcolor (imulFix_simple(r0,a0 ) + r1 ),
 								 clampfix_maxcolor (imulFix_simple(g0,a0 ) + g1 ),
 								 clampfix_maxcolor (imulFix_simple(b0,a0 ) + b1 )
@@ -1227,7 +1176,7 @@ void CTRTextureBlend::fragment_src_alpha_one ()
 */
 void CTRTextureBlend::fragment_src_alpha_one_minus_src_alpha()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -1302,10 +1251,10 @@ void CTRTextureBlend::fragment_src_alpha_one_minus_src_alpha()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*)DepthBuffer->lock() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 #endif
 
 
@@ -1347,14 +1296,14 @@ void CTRTextureBlend::fragment_src_alpha_one_minus_src_alpha()
 					b0 = imulFix_simple(b0, b2);
 #endif
 
-					color_to_fix(r1, g1, b1, dst[i]);
+					sample_to_fix(r1, g1, b1, dst[i]);
 
 					fix_color_norm(a0);
 
 					r2 = r1 + imulFix(a0, r0 - r1);
 					g2 = g1 + imulFix(a0, g0 - g1);
 					b2 = b1 + imulFix(a0, b0 - b1);
-					dst[i] = fix4_to_sample(a0, r2, g2, b2);
+					dst[i] = fix_to_sample(a0, r2, g2, b2);
 				}
 
 			}
@@ -1380,7 +1329,7 @@ void CTRTextureBlend::fragment_src_alpha_one_minus_src_alpha()
 */
 void CTRTextureBlend::fragment_dst_color_one_minus_dst_alpha ()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -1456,10 +1405,10 @@ void CTRTextureBlend::fragment_dst_color_one_minus_dst_alpha ()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -1493,7 +1442,7 @@ void CTRTextureBlend::fragment_dst_color_one_minus_dst_alpha ()
 #endif
 
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix1 ( a1, r1, g1, b1, dst[i] );
+		sample_to_fix_one ( a1, r1, g1, b1, dst[i] );
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
 
@@ -1541,7 +1490,7 @@ void CTRTextureBlend::fragment_dst_color_one_minus_dst_alpha ()
 		iw = fix_inverse32 ( line.w[0] );
 #endif
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix1 ( a1, r1, g1, b1, dst[i] );
+		sample_to_fix_one ( a1, r1, g1, b1, dst[i] );
 
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
@@ -1579,7 +1528,7 @@ void CTRTextureBlend::fragment_dst_color_one_minus_dst_alpha ()
 */
 void CTRTextureBlend::fragment_dst_color_zero ()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -1655,10 +1604,10 @@ void CTRTextureBlend::fragment_dst_color_zero ()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -1692,7 +1641,7 @@ void CTRTextureBlend::fragment_dst_color_zero ()
 #endif
 
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix1 ( r1, g1, b1, dst[i] );
+		sample_to_fix_one ( r1, g1, b1, dst[i] );
 
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
@@ -1739,7 +1688,7 @@ void CTRTextureBlend::fragment_dst_color_zero ()
 		iw = fix_inverse32 ( line.w[0] );
 #endif
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix1 ( r1, g1, b1, dst[i] );
+		sample_to_fix_one ( r1, g1, b1, dst[i] );
 
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
@@ -1776,7 +1725,7 @@ void CTRTextureBlend::fragment_dst_color_zero ()
 */
 void CTRTextureBlend::fragment_dst_color_one ()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -1852,10 +1801,10 @@ void CTRTextureBlend::fragment_dst_color_one ()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -1889,7 +1838,7 @@ void CTRTextureBlend::fragment_dst_color_one ()
 #endif
 
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix ( r1, g1, b1, dst[i] );
+		sample_to_fix ( r1, g1, b1, dst[i] );
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
 
@@ -1937,7 +1886,7 @@ void CTRTextureBlend::fragment_dst_color_one ()
 		iw = fix_inverse32 ( line.w[0] );
 #endif
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix ( r1, g1, b1, dst[i] );
+		sample_to_fix ( r1, g1, b1, dst[i] );
 
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
@@ -1976,7 +1925,7 @@ void CTRTextureBlend::fragment_dst_color_one ()
 */
 void CTRTextureBlend::fragment_zero_one_minus_scr_color ()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -2052,10 +2001,10 @@ void CTRTextureBlend::fragment_zero_one_minus_scr_color ()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -2089,7 +2038,7 @@ void CTRTextureBlend::fragment_zero_one_minus_scr_color ()
 #endif
 
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix1 ( r1, g1, b1, dst[i] );
+		sample_to_fix_one ( r1, g1, b1, dst[i] );
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
 
@@ -2137,7 +2086,7 @@ void CTRTextureBlend::fragment_zero_one_minus_scr_color ()
 		iw = fix_inverse32 ( line.w[0] );
 #endif
 		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
-		color_to_fix1 ( r1, g1, b1, dst[i] );
+		sample_to_fix_one ( r1, g1, b1, dst[i] );
 #ifdef IPOL_C0
 		vec4_to_fix( r2, g2, b2, line.c[0][0],iw );
 
@@ -2178,9 +2127,9 @@ void CTRTextureBlend::drawTriangle(const s4DVertex* burning_restrict a, const s4
 		return;
 
 	// sort on height, y
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(a, b);
+	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(b, c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(a, b);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;
@@ -2538,30 +2487,14 @@ void CTRTextureBlend::drawTriangle(const s4DVertex* burning_restrict a, const s4
 }
 
 
-
-} // end namespace video
-} // end namespace irr
-
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-namespace irr
-{
-namespace video
-{
-
 //! creates a flat triangle renderer
 IBurningShader* createTRTextureBlend(CBurningVideoDriver* driver)
 {
 	// EMT_ONETEXTURE_BLEND
-	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CTRTextureBlend(driver);
-	#else
-	return 0;
-	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
 
+burning_namespace_end
 
-} // end namespace video
-} // end namespace irr
-
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 

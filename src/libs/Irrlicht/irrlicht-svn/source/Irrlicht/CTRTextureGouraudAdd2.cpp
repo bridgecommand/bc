@@ -1,28 +1,14 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#include "IBurningShader.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#include "IBurningShader.h"
 
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
-
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_T0
-#undef IPOL_T1
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
 // define render case
 #define SUBTEXEL
@@ -36,45 +22,7 @@
 //#define IPOL_C0
 #define IPOL_T0
 //#define IPOL_T1
-
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-	#undef INVERSE_W
-#endif
-
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-	#undef SUBTEXEL
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 1
-	#undef IPOL_C0
-#endif
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-	#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-		#undef IPOL_W
-	#endif
-	#define IPOL_Z
-
-	#ifdef CMP_W
-		#undef CMP_W
-		#define CMP_Z
-	#endif
-
-	#ifdef WRITE_W
-		#undef WRITE_W
-		#define WRITE_Z
-	#endif
-
-#endif
-
-
-
-namespace irr
-{
-
-namespace video
-{
+#include "burning_shader_compile_verify.h"
 
 class CTRTextureGouraudAdd2 : public IBurningShader
 {
@@ -101,12 +49,11 @@ CTRTextureGouraudAdd2::CTRTextureGouraudAdd2(CBurningVideoDriver* driver)
 }
 
 
-
 /*!
 */
 void CTRTextureGouraudAdd2::fragmentShader()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
@@ -182,10 +129,10 @@ void CTRTextureGouraudAdd2::fragmentShader()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 #endif
 
 
@@ -201,7 +148,6 @@ void CTRTextureGouraudAdd2::fragmentShader()
 	tFixPoint r0, g0, b0;
 	tFixPoint r1, g1, b1;
 #endif
-
 
 	for ( s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
 	{
@@ -224,7 +170,7 @@ void CTRTextureGouraudAdd2::fragmentShader()
 
 		dst[i] = PixelAdd32 (
 					dst[i],
-				getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x,inversew),
+				texelFetch ( &IT[0],	d + tofix ( line.t[0][0].x,inversew),
 											d + tofix ( line.t[0][0].y,inversew) )
 												);
 #else
@@ -233,12 +179,13 @@ void CTRTextureGouraudAdd2::fragmentShader()
 			ty0 = tofix ( line.t[0][0].y,inversew);
 			getSample_texture ( r0, g0, b0, &IT[0], tx0,ty0 );
 
-			color_to_fix ( r1, g1, b1, dst[i] );
+			sample_to_fix ( r1, g1, b1, dst[i] );
 
-			dst[i] = fix_to_sample( clampfix_maxcolor ( r1 + r0 ),
-									clampfix_maxcolor ( g1 + g0 ),
-									clampfix_maxcolor ( b1 + b0 )
-								);
+			dst[i] = fix_to_sample_nearest(
+				clampfix_maxcolor ( r1 + r0 ),
+				clampfix_maxcolor ( g1 + g0 ),
+				clampfix_maxcolor ( b1 + b0 )
+			);
 #endif
 
 #ifdef WRITE_Z
@@ -272,9 +219,9 @@ void CTRTextureGouraudAdd2::fragmentShader()
 void CTRTextureGouraudAdd2::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(a, b);
+	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(b, c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(a, b);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;
@@ -629,32 +576,14 @@ void CTRTextureGouraudAdd2::drawTriangle(const s4DVertex* burning_restrict a, co
 
 }
 
-
-} // end namespace video
-} // end namespace irr
-
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-namespace irr
-{
-namespace video
-{
-
 //! creates a flat triangle renderer
 IBurningShader* createTRTextureGouraudAdd2(CBurningVideoDriver* driver)
 {
 	//ETR_TEXTURE_GOURAUD_ADD
-
-	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CTRTextureGouraudAdd2(driver);
-	#else
-	return 0;
-	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
 
+burning_namespace_end
 
-} // end namespace video
-} // end namespace irr
-
-
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 

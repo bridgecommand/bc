@@ -1,28 +1,14 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#include "IBurningShader.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#include "IBurningShader.h"
 
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
-
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_T0
-#undef IPOL_T1
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
 // define render case
 #define SUBTEXEL
@@ -37,42 +23,8 @@
 #define IPOL_T0
 #define IPOL_T1
 
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-	#undef INVERSE_W
-#endif
 
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-	#undef SUBTEXEL
-#endif
-
-#if BURNING_MATERIAL_MAX_COLORS < 1
-	#undef IPOL_C0
-#endif
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-	#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-		#undef IPOL_W
-	#endif
-	#define IPOL_Z
-
-	#ifdef CMP_W
-		#undef CMP_W
-		#define CMP_Z
-	#endif
-
-	#ifdef WRITE_W
-		#undef WRITE_W
-		#define WRITE_Z
-	#endif
-
-#endif
-
-namespace irr
-{
-
-namespace video
-{
+#include "burning_shader_compile_verify.h"
 
 class CTRTextureLightMap2_M2 : public IBurningShader
 {
@@ -103,7 +55,7 @@ CTRTextureLightMap2_M2::CTRTextureLightMap2_M2(CBurningVideoDriver* driver)
 */
 REALINLINE void CTRTextureLightMap2_M2::scanline_bilinear2 ()
 {
-	tVideoSample *dst;
+	tRenderTargetColorSample *dst;
 	fp24 *z;
 
 	s32 xStart;
@@ -124,7 +76,7 @@ REALINLINE void CTRTextureLightMap2_M2::scanline_bilinear2 ()
 	const f32 invDeltaX = fill_step_x( line.x[1] - line.x[0] );
 
 	// search z-buffer for first not occulled pixel
-	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*)RenderTarget.depth->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 	// subTexel
 	const f32 subPixel = ( (f32) xStart ) - line.x[0];
@@ -169,7 +121,7 @@ REALINLINE void CTRTextureLightMap2_M2::scanline_bilinear2 ()
 	line.z[1] = b;
 #endif
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + ( line.y * RenderTarget.color->getDimension().Width ) + xStart;
 
 	a = (f32) i + subPixel;
 
@@ -246,9 +198,9 @@ REALINLINE void CTRTextureLightMap2_M2::scanline_bilinear2 ()
 void CTRTextureLightMap2_M2::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
-	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(a, b);
+	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(b, c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(a, b);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;
@@ -607,32 +559,12 @@ void CTRTextureLightMap2_M2::drawTriangle(const s4DVertex* burning_restrict a, c
 
 }
 
-
-} // end namespace video
-} // end namespace irr
-
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-namespace irr
-{
-namespace video
-{
-
-
-
 //! creates a flat triangle renderer
 IBurningShader* createTriangleRendererTextureLightMap2_M2(CBurningVideoDriver* driver)
 {
-	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CTRTextureLightMap2_M2(driver);
-	#else
-	return 0;
-	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
 
+burning_namespace_end
 
-} // end namespace video
-} // end namespace irr
-
-
-
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_

@@ -279,6 +279,7 @@ namespace scene
 			clone->MappingHintVertex = MappingHintVertex;
 			clone->MappingHintIndex = MappingHintIndex;
 			clone->PrimitiveType = PrimitiveType;
+			clone->Name = Name;
 
 			return clone;
 		}

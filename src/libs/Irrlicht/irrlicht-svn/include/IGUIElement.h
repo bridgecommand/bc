@@ -768,12 +768,18 @@ public:
 	}
 
 	//! Returns the name of the element.
-	/** \return Name as character string. */
+	/** \return Name as c-string. */
 	virtual const c8* getName() const
 	{
 		return Name.c_str();
 	}
 
+	//! Returns the name of the element.
+	/** \return Name as Irrlicht string. */
+	virtual const core::stringc& getNameStr() const
+	{
+		return Name;
+	}
 
 	//! Sets the name of the element.
 	/** \param name New name of the gui element. */
@@ -781,7 +787,6 @@ public:
 	{
 		Name = name;
 	}
-
 
 	//! Sets the name of the element.
 	/** \param name New name of the gui element. */

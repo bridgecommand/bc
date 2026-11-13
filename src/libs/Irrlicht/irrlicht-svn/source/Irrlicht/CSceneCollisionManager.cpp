@@ -50,11 +50,10 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
 }
 
 
-//! Returns the nearest scene node which collides with a 3d ray and
-//! which id matches a bitmask.
+//! Returns the nearest scene node which has it's bounding-box collide the ray and the node id matches a bitmask.
 ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(
 		const core::line3d<f32>& ray,
-		s32 idBitMask, bool noDebugObjects, scene::ISceneNode* root)
+		s32 idBitMask, bool noDebugObjects, scene::ISceneNode* root, f32* nearestHitDist)
 {
 	ISceneNode* best = 0;
 	f32 dist = FLT_MAX;
@@ -62,7 +61,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(
 	core::line3d<f32> truncatableRay(ray);
 
 	getPickedNodeBB((root==0)?SceneManager->getRootSceneNode():root, truncatableRay,
-		idBitMask, noDebugObjects, dist, best);
+		idBitMask, noDebugObjects, nearestHitDist ? *nearestHitDist : dist, best);
 
 	return best;
 }

@@ -1258,7 +1258,7 @@ public:
 	{
 		char tmp[34];
 		const video::SColor c = getColor();
-		sprintf(tmp, "%02x%02x%02x%02x", c.getAlpha(), c.getRed(), c.getGreen(), c.getBlue());
+		snprintf_irr(tmp, sizeof(tmp), "%02x%02x%02x%02x", c.getAlpha(), c.getRed(), c.getGreen(), c.getBlue());
 		return core::stringc(tmp);
 	}
 
@@ -1266,7 +1266,7 @@ public:
 	{
 		char tmp[34];
 		const video::SColor c = getColor();
-		sprintf(tmp, "%02x%02x%02x%02x", c.getAlpha(), c.getRed(), c.getGreen(), c.getBlue());
+		snprintf_irr(tmp, sizeof(tmp), "%02x%02x%02x%02x", c.getAlpha(), c.getRed(), c.getGreen(), c.getBlue());
 		return core::stringw(tmp);
 	}
 

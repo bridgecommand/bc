@@ -954,9 +954,6 @@
     <ClInclude Include="CD3D9Texture.h">
       <Filter>Irrlicht\video\Direct3D9</Filter>
     </ClInclude>
-    <ClInclude Include="CDepthBuffer.h">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClInclude>
     <ClInclude Include="CSoftware2MaterialRenderer.h">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClInclude>
@@ -967,9 +964,6 @@
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClInclude>
     <ClInclude Include="IBurningShader.h">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClInclude>
-    <ClInclude Include="IDepthBuffer.h">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClInclude>
     <ClInclude Include="S4DVertex.h">
@@ -1449,6 +1443,9 @@
     <ClInclude Include="..\..\include\IUserData.h">
       <Filter>include\io</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\SExposedTextureData.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
@@ -1834,22 +1831,10 @@
     <ClCompile Include="CD3D9Texture.cpp">
       <Filter>Irrlicht\video\Direct3D9</Filter>
     </ClCompile>
-    <ClCompile Include="CBurningShader_Raster_Reference.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
-    <ClCompile Include="CDepthBuffer.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
     <ClCompile Include="CSoftwareDriver2.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
     <ClCompile Include="CSoftwareTexture2.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
-    <ClCompile Include="CTRGouraud2.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
-    <ClCompile Include="CTRGouraudAlphaNoZ2.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
     <ClCompile Include="CTRNormalMap.cpp">
@@ -2390,9 +2375,6 @@
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
     <ClCompile Include="CTR_transparent_reflection_2_layer.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
-    <ClCompile Include="CTRGouraudNoZ2.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
   </ItemGroup>

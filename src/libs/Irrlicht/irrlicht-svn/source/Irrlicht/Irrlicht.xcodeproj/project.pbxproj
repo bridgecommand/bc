@@ -234,12 +234,8 @@
 		5E34CB881B7F6EC400F212E8 /* CMeshCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C8B31B7F664100F212E8 /* CMeshCache.cpp */; };
 		5E34CB8A1B7F6EC400F212E8 /* CMeshManipulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C8B51B7F664100F212E8 /* CMeshManipulator.cpp */; };
 		5E34CB8C1B7F6EC400F212E8 /* CSceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C8B71B7F664100F212E8 /* CSceneManager.cpp */; };
-		5E34CB8F1B7F6EC400F212E8 /* CBurningShader_Raster_Reference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C9601B7F6A7600F212E8 /* CBurningShader_Raster_Reference.cpp */; };
-		5E34CB901B7F6EC500F212E8 /* CDepthBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C9611B7F6A7600F212E8 /* CDepthBuffer.cpp */; };
 		5E34CB931B7F6EC500F212E8 /* CSoftwareDriver2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C9641B7F6A7600F212E8 /* CSoftwareDriver2.cpp */; };
 		5E34CB951B7F6EC500F212E8 /* CSoftwareTexture2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C9661B7F6A7600F212E8 /* CSoftwareTexture2.cpp */; };
-		5E34CB971B7F6EC500F212E8 /* CTRGouraud2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C9681B7F6A7600F212E8 /* CTRGouraud2.cpp */; };
-		5E34CB991B7F6EC500F212E8 /* CTRGouraudAlphaNoZ2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C96A1B7F6A7600F212E8 /* CTRGouraudAlphaNoZ2.cpp */; };
 		5E34CB9A1B7F6EC500F212E8 /* CTRNormalMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C96B1B7F6A7600F212E8 /* CTRNormalMap.cpp */; };
 		5E34CB9B1B7F6EC500F212E8 /* CTRStencilShadow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C96C1B7F6A7600F212E8 /* CTRStencilShadow.cpp */; };
 		5E34CB9C1B7F6EC500F212E8 /* CTRTextureBlend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E34C96D1B7F6A7600F212E8 /* CTRTextureBlend.cpp */; };
@@ -319,7 +315,6 @@
 		84A219B4249F82DD00E189FC /* burning_shader_compile_fragment_default.h in Headers */ = {isa = PBXBuildFile; fileRef = 84A219AC249F82DC00E189FC /* burning_shader_compile_fragment_default.h */; };
 		84A219B5249F82DD00E189FC /* burning_shader_compile_fragment_end.h in Headers */ = {isa = PBXBuildFile; fileRef = 84A219AD249F82DD00E189FC /* burning_shader_compile_fragment_end.h */; };
 		84A219B7249F82E800E189FC /* burning_shader_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84A219B6249F82E800E189FC /* burning_shader_color.cpp */; };
-		84A219B9249F834000E189FC /* CTRGouraudNoZ2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84A219B8249F834000E189FC /* CTRGouraudNoZ2.cpp */; };
 		84A219BB249F835B00E189FC /* CTR_transparent_reflection_2_layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84A219BA249F835B00E189FC /* CTR_transparent_reflection_2_layer.cpp */; };
 /* End PBXBuildFile section */
 
@@ -918,15 +913,11 @@
 		5E34C9581B7F691500F212E8 /* CSTLMeshWriter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSTLMeshWriter.cpp; sourceTree = "<group>"; };
 		5E34C9591B7F691500F212E8 /* CSTLMeshWriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSTLMeshWriter.h; sourceTree = "<group>"; };
 		5E34C9601B7F6A7600F212E8 /* CBurningShader_Raster_Reference.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CBurningShader_Raster_Reference.cpp; sourceTree = "<group>"; };
-		5E34C9611B7F6A7600F212E8 /* CDepthBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CDepthBuffer.cpp; sourceTree = "<group>"; };
-		5E34C9621B7F6A7600F212E8 /* CDepthBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDepthBuffer.h; sourceTree = "<group>"; };
 		5E34C9631B7F6A7600F212E8 /* CSoftware2MaterialRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSoftware2MaterialRenderer.h; sourceTree = "<group>"; };
 		5E34C9641B7F6A7600F212E8 /* CSoftwareDriver2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSoftwareDriver2.cpp; sourceTree = "<group>"; };
 		5E34C9651B7F6A7600F212E8 /* CSoftwareDriver2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSoftwareDriver2.h; sourceTree = "<group>"; };
 		5E34C9661B7F6A7600F212E8 /* CSoftwareTexture2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSoftwareTexture2.cpp; sourceTree = "<group>"; };
 		5E34C9671B7F6A7600F212E8 /* CSoftwareTexture2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSoftwareTexture2.h; sourceTree = "<group>"; };
-		5E34C9681B7F6A7600F212E8 /* CTRGouraud2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CTRGouraud2.cpp; sourceTree = "<group>"; };
-		5E34C96A1B7F6A7600F212E8 /* CTRGouraudAlphaNoZ2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CTRGouraudAlphaNoZ2.cpp; sourceTree = "<group>"; };
 		5E34C96B1B7F6A7600F212E8 /* CTRNormalMap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CTRNormalMap.cpp; sourceTree = "<group>"; };
 		5E34C96C1B7F6A7600F212E8 /* CTRStencilShadow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CTRStencilShadow.cpp; sourceTree = "<group>"; };
 		5E34C96D1B7F6A7600F212E8 /* CTRTextureBlend.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CTRTextureBlend.cpp; sourceTree = "<group>"; };
@@ -946,7 +937,6 @@
 		5E34C97B1B7F6A7600F212E8 /* CTRTextureWire2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CTRTextureWire2.cpp; sourceTree = "<group>"; };
 		5E34C97C1B7F6A7600F212E8 /* IBurningShader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IBurningShader.cpp; sourceTree = "<group>"; };
 		5E34C97D1B7F6A7600F212E8 /* IBurningShader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IBurningShader.h; sourceTree = "<group>"; };
-		5E34C97E1B7F6A7600F212E8 /* IDepthBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IDepthBuffer.h; sourceTree = "<group>"; };
 		5E34C97F1B7F6A7600F212E8 /* S4DVertex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S4DVertex.h; sourceTree = "<group>"; };
 		5E34C9801B7F6A7600F212E8 /* SoftwareDriver2_compile_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SoftwareDriver2_compile_config.h; sourceTree = "<group>"; };
 		5E34C9811B7F6A7600F212E8 /* SoftwareDriver2_helper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SoftwareDriver2_helper.h; sourceTree = "<group>"; };
@@ -1058,7 +1048,6 @@
 		84A219AC249F82DC00E189FC /* burning_shader_compile_fragment_default.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = burning_shader_compile_fragment_default.h; sourceTree = "<group>"; };
 		84A219AD249F82DD00E189FC /* burning_shader_compile_fragment_end.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = burning_shader_compile_fragment_end.h; sourceTree = "<group>"; };
 		84A219B6249F82E800E189FC /* burning_shader_color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = burning_shader_color.cpp; sourceTree = "<group>"; };
-		84A219B8249F834000E189FC /* CTRGouraudNoZ2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CTRGouraudNoZ2.cpp; sourceTree = "<group>"; };
 		84A219BA249F835B00E189FC /* CTR_transparent_reflection_2_layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CTR_transparent_reflection_2_layer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1909,17 +1898,11 @@
 			isa = PBXGroup;
 			children = (
 				84A219B6249F82E800E189FC /* burning_shader_color.cpp */,
-				5E34C9601B7F6A7600F212E8 /* CBurningShader_Raster_Reference.cpp */,
-				5E34C9611B7F6A7600F212E8 /* CDepthBuffer.cpp */,
-				5E34C9621B7F6A7600F212E8 /* CDepthBuffer.h */,
 				5E34C9631B7F6A7600F212E8 /* CSoftware2MaterialRenderer.h */,
 				5E34C9641B7F6A7600F212E8 /* CSoftwareDriver2.cpp */,
 				5E34C9651B7F6A7600F212E8 /* CSoftwareDriver2.h */,
 				5E34C9661B7F6A7600F212E8 /* CSoftwareTexture2.cpp */,
 				5E34C9671B7F6A7600F212E8 /* CSoftwareTexture2.h */,
-				5E34C9681B7F6A7600F212E8 /* CTRGouraud2.cpp */,
-				5E34C96A1B7F6A7600F212E8 /* CTRGouraudAlphaNoZ2.cpp */,
-				84A219B8249F834000E189FC /* CTRGouraudNoZ2.cpp */,
 				5E34C96B1B7F6A7600F212E8 /* CTRNormalMap.cpp */,
 				65E74BB2282193B40004CA1D /* CTRParallaxMap.cpp */,
 				5E34C96C1B7F6A7600F212E8 /* CTRStencilShadow.cpp */,
@@ -1941,7 +1924,6 @@
 				84A219BA249F835B00E189FC /* CTR_transparent_reflection_2_layer.cpp */,
 				5E34C97C1B7F6A7600F212E8 /* IBurningShader.cpp */,
 				5E34C97D1B7F6A7600F212E8 /* IBurningShader.h */,
-				5E34C97E1B7F6A7600F212E8 /* IDepthBuffer.h */,
 				5E34C97F1B7F6A7600F212E8 /* S4DVertex.h */,
 				5E34C9801B7F6A7600F212E8 /* SoftwareDriver2_compile_config.h */,
 				5E34C9811B7F6A7600F212E8 /* SoftwareDriver2_helper.h */,
@@ -2405,12 +2387,8 @@
 				5E34CB881B7F6EC400F212E8 /* CMeshCache.cpp in Sources */,
 				5E34CB8A1B7F6EC400F212E8 /* CMeshManipulator.cpp in Sources */,
 				5E34CB8C1B7F6EC400F212E8 /* CSceneManager.cpp in Sources */,
-				5E34CB8F1B7F6EC400F212E8 /* CBurningShader_Raster_Reference.cpp in Sources */,
-				5E34CB901B7F6EC500F212E8 /* CDepthBuffer.cpp in Sources */,
 				5E34CB931B7F6EC500F212E8 /* CSoftwareDriver2.cpp in Sources */,
 				5E34CB951B7F6EC500F212E8 /* CSoftwareTexture2.cpp in Sources */,
-				5E34CB971B7F6EC500F212E8 /* CTRGouraud2.cpp in Sources */,
-				5E34CB991B7F6EC500F212E8 /* CTRGouraudAlphaNoZ2.cpp in Sources */,
 				5E34CB9A1B7F6EC500F212E8 /* CTRNormalMap.cpp in Sources */,
 				5E34CB9B1B7F6EC500F212E8 /* CTRStencilShadow.cpp in Sources */,
 				5E34CB9C1B7F6EC500F212E8 /* CTRTextureBlend.cpp in Sources */,
@@ -2431,7 +2409,6 @@
 				5E34CBAA1B7F6EC500F212E8 /* CTRTextureWire2.cpp in Sources */,
 				5E34CBAB1B7F6EC500F212E8 /* IBurningShader.cpp in Sources */,
 				5E34CBB11B7F6EC500F212E8 /* CImageLoaderBMP.cpp in Sources */,
-				84A219B9249F834000E189FC /* CTRGouraudNoZ2.cpp in Sources */,
 				5E34CBB31B7F6EC500F212E8 /* CImageLoaderDDS.cpp in Sources */,
 				5E34CBB51B7F6EC600F212E8 /* CImageLoaderJPG.cpp in Sources */,
 				5E34CBB71B7F6EC600F212E8 /* CImageLoaderPCX.cpp in Sources */,

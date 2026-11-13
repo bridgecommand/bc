@@ -1967,7 +1967,7 @@ void CQ3LevelMesh::loadTextures()
 	video::IImage* lmapImg;
 	for ( t = 0; t < NumLightMaps ; ++t)
 	{
-		sprintf(lightmapname, "%s.lightmap.%d", LevelName.c_str(), t);
+		snprintf_irr(lightmapname, sizeof(lightmapname), "%s.lightmap.%d", LevelName.c_str(), t);
 
 		// lightmap is a CTexture::R8G8B8 format
 		lmapImg = Driver->createImageFromData(

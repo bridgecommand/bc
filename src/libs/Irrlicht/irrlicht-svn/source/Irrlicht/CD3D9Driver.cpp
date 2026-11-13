@@ -203,7 +203,7 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 		s32 SubVersion = HIWORD(dai.DriverVersion.LowPart);
 		s32 Build = LOWORD(dai.DriverVersion.LowPart);
 
-		sprintf(tmp, "%s %s %d.%d.%d.%d", dai.Description, dai.Driver, Product, Version,
+		snprintf_irr(tmp, sizeof(tmp), "%s %s %d.%d.%d.%d", dai.Description, dai.Driver, Product, Version,
 			SubVersion, Build);
 		os::Printer::log(tmp, ELL_INFORMATION);
 
@@ -1436,7 +1436,7 @@ void CD3D9Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 			else
 				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLEFAN, 0, vertexCount, primitiveCount,
 						indexList, indexType, vertices, stride);
-				break;
+			break;
 		case scene::EPT_TRIANGLES:
 			if(!vertices)
 			{
@@ -3237,12 +3237,20 @@ IVideoDriver* CD3D9Driver::getVideoDriver()
 //! Creates a render target texture.
 ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
 											  const io::path& name,
-											  const ECOLOR_FORMAT format)
+											  const ECOLOR_FORMAT format, u32 multiSamples, bool mipmap)
 {
 	if ( IImage::isCompressedFormat(format) )
 		return 0;
 
+	// set mip-mapping flags
+	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, mipmap);
+
 	CD3D9Texture* tex = new CD3D9Texture(this, size, name, ETT_2D, format);
+
+	//restore mip-mapping
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, generateMipLevels);
+
 	if (tex)
 	{
 		if (!tex->Texture)
@@ -3258,12 +3266,20 @@ ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size
 }
 
 ITexture* CD3D9Driver::addRenderTargetTextureCubemap(const irr::u32 sideLen,
-	const io::path& name, const ECOLOR_FORMAT format)
+	const io::path& name, const ECOLOR_FORMAT format, bool mipmap)
 {
 	if ( IImage::isCompressedFormat(format) )
 		return 0;
 
+	// set mip-mapping flags
+	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, mipmap);
+
 	CD3D9Texture* tex = new CD3D9Texture(this, core::dimension2d<u32>(sideLen, sideLen), name, ETT_CUBEMAP, format);
+
+	//restore mip-mapping
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, generateMipLevels);
+
 	if (tex)
 	{
 		if (!tex->CubeTexture)

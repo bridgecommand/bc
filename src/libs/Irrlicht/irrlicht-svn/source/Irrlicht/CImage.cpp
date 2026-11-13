@@ -6,7 +6,6 @@
 #include "CColorConverter.h"
 #include "CBlit.h"
 #include "os.h"
-#include "SoftwareDriver2_helper.h"
 
 namespace irr
 {
@@ -24,7 +23,7 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* d
 	else
 	{
 		const size_t dataSize = getDataSizeFromFormat(Format, Size.Width, Size.Height);
-		Data = new u8[align_next(dataSize,16)];
+		Data = new u8[CBLIT_ALIGN_NEXT(dataSize,16)];
 		memcpy(Data, data, dataSize);
 		DeleteMemory = true;
 	}
@@ -35,7 +34,7 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* d
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) : IImage(format, size, true)
 {
 	const size_t dataSize = getDataSizeFromFormat(Format, Size.Width, Size.Height);
-	Data = new u8[align_next(dataSize,16)];
+	Data = new u8[CBLIT_ALIGN_NEXT(dataSize,16)];
 	DeleteMemory = true;
 }
 
@@ -343,7 +342,7 @@ void CImage::fill(const SColor &color)
 		// TODO: Handle other formats
 			return;
 	}
-	memset32( Data, c, getImageDataSizeInBytes() );
+	blit_memset32( Data, c, getImageDataSizeInBytes() );
 }
 
 void CImage::flip(bool topBottom, bool leftRight)

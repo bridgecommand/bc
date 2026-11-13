@@ -1,37 +1,17 @@
-// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2022 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#include "IBurningShader.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#include "IBurningShader.h"
 
-// compile flag for this file
-#undef USE_ZBUFFER
-#undef IPOL_Z
-#undef CMP_Z
-#undef WRITE_Z
+burning_namespace_start
+#include "burning_shader_compile_start.h"
 
-#undef IPOL_W
-#undef CMP_W
-#undef WRITE_W
-
-#undef SUBTEXEL
-#undef INVERSE_W
-
-#undef IPOL_C0
-#undef IPOL_T0
-#undef IPOL_T1
-
-// define render case
-#ifdef BURNINGVIDEO_RENDERER_FAST
 #define SUBTEXEL
 #define INVERSE_W
-#else
-#define SUBTEXEL
-#define INVERSE_W
-#endif
 
 //#define USE_ZBUFFER
 #define IPOL_W
@@ -42,38 +22,8 @@
 #define IPOL_T0
 //#define IPOL_T1
 
-#if BURNING_MATERIAL_MAX_COLORS < 1
-#undef IPOL_C0
-#endif
+#include "burning_shader_compile_verify.h"
 
-// apply global override
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef INVERSE_W
-#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
-#undef IPOL_W
-#endif
-#endif
-
-#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
-#undef SUBTEXEL
-#endif
-
-#if !defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) && defined ( USE_ZBUFFER )
-#define IPOL_Z
-
-#ifdef CMP_W
-#undef CMP_W
-#define CMP_Z
-#endif
-
-#ifdef WRITE_W
-#undef WRITE_W
-#define WRITE_Z
-#endif
-
-#endif
-
-burning_namespace_start
 
 class CTRTextureGouraudNoZ2 : public IBurningShader
 {
@@ -84,7 +34,7 @@ public:
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) IRR_OVERRIDE;
-	virtual void OnSetMaterialBurning(const SBurningShaderMaterial& material) IRR_OVERRIDE;
+	virtual void OnSetMaterial_BL(const SBurningShaderMaterial& material) IRR_OVERRIDE;
 
 	virtual bool canWireFrame() IRR_OVERRIDE { return true; }
 
@@ -94,13 +44,18 @@ private:
 	typedef void (CTRTextureGouraudNoZ2::* tFragmentShader) ();
 	void fragment_linear();
 	void fragment_nearest();
+	void fragment_npot();
+	void frag_BFT_IRR_0385_0xa0194718();
+#if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0_Shader)
+	void frag_BFT_STK_2971_0xd34c333c();
+#endif
 
 	tFragmentShader fragmentShader;
 };
 
 //! constructor
 CTRTextureGouraudNoZ2::CTRTextureGouraudNoZ2(CBurningVideoDriver* driver)
-	: IBurningShader(driver,EMT_SOLID)
+	: IBurningShader(driver, EMT_SOLID)
 {
 #ifdef _DEBUG
 	setDebugName("CTRTextureGouraudNoZ2");
@@ -111,10 +66,20 @@ CTRTextureGouraudNoZ2::CTRTextureGouraudNoZ2(CBurningVideoDriver* driver)
 
 /*!
 */
-void CTRTextureGouraudNoZ2::OnSetMaterialBurning(const SBurningShaderMaterial& material)
+void CTRTextureGouraudNoZ2::OnSetMaterial_BL(const SBurningShaderMaterial& material)
 {
+	//sampler
+	ITexture* tex0 = material.org.getTexture(0);
+	if (tex0 && tex0->getPitch() != (u32)(1 << s32_log2_s32(tex0->getPitch())))
+	{
+		fragmentShader = &CTRTextureGouraudNoZ2::fragment_npot;
+		if (material.FragmentShader.id == BFT_IRR_0385_0xa0194718) fragmentShader = &CTRTextureGouraudNoZ2::frag_BFT_IRR_0385_0xa0194718;
+#if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0_Shader)
+		else if (material.FragmentShader.id == BFT_STK_2971_0xd34c333c) fragmentShader = &CTRTextureGouraudNoZ2::frag_BFT_STK_2971_0xd34c333c;
+#endif
 
-	if (material.org.TextureLayer[0].BilinearFilter ||
+	}
+	else if (material.org.TextureLayer[0].BilinearFilter ||
 		material.org.TextureLayer[0].TrilinearFilter ||
 		material.org.TextureLayer[0].AnisotropicFilter
 		)
@@ -132,150 +97,7 @@ void CTRTextureGouraudNoZ2::OnSetMaterialBurning(const SBurningShaderMaterial& m
 */
 void CTRTextureGouraudNoZ2::fragment_linear()
 {
-	tVideoSample* dst;
-
-#ifdef USE_ZBUFFER
-	fp24* z;
-#endif
-
-	s32 xStart;
-	s32 xEnd;
-	s32 dx;
-
-
-#ifdef SUBTEXEL
-	f32 subPixel;
-#endif
-
-#ifdef IPOL_Z
-	f32 slopeZ;
-#endif
-#ifdef IPOL_W
-	fp24 slopeW;
-#endif
-#ifdef IPOL_C0
-	sVec4 slopeC;
-#endif
-#ifdef IPOL_T0
-	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
-#endif
-
-	// apply top-left fill-convention, left
-	xStart = fill_convention_left(line.x[0]);
-	xEnd = fill_convention_right(line.x[1]);
-
-	dx = xEnd - xStart;
-	if (dx < 0)
-		return;
-
-	// slopes
-	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
-
-#ifdef IPOL_Z
-	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
-#endif
-#ifdef IPOL_W
-	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
-#endif
-#ifdef IPOL_C0
-	slopeC = (line.c[1] - line.c[0]) * invDeltaX;
-#endif
-#ifdef IPOL_T0
-	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
-#endif
-#ifdef IPOL_T1
-	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
-#endif
-
-#ifdef SUBTEXEL
-	subPixel = ((f32) xStart) - line.x[0];
-#ifdef IPOL_Z
-	line.z[0] += slopeZ * subPixel;
-#endif
-#ifdef IPOL_W
-	line.w[0] += slopeW * subPixel;
-#endif
-#ifdef IPOL_C0
-	line.c[0] += slopeC * subPixel;
-#endif
-#ifdef IPOL_T0
-	line.t[0][0] += slopeT[0] * subPixel;
-#endif
-#ifdef IPOL_T1
-	line.t[1][0] += slopeT[1] * subPixel;
-#endif
-#endif
-
-	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + (line.y * RenderTarget->getDimension().Width) + xStart;
-
-#ifdef USE_ZBUFFER
-	z = (fp24*)DepthBuffer->lock() + (line.y * RenderTarget->getDimension().Width) + xStart;
-#endif
-
-
-	f32 inversew = FIX_POINT_F32_MUL;
-
-	tFixPoint tx0;
-	tFixPoint ty0;
-	tFixPoint r0, g0, b0;
-
-	for (s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
-	{
-		//if test active only first pixel
-		if ((0 == EdgeTestPass) & (i > line.x_edgetest)) break;
-
-#ifdef CMP_Z
-		if (line.z[0] < z[i])
-#endif
-#ifdef CMP_W
-			if (line.w[0] >= z[i])
-#endif
-			if_scissor_test_x
-			{
-	#ifdef INVERSE_W
-				inversew = fix_inverse32(line.w[0]);
-	#endif
-				tx0 = tofix(line.t[0][0].x,inversew);
-				ty0 = tofix(line.t[0][0].y,inversew);
-				//skybox
-				//dst[i] = getTexel_plain ( &IT[0], tx0, ty0 );
-
-				getSample_texture(r0, g0, b0, IT + 0, tx0, ty0);
-				dst[i] = fix_to_sample(r0, g0, b0);
-
-	#ifdef WRITE_Z
-				z[i] = line.z[0];
-	#endif
-	#ifdef WRITE_W
-				z[i] = line.w[0];
-	#endif
-			}
-
-#ifdef IPOL_Z
-		line.z[0] += slopeZ;
-#endif
-#ifdef IPOL_W
-		line.w[0] += slopeW;
-#endif
-#ifdef IPOL_C0
-		line.c[0] += slopeC;
-#endif
-#ifdef IPOL_T0
-		line.t[0][0] += slopeT[0];
-#endif
-#ifdef IPOL_T1
-		line.t[1][0] += slopeT[1];
-#endif
-	}
-
-}
-
-/*!
-*/
-void CTRTextureGouraudNoZ2::fragment_nearest()
-{
-	tVideoSample* dst;
+	tRenderTargetColorSample* dst;
 
 #ifdef USE_ZBUFFER
 	fp24* z;
@@ -350,10 +172,153 @@ void CTRTextureGouraudNoZ2::fragment_nearest()
 #endif
 
 	SOFTWARE_DRIVER_2_CLIPCHECK;
-	dst = (tVideoSample*)RenderTarget->getData() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = (fp24*)DepthBuffer->lock() + (line.y * RenderTarget->getDimension().Width) + xStart;
+	z = (fp24*)RenderTarget.depth->lock() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+#endif
+
+
+	f32 inversew = FIX_POINT_F32_MUL;
+
+	tFixPoint tx0;
+	tFixPoint ty0;
+	tFixPoint r0, g0, b0;
+
+	for (s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
+	{
+		//if test active only first pixel
+		if ((0 == EdgeTestPass) & (i > line.x_edgetest)) break;
+
+#ifdef CMP_Z
+		if (line.z[0] < z[i])
+#endif
+#ifdef CMP_W
+			if (line.w[0] >= z[i])
+#endif
+				if_scissor_test_x
+			{
+	#ifdef INVERSE_W
+				inversew = fix_inverse32(line.w[0]);
+	#endif
+				tx0 = tofix(line.t[0][0].x,inversew);
+				ty0 = tofix(line.t[0][0].y,inversew);
+				//skybox
+				//dst[i] = texelFetch ( &IT[0], tx0, ty0 );
+
+				getSample_texture(r0, g0, b0, IT + 0, tx0, ty0);
+				dst[i] = fix_to_sample_nearest(r0, g0, b0);
+
+	#ifdef WRITE_Z
+				z[i] = line.z[0];
+	#endif
+	#ifdef WRITE_W
+				z[i] = line.w[0];
+	#endif
+			}
+
+#ifdef IPOL_Z
+		line.z[0] += slopeZ;
+#endif
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_C0
+		line.c[0] += slopeC;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_T1
+		line.t[1][0] += slopeT[1];
+#endif
+			}
+
+	}
+
+/*!
+*/
+void CTRTextureGouraudNoZ2::fragment_nearest()
+{
+	tRenderTargetColorSample* dst;
+
+#ifdef USE_ZBUFFER
+	fp24* z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC;
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = fill_convention_left(line.x[0]);
+	xEnd = fill_convention_right(line.x[1]);
+
+	dx = xEnd - xStart;
+	if (dx < 0)
+		return;
+
+	// slopes
+	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC = (line.c[1] - line.c[0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ((f32)xStart) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0] += slopeC * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	SOFTWARE_DRIVER_2_CLIPCHECK;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*)RenderTarget.depth->lock() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
 #endif
 
 
@@ -379,7 +344,7 @@ void CTRTextureGouraudNoZ2::fragment_nearest()
 				tx0 = tofix(line.t[0][0].x, inversew);
 				ty0 = tofix(line.t[0][0].y, inversew);
 				//skybox
-				dst[i] = getTexel_plain(&IT[0], tx0, ty0);
+				dst[i] = texelFetch(&IT[0], tx0, ty0);
 
 				//getSample_texture ( r0, g0, b0, IT+0, tx0, ty0 );
 				//dst[i] = fix_to_sample( r0, g0, b0 );
@@ -411,12 +376,622 @@ void CTRTextureGouraudNoZ2::fragment_nearest()
 
 }
 
+/*!
+*/
+void CTRTextureGouraudNoZ2::fragment_npot()
+{
+	tRenderTargetColorSample* dst;
+
+#ifdef USE_ZBUFFER
+	fp24* z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC;
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = fill_convention_left(line.x[0]);
+	xEnd = fill_convention_right(line.x[1]);
+
+	dx = xEnd - xStart;
+	if (dx < 0)
+		return;
+
+	// slopes
+	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC = (line.c[1] - line.c[0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ((f32)xStart) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0] += slopeC * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	SOFTWARE_DRIVER_2_CLIPCHECK;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*)RenderTarget.depth->lock() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+#endif
+
+
+	f32 inversew = FIX_POINT_F32_MUL;
+
+	tFixPoint tx0;
+	tFixPoint ty0;
+	//tFixPoint r0, g0, b0;
+
+	for (s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
+	{
+#ifdef CMP_Z
+		if (line.z[0] < z[i])
+#endif
+#ifdef CMP_W
+			if (line.w[0] >= z[i])
+#endif
+				//scissor_test_x
+			{
+#ifdef INVERSE_W
+				inversew = fix_inverse32(line.w[0]);
+#endif
+				tx0 = tofix(line.t[0][0].x, inversew);
+				ty0 = tofix(line.t[0][0].y, inversew);
+				dst[i] = texelFetch_npot(&IT[0], tx0, ty0);
+
+
+#ifdef WRITE_Z
+				z[i] = line.z[0];
+#endif
+#ifdef WRITE_W
+				z[i] = line.w[0];
+#endif
+			}
+
+#ifdef IPOL_Z
+		line.z[0] += slopeZ;
+#endif
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_C0
+		line.c[0] += slopeC;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_T1
+		line.t[1][0] += slopeT[1];
+#endif
+	}
+
+}
+
+/*!
+// example 27 pp_opengl.frag
+// Texture sampler
+uniform sampler2D TextureSampler;
+
+// TexCoords from vertex shader
+varying vec2 TexCoords;
+
+void main (void)
+{
+	// Texture is sampled at Texcoords using texture2D
+	vec4 Color = texture2D(TextureSampler, TexCoords);
+
+	// Inverse the color to produce negative image effect
+	Color.rgb = 1.0 - Color.rgb;
+
+	gl_FragColor = Color;
+}
+*/
+
+void CTRTextureGouraudNoZ2::frag_BFT_IRR_0385_0xa0194718()
+{
+	tRenderTargetColorSample* dst;
+
+#ifdef USE_ZBUFFER
+	fp24* z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	//	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC;
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = fill_convention_left(line.x[0]);
+	xEnd = fill_convention_right(line.x[1]);
+
+	dx = xEnd - xStart;
+	if (dx < 0)
+		return;
+
+	// slopes
+	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	//slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC = (line.c[1] - line.c[0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ((f32)xStart) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	//line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0] += slopeC * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	SOFTWARE_DRIVER_2_CLIPCHECK;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*)RenderTarget.depth->lock() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+#endif
+
+
+	f32 inversew = FIX_POINT_F32_MUL;
+
+	tFixPoint tx0;
+	tFixPoint ty0;
+	//tFixPoint r0, g0, b0;
+
+	for (s32 i = 0; i <= dx; i += SOFTWARE_DRIVER_2_STEP_X)
+	{
+#ifdef CMP_Z
+		if (line.z[0] < z[i])
+#endif
+#ifdef CMP_W
+			if (line.w[0] >= z[i])
+#endif
+				//scissor_test_x
+			{
+#ifdef INVERSE_W
+				//inversew = fix_inverse32(line.w[0]);
+#endif
+				tx0 = tofix(line.t[0][0].x, inversew);
+				ty0 = tofix(line.t[0][0].y, inversew);
+				//27.post processing (rendertarget overlay)
+				dst[i] = MASK_A | (~texelFetch_npot(&IT[0], tx0, ty0));
+
+
+#ifdef WRITE_Z
+				z[i] = line.z[0];
+#endif
+#ifdef WRITE_W
+				z[i] = line.w[0];
+#endif
+			}
+
+#ifdef IPOL_Z
+		line.z[0] += slopeZ;
+#endif
+#ifdef IPOL_W
+		//line.w[0] += slopeW;
+#endif
+#ifdef IPOL_C0
+		line.c[0] += slopeC;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_T1
+		line.t[1][0] += slopeT[1];
+#endif
+	}
+
+}
+
+/*
+// motion_blur.frag
+
+// The actual boost amount (which linearly scales the blur to be shown).
+// should be in the range [0.0, 1.0], though a larger value might make
+// the blurring too string. Atm we are using [0, 0.5].
+uniform float boost_amount;
+
+// The color buffer to use.
+uniform sampler2D color_buffer;
+
+// Center (in texture coordinates) at which the kart is. A small circle
+// around this center is not blurred (see mask_radius below)
+uniform vec2 center;
+
+// The direction to which the blurring aims at
+uniform vec2 direction;
+
+// Radius of mask around the character in which no blurring happens
+// so that the kart doesn't get blurred.
+uniform float mask_radius;
+
+// Maximum height of texture used
+uniform float max_tex_height;
+
+// Number of samples used for blurring
+#define NB_SAMPLES 12
+
+void main()
+{
+	vec2 texcoords = gl_TexCoord[0].st;
+
+	// Sample the color buffer
+	vec3 color = texture2D(color_buffer, texcoords).rgb;
+
+	// If no motion blur is needed, don't do any of the blur computation,
+	// just return the color from the texture.
+	if(boost_amount==0.0)
+	{
+		gl_FragColor = vec4(color, 1.0);
+		return;
+	}
+
+	// Compute the blur direction.
+	// IMPORTANT: we don't normalize it so that it avoids a glitch around 'center',
+	// plus it naturally scales the motion blur in a cool way :)
+	vec2 blur_dir = direction - texcoords;
+
+	// Compute the blurring factor:
+	// - apply the mask, i.e. no blurring in a small circle around the kart
+	float blur_factor = max(0.0, length(texcoords - center) - mask_radius);
+
+	// - avoid blurring the top of the screen
+	blur_factor *= (max_tex_height - texcoords.t);
+
+	// - apply the boost amount
+	blur_factor *= boost_amount;
+
+	// Scale the blur direction
+	blur_dir *= blur_factor;
+
+	// Compute the blur
+	vec2 inc_vec = blur_dir / vec2(NB_SAMPLES);
+	vec2 blur_texcoords = texcoords + inc_vec;
+	for(int i=1 ; i < NB_SAMPLES ; i++)
+	{
+		color += texture2D(color_buffer, blur_texcoords).rgb;
+		blur_texcoords += inc_vec;
+	}
+	color /= vec3(NB_SAMPLES);
+	gl_FragColor = vec4(color, 1.0);
+
+	// Keep this commented line for debugging:
+	//gl_FragColor = vec4(blur_factor, blur_factor, blur_factor, 0.0);
+}
+*/
+
+static inline float length(const irr::video::sVec2& a) {
+	return a.length_xy();
+}
+
+static inline float max(const float a, const float b) {
+	return a > b ? a : b;
+}
+
+#if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0_Shader)
+void CTRTextureGouraudNoZ2::frag_BFT_STK_2971_0xd34c333c()
+{
+	tRenderTargetColorSample* dst;
+
+#ifdef USE_ZBUFFER
+	fp24* z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	//	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC;
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = fill_convention_left(line.x[0]);
+	xEnd = fill_convention_right(line.x[1]);
+
+	dx = xEnd - xStart;
+	if (dx < 0)
+		return;
+
+	// slopes
+	const f32 invDeltaX = fill_step_x(line.x[1] - line.x[0]);
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	//slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC = (line.c[1] - line.c[0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ((f32)xStart) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	//line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0] += slopeC * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	SOFTWARE_DRIVER_2_CLIPCHECK;
+	dst = (tRenderTargetColorSample*)RenderTarget.color->getData() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*)RenderTarget.depth->lock() + (line.y * RenderTarget.color->getDimension().Width) + xStart;
+#endif
+
+
+	f32 inversew = 1.f;// FIX_POINT_F32_MUL;
+
+	//tFixPoint tx0;
+	//tFixPoint ty0;
+	//tFixPoint r0, g0, b0;
+
+#define burning_shader_fragment_emu
+#include "burning_shader_glsl_emu_define.h"
+
+	// The actual boost amount (which linearly scales the blur to be shown).
+	// should be in the range [0.0, 1.0], though a larger value might make
+	// the blurring too string. Atm we are using [0, 0.5].
+	uniform(float, boost_amount);
+
+	// The color buffer to use.
+	uniform(sampler2D, color_buffer);
+
+	// Center (in texture coordinates) at which the kart is. A small circle
+	// around this center is not blurred (see mask_radius below)
+	uniform(vec2, center);
+
+	// The direction to which the blurring aims at
+	uniform(vec2, direction);
+
+	// Radius of mask around the character in which no blurring happens
+	// so that the kart doesn't get blurred.
+	uniform(float, mask_radius);
+
+	// Maximum height of texture used
+	uniform(float, max_tex_height);
+
+	// Number of samples used for blurring
+#define NB_SAMPLES 4
+#define NB_SAMPLES_INV 0.25f
+
+	for (s32 _sx = 0; _sx <= dx; _sx += SOFTWARE_DRIVER_2_STEP_X)
+	{
+#ifdef CMP_Z
+		if (line.z[0] < z[_sx])
+#endif
+#ifdef CMP_W
+			if (line.w[0] >= z[_sx])
+#endif
+				//scissor_test_x
+			{
+#ifdef INVERSE_W
+				//inversew = fix_inverse32(line.w[0]);
+#endif
+
+#if 0
+				tx0 = tofix(line.t[0][0].x, inversew);
+				ty0 = tofix(line.t[0][0].y, inversew);
+
+				tRenderTargetColorSample col = texelFetch_npot(&IT[0], tx0, ty0);
+				gl_FragColor = ~col | MASK_A;
+				return;
+#endif
+
+#ifdef INVERSE_W
+				//inversew = reciprocal_zero(line.w[0]);
+#endif
+
+				gl_TexCoord[0].x = line.t[0][0].x /* * inversew */;
+				gl_TexCoord[0].y = line.t[0][0].y /* * inversew */;
+
+				vec2 texcoords = gl_TexCoord[0].st;
+
+				// Sample the color buffer
+				vec3 color = texture2D(color_buffer, texcoords).rgb;
+
+				// If no motion blur is needed, don't do any of the blur computation,
+				// just return the color from the texture.
+				if (boost_amount == 0.0)
+				{
+					gl_FragColor = vec4(color, 1.0).getRenderTargetSample();
+					return;
+				}
+
+				// Compute the blur direction.
+				// IMPORTANT: we don't normalize it so that it avoids a glitch around 'center',
+				// plus it naturally scales the motion blur in a cool way :)
+				vec2 blur_dir = direction - texcoords;
+
+				// Compute the blurring factor:
+				// - apply the mask, i.e. no blurring in a small circle around the kart
+				float blur_factor = max(0.0, length(texcoords - center) - mask_radius);
+
+				// - avoid blurring the top of the screen
+				blur_factor *= (max_tex_height - texcoords.t);
+
+				// - apply the boost amount
+				blur_factor *= boost_amount;
+				//if (blur_factor <= 0.0) discard;
+
+				// Scale the blur direction
+				blur_dir *= blur_factor;
+
+				// Compute the blur
+				//vec2 inc_vec = blur_dir / vec2(NB_SAMPLES);
+				vec2 inc_vec(blur_dir.s * NB_SAMPLES_INV, blur_dir.t * NB_SAMPLES_INV);
+				vec2 blur_texcoords = texcoords + inc_vec;
+				for (int i = 1; i < NB_SAMPLES; i++)
+				{
+					color += texture2D(color_buffer, blur_texcoords).rgb;
+					blur_texcoords += inc_vec;
+				}
+				//color /= vec3(NB_SAMPLES);
+				color.r *= NB_SAMPLES_INV;
+				color.g *= NB_SAMPLES_INV;
+				color.b *= NB_SAMPLES_INV;
+
+				gl_FragColor = vec4(color, 1.0).getRenderTargetSample();
+
+				// Keep this commented line for debugging:
+				//gl_FragColor = vec4(blur_factor, blur_factor, blur_factor, 0.0);
+
+#ifdef WRITE_Z
+				z[_sx] = line.z[0];
+#endif
+#ifdef WRITE_W
+				z[_sx] = line.w[0];
+#endif
+			}
+	BL_shader_return:
+#ifdef IPOL_Z
+		line.z[0] += slopeZ;
+#endif
+#ifdef IPOL_W
+		//line.w[0] += slopeW;
+#endif
+#ifdef IPOL_C0
+		line.c[0] += slopeC;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_T1
+		line.t[1][0] += slopeT[1];
+#endif
+	}
+
+#include "burning_shader_glsl_emu_undefine.h"
+#undef NB_SAMPLES
+#undef NB_SAMPLES_INV
+}
+#endif
+
 void CTRTextureGouraudNoZ2::drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c)
 {
 	// sort on height, y
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
-	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(&b, &c);
-	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(&a, &b);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
+	if (F32_A_GREATER_B(b->Pos.y, c->Pos.y)) swapVertexPointer(b, c);
+	if (F32_A_GREATER_B(a->Pos.y, b->Pos.y)) swapVertexPointer(a, b);
 
 	const f32 ca = c->Pos.y - a->Pos.y;
 	const f32 ba = b->Pos.y - a->Pos.y;
@@ -584,8 +1159,8 @@ void CTRTextureGouraudNoZ2::drawTriangle(const s4DVertex* burning_restrict a, co
 
 			// render a scanline
 			if_interlace_scanline
-			if_scissor_test_y
-			(this->*fragmentShader) ();
+				if_scissor_test_y
+				(this->*fragmentShader) ();
 			if (EdgeTestPass & edge_test_first_line) break;
 
 			scan.x[0] += scan.slopeX[0];
@@ -749,8 +1324,8 @@ void CTRTextureGouraudNoZ2::drawTriangle(const s4DVertex* burning_restrict a, co
 
 			// render a scanline
 			if_interlace_scanline
-			if_scissor_test_y
-			(this->*fragmentShader) ();
+				if_scissor_test_y
+				(this->*fragmentShader) ();
 			if (EdgeTestPass & edge_test_first_line) break;
 
 			scan.x[0] += scan.slopeX[0];
@@ -786,22 +1361,15 @@ void CTRTextureGouraudNoZ2::drawTriangle(const s4DVertex* burning_restrict a, co
 
 }
 
-
-burning_namespace_end
-
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-
-burning_namespace_start
-
 //! creates a flat triangle renderer
 IBurningShader* createTRTextureGouraudNoZ2(CBurningVideoDriver* driver)
 {
 	// ETR_TEXTURE_GOURAUD_NOZ
-#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CTRTextureGouraudNoZ2(driver);
-#else
-	return 0;
-#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
 
+
 burning_namespace_end
+
+#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
+

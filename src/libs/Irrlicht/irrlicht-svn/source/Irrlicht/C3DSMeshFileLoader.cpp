@@ -174,7 +174,8 @@ IAnimatedMesh* C3DSMeshFileLoader::createMesh(io::IReadFile* file)
 
 	ChunkData data;
 
-	readChunkData(file, data);
+	if ( !readChunkData(file, data) )
+		return 0;
 
 	if (data.header.id != C3DS_MAIN3DS )
 		return 0;
@@ -246,10 +247,11 @@ bool C3DSMeshFileLoader::readPercentageChunk(io::IReadFile* file,
 #endif
 
 	ChunkData data;
-	readChunkData(file, data);
+	if ( !readChunkData(file, data) )
+		return false;
 
-	short intpercentage;
-	float fpercentage;
+	short intpercentage = 0;
+	float fpercentage = 0.f;
 
 	switch(data.header.id)
 	{
@@ -297,10 +299,11 @@ bool C3DSMeshFileLoader::readColorChunk(io::IReadFile* file, ChunkData* chunk,
 	os::Printer::log("Load color chunk.", ELL_DEBUG);
 #endif
 	ChunkData data;
-	readChunkData(file, data);
+	if ( !readChunkData(file, data) )
+		return false;
 
-	u8 c[3];
-	f32 cf[3];
+	u8 c[3] = {};
+	f32 cf[3] = {};
 
 	switch(data.header.id)
 	{
@@ -352,20 +355,28 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 	while(parent->read < parent->header.length)
 	{
 		ChunkData data;
-		readChunkData(file, data);
+		if ( !readChunkData(file, data) )
+			return false;
 
 		switch(data.header.id)
 		{
 		case C3DS_MATNAME:
 			{
-				c8* c = new c8[data.header.length - data.read];
-				file->read(c, data.header.length - data.read);
+				if ( data.header.length < data.read )
+					return false;
+				u32 s = data.header.length - data.read;
+				if ( s > 0 )
+				{
+					c8* c = new c8[s];
+					file->read(c, s);
+					c[s-1] = 0;
 
-				if (strlen(c))
-					CurrentMaterial.Name = c;
+					if (strlen(c))
+						CurrentMaterial.Name = c;
 
-				data.read += data.header.length - data.read;
-				delete [] c;
+					data.read += data.header.length - data.read;
+					delete [] c;
+				}
 			}
 			break;
 		case C3DS_MATAMBIENT:
@@ -404,7 +415,7 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 			break;
 		case C3DS_SHADING:
 			{
-				s16 flags;
+				s16 flags = 0;
 				file->read(&flags, 2);
 #ifdef __BIG_ENDIAN__
 				flags = os::Byteswap::byteswap(flags);
@@ -438,7 +449,7 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 				matSection=data.header.id;
 				// Should contain a percentage chunk, but does
 				// not always have it
-				s16 testval;
+				s16 testval = 0;
 				const long pos = file->getPos();
 				file->read(&testval, 2);
 #ifdef __BIG_ENDIAN__
@@ -467,33 +478,40 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 		case C3DS_MATMAPFILE:
 			{
 				// read texture file name
-				c8* c = new c8[data.header.length - data.read];
-				file->read(c, data.header.length - data.read);
-				switch (matSection)
+				if ( data.header.length < data.read )
+					return false;
+				u32 s = data.header.length - data.read;
+				if ( s > 0 )
 				{
-				case C3DS_MATTEXMAP:
-					CurrentMaterial.Filename[0] = c;
-				break;
-				case C3DS_MATSPECMAP:
-					CurrentMaterial.Filename[1] = c;
-				break;
-				case C3DS_MATOPACMAP:
-					CurrentMaterial.Filename[2] = c;
-				break;
-				case C3DS_MATREFLMAP:
-					CurrentMaterial.Filename[3] = c;
-				break;
-				case C3DS_MATBUMPMAP:
-					CurrentMaterial.Filename[4] = c;
-				break;
+					c8* c = new c8[s];
+					file->read(c, s);
+					c[s-1] = 0;
+					switch (matSection)
+					{
+					case C3DS_MATTEXMAP:
+						CurrentMaterial.Filename[0] = c;
+					break;
+					case C3DS_MATSPECMAP:
+						CurrentMaterial.Filename[1] = c;
+					break;
+					case C3DS_MATOPACMAP:
+						CurrentMaterial.Filename[2] = c;
+					break;
+					case C3DS_MATREFLMAP:
+						CurrentMaterial.Filename[3] = c;
+					break;
+					case C3DS_MATBUMPMAP:
+						CurrentMaterial.Filename[4] = c;
+					break;
+					}
+					data.read += data.header.length - data.read;
+					delete [] c;
 				}
-				data.read += data.header.length - data.read;
-				delete [] c;
 			}
 			break;
 		case C3DS_MAT_TEXTILING:
 			{
-				s16 flags;
+				s16 flags=0;
 				file->read(&flags, 2);
 #ifdef __BIG_ENDIAN__
 				flags = os::Byteswap::byteswap(flags);
@@ -506,7 +524,7 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 		case C3DS_MAT_UOFFSET:
 		case C3DS_MAT_VOFFSET:
 			{
-				f32 value;
+				f32 value = 0.f;
 				file->read(&value, 4);
 #ifdef __BIG_ENDIAN__
 				value = os::Byteswap::byteswap(value);
@@ -558,8 +576,8 @@ bool C3DSMeshFileLoader::readTrackChunk(io::IReadFile* file, ChunkData& data,
 #ifdef _IRR_DEBUG_3DS_LOADER_
 	os::Printer::log("Load track chunk.", ELL_DEBUG);
 #endif
-	u16 flags;
-	u32 flags2;
+	u16 flags = 0;
+	u32 flags2 = 0;
 	// Track flags
 	file->read(&flags, 2);
 #ifdef __BIG_ENDIAN__
@@ -646,7 +664,8 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 	ChunkData data;
 
 	//KF_HDR is always at the beginning
-	readChunkData(file, data);
+	if (!readChunkData(file, data) )
+		return false;
 	if (data.header.id != C3DS_KF_HDR)
 		return false;
 	else
@@ -654,14 +673,14 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 #ifdef _IRR_DEBUG_3DS_LOADER_
 	os::Printer::log("Load keyframe header.", ELL_DEBUG);
 #endif
-		u16 version;
+		u16 version=0;
 		file->read(&version, 2);
 #ifdef __BIG_ENDIAN__
 		version = os::Byteswap::byteswap(version);
 #endif
 		core::stringc name;
 		readString(file, data, name);
-		u32 flags;
+		u32 flags=0;
 		file->read(&flags, 4);
 #ifdef __BIG_ENDIAN__
 		flags = os::Byteswap::byteswap(flags);
@@ -676,7 +695,8 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 	core::vector3df pivot,bboxCenter;
 	while(parent->read < parent->header.length)
 	{
-		readChunkData(file, data);
+		if ( !readChunkData(file, data) )
+			return false;
 
 		switch(data.header.id)
 		{
@@ -694,7 +714,7 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 #ifdef _IRR_DEBUG_3DS_LOADER_
 	os::Printer::log("Load keyframe segment.", ELL_DEBUG);
 #endif
-				u32 flags;
+				u32 flags=0;
 				file->read(&flags, 4);
 #ifdef __BIG_ENDIAN__
 				flags = os::Byteswap::byteswap(flags);
@@ -711,20 +731,28 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 #ifdef _IRR_DEBUG_3DS_LOADER_
 	os::Printer::log("Load keyframe node header.", ELL_DEBUG);
 #endif
-				s16 flags;
-				c8* c = new c8[data.header.length - data.read-6];
-				file->read(c, data.header.length - data.read-6);
-
-				// search mesh buffer to apply these transformations to
-				for (u32 i=0; i<MeshBufferNames.size(); ++i)
+				if ( data.header.length < data.read+6 )
+					break;
+				u32 s = data.header.length - data.read-6;
+				if ( s > 0 )
 				{
-					if (MeshBufferNames[i]==c)
+					c8* c = new c8[s];
+					file->read(c, s);
+					c[s-1] = 0;
+
+					// search mesh buffer to apply these transformations to
+					for (u32 i=0; i<MeshBufferNames.size(); ++i)
 					{
-						mb=Mesh->getMeshBuffer(i);
-						break;
+						if (MeshBufferNames[i]==c)
+						{
+							mb=Mesh->getMeshBuffer(i);
+							break;
+						}
 					}
+					delete [] c;
 				}
 
+				s16 flags=0;
 				file->read(&flags, 2);
 #ifdef __BIG_ENDIAN__
 				flags = os::Byteswap::byteswap(flags);
@@ -738,7 +766,6 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 				flags = os::Byteswap::byteswap(flags);
 #endif
 				data.read += data.header.length - data.read;
-				delete [] c;
 			}
 			break;
 		case C3DS_KF_CURTIME:
@@ -746,7 +773,7 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 #ifdef _IRR_DEBUG_3DS_LOADER_
 	os::Printer::log("Load keyframe current time.", ELL_DEBUG);
 #endif
-				u32 flags;
+				u32 flags=0;
 				file->read(&flags, 4);
 #ifdef __BIG_ENDIAN__
 				flags = os::Byteswap::byteswap(flags);
@@ -759,7 +786,7 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 #ifdef _IRR_DEBUG_3DS_LOADER_
 	os::Printer::log("Load node ID.", ELL_DEBUG);
 #endif
-				u16 flags;
+				u16 flags=0;
 				file->read(&flags, 2);
 #ifdef __BIG_ENDIAN__
 				flags = os::Byteswap::byteswap(flags);
@@ -788,7 +815,6 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 #ifdef _IRR_DEBUG_3DS_LOADER_
 	os::Printer::log("Load bounding box.", ELL_DEBUG);
 #endif
-				core::aabbox3df bbox;
 				// abuse bboxCenter as temporary variable
 				file->read(&bboxCenter.X, sizeof(f32));
 				file->read(&bboxCenter.Y, sizeof(f32));
@@ -798,6 +824,7 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 				bboxCenter.Y = os::Byteswap::byteswap(bboxCenter.Y);
 				bboxCenter.Z = os::Byteswap::byteswap(bboxCenter.Z);
 #endif
+				core::aabbox3df bbox;
 				bbox.reset(bboxCenter);
 				file->read(&bboxCenter.X, sizeof(f32));
 				file->read(&bboxCenter.Y, sizeof(f32));
@@ -817,7 +844,7 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 #ifdef _IRR_DEBUG_3DS_LOADER_
 	os::Printer::log("Load morph smooth.", ELL_DEBUG);
 #endif
-				f32 flag;
+				f32 flag=0;
 				file->read(&flag, 4);
 #ifdef __BIG_ENDIAN__
 				flag = os::Byteswap::byteswap(flag);
@@ -849,13 +876,14 @@ bool C3DSMeshFileLoader::readChunk(io::IReadFile* file, ChunkData* parent)
 	while(parent->read < parent->header.length)
 	{
 		ChunkData data;
-		readChunkData(file, data);
+		if (!readChunkData(file, data) )
+			return false;
 
 		switch(data.header.id)
 		{
 		case C3DS_VERSION:
 			{
-				u16 version;
+				u16 version=0;
 				file->read(&version, sizeof(u16));
 #ifdef __BIG_ENDIAN__
 				version = os::Byteswap::byteswap(version);
@@ -877,7 +905,7 @@ bool C3DSMeshFileLoader::readChunk(io::IReadFile* file, ChunkData* parent)
 		case C3DS_MESHVERSION:
 		case 0x01:
 			{
-				u32 version;
+				u32 version=0;
 				file->read(&version, sizeof(u32));
 #ifdef __BIG_ENDIAN__
 				version = os::Byteswap::byteswap(version);
@@ -915,7 +943,8 @@ bool C3DSMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData* parent)
 	while(parent->read < parent->header.length)
 	{
 		ChunkData data;
-		readChunkData(file, data);
+		if ( !readChunkData(file, data) )
+			return false;
 
 		switch(data.header.id)
 		{
@@ -929,7 +958,8 @@ bool C3DSMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData* parent)
 
 		case C3DS_POINTFLAGARRAY:
 			{
-				u16 numVertex, flags;
+				u16 numVertex=0;
+				u16 flags=0;
 				file->read(&numVertex, sizeof(u16));
 #ifdef __BIG_ENDIAN__
 				numVertex= os::Byteswap::byteswap(numVertex);
@@ -960,7 +990,7 @@ bool C3DSMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData* parent)
 
 		case C3DS_TRIMATRIX:
 			{
-				f32 mat[4][3];
+				f32 mat[4][3] = {};
 				file->read(&mat, 12*sizeof(f32));
 				TransformationMatrix.makeIdentity();
 				for (int i=0; i<4; ++i)
@@ -979,7 +1009,7 @@ bool C3DSMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData* parent)
 			break;
 		case C3DS_MESHCOLOR:
 			{
-				u8 flag;
+				u8 flag=0;
 				file->read(&flag, sizeof(u8));
 				++data.read;
 			}
@@ -1241,7 +1271,7 @@ void C3DSMeshFileLoader::readTextureCoords(io::IReadFile* file, ChunkData& data)
 #endif
 	data.read += sizeof(CountTCoords);
 
-	s32 tcoordsBufferByteSize = CountTCoords * sizeof(f32) * 2;
+	u32 tcoordsBufferByteSize = CountTCoords * sizeof(f32) * 2;
 
 	if (data.header.length - data.read != tcoordsBufferByteSize)
 	{
@@ -1322,7 +1352,7 @@ void C3DSMeshFileLoader::readVertices(io::IReadFile* file, ChunkData& data)
 #endif
 	data.read += sizeof(CountVertices);
 
-	const s32 vertexBufferByteSize = CountVertices * sizeof(f32) * 3;
+	const u32 vertexBufferByteSize = CountVertices * sizeof(f32) * 3;
 
 	if (data.header.length - data.read != vertexBufferByteSize)
 	{
@@ -1340,14 +1370,16 @@ void C3DSMeshFileLoader::readVertices(io::IReadFile* file, ChunkData& data)
 }
 
 
-void C3DSMeshFileLoader::readChunkData(io::IReadFile* file, ChunkData& data)
+bool C3DSMeshFileLoader::readChunkData(io::IReadFile* file, ChunkData& data)
 {
-	file->read(&data.header, sizeof(ChunkHeader));
+	if ( file->read(&data.header, sizeof(ChunkHeader)) != sizeof(ChunkHeader) )
+		return false;
 #ifdef __BIG_ENDIAN__
 	data.header.id = os::Byteswap::byteswap(data.header.id);
 	data.header.length = os::Byteswap::byteswap(data.header.length);
 #endif
 	data.read += sizeof(ChunkHeader);
+	return true;
 }
 
 
@@ -1358,6 +1390,7 @@ void C3DSMeshFileLoader::readString(io::IReadFile* file, ChunkData& data, core::
 
 	while (c)
 	{
+		c = 0;
 		file->read(&c, sizeof(c8));
 		if (c)
 			out.append(c);

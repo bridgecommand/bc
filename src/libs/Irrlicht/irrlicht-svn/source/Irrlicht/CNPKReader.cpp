@@ -94,7 +94,8 @@ bool CArchiveLoaderNPK::isALoadableFileFormat(io::IReadFile* file) const
 {
 	SNPKHeader header;
 
-	file->read(&header, sizeof(header));
+	if ( file->read(&header, sizeof(header)) != sizeof(header) )
+		return false;
 
 	return isHeaderValid(header);
 }
@@ -139,7 +140,8 @@ bool CNPKReader::scanLocalHeader()
 	SNPKHeader header;
 
 	// Read and validate the header
-	File->read(&header, sizeof(header));
+	if ( File->read(&header, sizeof(header)) != sizeof(header) )
+		return false;
 	if (!isHeaderValid(header))
 		return false;
 
@@ -159,7 +161,7 @@ bool CNPKReader::scanLocalHeader()
 		SNPKFileEntry entry;
 		File->read(tag, 4);
 		const int numTag = MAKE_IRR_ID(tag[3],tag[2],tag[1],tag[0]);
-		int size;
+		u32 size=0;
 
 		bool isDir=true;
 
@@ -252,20 +254,24 @@ IReadFile* CNPKReader::createAndOpenFile(u32 index)
 
 void CNPKReader::readString(core::stringc& name)
 {
-	short stringSize;
-	char buf[256];
+	u16 stringSize = 0;
 	File->read(&stringSize, 2);
 #ifdef __BIG_ENDIAN__
 	stringSize = os::Byteswap::byteswap(stringSize);
 #endif
 	name.reserve(stringSize);
+
+	char buf[256] = {0};
 	while(stringSize)
 	{
-		const short next = core::min_(stringSize, (short)255);
+		const u16 next = core::min_(stringSize, (u16)255);
 		File->read(buf,next);
 		buf[next]=0;
 		name.append(buf);
-		stringSize -= next;
+		if ( stringSize > next )
+			stringSize -= next;
+		else
+			stringSize = 0;
 	}
 }
 

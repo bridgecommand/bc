@@ -26,8 +26,10 @@ class CD3D9Driver;
 class CD3D9Texture : public ITexture
 {
 public:
+	// Texture (not render target)
 	CD3D9Texture(const io::path& name, const core::array<IImage*>& image, E_TEXTURE_TYPE type, CD3D9Driver* driver);
 
+	// Render target texture
 	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, E_TEXTURE_TYPE type, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	virtual ~CD3D9Texture();
@@ -47,12 +49,27 @@ public:
 		return VertexTextureSupport;
 	}
 
+	virtual SExposedTextureData getExposedTextureData() const IRR_OVERRIDE
+	{
+		SExposedTextureData data;
+		data.D3D9.Texture = Texture;
+		data.D3D9.CubeTexture = CubeTexture;
+		data.D3D9.RTTSurface = RTTSurface;
+		return data;
+	}
+
 private:
 	friend class CD3D9Driver;
 
 	void releaseTexture();
 
 	void generateRenderTarget();
+
+	// Init texture with texture creation flags
+	void checkTextureCreationFlags();
+
+	// Check if flags we want enabled are really supported by device or disable them otherwise
+	void checkDeviceFormatFlags();
 
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
 
@@ -70,7 +87,6 @@ private:
 	//! Helper function for mipmap generation.
 	void copy32BitMipMap(char* src, char* tgt,
 		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt) const;
-
 
 	CD3D9Driver* Driver;
 
