@@ -75,6 +75,9 @@ irr::core::stringw Lang::translate(std::string phraseName)
     catch (const std::bad_cast& e) {
         // Don't do anything, translatedPhrase will be left unchanged
     }
+    catch (const std::runtime_error& e) {
+        // Don't do anything, translatedPhrase will be left unchanged
+    }
 #endif
 
     //convert to stringw
