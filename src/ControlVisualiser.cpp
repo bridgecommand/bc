@@ -28,7 +28,7 @@ ControlVisualiser::~ControlVisualiser()
     //dtor
 }
 
-void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 scale, irr::u32 rotationAxis, irr::u32 controlType)
+void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, float scale, unsigned int rotationAxis, unsigned int controlType)
 {
     // Store rotation axis (0=x, 1=y, 2=z)
     this->rotationAxis = rotationAxis;
@@ -63,7 +63,7 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
             // Set material parameters
             if (controlNode && controlNode->getMaterialCount() > 0)
             {
-                for (irr::u32 mat = 0; mat < controlNode->getMaterialCount(); mat++)
+                for (unsigned int mat = 0; mat < controlNode->getMaterialCount(); mat++)
                 {
                     controlNode->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
                     controlNode->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
@@ -75,7 +75,7 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
     }
 }
 
-void ControlVisualiser::update(irr::f32 displayValue)
+void ControlVisualiser::update(float displayValue)
 {
 
     this->displayValue = displayValue;

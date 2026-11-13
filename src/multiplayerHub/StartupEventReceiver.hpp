@@ -23,17 +23,17 @@ class StartupEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::s32 listBoxID, irr::s32 okButtonID);
+    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, signed int listBoxID, signed int okButtonID);
     bool OnEvent(const irr::SEvent& event);
 
-    irr::s32 getScenarioSelected() const;
+    signed int getScenarioSelected() const;
 
 private:
 
     irr::gui::IGUIListBox* scenarioListBox;
-    irr::s32 listBoxID;
-    irr::s32 okButtonID;
-    irr::s32 scenarioSelected;
+    signed int listBoxID;
+    signed int okButtonID;
+    signed int scenarioSelected;
 
 };
 

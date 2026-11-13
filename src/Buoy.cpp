@@ -27,7 +27,7 @@
 
 //using namespace irr;
 
-Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, std::string raconCode, irr::f32 raconOnTime, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, float radarCrossSection, std::string raconCode, float raconOnTime, bool floating, float heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/Buoy/" + name + "/";
@@ -51,7 +51,7 @@ Buoy::Buoy(const std::string& name, const std::string& internalName, const std::
     std::string buoyFileName = IniFile::iniFileToString(buoyIniFilename,"FileName", "buoy.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    irr::f32 buoyScale = IniFile::iniFileTof32(buoyIniFilename,"Scalefactor", 1.f);
+    float buoyScale = IniFile::iniFileTof32(buoyIniFilename,"Scalefactor", 1.f);
 
     //The path to the actual model file
     std::string buoyFullPath = basePath + buoyFileName;
@@ -83,7 +83,7 @@ Buoy::Buoy(const std::string& name, const std::string& internalName, const std::
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(buoy->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<buoy->getMaterialCount();mat++) {
+        for(unsigned int mat=0;mat<buoy->getMaterialCount();mat++) {
             buoy->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
@@ -104,7 +104,7 @@ Buoy::Buoy(const std::string& name, const std::string& internalName, const std::
     racon = raconCode;
     this->raconOnTime = raconOnTime;
 
-    raconOffsetTime = 60.0f * (irr::f32) rand() / RAND_MAX;
+    raconOffsetTime = 60.0f * (float) rand() / RAND_MAX;
 
     this->floating = floating; //Does the buoy respond to the water
 
@@ -131,22 +131,22 @@ void Buoy::setRotation(irr::core::vector3df rotation)
     buoy->setRotation(rotation);
 }
 
-irr::f32 Buoy::getLength() const
+float Buoy::getLength() const
 {
     return length;
 }
 
-irr::f32 Buoy::getHeight() const
+float Buoy::getHeight() const
 {
     return height;
 }
 
-irr::f32 Buoy::getRCS() const
+float Buoy::getRCS() const
 {
     return rcs;
 }
 
-irr::f32 Buoy::getHeightCorrection() const
+float Buoy::getHeightCorrection() const
 {
     return heightCorrection;
 }
@@ -187,10 +187,10 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.rcs=getRCS();
 
     //Calculate angles and ranges to each end of the contact
-    irr::f32 relAngle1 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
-    irr::f32 relAngle2 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
-    irr::f32 range1 = std::sqrt(std::pow(radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
-    irr::f32 range2 = std::sqrt(std::pow(radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+    float relAngle1 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+    float relAngle2 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+    float range1 = std::sqrt(std::pow(radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+    float range2 = std::sqrt(std::pow(radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
     radarData.minRange=std::min(range1,range2);
     radarData.maxRange=std::max(range1,range2);
     radarData.minAngle=std::min(relAngle1,relAngle2);
@@ -210,12 +210,12 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     return radarData;
 }
 
-void Buoy::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void Buoy::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     irr::core::vector3df currentPos = buoy->getPosition();
-    irr::f32 newPosX = currentPos.X + deltaX;
-    irr::f32 newPosY = currentPos.Y + deltaY;
-    irr::f32 newPosZ = currentPos.Z + deltaZ;
+    float newPosX = currentPos.X + deltaX;
+    float newPosY = currentPos.Y + deltaY;
+    float newPosZ = currentPos.Z + deltaZ;
 
     buoy->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }

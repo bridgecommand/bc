@@ -96,12 +96,12 @@ int main (int argc, char ** argv)
 	    fontScale = 1.0;
     }
 
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    unsigned int graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    unsigned int graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    unsigned int graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
-    irr::core::dimension2d<irr::u32> deskres;
+    irr::core::dimension2d<unsigned int> deskres;
     #ifdef _WIN32
     // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
     deskres.Width=GetSystemMetrics(SM_CXSCREEN);
@@ -126,21 +126,21 @@ int main (int argc, char ** argv)
         }
     }
 
-	irr::u32 zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
+	unsigned int zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
 	if (zoomLevels == 0) {
 		zoomLevels = 10;
 	}
 
     //Load UDP network settings
-    irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+    unsigned int udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
     if (udpPort == 0) {
         udpPort = 18304;
     }
 
     //Listen on UDP for AIS data if set
-    irr::u32 aisPort = IniFile::iniFileTou32(iniFilename, "ais_udp_port");
+    unsigned int aisPort = IniFile::iniFileTou32(iniFilename, "ais_udp_port");
 
-    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<unsigned int>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
 
@@ -194,8 +194,8 @@ int main (int argc, char ** argv)
     patienceMessage.append(irr::core::stringw(network.getPort()));
 
     //Find world model to use, from the network
-    irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(irr::core::rect<irr::s32>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());
-    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(patienceMessage.c_str(), irr::core::rect<irr::s32>(10,40,driver->getScreenSize().Width-30, driver->getScreenSize().Height-40), true, false, patienceWindow);
+    irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(irr::core::rect<signed int>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());
+    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(patienceMessage.c_str(), irr::core::rect<signed int>(10,40,driver->getScreenSize().Width-30, driver->getScreenSize().Height-40), true, false, patienceWindow);
     //hide close button
     patienceWindow->getCloseButton()->setVisible(false);
 
@@ -229,14 +229,14 @@ int main (int argc, char ** argv)
     ControllerModel controller(device, &guiMain, &network, worldName, zoomLevels);
 
     //Create data structures to hold own ship, other ship and buoy data
-    irr::f32 time = 0; //Time since start of day 1 of the scenario
-    irr::f32 weather = 0; //(0-12)
-    irr::f32 rain = 0; //(0-10)
-    irr::f32 visibility = 10.1; //(0.1-10.1)
-    irr::f32 windDirection = 0;
-    irr::f32 windSpeed = 0;
-    irr::f32 streamDirection = 0;
-    irr::f32 streamSpeed = 0;
+    float time = 0; //Time since start of day 1 of the scenario
+    float weather = 0; //(0-12)
+    float rain = 0; //(0-10)
+    float visibility = 10.1; //(0.1-10.1)
+    float windDirection = 0;
+    float windSpeed = 0;
+    float streamDirection = 0;
+    float streamSpeed = 0;
     bool streamOverride = false;
     ShipData ownShipData;
     std::vector<PositionData> buoysData;

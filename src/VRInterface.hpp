@@ -61,7 +61,7 @@
 
 class VRInterface {
 public:
-    VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, irr::u32 suGUI, irr::u32 shGUI);
+    VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, unsigned int suGUI, unsigned int shGUI);
     ~VRInterface();
     int load(SimulationModel* model);
     void unload();
@@ -69,7 +69,7 @@ public:
     bool isVRActive() const;
     int runtimeEvents();
     int update();
-    bool getRayFromController(irr::core::line3d<irr::f32>* ray, irr::f32 rayLength);
+    bool getRayFromController(irr::core::line3d<float>* ray, float rayLength);
 
 private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);
@@ -160,13 +160,13 @@ private:
     bool vrChangingPortEngine;
     bool vrChangingStbdEngine;
     // Engine settings for these reference positions
-    irr::f32 portEngineReference;
-    irr::f32 stbdEngineReference;
-    irr::f32 wheelReference;
-    irr::f32 portSchottelReference;
-    irr::f32 portAzimuthThrottleReference;
-    irr::f32 stbdSchottelReference;
-    irr::f32 stbdAzimuthThrottleReference;
+    float portEngineReference;
+    float stbdEngineReference;
+    float wheelReference;
+    float portSchottelReference;
+    float portAzimuthThrottleReference;
+    float stbdSchottelReference;
+    float stbdAzimuthThrottleReference;
 
     irr::scene::ISceneNode* leftController;
     irr::scene::ISceneNode* rightController;
@@ -176,13 +176,13 @@ private:
     irr::scene::ISceneNode* hudScreenTopLeft;
     irr::scene::ISceneNode* hudScreenBottomRight;
     irr::video::ITexture* hudTexture;
-    irr::u32 suGUI;
-    irr::u32 shGUI;
+    unsigned int suGUI;
+    unsigned int shGUI;
     bool showHUD;
     bool selectState[HAND_COUNT];
     bool previousSelectState[HAND_COUNT];
-    irr::s32 raySelectScreenX;
-    irr::s32 raySelectScreenY;
+    signed int raySelectScreenX;
+    signed int raySelectScreenY;
 
     // --- MSAA ---
     static const int MSAA_SAMPLES = 4;

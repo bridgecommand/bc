@@ -19,7 +19,6 @@
 
 #include "NMEASentences.hpp"
 #include "SimulationModel.hpp"
-#include "irrTypes.h"
 #include <array>
 
 class Autopilot
@@ -32,10 +31,10 @@ class Autopilot
     private:
         bool AUTOPILOT_ENABLED;
         SimulationModel* model;
-        std::array<irr::f32, 2> currentWaypointPos;
+        std::array<float, 2> currentWaypointPos;
         std::string currentWaypointId;
-        irr::f32 crossTrackError;
-        irr::f32 currentLegLen;
+        float crossTrackError;
+        float currentLegLen;
         char directionToSteer;
 };
 

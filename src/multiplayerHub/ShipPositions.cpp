@@ -25,7 +25,7 @@ ShipPositions::ShipPositions(unsigned int numberOfShips)
     }
 }
 
-void ShipPositions::setShipPosition(unsigned int shipNumber, irr::f32 scenarioTime, irr::f32 positionX, irr::f32 positionZ, irr::f32 speed, irr::f32 bearing, irr::f32 rateOfTurn)
+void ShipPositions::setShipPosition(unsigned int shipNumber, float scenarioTime, float positionX, float positionZ, float speed, float bearing, float rateOfTurn)
 {
     if (shipNumber < shipData.size()) {
         shipData.at(shipNumber).speed = speed;
@@ -37,21 +37,21 @@ void ShipPositions::setShipPosition(unsigned int shipNumber, irr::f32 scenarioTi
     }
 }
 
-void ShipPositions::getShipPosition(const unsigned int& shipNumber, const irr::f32& scenarioTime, irr::f32& positionX, irr::f32& positionZ, irr::f32& speed, irr::f32& bearing, irr::f32& rateOfTurn)
+void ShipPositions::getShipPosition(const unsigned int& shipNumber, const float& scenarioTime, float& positionX, float& positionZ, float& speed, float& bearing, float& rateOfTurn)
 {
     if (shipNumber < shipData.size()) {
         //Extrapolate from last recorded point
         speed = shipData.at(shipNumber).speed; //In m/s
 
-        irr::f32 deltaTime = scenarioTime - shipData.at(shipNumber).timeStored;
-        irr::f32 deltaAngle = deltaTime*shipData.at(shipNumber).rateOfTurn;
+        float deltaTime = scenarioTime - shipData.at(shipNumber).timeStored;
+        float deltaAngle = deltaTime*shipData.at(shipNumber).rateOfTurn;
 
         rateOfTurn = shipData.at(shipNumber).rateOfTurn;
 
         bearing = shipData.at(shipNumber).bearing + deltaAngle;
         
-        irr::f32 deltaX = deltaTime*speed*sin(RAD_IN_DEG*bearing);
-        irr::f32 deltaZ = deltaTime*speed*cos(RAD_IN_DEG*bearing);
+        float deltaX = deltaTime*speed*sin(RAD_IN_DEG*bearing);
+        float deltaZ = deltaTime*speed*cos(RAD_IN_DEG*bearing);
         
         positionX = shipData.at(shipNumber).positionX + deltaX;
         positionZ = shipData.at(shipNumber).positionZ + deltaZ;

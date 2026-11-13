@@ -26,7 +26,7 @@
 struct OtherShipDisplayData : public ShipData //To hold information about a ship's position and heading
 {
     std::vector<Leg> legs;
-    irr::u32 mmsi;
+    unsigned int mmsi;
     bool SART;
 };
 

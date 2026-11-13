@@ -56,22 +56,22 @@ public:
     struct ModelParameters{
         OperatingMode::Mode mode;
         bool vrMode;
-        irr::f32 viewAngle;
-        irr::f32 lookAngle;
-        irr::f32 cameraMinDistance;
-        irr::f32 cameraMaxDistance;
-        irr::u32 disableShaders;
-        irr::u32 waterSegments;
+        float viewAngle;
+        float lookAngle;
+        float cameraMinDistance;
+        float cameraMaxDistance;
+        unsigned int disableShaders;
+        unsigned int waterSegments;
         irr::core::vector3di numberOfContactPoints;
-        irr::f32 minContactPointSpacing;
-        irr::f32 contactStiffnessFactor;
-        irr::f32 contactDampingFactor;
-        irr::f32 lineStiffnessFactor;
-        irr::f32 lineDampingFactor;
-        irr::f32 frictionCoefficient;
-        irr::f32 tanhFrictionFactor;
-        irr::u32 limitTerrainResolution;        
-        irr::u32 terrainLOD;       
+        float minContactPointSpacing;
+        float contactStiffnessFactor;
+        float contactDampingFactor;
+        float lineStiffnessFactor;
+        float lineDampingFactor;
+        float frictionCoefficient;
+        float tanhFrictionFactor;
+        unsigned int limitTerrainResolution;        
+        unsigned int terrainLOD;       
         bool secondaryControlWheel;
         bool secondaryControlPortEngine;
         bool secondaryControlStbdEngine;
@@ -91,34 +91,34 @@ public:
                     ScenarioData scenarioData,
                     ModelParameters modelParameters);
     ~SimulationModel();
-    irr::f32 longToX(irr::f32 longitude) const;
-    irr::f32 latToZ(irr::f32 latitude) const;
-    void setSpeed(irr::f32 spd); //Sets the own ship's speed
-    void setHeading(irr::f32 hdg); //Sets the own ship's heading
+    float longToX(float longitude) const;
+    float latToZ(float latitude) const;
+    void setSpeed(float spd); //Sets the own ship's speed
+    void setHeading(float hdg); //Sets the own ship's heading
 
-    irr::f32 getRateOfTurn() const;
-    void setRateofTurn(irr::f32 rudder); //Set the rate of turn (-ve is port, +ve is stbd)
+    float getRateOfTurn() const;
+    void setRateofTurn(float rudder); //Set the rate of turn (-ve is port, +ve is stbd)
 
 
 
-    void setRateOfTurn(irr::f32 rateOfTurn);
-    void setPos(irr::f32 positionX, irr::f32 positionZ);
-    void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
-    void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
-    irr::f32 getRudder() const;
-    irr::f32 getWheel() const; // DEE
+    void setRateOfTurn(float rateOfTurn);
+    void setPos(float positionX, float positionZ);
+    void setRudder(float rudder); //Set the rudder (-ve is port, +ve is stbd)
+    void setWheel(float wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
+    float getRudder() const;
+    float getWheel() const; // DEE
     void setAzimuth1Master(bool isMaster); // Set if azimuth 1 should also control azimuth 2
     void setAzimuth2Master(bool isMaster); // Set if azimuth 2 should also control azimuth 1
     bool getAzimuth1Master() const;
     bool getAzimuth2Master() const;
-    void setPortAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
-    void setStbdAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+    void setPortAzimuthAngle(float angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+    void setStbdAzimuthAngle(float angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
 
     // DEE_NOV22 vvvv for follow up shcottel and automatic clutch
-    void setPortSchottel(irr::f32 angle); // Set Port Schottel angle
-    irr::f32 getPortSchottel();
-    void setStbdSchottel(irr::f32 angle); // Set Stbd Schottel angle
-    irr::f32 getStbdSchottel();
+    void setPortSchottel(float angle); // Set Port Schottel angle
+    float getPortSchottel();
+    void setStbdSchottel(float angle); // Set Stbd Schottel angle
+    float getStbdSchottel();
     bool getPortClutch();
     void setPortClutch(bool);
     bool getStbdClutch();
@@ -127,10 +127,10 @@ public:
     void disengagePortClutch();
     void engageStbdClutch();
     void disengageStbdClutch();
-    void setPortAzimuthThrustLever(irr::f32);   // sets port thrust lever range is 0..+1 or -1..+1
-    irr::f32 getPortAzimuthThrustLever(); 	 // gets port thrust lever range is 0..+1 or -1..+1
-    void setStbdAzimuthThrustLever(irr::f32);   // sets starboard thrust lever range is 0..+1 or -1..+1
-    irr::f32 getStbdAzimuthThrustLever(); // gets starboard thrust lever range is 0..+1 or -1..+1
+    void setPortAzimuthThrustLever(float);   // sets port thrust lever range is 0..+1 or -1..+1
+    float getPortAzimuthThrustLever(); 	 // gets port thrust lever range is 0..+1 or -1..+1
+    void setStbdAzimuthThrustLever(float);   // sets starboard thrust lever range is 0..+1 or -1..+1
+    float getStbdAzimuthThrustLever(); // gets starboard thrust lever range is 0..+1 or -1..+1
 
     void btnIncrementPortThrustLever(); // increments the port thrust lever
     void btnDecrementPortThrustLever(); // decrements the port thrust lever
@@ -144,90 +144,90 @@ public:
 
     // DEE_NOV22 ^^^^
 
-    void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
-    void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
-    irr::f32 getPortEngine() const; //Range +-1
-    irr::f32 getStbdEngine() const; //Range +-1
-    irr::f32 getPortEngineRPM() const;
-    irr::f32 getStbdEngineRPM() const;
-    void setBowThruster(irr::f32 proportion);
-    void setSternThruster(irr::f32 proportion);
-    void setBowThrusterRate(irr::f32 bowThrusterRate); //Sets rate of change, for joystick button control
-    void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets rate of change, for joystick button control
-    irr::f32 getBowThruster() const;
-    irr::f32 getSternThruster() const;
+    void setPortEngine(float port); //Set the engine, (-ve astern, +ve ahead), range is +-1
+    void setStbdEngine(float stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
+    float getPortEngine() const; //Range +-1
+    float getStbdEngine() const; //Range +-1
+    float getPortEngineRPM() const;
+    float getStbdEngineRPM() const;
+    void setBowThruster(float proportion);
+    void setSternThruster(float proportion);
+    void setBowThrusterRate(float bowThrusterRate); //Sets rate of change, for joystick button control
+    void setSternThrusterRate(float sternThrusterRate); //Sets rate of change, for joystick button control
+    float getBowThruster() const;
+    float getSternThruster() const;
     void setRudderPumpState(int whichPump, bool rudderPumpState); //Sets how the rudder is responding. Assumed that whichPump can be 1 or 2
     bool getRudderPumpState(int whichPump) const;
     void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
-    void setAccelerator(irr::f32 accelerator); //Set simulation time compression
-    irr::f32 getAccelerator() const;
-    irr::f32 getHeading() const; //Gets the own ship's heading
+    void setAccelerator(float accelerator); //Set simulation time compression
+    float getAccelerator() const;
+    float getHeading() const; //Gets the own ship's heading
 
-    irr::f32 getLat() const;
-    irr::f32 getLong() const;
-    irr::f32 getPosX() const;
-    irr::f32 getPosZ() const;
-    irr::f32 getCOG() const;
-    irr::f32 getSOG() const; //In metres/second
-    irr::f32 getDepth() const;
+    float getLat() const;
+    float getLong() const;
+    float getPosX() const;
+    float getPosZ() const;
+    float getCOG() const;
+    float getSOG() const; //In metres/second
+    float getDepth() const;
 
-    irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
-    irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
+    float getWaveHeight(float posX, float posZ) const; //Return wave height (not tide) at the world position specified
+    irr::core::vector2df getLocalNormals(float relPosX, float relPosZ) const;
 
-    irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const; //Tidal stream in m/s for the specified absolute position
+    irr::core::vector2df getTidalStream(float longitude, float latitude, uint64_t requestTime) const; //Tidal stream in m/s for the specified absolute position
 
     //void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
     //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
     uint64_t getTimestamp() const; //The unix timestamp in s
     uint64_t getTimeOffset() const; //The timestamp at the start of the first day of the scenario
-    void changeTime(irr::f32 deltaTime); // Change the scenario time, without affecting other ship movements
-    irr::f32 getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
-    void     setTimeDelta(irr::f32 scenarioTime);
+    void changeTime(float deltaTime); // Change the scenario time, without affecting other ship movements
+    float getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
+    void     setTimeDelta(float scenarioTime);
 
-    irr::u32 getNumberOfOtherShips() const;
-    irr::u32 getNumberOfBuoys() const;
+    unsigned int getNumberOfOtherShips() const;
+    unsigned int getNumberOfBuoys() const;
     std::string getOtherShipName(int number) const;
-    irr::f32 getOtherShipPosX(int number) const;
-    irr::f32 getOtherShipPosZ(int number) const;
-    irr::f32 getOtherShipLat(int number) const;
-    irr::f32 getOtherShipLong(int number) const;
-    irr::f32 getOtherShipHeading(int number) const;
-    irr::f32 getOtherShipSpeed(int number) const; //Speed in m/s
-    irr::u32 getOtherShipMMSI(int number) const;
+    float getOtherShipPosX(int number) const;
+    float getOtherShipPosZ(int number) const;
+    float getOtherShipLat(int number) const;
+    float getOtherShipLong(int number) const;
+    float getOtherShipHeading(int number) const;
+    float getOtherShipSpeed(int number) const; //Speed in m/s
+    unsigned int getOtherShipMMSI(int number) const;
     bool getOtherShipSARTOn(int number) const;
     void setOtherShipSARTOn(int number, bool sartState);
-    void setOtherShipHeading(int number, irr::f32 hdg);
-    void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
-    void setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn);
-    void setOtherShipSpeed(int number, irr::f32 speed); //Speed in m/s
-    void setOtherShipMMSI(int number, irr::u32 mmsi);
+    void setOtherShipHeading(int number, float hdg);
+    void setOtherShipPos(int number, float positionX, float positionZ);
+    void setOtherShipRateOfTurn(int number, float rateOfTurn);
+    void setOtherShipSpeed(int number, float speed); //Speed in m/s
+    void setOtherShipMMSI(int number, unsigned int mmsi);
     std::vector<Leg> getOtherShipLegs(int number) const;
-    irr::f32 getBuoyPosX(int number) const;
-    irr::f32 getBuoyPosZ(int number) const;
-    void changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
-    void addOtherShipLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
+    float getBuoyPosX(int number) const;
+    float getBuoyPosZ(int number) const;
+    void changeOtherShipLeg(int shipNumber, int legNumber, float bearing, float speed, float distance);
+    void addOtherShipLeg(int shipNumber, int afterLegNumber, float bearing, float speed, float distance);
     void deleteOtherShipLeg(int shipNumber, int legNumber);
-    void resetOtherShipLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm);
+    void resetOtherShipLegs(int shipNumber, float course, float speedKts, float distanceNm);
 	std::string getOwnShipEngineSound() const;
 	std::string getOwnShipWaveSound() const;
 	std::string getOwnShipHornSound() const;
     std::string getOwnShipAlarmSound() const;
 
 
-    void setWeather(irr::f32 weather); //Range 0-12.
-    irr::f32 getWeather() const;
-    void setRain(irr::f32 rainIntensity); //Range 0-10
-    irr::f32 getRain() const;
-    void setVisibility(irr::f32 visibilityNm);
-    irr::f32 getVisibility() const;
-    void setWindDirection(irr::f32 windDirection); //Range 0-360.
-    irr::f32 getWindDirection() const;
-    void setWindSpeed(irr::f32 windSpeed); //Nm/h
-    irr::f32 getWindSpeed() const;
-    void setStreamOverrideDirection(irr::f32 streamDirection); //Range 0-360.
-    irr::f32 getStreamOverrideDirection() const;
-    void setStreamOverrideSpeed(irr::f32 streamSpeed); //Nm/h
-    irr::f32 getStreamOverrideSpeed() const;
+    void setWeather(float weather); //Range 0-12.
+    float getWeather() const;
+    void setRain(float rainIntensity); //Range 0-10
+    float getRain() const;
+    void setVisibility(float visibilityNm);
+    float getVisibility() const;
+    void setWindDirection(float windDirection); //Range 0-360.
+    float getWindDirection() const;
+    void setWindSpeed(float windSpeed); //Nm/h
+    float getWindSpeed() const;
+    void setStreamOverrideDirection(float streamDirection); //Range 0-360.
+    float getStreamOverrideDirection() const;
+    void setStreamOverrideSpeed(float streamSpeed); //Nm/h
+    float getStreamOverrideSpeed() const;
     void setStreamOverride(bool streamOverride);
     bool getStreamOverride() const;
     void setWaterVisible(bool visible);
@@ -235,9 +235,9 @@ public:
     void lookDown();
     void lookLeft();
     void lookRight();
-    void setPanSpeed(irr::f32 horizontalPanSpeed);
-    void setVerticalPanSpeed(irr::f32 verticalPanSpeed);
-    void changeLookPx(irr::s32 deltaX, irr::s32 deltaY);
+    void setPanSpeed(float horizontalPanSpeed);
+    void setVerticalPanSpeed(float verticalPanSpeed);
+    void changeLookPx(signed int deltaX, signed int deltaY);
     void lookStepLeft();
     void lookStepRight();
     void moveCameraForwards();
@@ -247,8 +247,8 @@ public:
     void lookPort();
     void lookStbd();
     void changeView();
-    void setView(irr::u32 view);
-    irr::u32 getCameraView() const;
+    void setView(unsigned int view);
+    unsigned int getCameraView() const;
     irr::core::vector3df getCameraBasePosition() const;
     irr::core::matrix4 getCameraBaseRotation() const;
     void setFrozenCamera(bool frozen);
@@ -259,18 +259,18 @@ public:
     irr::video::SColor getRadarSurroundColour() const;
 	void increaseRadarRange();
     void decreaseRadarRange();
-    void setRadarGain(irr::f32 value);
-    void setRadarClutter(irr::f32 value);
-    void setRadarRain(irr::f32 value);
-    void increaseRadarGain(irr::f32 value);
-    void decreaseRadarGain(irr::f32 value);
-    void increaseRadarClutter(irr::f32 value);
-    void decreaseRadarClutter(irr::f32 value);
-    void increaseRadarRain(irr::f32 value);
-    void decreaseRadarRain(irr::f32 value);
-    void setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange);
-    irr::f32 getPIbearing(irr::s32 PIid) const;
-    irr::f32 getPIrange(irr::s32 PIid) const;
+    void setRadarGain(float value);
+    void setRadarClutter(float value);
+    void setRadarRain(float value);
+    void increaseRadarGain(float value);
+    void decreaseRadarGain(float value);
+    void increaseRadarClutter(float value);
+    void decreaseRadarClutter(float value);
+    void increaseRadarRain(float value);
+    void decreaseRadarRain(float value);
+    void setPIData(signed int PIid, float PIbearing, float PIrange);
+    float getPIbearing(signed int PIid) const;
+    float getPIrange(signed int PIid) const;
     void increaseRadarEBLRange();
     void decreaseRadarEBLRange();
     void increaseRadarEBLBrg();
@@ -285,28 +285,28 @@ public:
     void changeRadarColourChoice();
     int getArpaMode() const;
     void setArpaMode(int mode);
-    void setArpaListSelection(irr::s32 selection);
+    void setArpaListSelection(signed int selection);
     void setRadarARPARel();
     void setRadarARPATrue();
-    void setRadarARPAVectors(irr::f32 vectorMinutes);
-    void setRadarDisplayRadius(irr::u32 radiusPx);
+    void setRadarARPAVectors(float vectorMinutes);
+    void setRadarDisplayRadius(unsigned int radiusPx);
     void addManualPoint(bool newContact);
     void clearManualPoints();
     void trackTargetFromCursor();
     void clearTargetFromCursor();
-    irr::u32 getARPATracksSize() const;
-    ARPAContact getARPAContactFromTrackIndex(irr::u32 index) const;
-    irr::f32 getBrilliance() const;
-    void setBrilliance(irr::f32 brilliance);
+    unsigned int getARPATracksSize() const;
+    ARPAContact getARPAContactFromTrackIndex(unsigned int index) const;
+    float getBrilliance() const;
+    void setBrilliance(float brilliance);
     void setMainCameraActive();
     void setRadarCameraActive();
-    void updateViewport(irr::f32 aspect);
+    void updateViewport(float aspect);
     void setMouseDown(bool isMouseDown);
     void setZoom(bool zoomOn);
-    void setZoom(bool zoomOn, irr::f32 zoomLevel);
-    irr::f32 getZoom() const;
-    void setViewAngle(irr::f32 viewAngle);
-    irr::u32 getLoopNumber() const;
+    void setZoom(bool zoomOn, float zoomLevel);
+    float getZoom() const;
+    void setViewAngle(float viewAngle);
+    unsigned int getLoopNumber() const;
     std::string getSerialisedScenario() const;
     std::string getScenarioName() const;
     std::string getWorldName() const;
@@ -314,25 +314,25 @@ public:
     void releaseManOverboard();
     void retrieveManOverboard();
     bool getManOverboardVisible() const;
-    irr::f32 getManOverboardPosX() const;
-    irr::f32 getManOverboardPosZ() const;
+    float getManOverboardPosX() const;
+    float getManOverboardPosZ() const;
     void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
-    void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
+    void setManOverboardPos(float positionX, float positionZ);   //To be used directly, eg when in secondary display mode only
     bool hasGPS() const;
     bool isSingleEngine() const;
     bool isAzimuthDrive() const;
     bool isAzimuthAsternAllowed() const;
-    irr::f32 inputToAzimuthEngineMapping(irr::f32 inputAngle) const;
-    irr::f32 azimuthToInputEngineMapping(irr::f32 inputEngine) const;
+    float inputToAzimuthEngineMapping(float inputAngle) const;
+    float azimuthToInputEngineMapping(float inputEngine) const;
     bool hasDepthSounder() const;
-    irr::f32 getMaxSounderDepth() const;
+    float getMaxSounderDepth() const;
     bool hasBowThruster() const;
     bool hasSternThruster() const;
     bool hasTurnIndicator() const;
     bool debugModeOn() const;
-    irr::f32 getOwnShipMass() const;
-    irr::f32 getOwnShipMassEstimate() const;
-    irr::f32 getOtherShipMassEstimate(int number) const;
+    float getOwnShipMass() const;
+    float getOwnShipMassEstimate() const;
+    float getOtherShipMassEstimate(int number) const;
 
     bool getMoveViewWithPrimary() const;
     void setMoveViewWithPrimary(bool moveView);
@@ -350,13 +350,13 @@ public:
     bool getIsSecondaryControlBowThruster() const;
     bool getIsSecondaryControlSternThruster() const;
 
-    irr::f32 getLineStiffnessFactor() const;
-    irr::f32 getLineDampingFactor() const;
+    float getLineStiffnessFactor() const;
+    float getLineDampingFactor() const;
 
 	void startHorn();
 	void endHorn();
 
-    irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode);
+    irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<float> ray, signed int linesMode);
     
     irr::scene::ISceneNode* getOwnShipSceneNode();
     irr::scene::ISceneNode* getOtherShipSceneNode(int number);
@@ -368,7 +368,7 @@ public:
 
     Terrain* getTerrain();
 
-    irr::f32 getTerrainHeight(irr::f32 posX, irr::f32 posZ) const;
+    float getTerrainHeight(float posX, float posZ) const;
 
     void addLine(); // Add a line, which will be undefined
     
@@ -393,19 +393,19 @@ private:
     irr::video::IImage* radarImageOverlaidLarge; //WIth any 2d overlay, for full screen display
     irr::video::IImage* radarImageChosen; //Should point to one of radarImage or radarImageLarge
     irr::video::IImage* radarImageOverlaidChosen; //Should point to one of radarImageOverlaid or radarImageOverlaidLarge
-    //irr::f32 accelerator;
-    irr::f32 tideHeight;
-    irr::f32 weather; //0-12.0
-    irr::f32 rainIntensity; //0-10
-    irr::f32 visibilityRange; //Nm
-    irr::f32 windDirection; //0-360
-    irr::f32 windSpeed; //Nm
-    irr::f32 streamOverrideDirection; //0-360
-    irr::f32 streamOverrideSpeed; //Nm
+    //float accelerator;
+    float tideHeight;
+    float weather; //0-12.0
+    float rainIntensity; //0-10
+    float visibilityRange; //Nm
+    float windDirection; //0-360
+    float windSpeed; //Nm
+    float streamOverrideDirection; //0-360
+    float streamOverrideSpeed; //Nm
     bool streamOverride;
-    irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
-    irr::f32 currentZoom; // Zoom currently in use
-    irr::f32 zoomLevel; // Zoom level that should be used if binos are on
+    unsigned int loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
+    float currentZoom; // Zoom currently in use
+    float zoomLevel; // Zoom level that should be used if binos are on
     Terrain terrain;
     Light light;
     OwnShip ownShip;
@@ -433,10 +433,10 @@ private:
     ManOverboard manOverboard;
 
     //Simulation time handling
-    irr::u32 currentTime; //Computer clock time
-    irr::u32 previousTime; //Computer clock time
-    irr::f32 deltaTime;
-    irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
+    unsigned int currentTime; //Computer clock time
+    unsigned int previousTime; //Computer clock time
+    float deltaTime;
+    float scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
     uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
     uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
 

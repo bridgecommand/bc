@@ -22,11 +22,11 @@
 
 struct ShipData : public PositionData //To hold information about a ship's position and heading
 {
-    irr::f32 heading;
-    irr::f32 rudder;
-    irr::f32 wheel;
-    irr::f32 portEngine;
-    irr::f32 stbdEngine;
+    float heading;
+    float rudder;
+    float wheel;
+    float portEngine;
+    float stbdEngine;
     ShipData():heading(0), rudder(0), wheel(0), portEngine(0), stbdEngine(0) {}
 };
 

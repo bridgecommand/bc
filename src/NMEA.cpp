@@ -27,7 +27,7 @@
 #include <thread>
 #include <vector>
 
-NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev) : autopilot(model) //Constructor
+NMEA::NMEA(SimulationModel* model, std::string serialPortName, unsigned int serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev) : autopilot(model) //Constructor
 {
     //link to model so network can interact with model
     this->model = model; //Link to the model
@@ -206,8 +206,8 @@ void NMEA::receive()
                 if (sentence.length() < 10) continue;
                
                 // parse the provided checksum and verify it
-                irr::u32 providedChecksum;
-                irr::u32 checksum;
+                unsigned int providedChecksum;
+                unsigned int checksum;
                 try 
                 {
                     providedChecksum = std::stoi(sentence.substr(sentence.length()-2, 2), 0, 16);
@@ -332,14 +332,14 @@ void NMEA::updateNMEA()
         messageBuffer[i]=0;
     }
 
-    irr::u32 now = device->getTimer()->getTime();
+    unsigned int now = device->getTimer()->getTime();
 
     // AIS messages are scheduled based on amount of otherShips and their speed
     // check each frame if a new report should be sent
     if (model->getNumberOfOtherShips() >= 0) { // only consider AIS if there are other ships
         std::string messageToSend = "";
         // which ships are ready to send?
-        std::vector<irr::u32> readyShips = AIS::getReadyShips(model, now);
+        std::vector<unsigned int> readyShips = AIS::getReadyShips(model, now);
         for (auto ship : readyShips) {
             // 8.3.90 AIS VHF data-link message (6-bit, iaw ITU-R M.1371)
             // Position Report Class A
@@ -397,31 +397,31 @@ void NMEA::updateNMEA()
     const char *min  = minuteString.c_str();
     const char *sec  =secondsString.c_str();
 
-    irr::f32 rudderAngle = model->getRudder();
+    float rudderAngle = model->getRudder();
 
     int engineRPM[] = {
         Utilities::round(model->getStbdEngineRPM()), // idx=1, odd (starboard)
         Utilities::round(model->getPortEngineRPM())  // idx=2, even (port)
     };
 
-    irr::f32 lat = model->getLat();
-    irr::f32 lon = model->getLong();
+    float lat = model->getLat();
+    float lon = model->getLong();
 
-    irr::f32 cog = model->getCOG();
-    irr::f32 sog = model->getSOG()*MPS_TO_KTS;
+    float cog = model->getCOG();
+    float sog = model->getSOG()*MPS_TO_KTS;
 
-    irr::f32 hdg = model->getHeading();
-    irr::f32 rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
+    float hdg = model->getHeading();
+    float rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
 
-    irr::f32 depth = model->getDepth();
+    float depth = model->getDepth();
 
     char eastWest = easting[lon < 0];
     char northSouth = northing[lat < 0];
 
     lat = fabs(lat);
     lon = fabs(lon);
-    irr::f32 latMinutes = (lat - (int)lat)*60;
-    irr::f32 lonMinutes = (lon - (int)lon)*60;
+    float latMinutes = (lat - (int)lat)*60;
+    float lonMinutes = (lon - (int)lon)*60;
     irr::u8 latDegrees = (int) lat;
     irr::u8 lonDegrees = (int) lon;
 

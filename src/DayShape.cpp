@@ -17,7 +17,7 @@
 #include "DayShape.hpp"
 #include "Utilities.hpp"
 
-DayShape::DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, irr::core::vector3df position, std::string shapeName, std::string shipModelPath, irr::f32 scaleFactor) {
+DayShape::DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, irr::core::vector3df position, std::string shapeName, std::string shipModelPath, float scaleFactor) {
 
     //Store the scene manager
     this->smgr = smgr;
@@ -65,7 +65,7 @@ DayShape::DayShape(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(shapeNode->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<shapeNode->getMaterialCount();mat++) {
+        for(unsigned int mat=0;mat<shapeNode->getMaterialCount();mat++) {
             shapeNode->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
