@@ -599,7 +599,9 @@ int main(int argc, char ** argv)
         #endif
 
 		if (graphicsWidth == 0) {
-			if (fullScreen || fakeFullScreen) {
+			if (fakeFullScreen) {
+                graphicsWidth = 0; // Will be set later to the monitor width
+            } else if (fullScreen) {
 				graphicsWidth = deskres.Width;
 			} else {
 				graphicsWidth = 1200 * fontScale; // deskres.Width*0.8;
@@ -609,7 +611,9 @@ int main(int argc, char ** argv)
 			}
 		}
 		if (graphicsHeight == 0) {
-			if (fullScreen) {
+			if (fakeFullScreen) {
+                graphicsHeight = 0; // Will be set later to the monitor height
+            } else if (fullScreen) {
 				graphicsHeight = deskres.Height;
 			}
 			else {
