@@ -972,6 +972,12 @@ int main(int argc, char ** argv)
         vr3dMode=true;
     }
 
+    // Check water reflection
+    bool waterReflection = true;
+    if (IniFile::iniFileTou32(iniFilename, "water_reflection")==0) {
+        waterReflection=false;
+    }
+
     // Set up the VR interface
     VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
 
@@ -1025,6 +1031,7 @@ int main(int argc, char ** argv)
     modelParameters.cameraMaxDistance = cameraMaxDistance;
     modelParameters.disableShaders = disableShaders; 
     modelParameters.waterSegments = waterSegments; 
+    modelParameters.waterReflection = waterReflection;
     modelParameters.numberOfContactPoints = numberOfContactPoints; 
     modelParameters.minContactPointSpacing = minContactPointSpacing; 
     modelParameters.contactStiffnessFactor = contactStiffnessFactor; 

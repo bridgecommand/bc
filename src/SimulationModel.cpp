@@ -257,11 +257,12 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //add water
         // Note that water.load resets the srand() seed to a fixed value.
-        bool waterReflection = true;
-        if (modelParameters.vrMode == true) {
-            waterReflection = false;
+        // Water reflections can be disabled via ini setting, but are always disabled in VR mode
+        bool enableWaterReflection = true;
+        if (modelParameters.vrMode == true || modelParameters.waterReflection == false) {
+            enableWaterReflection = false;
         }
-        water.load(smgr,ownShip.getSceneNode(),weather,modelParameters.disableShaders,waterReflection,modelParameters.waterSegments);
+        water.load(smgr,ownShip.getSceneNode(),weather,modelParameters.disableShaders,enableWaterReflection,modelParameters.waterSegments);
 
         //initialise offset
         offsetPosition = irr::core::vector3d<int64_t>(0,0,0);
