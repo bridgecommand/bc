@@ -34,7 +34,7 @@ public:
     Network(int port);
     ~Network();
 
-    void update(irr::f32& time, ShipData& ownShipData);
+    void update(float& time, ShipData& ownShipData);
     int getPort();
 
 private:
@@ -46,7 +46,7 @@ private:
     ENetEvent event;
     ENetPacket * packet;
 
-    void receiveMessage(irr::f32& time, ShipData& ownShipData); //Acts on 'event'
+    void receiveMessage(float& time, ShipData& ownShipData); //Acts on 'event'
 
 };
 #endif // __NETWORK_HPP_INCLUDED__

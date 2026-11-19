@@ -131,7 +131,7 @@ namespace scene
 			VertexBuffer->reallocate(vertexCount+numVertices, false);
 			if ( vertexType == getVertexType() )
 			{
-				const irr::u32 typeSize = getVertexPitchFromType(vertexType);
+				const unsigned int typeSize = getVertexPitchFromType(vertexType);
 				VertexBuffer->set_used(vertexCount+numVertices);
 				irr::u8* target = &static_cast<irr::u8*>(VertexBuffer->pointer())[vertexCount*typeSize];
 				memcpy(target, vertices, numVertices*typeSize);
@@ -189,7 +189,7 @@ namespace scene
 				}
 				case video::EIT_32BIT:
 				{
-					const irr::u32* indices32 = reinterpret_cast<const irr::u32*>(indices);
+					const unsigned int* indices32 = reinterpret_cast<const unsigned int*>(indices);
 					for (u32 i=0; i<numIndices; ++i)
 					{
 						IndexBuffer->push_back(indices32[i]+vertexCount);

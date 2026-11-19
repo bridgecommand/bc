@@ -33,44 +33,44 @@
 class SimulationModel;
 
 struct GUIData {
-    irr::f32 lat;
-    irr::f32 longitude;
-    irr::f32 hdg;
-    irr::f32 viewAngle;
-    irr::f32 viewElevationAngle;
-    irr::f32 spd; // Show speed through water
-    irr::f32 portEng;
-    irr::f32 stbdEng;
-    irr::f32 rudder;
-    irr::f32 bowThruster;
-    irr::f32 sternThruster;
-    irr::f32 wheel;
-    irr::f32 portAzimuthAngle;
-    irr::f32 stbdAzimuthAngle;
+    float lat;
+    float longitude;
+    float hdg;
+    float viewAngle;
+    float viewElevationAngle;
+    float spd; // Show speed through water
+    float portEng;
+    float stbdEng;
+    float rudder;
+    float bowThruster;
+    float sternThruster;
+    float wheel;
+    float portAzimuthAngle;
+    float stbdAzimuthAngle;
     bool azimuth1Master;
     bool azimuth2Master;
-    irr::f32 RateOfTurn;
-    irr::f32 depth;
-    irr::f32 weather;
-    irr::f32 rain;
-    irr::f32 visibility;
-    irr::f32 windDirection;
-    irr::f32 windSpeed;
-    irr::f32 streamDirection;
-    irr::f32 streamSpeed;
+    float RateOfTurn;
+    float depth;
+    float weather;
+    float rain;
+    float visibility;
+    float windDirection;
+    float windSpeed;
+    float streamDirection;
+    float streamSpeed;
     bool streamOverride;
     bool radarOn;
     bool viewOwnShip;
-    irr::f32 radarRangeNm;
-    irr::f32 radarGain;
-    irr::f32 radarClutter;
-    irr::f32 radarRain;
-    irr::f32 radarBrill;
-    irr::f32 guiRadarEBLBrg;
-    irr::f32 guiRadarEBLRangeNm;
-    irr::f32 guiRadarCursorBrg;
-    irr::f32 guiRadarCursorRangeNm;
-    irr::s32 arpaListSelection;
+    float radarRangeNm;
+    float radarGain;
+    float radarClutter;
+    float radarRain;
+    float radarBrill;
+    float guiRadarEBLBrg;
+    float guiRadarEBLRangeNm;
+    float guiRadarCursorBrg;
+    float guiRadarCursorRangeNm;
+    signed int arpaListSelection;
     std::vector<ARPAEstimatedState> arpaContactStates;
 	std::string currentTime;
     bool paused;
@@ -80,20 +80,20 @@ struct GUIData {
     bool pump1On;
     bool pump2On;
 // DEE_NOV22 Azimuth Drive related gui items
-    irr::f32 schottelPort; // angle of the schottels +ve clockwise 0 dead ahead
-    irr::f32 schottelStbd;
-    irr::f32 thrustLeverPort; // thrust levers (0..1) leave this in here for future graphical lever
-    irr::f32 thrustLeverStbd;
-    irr::f32 azimuthEnginePort;
-    irr::f32 azimuthEngineStbd;
-    irr::f32 emergencySteering;
+    float schottelPort; // angle of the schottels +ve clockwise 0 dead ahead
+    float schottelStbd;
+    float thrustLeverPort; // thrust levers (0..1) leave this in here for future graphical lever
+    float thrustLeverStbd;
+    float azimuthEnginePort;
+    float azimuthEngineStbd;
+    float emergencySteering;
     bool azimuthClutchPort;  // Clutches true for engaged false for disengaged
     bool azimuthClutchStbd;
 
     // the angle of each azimuth drive and each engine level is defined elsewhere
     // DEE_NOV22 some indication and or switch from normal steering to non follow up emergency steering
 
-    irr::f32 tideHeight; // DEE FEB 23
+    float tideHeight; // DEE FEB 23
 };
 
 class GUIMain //Create, build and update GUI
@@ -101,7 +101,7 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain();
     ~GUIMain();
-    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode);
+    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, float maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -230,16 +230,16 @@ public:
     void hideBearings();
     void setLargeRadar(bool radarState);
     bool getLargeRadar() const;
-    void setARPAComboboxes(irr::s32 arpaState);
+    void setARPAComboboxes(signed int arpaState);
     void setARPAList(int arpaSelected);
-    irr::u32 getRadarPixelRadius() const;
+    unsigned int getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
-    irr::core::rect<irr::s32> getSmallRadarRect() const;
-    irr::core::rect<irr::s32> getLargeRadarRect() const;
+    irr::core::rect<signed int> getSmallRadarRect() const;
+    irr::core::rect<signed int> getLargeRadarRect() const;
     bool isNFUActive() const;
     void setSingleEngine(); //Used for single engine operation
     void hideEngineAndRudder(); //Used for secondary mode
-//    void setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);
+//    void setInstruments(bool hasDepthSounder, float maxSounderDepth, bool hasGPS);
     void updateGuiData(GUIData* guiData);
     void showLogWindow();
     void drawGUI();
@@ -370,39 +370,39 @@ private:
     irr::gui::IGUIWindow* extraControlsWindow;
     irr::gui::IGUIWindow* linesControlsWindow;
 
-    irr::u32 su;
-    irr::u32 sh;
+    unsigned int su;
+    unsigned int sh;
 
-    irr::s32 azimuthGUIOffsetL;
-    irr::s32 azimuthGUIOffsetR;
+    signed int azimuthGUIOffsetL;
+    signed int azimuthGUIOffsetR;
 
-    irr::f32 guiLat;
-    irr::f32 guiLong;
-    irr::f32 guiHeading;
-    irr::f32 viewHdg;
-    irr::f32 viewElev;
-    irr::f32 guiSpeed;
-    irr::f32 guiDepth;
-    irr::f32 guiTideHeight;
+    float guiLat;
+    float guiLong;
+    float guiHeading;
+    float viewHdg;
+    float viewElev;
+    float guiSpeed;
+    float guiDepth;
+    float guiTideHeight;
     bool guiRadarOn;
-    irr::f32 guiRadarRangeNm;
-    irr::f32 guiRadarGain;
-    irr::f32 guiRadarClutter;
-    irr::f32 guiRadarRain;
-    irr::f32 guiRadarEBLBrg;
-    irr::f32 guiRadarEBLRangeNm;
-    irr::f32 guiRadarCursorBrg;
-    irr::f32 guiRadarCursorRangeNm;
+    float guiRadarRangeNm;
+    float guiRadarGain;
+    float guiRadarClutter;
+    float guiRadarRain;
+    float guiRadarEBLBrg;
+    float guiRadarEBLRangeNm;
+    float guiRadarCursorBrg;
+    float guiRadarCursorRangeNm;
     bool radarHeadUp;
     bool radarStabilised;
     bool radarLarge;
-    irr::core::rect<irr::s32> radarLargeRect;
-    irr::s32 largeRadarScreenCentreX;
-    irr::s32 largeRadarScreenCentreY;
-    irr::s32 largeRadarScreenRadius;
-    irr::s32 smallRadarScreenCentreX;
-    irr::s32 smallRadarScreenCentreY;
-    irr::s32 smallRadarScreenRadius;
+    irr::core::rect<signed int> radarLargeRect;
+    signed int largeRadarScreenCentreX;
+    signed int largeRadarScreenCentreY;
+    signed int largeRadarScreenRadius;
+    signed int smallRadarScreenCentreX;
+    signed int smallRadarScreenCentreY;
+    signed int smallRadarScreenRadius;
     std::vector<ARPAEstimatedState> arpaContactStates;
     std::string guiTime;
     bool singleEngine;
@@ -416,7 +416,7 @@ private:
     bool controlsHidden; //If controls should always be hidden (if a secondary screen etc)
 
     bool hasDepthSounder;
-    irr::f32 maxSounderDepth;
+    float maxSounderDepth;
     bool hasGPS;
     bool showTideHeight;
     bool showCollided;
@@ -426,18 +426,18 @@ private:
     SimulationModel* model;
 
     //Different locations for heading indicator depending on GUI visibility
-    irr::core::rect<irr::s32> stdHdgIndicatorPos;
-    irr::core::rect<irr::s32> radHdgIndicatorPos;
-    irr::core::rect<irr::s32> maxHdgIndicatorPos;
+    irr::core::rect<signed int> stdHdgIndicatorPos;
+    irr::core::rect<signed int> radHdgIndicatorPos;
+    irr::core::rect<signed int> maxHdgIndicatorPos;
 
-    irr::core::rect<irr::s32> stdDataDisplayPos;
-    irr::core::rect<irr::s32> radDataDisplayPos;
-    irr::core::rect<irr::s32> altDataDisplayPos;
+    irr::core::rect<signed int> stdDataDisplayPos;
+    irr::core::rect<signed int> radDataDisplayPos;
+    irr::core::rect<signed int> altDataDisplayPos;
     irr::video::SColor stdDataDisplayBG;
     irr::video::SColor altDataDisplayBG;
     irr::video::SColor radDataDisplayBG;
 
-    irr::core::rect<irr::s32> stdRateOfTurnIndicatorPos;
+    irr::core::rect<signed int> stdRateOfTurnIndicatorPos;
 
     bool nfuPortDown;
     bool nfuStbdDown;
@@ -447,12 +447,12 @@ private:
     void draw2dRadar();
     void draw2dBearing();
     void drawCollisionWarning();
-    std::wstring f32To1dp(irr::f32 value);
-    std::wstring f32To2dp(irr::f32 value);
-    std::wstring f32To3dp(irr::f32 value);
+    std::wstring f32To1dp(float value);
+    std::wstring f32To2dp(float value);
+    std::wstring f32To3dp(float value);
     bool manuallyTriggerClick(irr::gui::IGUIButton* button);
     bool manuallyTriggerScroll(irr::gui::IGUIScrollBar* bar);
-    irr::video::SColor brill(irr::video::SColor originalColour, irr::f32 brilliance) const;
+    irr::video::SColor brill(irr::video::SColor originalColour, float brilliance) const;
 
 };
 

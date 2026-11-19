@@ -57,7 +57,7 @@ namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;
 }
 
-std::string makeTimeString(uint64_t absoluteTime, uint64_t offsetTime, irr::f32 scenarioTime, irr::f32 accelerator)
+std::string makeTimeString(uint64_t absoluteTime, uint64_t offsetTime, float scenarioTime, float accelerator)
 {
     //timestamp (unix),
     //timestamp of start of first scenario day,
@@ -149,13 +149,13 @@ int main()
 	    fontScale = 1.0;
     }
     
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    unsigned int graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    unsigned int graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    unsigned int graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     int port = IniFile::iniFileTou32(iniFilename, "udp_send_port");
 
     // How long to pause between updates
-    irr::u32 sleepTime = IniFile::iniFileTou32(iniFilename, "update_time");
+    unsigned int sleepTime = IniFile::iniFileTou32(iniFilename, "update_time");
     // Set defaults, and upper limit of 10s
     if (sleepTime==0) {
         sleepTime = 100;
@@ -165,7 +165,7 @@ int main()
     }
 
     //Sensible defaults if not set
-    irr::core::dimension2d<irr::u32> deskres;
+    irr::core::dimension2d<unsigned int> deskres;
     #ifdef _WIN32
     // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
     deskres.Width=GetSystemMetrics(SM_CXSCREEN);
@@ -195,7 +195,7 @@ int main()
     //create device
     irr::SIrrlichtCreationParameters deviceParameters;
     deviceParameters.DriverType = irr::video::EDT_OPENGL;
-    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight);
+    deviceParameters.WindowSize = irr::core::dimension2d<unsigned int>(graphicsWidth,graphicsHeight);
     deviceParameters.Bits = graphicsDepth;
     irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
     device->setWindowCaption(L"Multiplayer Hub"); //Fixme - odd conversion from char* to wchar*!
@@ -275,7 +275,7 @@ int main()
     //Load overall scenario information
     ScenarioData masterScenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName,scenarioName);
 
-    irr::u32 numberOfOtherShips; // This is the number of 'other' ships in each simulation. The total number of controllable ships is numberOfOtherShips+1
+    unsigned int numberOfOtherShips; // This is the number of 'other' ships in each simulation. The total number of controllable ships is numberOfOtherShips+1
     if (masterScenarioData.otherShipsData.size() > 0) {
         numberOfOtherShips = masterScenarioData.otherShipsData.size()-1;
     } else {
@@ -287,32 +287,32 @@ int main()
     LinesData linesData(numberOfOtherShips+1);
 
     //Get time information and initialise
-    irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
+    float scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
     uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
     uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
 
     std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
     std::chrono::time_point<std::chrono::system_clock> previousTime = currentTime;
 
-    //irr::u32 currentTime = millisecs(); //Computer clock time (ms)
-    //irr::u32 previousTime = currentTime; //Computer clock time (ms)
-    irr::f32 accelerator = 1.0;
+    //unsigned int currentTime = millisecs(); //Computer clock time (ms)
+    //unsigned int previousTime = currentTime; //Computer clock time (ms)
+    float accelerator = 1.0;
 
     //Add some simple information to the GUI, so the user knows it's running
     //Add text, which will list connected peers, and current time.
-    irr::u32 su = driver->getScreenSize().Width;
-    irr::u32 sh = driver->getScreenSize().Height;
-    irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.74*sh),true);
+    unsigned int su = driver->getScreenSize().Width;
+    unsigned int sh = driver->getScreenSize().Height;
+    irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<signed int>(0.01*su,0.01*sh,0.99*su,0.74*sh),true);
 
     // Add run, pause and time shift buttons
-    irr::s32 runButtonID = 101;
-    irr::s32 pauseButtonID = 102;
-    irr::s32 timeForwardButtonID = 103;
-    irr::s32 timeBackwardButtonID = 104;
-    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.76*sh,0.49*su,0.87*sh), 0, runButtonID, language.translate("run").c_str());
-    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.51*su,0.76*sh,0.99*su,0.87*sh), 0, pauseButtonID, language.translate("pause").c_str());
-    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01 * su, 0.88 * sh, 0.49 * su, 0.99 * sh), 0, timeForwardButtonID, language.translate("shiftTimeForward").c_str());
-    device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.51 * su, 0.88 * sh, 0.99 * su, 0.99 * sh), 0, timeBackwardButtonID, language.translate("shiftTimeBackward").c_str());
+    signed int runButtonID = 101;
+    signed int pauseButtonID = 102;
+    signed int timeForwardButtonID = 103;
+    signed int timeBackwardButtonID = 104;
+    device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.01*su,0.76*sh,0.49*su,0.87*sh), 0, runButtonID, language.translate("run").c_str());
+    device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.51*su,0.76*sh,0.99*su,0.87*sh), 0, pauseButtonID, language.translate("pause").c_str());
+    device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.01 * su, 0.88 * sh, 0.49 * su, 0.99 * sh), 0, timeForwardButtonID, language.translate("shiftTimeForward").c_str());
+    device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(0.51 * su, 0.88 * sh, 0.99 * su, 0.99 * sh), 0, timeBackwardButtonID, language.translate("shiftTimeBackward").c_str());
 
     // Setup event receiver
     EventReceiver eventReceiver(pauseButtonID, runButtonID, timeForwardButtonID, timeBackwardButtonID, accelerator);
@@ -370,7 +370,7 @@ int main()
         accelerator = eventReceiver.getAccelerator();
 
         // Apply a time shift if requrested by the event receiver
-        irr::f32 timeShift = eventReceiver.getAndResetTimeShift();
+        float timeShift = eventReceiver.getAndResetTimeShift();
         scenarioTime += timeShift;
 
         //Do time handling here.
@@ -410,11 +410,11 @@ int main()
             std::string otherShipsString;
             for(unsigned int i = 0; i < (numberOfOtherShips+1); i++) {
                 if (i!=thisPeer) {
-                    irr::f32 thisOtherShipX = 0;
-                    irr::f32 thisOtherShipZ = 0;
-                    irr::f32 thisOtherShipSpeed = 0;
-                    irr::f32 thisOtherShipBearing = 0;
-                    irr::f32 thisOtherShipRateOfTurn = 0;
+                    float thisOtherShipX = 0;
+                    float thisOtherShipZ = 0;
+                    float thisOtherShipSpeed = 0;
+                    float thisOtherShipBearing = 0;
+                    float thisOtherShipRateOfTurn = 0;
 
                     shipPositionData.getShipPosition(i,
                                                      scenarioTime,
@@ -499,12 +499,12 @@ int main()
                 std::vector<std::string> splitMessage = Utilities::split(receivedMessage,'#');
                 //Store information
                 if (splitMessage.size() == 7) {
-                    irr::f32 thisOtherShipX = Utilities::lexical_cast<irr::f32>(splitMessage.at(0));
-                    irr::f32 thisOtherShipZ = Utilities::lexical_cast<irr::f32>(splitMessage.at(1));
-                    irr::f32 thisOtherShipBearing = Utilities::lexical_cast<irr::f32>(splitMessage.at(2));
-                    irr::f32 thisOtherShipRateOfTurn = Utilities::lexical_cast<irr::f32>(splitMessage.at(3)); // deg/s
-                    irr::f32 thisOtherShipSpeed = Utilities::lexical_cast<irr::f32>(splitMessage.at(4));
-                    irr::f32 thisOtherShipTime = Utilities::lexical_cast<irr::f32>(splitMessage.at(5));
+                    float thisOtherShipX = Utilities::lexical_cast<float>(splitMessage.at(0));
+                    float thisOtherShipZ = Utilities::lexical_cast<float>(splitMessage.at(1));
+                    float thisOtherShipBearing = Utilities::lexical_cast<float>(splitMessage.at(2));
+                    float thisOtherShipRateOfTurn = Utilities::lexical_cast<float>(splitMessage.at(3)); // deg/s
+                    float thisOtherShipSpeed = Utilities::lexical_cast<float>(splitMessage.at(4));
+                    float thisOtherShipTime = Utilities::lexical_cast<float>(splitMessage.at(5));
                     shipPositionData.setShipPosition(thisPeer,thisOtherShipTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing,thisOtherShipRateOfTurn);
 
                     // Lines data, from splitMessage.at(6)
@@ -520,20 +520,20 @@ int main()
                         std::vector<std::string> thisLineData = Utilities::split(linesDataString.at(lineID),',');
                         // Check number of elements for line data line
                         if (thisLineData.size() == 16) {
-                            irr::f32 thisStartX = Utilities::lexical_cast<irr::f32>(thisLineData.at(0));
-                            irr::f32 thisStartY = Utilities::lexical_cast<irr::f32>(thisLineData.at(1));
-                            irr::f32 thisStartZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(2));
-                            irr::f32 thisEndX = Utilities::lexical_cast<irr::f32>(thisLineData.at(3));
-                            irr::f32 thisEndY = Utilities::lexical_cast<irr::f32>(thisLineData.at(4));
-                            irr::f32 thisEndZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(5));
+                            float thisStartX = Utilities::lexical_cast<float>(thisLineData.at(0));
+                            float thisStartY = Utilities::lexical_cast<float>(thisLineData.at(1));
+                            float thisStartZ = Utilities::lexical_cast<float>(thisLineData.at(2));
+                            float thisEndX = Utilities::lexical_cast<float>(thisLineData.at(3));
+                            float thisEndY = Utilities::lexical_cast<float>(thisLineData.at(4));
+                            float thisEndZ = Utilities::lexical_cast<float>(thisLineData.at(5));
                             int thisStartType = Utilities::lexical_cast<int>(thisLineData.at(6));
                             int thisEndType = Utilities::lexical_cast<int>(thisLineData.at(7));
                             int thisStartID = Utilities::lexical_cast<int>(thisLineData.at(8));
                             int thisEndID = Utilities::lexical_cast<int>(thisLineData.at(9));
-                            irr::f32 thisNominalLength = Utilities::lexical_cast<irr::f32>(thisLineData.at(10));
-                            irr::f32 thisBreakingTension = Utilities::lexical_cast<irr::f32>(thisLineData.at(11));
-                            irr::f32 thisBreakingStrain = Utilities::lexical_cast<irr::f32>(thisLineData.at(12));
-                            irr::f32 thisNominalShipMass = Utilities::lexical_cast<irr::f32>(thisLineData.at(13));
+                            float thisNominalLength = Utilities::lexical_cast<float>(thisLineData.at(10));
+                            float thisBreakingTension = Utilities::lexical_cast<float>(thisLineData.at(11));
+                            float thisBreakingStrain = Utilities::lexical_cast<float>(thisLineData.at(12));
+                            float thisNominalShipMass = Utilities::lexical_cast<float>(thisLineData.at(13));
                             int thisKeepSlack = Utilities::lexical_cast<int>(thisLineData.at(14));
                             int thisHeaveIn = Utilities::lexical_cast<int>(thisLineData.at(15));
 
@@ -587,11 +587,11 @@ int main()
         displayText.append(irr::core::stringw(displayTime.c_str()));
         displayText.append(L"\n\n");
         for(unsigned int i = 0; i<numberOfPeers; i++ ) {
-            irr::f32 thisOtherShipX = 0;
-            irr::f32 thisOtherShipZ = 0;
-            irr::f32 thisOtherShipSpeed = 0;
-            irr::f32 thisOtherShipBearing = 0;
-            irr::f32 thisOtherShipRateOfTurn = 0;
+            float thisOtherShipX = 0;
+            float thisOtherShipZ = 0;
+            float thisOtherShipSpeed = 0;
+            float thisOtherShipBearing = 0;
+            float thisOtherShipRateOfTurn = 0;
 
             shipPositionData.getShipPosition(i,scenarioTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing,thisOtherShipRateOfTurn);
             std::string thisShipNumber = Utilities::lexical_cast<std::string>(i+1);

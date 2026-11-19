@@ -39,12 +39,12 @@ enum ARPA_CONTACT_TYPE {
 
 struct ARPAScan {
     //ARPA scan information based on the assumption that the own ship position is well known
-    irr::f32 x; //Absolute metres
-    irr::f32 z; //Absolute metres
+    float x; //Absolute metres
+    float z; //Absolute metres
     uint64_t timeStamp; //Timestamp in seconds
-    //irr::f32 estimatedRCS; //Estimated radar cross section
-    irr::f32 rangeNm; //Reference only
-    irr::f32 bearingDeg; //For reference only
+    //float estimatedRCS; //Estimated radar cross section
+    float rangeNm; //Reference only
+    float bearingDeg; //For reference only
 
     ARPAScan() {
         x = 0;
@@ -56,20 +56,20 @@ struct ARPAScan {
 };
 
 struct ARPAEstimatedState {
-    irr::u32 displayID; //User displayed ID
+    unsigned int displayID; //User displayed ID
     bool stationary; // E.g. if detected as static and a small RCS or a buoy.
-    irr::f32 absVectorX; //Estimated X speed (m/s)
-    irr::f32 absVectorZ; //Estimated Z speed (m/s)
-    irr::f32 absHeading; //Estimated heading (deg)
-    irr::f32 relVectorX; //Estimated X speed (m/s)
-    irr::f32 relVectorZ; //Estimated Z speed (m/s)
-    irr::f32 relHeading; //Estimated heading (deg)
-    irr::f32 range; //Estimated current range from own ship (Nm)
-    irr::f32 bearing; //Estimated current bearing from own ship (deg)
-    irr::f32 speed; //Estimated current speed (Kts)
+    float absVectorX; //Estimated X speed (m/s)
+    float absVectorZ; //Estimated Z speed (m/s)
+    float absHeading; //Estimated heading (deg)
+    float relVectorX; //Estimated X speed (m/s)
+    float relVectorZ; //Estimated Z speed (m/s)
+    float relHeading; //Estimated heading (deg)
+    float range; //Estimated current range from own ship (Nm)
+    float bearing; //Estimated current bearing from own ship (deg)
+    float speed; //Estimated current speed (Kts)
     bool lost; //True if we last scanned more than a defined time ago.
-    irr::f32 cpa; //Closest point of approach in Nm
-    irr::f32 tcpa; //Time to closest point of approach (mins)
+    float cpa; //Closest point of approach in Nm
+    float tcpa; //Time to closest point of approach (mins)
     ARPA_CONTACT_TYPE contactType; //Duplicate of what's in the parent, but useful to pass to the GUI
 
     ARPAEstimatedState() {
@@ -93,11 +93,11 @@ struct ARPAEstimatedState {
 
 struct ARPAContact {
     std::vector<ARPAScan> scans;
-    irr::f32 totalXMovementEst; //Estimates of total movement (sum of absolutes) in X and Z, to help detect stationary contacts
-    irr::f32 totalZMovementEst;
+    float totalXMovementEst; //Estimates of total movement (sum of absolutes) in X and Z, to help detect stationary contacts
+    float totalZMovementEst;
     ARPA_CONTACT_TYPE contactType;
     void* contact;
-    //irr::u32 displayID;
+    //unsigned int displayID;
     ARPAEstimatedState estimate;
 
     ARPAContact() {
@@ -116,26 +116,26 @@ class RadarCalculation
         void load(std::string radarConfigFile, irr::IrrlichtDevice* dev);
         void increaseRange();
         void decreaseRange();
-        irr::f32 getRangeNm() const;
-        void setGain(irr::f32 value);
-        void setClutter(irr::f32 value);
-        void setRainClutter(irr::f32 value);
-        void increaseClutter(irr::f32 value);
-        void decreaseClutter(irr::f32 value);
-        void increaseRainClutter(irr::f32 value);
-        void decreaseRainClutter(irr::f32 value);
-        void increaseGain(irr::f32 value);
-        void decreaseGain(irr::f32 value);
-        irr::f32 getGain() const;
-        irr::f32 getClutter() const;
-        irr::f32 getRainClutter() const;
-        irr::f32 getEBLRangeNm() const;
-        irr::f32 getEBLBrg() const;
-        irr::f32 getCursorRangeNm() const;
-        irr::f32 getCursorBrg() const;
-        void setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange);
-        irr::f32 getPIbearing(irr::s32 PIid) const;
-        irr::f32 getPIrange(irr::s32 PIid) const;
+        float getRangeNm() const;
+        void setGain(float value);
+        void setClutter(float value);
+        void setRainClutter(float value);
+        void increaseClutter(float value);
+        void decreaseClutter(float value);
+        void increaseRainClutter(float value);
+        void decreaseRainClutter(float value);
+        void increaseGain(float value);
+        void decreaseGain(float value);
+        float getGain() const;
+        float getClutter() const;
+        float getRainClutter() const;
+        float getEBLRangeNm() const;
+        float getEBLBrg() const;
+        float getCursorRangeNm() const;
+        float getCursorBrg() const;
+        void setPIData(signed int PIid, float PIbearing, float PIrange);
+        float getPIbearing(signed int PIid) const;
+        float getPIrange(signed int PIid) const;
         void increaseCursorRangeXNm();
         void decreaseCursorRangeXNm();
         void increaseCursorRangeYNm();
@@ -155,14 +155,14 @@ class RadarCalculation
         void setArpaMode(int mode);
         void setRadarARPARel();
         void setRadarARPATrue();
-        void setArpaListSelection(irr::s32 selection);
-        irr::s32 getArpaListSelection() const;
-        void setRadarARPAVectors(irr::f32 vectorMinutes);
-        void setRadarDisplayRadius(irr::u32 radiusPx);
+        void setArpaListSelection(signed int selection);
+        signed int getArpaListSelection() const;
+        void setRadarARPAVectors(float vectorMinutes);
+        void setRadarDisplayRadius(unsigned int radiusPx);
         void changeRadarColourChoice();
-        irr::u32 getARPATracksSize() const;
-        int getARPAContactIDFromTrackIndex(irr::u32 trackIndex) const;
-        ARPAContact getARPAContactFromTrackIndex(irr::u32 trackIndex) const;
+        unsigned int getARPATracksSize() const;
+        int getARPAContactIDFromTrackIndex(unsigned int trackIndex) const;
+        ARPAContact getARPAContactFromTrackIndex(unsigned int trackIndex) const;
         void addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime);
         void clearManualPoints();
         void trackTargetFromCursor();
@@ -170,80 +170,80 @@ class RadarCalculation
         irr::video::SColor getRadarForegroundColour() const;
         irr::video::SColor getRadarBackgroundColour() const;
         irr::video::SColor getRadarSurroundColour() const;
-        irr::f32 getBrilliance() const;
-        void setBrilliance(irr::f32 brilliance);
-        void update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::f32 scenarioTime, irr::core::vector2di mouseRelPosition, bool isMouseDown);
+        float getBrilliance() const;
+        void setBrilliance(float brilliance);
+        void update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, float weather, float rain, float tideHeight, float deltaTime, uint64_t absoluteTime, float scenarioTime, irr::core::vector2di mouseRelPosition, bool isMouseDown);
 
     private:
         irr::IrrlichtDevice* device;
-        std::vector<std::vector<irr::f32> > scanArray;
-        std::vector<std::vector<irr::f32> > scanArrayAmplified;
-        std::vector<std::vector<irr::f32> > scanArrayToPlot;
-        std::vector<std::vector<irr::f32> > scanArrayToPlotPrevious;
+        std::vector<std::vector<float> > scanArray;
+        std::vector<std::vector<float> > scanArrayAmplified;
+        std::vector<std::vector<float> > scanArrayToPlot;
+        std::vector<std::vector<float> > scanArrayToPlotPrevious;
         std::vector<bool> toReplot;
         std::vector<ARPAContact> arpaContacts;
-        std::vector<irr::u32> arpaTracks;
+        std::vector<unsigned int> arpaTracks;
         bool radarOn;
         int arpaMode; // 0: Off/Manual, 1: MARPA, 2: ARPA
-        irr::s32 arpaListSelection;
-        irr::f32 radarGain;
-        irr::f32 radarRainClutterReduction;
-        irr::f32 radarSeaClutterReduction;
-        irr::f32 currentScanAngle;
-        irr::f32 scanAngleStep;
-        irr::u32 currentScanLine; //Note that this MUST be an integer, as the scanline number is used to look up values in radar scan arrays
-        irr::u32 rangeResolution;
-        irr::u32 angularResolution;
-        irr::f32 rangeSensitivity; //Used for ARPA contacts - in metres
-        irr::u32 radarRangeIndex;
-        irr::f32 radarScannerHeight;
+        signed int arpaListSelection;
+        float radarGain;
+        float radarRainClutterReduction;
+        float radarSeaClutterReduction;
+        float currentScanAngle;
+        float scanAngleStep;
+        unsigned int currentScanLine; //Note that this MUST be an integer, as the scanline number is used to look up values in radar scan arrays
+        unsigned int rangeResolution;
+        unsigned int angularResolution;
+        float rangeSensitivity; //Used for ARPA contacts - in metres
+        unsigned int radarRangeIndex;
+        float radarScannerHeight;
         //parameters for noise behaviour
-        irr::f32 radarNoiseLevel;
-        irr::f32 radarSeaClutter;
-        irr::f32 radarRainClutter;
+        float radarNoiseLevel;
+        float radarSeaClutter;
+        float radarRainClutter;
         //Parameters for parallel index
-        std::vector<irr::f32> piBearings;
-        std::vector<irr::f32> piRanges;
+        std::vector<float> piBearings;
+        std::vector<float> piRanges;
         //Parameters for EBL
-        irr::f32 EBLRangeNm;
-        irr::f32 EBLBrg;
+        float EBLRangeNm;
+        float EBLBrg;
         clock_t radarCursorsLastUpdated;
         //Parameters for radar cursor
-        irr::f32 cursorRangeXNm;
-        irr::f32 cursorRangeYNm;
-        irr::f32 CursorRangeNm;
-        irr::f32 CursorBrg;
+        float cursorRangeXNm;
+        float cursorRangeYNm;
+        float CursorRangeNm;
+        float CursorBrg;
         //Radar config
         bool headUp;
         bool stabilised;
-        irr::u32 radarRadiusPx;
+        unsigned int radarRadiusPx;
         bool radarScreenStale;
         bool trueVectors;
-        irr::f32 vectorLengthMinutes;
+        float vectorLengthMinutes;
 
         //colours
         std::vector<irr::video::SColor> radarBackgroundColours;
         std::vector<irr::video::SColor> radarForegroundColours;
         std::vector<irr::video::SColor> radarSurroundColours;
-        irr::u32 currentRadarColourChoice;
+        unsigned int currentRadarColourChoice;
 
-        irr::f32 brilliance;
+        float brilliance;
 
-        std::vector<irr::f32> radarRangeNm;
-        void scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::f32 scenarioTime);
-        void addRaconString(irr::f32 raconEchoStrength, irr::f32 cellLength, irr::f32 contactRange, std::string raconCode);
-        void addRaconReturn(irr::f32 raconEchoStrength, irr::f32 cellLength, irr::f32 raconEchoLength, irr::f32 raconSpaceLength, irr::f32& raconEchoStart);
-        irr::f32 getSARTStrength(irr::f32 radarFactorSART, irr::f32 sartRange, irr::f32 localRange, irr::f32 relativeSARTAngle) const;
+        std::vector<float> radarRangeNm;
+        void scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, float weather, float rain, float tideHeight, float deltaTime, uint64_t absoluteTime, float scenarioTime);
+        void addRaconString(float raconEchoStrength, float cellLength, float contactRange, std::string raconCode);
+        void addRaconReturn(float raconEchoStrength, float cellLength, float raconEchoLength, float raconSpaceLength, float& raconEchoStart);
+        float getSARTStrength(float radarFactorSART, float sartRange, float localRange, float relativeSARTAngle) const;
         void updateARPA(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime);
         void updateArpaEstimate(ARPAContact& thisArpaContact, int contactID, const OwnShip& ownShip, irr::core::vector3d<int64_t> absolutePosition, uint64_t absoluteTime);
-        irr::f32 radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSeaClutter, irr::f32 radarRainClutter, irr::f32 weather, irr::f32 radarRange,irr::f32 radarBrgDeg, irr::f32 windDirectionDeg, irr::f32 radarInclinationAngle, irr::f32 rainIntensity);
-        void render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::f32 ownShipHeading, irr::f32 ownShipSpeed);
-        irr::f32 rangeAtAngle(irr::f32 checkAngle,irr::f32 centreX, irr::f32 centreZ, irr::f32 heading);
-        void drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::video::SColor colour, irr::f32 ownShipHeading);
-        void drawLine(irr::video::IImage * radarImage, irr::f32 startX, irr::f32 startY, irr::f32 endX, irr::f32 endY, irr::video::SColor colour);//Try with f32 as inputs so we can do interpolation based on the theoretical start and end
-        void drawCircle(irr::video::IImage * radarImage, irr::f32 centreX, irr::f32 centreY, irr::f32 radius, irr::video::SColor colour);//Try with f32 as inputs so we can do interpolation based on the theoretical start and end
-        bool isPointInEllipse(irr::f32 pointX, irr::f32 pointZ, irr::f32 centreX, irr::f32 centreZ, irr::f32 width, irr::f32 length, irr::f32 angle);
-        irr::video::SColor brill(irr::video::SColor originalColour, irr::f32 brilliance) const;
+        float radarNoise(float radarNoiseLevel, float radarSeaClutter, float radarRainClutter, float weather, float radarRange,float radarBrgDeg, float windDirectionDeg, float radarInclinationAngle, float rainIntensity);
+        void render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, float ownShipHeading, float ownShipSpeed);
+        float rangeAtAngle(float checkAngle,float centreX, float centreZ, float heading);
+        void drawSector(irr::video::IImage * radarImage,float centreX, float centreY, float innerRadius, float outerRadius, float startAngle, float endAngle, irr::video::SColor colour, float ownShipHeading);
+        void drawLine(irr::video::IImage * radarImage, float startX, float startY, float endX, float endY, irr::video::SColor colour);//Try with f32 as inputs so we can do interpolation based on the theoretical start and end
+        void drawCircle(irr::video::IImage * radarImage, float centreX, float centreY, float radius, irr::video::SColor colour);//Try with f32 as inputs so we can do interpolation based on the theoretical start and end
+        bool isPointInEllipse(float pointX, float pointZ, float centreX, float centreZ, float width, float length, float angle);
+        irr::video::SColor brill(irr::video::SColor originalColour, float brilliance) const;
 
 };
 

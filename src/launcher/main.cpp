@@ -44,19 +44,19 @@ namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;
 }
 
-const irr::s32 BC_BUTTON = 1;
-const irr::s32 MC_BUTTON = 2;
-const irr::s32 RP_BUTTON = 3;
-const irr::s32 ED_BUTTON = 4;
-const irr::s32 MH_BUTTON = 5;
-const irr::s32 INI_BC_BUTTON = 6;
-const irr::s32 INI_MC_BUTTON = 7;
-const irr::s32 INI_RP_BUTTON = 8;
-const irr::s32 INI_MH_BUTTON = 9;
-const irr::s32 DOC_BUTTON = 10;
-const irr::s32 USER_BUTTON = 11;
-const irr::s32 EXIT_BUTTON = 12;
-const irr::s32 COPY_USER = 13;
+const signed int BC_BUTTON = 1;
+const signed int MC_BUTTON = 2;
+const signed int RP_BUTTON = 3;
+const signed int ED_BUTTON = 4;
+const signed int MH_BUTTON = 5;
+const signed int INI_BC_BUTTON = 6;
+const signed int INI_MC_BUTTON = 7;
+const signed int INI_RP_BUTTON = 8;
+const signed int INI_MH_BUTTON = 9;
+const signed int DOC_BUTTON = 10;
+const signed int USER_BUTTON = 11;
+const signed int EXIT_BUTTON = 12;
+const signed int COPY_USER = 13;
 
 std::string userFolder;
 std::string prevUserFolder;
@@ -87,7 +87,7 @@ std::vector<std::string> getScenarioList(std::string scenarioPath) {
     }
 
     //List here
-    for (irr::u32 i = 0; i < fileList->getFileCount(); i++) {
+    for (unsigned int i = 0; i < fileList->getFileCount(); i++) {
         if (fileList->isDirectory(i)) {
             const irr::io::path& fileName = fileList->getFileName(i);
             if (fileName.findFirst('.') != 0) { //Check it doesn't start with '.' (., .., or hidden)
@@ -115,7 +115,7 @@ public:
     virtual bool OnEvent(const irr::SEvent& event)
     {
         if (event.EventType == irr::EET_GUI_EVENT) {
-            irr::s32 id = event.GUIEvent.Caller->getID();
+            signed int id = event.GUIEvent.Caller->getID();
             if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED ) {
 
                 if (id == EXIT_BUTTON) {
@@ -438,23 +438,23 @@ int main (int argc, char ** argv)
 	    fontScale = 1.0;
     }
 
-    irr::u32 graphicsWidth = 300;
-    irr::u32 graphicsHeight = 620;
-    irr::u32 graphicsDepth = 32;
+    unsigned int graphicsWidth = 300;
+    unsigned int graphicsHeight = 620;
+    unsigned int graphicsDepth = 32;
     bool fullScreen = false;
 
-    device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<unsigned int>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     irr::video::ITexture* imgTexture = driver->getTexture("media/logo.png");
-    irr::core::dimension2d<irr::u32> imgSize;
+    irr::core::dimension2d<unsigned int> imgSize;
     if (imgTexture) {
         imgSize = imgTexture->getSize();
     } else {
         // Fallback defaults
         imgSize = irr::core::dimension2du(289, 100);
     }
-    driver->OnResize(irr::core::dimension2d<irr::u32>(imgSize.Width, graphicsHeight));
+    driver->OnResize(irr::core::dimension2d<unsigned int>(imgSize.Width, graphicsHeight));
 
     #ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
@@ -505,49 +505,49 @@ int main (int argc, char ** argv)
     }
 
     y1 = imgSize.Height +   2*bR; y2 = y1 + 2*bH; 
-    irr::gui::IGUIButton* launchBC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
+    irr::gui::IGUIButton* launchBC    = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
     launchBC->setImage(driver->getTexture("media/startBC.png"));
     launchBC->setUseAlphaChannel();
 
-    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchED    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
+    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchED    = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
     launchED->setImage(driver->getTexture("media/startED.png"));
     launchED->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMC    = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
     launchMC->setImage(driver->getTexture("media/startMC.png"));
     launchMC->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchRP    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchRP    = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
     launchRP->setImage(driver->getTexture("media/startRP.png"));
     launchRP->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMH    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMH    = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
     launchMH->setImage(driver->getTexture("media/startMH.png"));
     launchMH->setUseAlphaChannel();
-    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
+    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
     launchINIBC->setImage(driver->getTexture("media/settings.png"));
     launchINIBC->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
     launchINIMC->setImage(driver->getTexture("media/settings.png"));
     launchINIMC->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
     launchINIRP->setImage(driver->getTexture("media/settings.png"));
     launchINIRP->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
     launchINIMH->setImage(driver->getTexture("media/settings.png"));
     launchINIMH->setUseAlphaChannel();
 
-    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
+    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
     launchDOC->setImage(driver->getTexture("media/startDOC.png"));
     launchDOC->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchFOLDER= device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,USER_BUTTON,language.translate("user").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchFOLDER= device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,USER_BUTTON,language.translate("user").c_str()); //i18n
     launchFOLDER->setImage(driver->getTexture("media/user.png"));
     launchFOLDER->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* leave       = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,EXIT_BUTTON,language.translate("leave").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* leave       = device->getGUIEnvironment()->addButton(irr::core::rect<signed int>(x1,y1,x2,y2),0,EXIT_BUTTON,language.translate("leave").c_str()); //i18n
     leave->setImage(driver->getTexture("media/leave.png"));
     leave->setUseAlphaChannel();
 
     std::string version = "v" + LONGVERSION; 
     irr::core::stringw wVer(version.c_str());
 
-    y1 = y2 + bR; y2 = y1 + bH; device->getGUIEnvironment()->addStaticText(wVer.c_str(), irr::core::rect<irr::s32>(180+ wVer.size(), y1, x2, y2), true);
+    y1 = y2 + bR; y2 = y1 + bH; device->getGUIEnvironment()->addStaticText(wVer.c_str(), irr::core::rect<signed int>(180+ wVer.size(), y1, x2, y2), true);
 
     device->getGUIEnvironment()->setFocus(launchBC);
 

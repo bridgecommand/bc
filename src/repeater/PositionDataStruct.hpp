@@ -21,7 +21,7 @@
 
 struct PositionData //To hold information about a position
 {
-    irr::f32 X, Z;
+    float X, Z;
     PositionData():X(0), Z(0){}
 };
 

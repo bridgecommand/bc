@@ -22,7 +22,7 @@
 
 struct ShipData : public PositionData //To hold information about a ship's position and heading
 {
-    irr::f32 heading;
+    float heading;
     ShipData():heading(0){}
 };
 

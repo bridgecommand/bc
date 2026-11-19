@@ -71,7 +71,7 @@ Network::~Network()
     enet_deinitialize();
 }
 
-void Network::update(irr::f32& time, ShipData& ownShipData)
+void Network::update(float& time, ShipData& ownShipData)
 {
     /* Wait up to 10 milliseconds for an event. */
     while (enet_host_service (server, & event, 10) > 0) {
@@ -114,7 +114,7 @@ int Network::getPort()
 
 }
 
-void Network::receiveMessage(irr::f32& time, ShipData& ownShipData)
+void Network::receiveMessage(float& time, ShipData& ownShipData)
 {
     //Assumes that event contains a received message
     /*printf ("A packet of length %u was received from %s on channel %u.\n",
@@ -143,23 +143,23 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData)
                 std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
                 //Time since start of scenario day 1 is record 2
                 if (timeData.size() > 0) {
-                    time = Utilities::lexical_cast<irr::f32>(timeData.at(2)); //
+                    time = Utilities::lexical_cast<float>(timeData.at(2)); //
                 }
 
                 //Position info is record 1
                 std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
                 if (positionData.size() == 9) { //9 elements in position data sent
-                    ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
-                    ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
-                    ownShipData.heading = Utilities::lexical_cast<irr::f32>(positionData.at(2));
+                    ownShipData.X = Utilities::lexical_cast<float>(positionData.at(0));
+                    ownShipData.Z = Utilities::lexical_cast<float>(positionData.at(1));
+                    ownShipData.heading = Utilities::lexical_cast<float>(positionData.at(2));
 
                     //In format rudder:wheel angle, so split to get wheel component, and just use cast to get rudder, discarding wheel part
-                    ownShipData.rudder = Utilities::lexical_cast<irr::f32>(positionData.at(8));
+                    ownShipData.rudder = Utilities::lexical_cast<float>(positionData.at(8));
                     std::vector<std::string> rudderWheelData = Utilities::split(positionData.at(8),':');
                     if (rudderWheelData.size() == 4) {
-                        ownShipData.wheel =  Utilities::lexical_cast<irr::f32>(rudderWheelData.at(1));
-                        ownShipData.portEngine = Utilities::lexical_cast<irr::f32>(rudderWheelData.at(2));
-                        ownShipData.stbdEngine = Utilities::lexical_cast<irr::f32>(rudderWheelData.at(2));
+                        ownShipData.wheel =  Utilities::lexical_cast<float>(rudderWheelData.at(1));
+                        ownShipData.portEngine = Utilities::lexical_cast<float>(rudderWheelData.at(2));
+                        ownShipData.stbdEngine = Utilities::lexical_cast<float>(rudderWheelData.at(2));
                     }
                 }
             } //Check correct number of records received
@@ -171,9 +171,9 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData)
             std::vector<std::string> positionData = Utilities::split(receivedString,',');
             if (positionData.size() == 5) { //5 elements in position data sent
                 //std::cout << "positionData.size() == 5" << std::endl;
-                ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
-                ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
-                ownShipData.heading = Utilities::lexical_cast<irr::f32>(positionData.at(2));
+                ownShipData.X = Utilities::lexical_cast<float>(positionData.at(0));
+                ownShipData.Z = Utilities::lexical_cast<float>(positionData.at(1));
+                ownShipData.heading = Utilities::lexical_cast<float>(positionData.at(2));
             }
         }
     } //Check message at least 3 characters

@@ -17,11 +17,11 @@
 #include "EventReceiver.hpp"
 
     EventReceiver::EventReceiver(
-        irr::s32 pauseButtonID, 
-        irr::s32 runButtonID,
-        irr::s32 timeForwardButtonID,
-        irr::s32 timeBackwardButtonID,
-        irr::f32 initialAccelerator) //Constructor
+        signed int pauseButtonID, 
+        signed int runButtonID,
+        signed int timeForwardButtonID,
+        signed int timeBackwardButtonID,
+        float initialAccelerator) //Constructor
 	{
 		accelerator = initialAccelerator;
         timeShift = 0;
@@ -34,7 +34,7 @@
     bool EventReceiver::OnEvent(const irr::SEvent& event)
 	{
         if (event.EventType == irr::EET_GUI_EVENT) {
-			irr::s32 id = event.GUIEvent.Caller->getID();
+			signed int id = event.GUIEvent.Caller->getID();
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED)
             {
                 if (id == pauseButtonID) {
@@ -64,14 +64,14 @@
         return false;
     }
 
-    irr::f32 EventReceiver::getAccelerator() const
+    float EventReceiver::getAccelerator() const
     {
         return accelerator;
     }
 
-    irr::f32 EventReceiver::getAndResetTimeShift()
+    float EventReceiver::getAndResetTimeShift()
     {
-        irr::f32 returnValue = timeShift;
+        float returnValue = timeShift;
         timeShift = 0;
         return returnValue;
     }

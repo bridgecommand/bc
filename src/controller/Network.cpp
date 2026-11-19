@@ -120,7 +120,7 @@ std::string Network::findWorldName()
     return worldName;
 }
 
-void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride)
+void Network::update(float& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, float& weather, float& visibility, float& rain, bool& mobVisible, PositionData& mobData, float& windDirection, float& windSpeed, float& streamDirection, float& streamSpeed, bool& streamOverride)
 {
     /* Wait up to 10 milliseconds for an event. */
     while (enet_host_service (server, & event, 10) > 0) {
@@ -188,7 +188,7 @@ void Network::sendMessage(ENetPeer* peer, enet_uint8 channel)
     }
 }
 
-void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride)
+void Network::receiveMessage(float& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, float& weather, float& visibility, float& rain, bool& mobVisible, PositionData& mobData, float& windDirection, float& windSpeed, float& streamDirection, float& streamSpeed, bool& streamOverride)
 {
     //Assumes that event contains a received message
     /*printf ("A packet of length %u was received from %s on channel %u.\n",
@@ -215,7 +215,7 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<
 
 }
 
-void Network::findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride) {
+void Network::findDataFromString(const std::string& receivedString, float& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, float& weather, float& visibility, float& rain, bool& mobVisible, PositionData& mobData, float& windDirection, float& windSpeed, float& streamDirection, float& streamSpeed, bool& streamOverride) {
 //Split into main parts
     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
@@ -226,7 +226,7 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
         std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
         //Time since start of scenario day 1 is record 2
         if (timeData.size() > 0) {
-            time = Utilities::lexical_cast<irr::f32>(timeData.at(2)); //
+            time = Utilities::lexical_cast<float>(timeData.at(2)); //
         }
 
         //Position info is record 1
@@ -236,8 +236,8 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
         //Numbers of objects in record 2 (Others, buoys, MOBs, lines)
         std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
         if (numberData.size() == 4) {
-            irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
-            irr::u32 numberBuoys  = Utilities::lexical_cast<irr::u32>(numberData.at(1));
+            unsigned int numberOthers = Utilities::lexical_cast<unsigned int>(numberData.at(0));
+            unsigned int numberBuoys  = Utilities::lexical_cast<unsigned int>(numberData.at(1));
 
             //Update other ship data
             std::vector<std::string> otherShipsDataString = Utilities::split(receivedData.at(3),'|');
@@ -255,14 +255,14 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
 
         //Update MOB data
         //BEGIN COPY FROM BC
-        irr::u32 numberMOB = Utilities::lexical_cast<irr::u32>(numberData.at(2));
+        unsigned int numberMOB = Utilities::lexical_cast<unsigned int>(numberData.at(2));
         if (numberMOB==1) {
             //MOB should be visible, find if we have an MOB position record with two items (record 5)
             //TODO: TEST!
             std::vector<std::string> mobStringData = Utilities::split(receivedData.at(5),',');
             if (mobStringData.size()==2) {
-                mobData.X = Utilities::lexical_cast<irr::f32>(mobStringData.at(0));
-                mobData.Z = Utilities::lexical_cast<irr::f32>(mobStringData.at(1));
+                mobData.X = Utilities::lexical_cast<float>(mobStringData.at(0));
+                mobData.Z = Utilities::lexical_cast<float>(mobStringData.at(1));
                 mobVisible=true;
             } else {
                 mobVisible = false;
@@ -280,13 +280,13 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
         std::vector<std::string> weatherData = Utilities::split(receivedData.at(7),',');
         if (weatherData.size() == 8) {
             //Weather at 0, Vis at 1, rain at 3
-            weather = Utilities::lexical_cast<irr::f32>(weatherData.at(0));
-            visibility = Utilities::lexical_cast<irr::f32>(weatherData.at(1));
-            windDirection = Utilities::lexical_cast<irr::f32>(weatherData.at(2));
-            rain = Utilities::lexical_cast<irr::f32>(weatherData.at(3));
-            windSpeed = Utilities::lexical_cast<irr::f32>(weatherData.at(4));
-            streamDirection = Utilities::lexical_cast<irr::f32>(weatherData.at(5));
-            streamSpeed = Utilities::lexical_cast<irr::f32>(weatherData.at(6));
+            weather = Utilities::lexical_cast<float>(weatherData.at(0));
+            visibility = Utilities::lexical_cast<float>(weatherData.at(1));
+            windDirection = Utilities::lexical_cast<float>(weatherData.at(2));
+            rain = Utilities::lexical_cast<float>(weatherData.at(3));
+            windSpeed = Utilities::lexical_cast<float>(weatherData.at(4));
+            streamDirection = Utilities::lexical_cast<float>(weatherData.at(5));
+            streamSpeed = Utilities::lexical_cast<float>(weatherData.at(6));
             streamOverride = (weatherData.at(7)=="1");
         }
 
@@ -296,9 +296,9 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
 void Network::findOwnShipPositionData(const std::vector<std::string>& positionData, ShipData& ownShipData)
 {
     if (positionData.size() == 9) { //9 elements in position data sent
-        ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
-        ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
-        ownShipData.heading = Utilities::lexical_cast<irr::f32>(positionData.at(2));
+        ownShipData.X = Utilities::lexical_cast<float>(positionData.at(0));
+        ownShipData.Z = Utilities::lexical_cast<float>(positionData.at(1));
+        ownShipData.heading = Utilities::lexical_cast<float>(positionData.at(2));
     }
 }
 
@@ -315,13 +315,13 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
         exit(EXIT_FAILURE);
     }
 
-    for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
+    for (unsigned int i=0; i<otherShipsDataString.size(); i++) {
         std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
         if (thisShipData.size() == 9) { //9 elements for each ship
             //Update data
-            otherShipsData.at(i).X=Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
-            otherShipsData.at(i).Z=Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
-            otherShipsData.at(i).mmsi =Utilities::lexical_cast<irr::u32>(thisShipData.at(6));
+            otherShipsData.at(i).X=Utilities::lexical_cast<float>(thisShipData.at(0));
+            otherShipsData.at(i).Z=Utilities::lexical_cast<float>(thisShipData.at(1));
+            otherShipsData.at(i).mmsi =Utilities::lexical_cast<unsigned int>(thisShipData.at(6));
             
             // SART
             if (thisShipData.at(5) == "1") {
@@ -331,7 +331,7 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
             }
 
             // Leg data
-            irr::u32 numberOfLegs = Utilities::lexical_cast<irr::u32>(thisShipData.at(7));
+            unsigned int numberOfLegs = Utilities::lexical_cast<unsigned int>(thisShipData.at(7));
             std::vector<std::string> legsDataString = Utilities::split(thisShipData.at(8),'/');
             if (numberOfLegs == legsDataString.size()) {
                 //Ensure legs vector is the right size
@@ -346,12 +346,12 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
                 }
 
                 //Populate the leg data
-                for (irr::u32 j=0; j<legsDataString.size(); j++) {
+                for (unsigned int j=0; j<legsDataString.size(); j++) {
                     std::vector<std::string> thisLegData = Utilities::split(legsDataString.at(j),':');
                     if (thisLegData.size() ==3) {
-                        otherShipsData.at(i).legs.at(j).bearing = Utilities::lexical_cast<irr::f32>(thisLegData.at(0));
-                        otherShipsData.at(i).legs.at(j).speed = Utilities::lexical_cast<irr::f32>(thisLegData.at(1));
-                        otherShipsData.at(i).legs.at(j).startTime = Utilities::lexical_cast<irr::f32>(thisLegData.at(2));
+                        otherShipsData.at(i).legs.at(j).bearing = Utilities::lexical_cast<float>(thisLegData.at(0));
+                        otherShipsData.at(i).legs.at(j).speed = Utilities::lexical_cast<float>(thisLegData.at(1));
+                        otherShipsData.at(i).legs.at(j).startTime = Utilities::lexical_cast<float>(thisLegData.at(2));
 
                         //std::cout << "Ship " << i << " Leg " << j << " Bearing " << otherShipsData.at(i).legs.at(j).bearing << " Speed " << otherShipsData.at(i).legs.at(j).speed << " Start Time " << otherShipsData.at(i).legs.at(j).startTime << std::endl;
 
@@ -378,12 +378,12 @@ void Network::findBuoyPositionData(const std::vector<std::string>&buoysDataStrin
         exit(EXIT_FAILURE);
     }
 
-    for (irr::u32 i=0; i<buoysDataString.size(); i++) {
+    for (unsigned int i=0; i<buoysDataString.size(); i++) {
         std::vector<std::string> thisBuoyData = Utilities::split(buoysDataString.at(i),',');
         if (thisBuoyData.size() == 2) {
             //Update data
-            buoysData.at(i).X=Utilities::lexical_cast<irr::u32>(thisBuoyData.at(0));
-            buoysData.at(i).Z=Utilities::lexical_cast<irr::u32>(thisBuoyData.at(1));
+            buoysData.at(i).X=Utilities::lexical_cast<unsigned int>(thisBuoyData.at(0));
+            buoysData.at(i).Z=Utilities::lexical_cast<unsigned int>(thisBuoyData.at(1));
         } //Check if buoy data contains 2 elements for X,Z
     } //Iterate through buoys
 }

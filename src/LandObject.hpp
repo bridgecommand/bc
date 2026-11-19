@@ -27,14 +27,14 @@ class Terrain;
 class LandObject
 {
     public:
-        LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, bool dummyObject = false, irr::f32 sectionLength = 1.0f);
+        LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, float rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, bool dummyObject = false, float sectionLength = 1.0f);
         virtual ~LandObject();
         irr::core::vector3df getPosition() const;
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void moveNode(float deltaX, float deltaY, float deltaZ);
         irr::scene::ISceneNode* getSceneNode() const;
         void enableTriangleSelector(bool selectorEnabled);
         bool getFloating() const;
-        irr::f32 getHeightCorrection() const;
+        float getHeightCorrection() const;
         void setPosition(irr::core::vector3df position);
     protected:
     private:
@@ -43,9 +43,9 @@ class LandObject
         irr::scene::ITriangleSelector* selector; //The triangle selector for the buoy. We will set and unset this depending on the distance from the ownship for speed
         bool triangleSelectorEnabled;
         bool collisionObject;
-        irr::f32 heightCorrection;
+        float heightCorrection;
         bool floating;
-        irr::f32 findContactYFromRay(irr::core::line3d<irr::f32> ray);
+        float findContactYFromRay(irr::core::line3d<float> ray);
 };
 
 #endif

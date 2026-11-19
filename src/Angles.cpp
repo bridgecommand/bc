@@ -46,7 +46,7 @@ bool Angles::isAngleBetween(irr::core::vector2df angle, irr::core::vector2df sta
            ((angle.Y * endAng.X-angle.X * endAng.Y) * (startAng.Y*endAng.X-startAng.X*endAng.Y) >= 0); //Is direction from checked to end and start to end the same?
 }
 
-bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) {
+bool Angles::isAngleBetween(float angle, float startAng, float endAng) {
 
     //Return false if any is not a normal number (e.g. NaN)
     if (localisinf(angle) || localisnan(angle) || localisinf(startAng) || localisnan(startAng) || localisinf(endAng) || localisnan(endAng)) {
@@ -73,7 +73,7 @@ bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) 
     }
 }
 
-irr::f32 Angles::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-360
+float Angles::normaliseAngle(float angle) { //ensure angle is in range 0-360
 
     //Return unchanged if NaN etc.
     if (localisinf(angle) || localisnan(angle)) {
@@ -91,7 +91,7 @@ irr::f32 Angles::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-3
     return angle;
 }
 
-irr::core::vector3df Angles::irrAnglesFromYawPitchRoll(irr::f32 yaw, irr::f32 pitch, irr::f32 roll)
+irr::core::vector3df Angles::irrAnglesFromYawPitchRoll(float yaw, float pitch, float roll)
 //Convert yaw,pitch,roll (in degrees) into irrlicht 'euler angles' in degrees, as used by setRotation,
 //essentially changing the order the transformations are applied in.
 {

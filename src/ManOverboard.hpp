@@ -31,8 +31,8 @@ class ManOverboard
         bool getVisible() const;
         void setPosition(irr::core::vector3df position);
         void setRotation(irr::core::vector3df rotation);
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void update(irr::f32 deltaTime, irr::f32 tideHeight);
+        void moveNode(float deltaX, float deltaY, float deltaZ);
+        void update(float deltaTime, float tideHeight);
         irr::scene::ISceneNode* getSceneNode() const;
     protected:
     private:

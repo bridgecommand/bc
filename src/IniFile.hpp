@@ -24,13 +24,13 @@ namespace IniFile
 {
     extern irr::ILogger* irrlichtLogger;
 
-    std::string enumerate1(std::string commandName, irr::s32 number);
-    std::string enumerate2(std::string commandName, irr::s32 number1, irr::s32 number2);
+    std::string enumerate1(std::string commandName, signed int number);
+    std::string enumerate2(std::string commandName, signed int number1, signed int number2);
 
     std::string iniFileToString(const std::string &fileName, const std::string &key, const std::string &defValue = "");
-    irr::u32 iniFileTou32(const std::string &fileName, const std::string &key, irr::u32 defValue = 0);
-    irr::s32 iniFileTos32(const std::string &fileName, const std::string &key, irr::s32 defValue = 0);
-    irr::f32 iniFileTof32(const std::string &fileName, const std::string &key, irr::f32 defValue = 0.f);
+    unsigned int iniFileTou32(const std::string &fileName, const std::string &key, unsigned int defValue = 0);
+    signed int iniFileTos32(const std::string &fileName, const std::string &key, signed int defValue = 0);
+    float iniFileTof32(const std::string &fileName, const std::string &key, float defValue = 0.f);
 }
 
 #endif

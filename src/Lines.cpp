@@ -63,7 +63,7 @@ void Lines::setLineStart(irr::scene::ISceneNode* lineStart,  int nodeType, int i
 }
 
 //Set the end point of the most recently added line
-void Lines::setLineEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id, irr::f32 lengthFactor, bool networkLine, int lineID)
+void Lines::setLineEnd(irr::scene::ISceneNode* lineEnd, float shipMass, int nodeType, int id, float lengthFactor, bool networkLine, int lineID)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -231,7 +231,7 @@ int Lines::getSelectedLine() const {
     return selectedLine;
 }
 
-irr::f32 Lines::getLineStartX(int lineID, bool networkLine)
+float Lines::getLineStartX(int lineID, bool networkLine)
 {
     
     std::vector<Line>* thisLines;
@@ -250,7 +250,7 @@ irr::f32 Lines::getLineStartX(int lineID, bool networkLine)
     }
 }
 
-irr::f32 Lines::getLineStartY(int lineID, bool networkLine)
+float Lines::getLineStartY(int lineID, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -268,7 +268,7 @@ irr::f32 Lines::getLineStartY(int lineID, bool networkLine)
     }
 }
 
-irr::f32 Lines::getLineStartZ(int lineID, bool networkLine)
+float Lines::getLineStartZ(int lineID, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -286,7 +286,7 @@ irr::f32 Lines::getLineStartZ(int lineID, bool networkLine)
     }
 }
 
-irr::f32 Lines::getLineEndX(int lineID, bool networkLine)
+float Lines::getLineEndX(int lineID, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -304,7 +304,7 @@ irr::f32 Lines::getLineEndX(int lineID, bool networkLine)
     }
 }
 
-irr::f32 Lines::getLineEndY(int lineID, bool networkLine)
+float Lines::getLineEndY(int lineID, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -322,7 +322,7 @@ irr::f32 Lines::getLineEndY(int lineID, bool networkLine)
     }
 }
 
-irr::f32 Lines::getLineEndZ(int lineID, bool networkLine)
+float Lines::getLineEndZ(int lineID, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -412,7 +412,7 @@ int Lines::getLineEndID(int lineID, bool networkLine)
     }
 }
 
-irr::f32 Lines::getLineNominalLength(int lineID, bool networkLine)
+float Lines::getLineNominalLength(int lineID, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -430,7 +430,7 @@ irr::f32 Lines::getLineNominalLength(int lineID, bool networkLine)
     }
 }
 
-void Lines::setLineNominalLength(int lineID, irr::f32 lineNominalLength, bool networkLine)
+void Lines::setLineNominalLength(int lineID, float lineNominalLength, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -444,7 +444,7 @@ void Lines::setLineNominalLength(int lineID, irr::f32 lineNominalLength, bool ne
     }
 }
 
-irr::f32 Lines::getLineBreakingTension(int lineID, bool networkLine)
+float Lines::getLineBreakingTension(int lineID, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -462,7 +462,7 @@ irr::f32 Lines::getLineBreakingTension(int lineID, bool networkLine)
     }
 }
 
-void Lines::setLineBreakingTension(int lineID, irr::f32 lineBreakingTension, bool networkLine)
+void Lines::setLineBreakingTension(int lineID, float lineBreakingTension, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -476,7 +476,7 @@ void Lines::setLineBreakingTension(int lineID, irr::f32 lineBreakingTension, boo
     }
 }
 
-irr::f32 Lines::getLineBreakingStrain(int lineID, bool networkLine)
+float Lines::getLineBreakingStrain(int lineID, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -494,7 +494,7 @@ irr::f32 Lines::getLineBreakingStrain(int lineID, bool networkLine)
     }
 }
 
-void Lines::setLineBreakingStrain(int lineID, irr::f32 lineBreakingStrain, bool networkLine)
+void Lines::setLineBreakingStrain(int lineID, float lineBreakingStrain, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -508,7 +508,7 @@ void Lines::setLineBreakingStrain(int lineID, irr::f32 lineBreakingStrain, bool 
     }
 }
 
-irr::f32 Lines::getLineNominalShipMass(int lineID, bool networkLine)
+float Lines::getLineNominalShipMass(int lineID, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -526,7 +526,7 @@ irr::f32 Lines::getLineNominalShipMass(int lineID, bool networkLine)
     }
 }
 
-void Lines::setLineNominalShipMass(int lineID, irr::f32 lineNominalShipMass, bool networkLine)
+void Lines::setLineNominalShipMass(int lineID, float lineNominalShipMass, bool networkLine)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -540,7 +540,7 @@ void Lines::setLineNominalShipMass(int lineID, irr::f32 lineNominalShipMass, boo
     }
 }
 
-void Lines::update(irr::f32 deltaTime) {
+void Lines::update(float deltaTime) {
     for(std::vector<Line>::iterator it = lines.begin(); it != lines.end(); ++it) {
         it->update(deltaTime);
     }

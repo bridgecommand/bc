@@ -147,7 +147,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             rightMouseDown = true;
             // Force focus on right click
             irr::gui::IGUIElement *overElement;
-            overElement = device->getGUIEnvironment()->getRootGUIElement()->getElementFromPoint(irr::core::position2d<irr::s32>(event.MouseInput.X, event.MouseInput.Y));
+            overElement = device->getGUIEnvironment()->getRootGUIElement()->getElementFromPoint(irr::core::position2d<signed int>(event.MouseInput.X, event.MouseInput.Y));
             if (overElement)
             {
                 device->getGUIEnvironment()->setFocus(overElement);
@@ -167,16 +167,16 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 // Ignore click if over a gui element (getElementFromPoint will return root element if not over anything else)
                 irr::gui::IGUIElement* rootGUIElement = device->getGUIEnvironment()->getRootGUIElement();
-                irr::gui::IGUIElement* clickElement = rootGUIElement->getElementFromPoint(irr::core::position2d<irr::s32>(event.MouseInput.X, event.MouseInput.Y));
+                irr::gui::IGUIElement* clickElement = rootGUIElement->getElementFromPoint(irr::core::position2d<signed int>(event.MouseInput.X, event.MouseInput.Y));
                 if (clickElement == rootGUIElement)
                 {
                     // Scale if required because 3d view may be different
-                    irr::s32 scaledMouseY = mouseClickY;
+                    signed int scaledMouseY = mouseClickY;
                     if (gui->getShowInterface())
                     {
                         scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
                     }
-                    irr::core::line3df rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY));
+                    irr::core::line3df rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<signed int>(mouseClickX, scaledMouseY));
                     handleMooringLines(rayForLines);
                 }
             }
@@ -190,8 +190,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             focussedElement = device->getGUIEnvironment()->getFocus();
             if (!focussedElement)
             {
-                irr::s32 deltaX = event.MouseInput.X - mouseClickX;
-                irr::s32 deltaY = event.MouseInput.Y - mouseClickY;
+                signed int deltaX = event.MouseInput.X - mouseClickX;
+                signed int deltaY = event.MouseInput.Y - mouseClickY;
                 model->changeLookPx(deltaX, deltaY);
             }
             // Store for next time
@@ -215,7 +215,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
     if (event.EventType == irr::EET_GUI_EVENT)
     {
-        irr::s32 id = event.GUIEvent.Caller->getID();
+        signed int id = event.GUIEvent.Caller->getID();
 
         if (event.GUIEvent.EventType == irr::gui::EGET_LISTBOX_SELECTED_AGAIN)
         {
@@ -315,7 +315,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_STBD_SCROLL_BAR)
             {
-                irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / -100.0; // Convert to from +-100 to +-1, and invert up/down
+                float value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / -100.0; // Convert to from +-100 to +-1, and invert up/down
                 model->setStbdEngine(value);
                 // If right mouse button, set the other engine as well
                 if (rightMouseDown)
@@ -325,7 +325,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }
             if (id == GUIMain::GUI_ID_PORT_SCROLL_BAR)
             {
-                irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / -100.0; // Convert to from +-100 to +-1, and invert up/down
+                float value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / -100.0; // Convert to from +-100 to +-1, and invert up/down
                 model->setPortEngine(value);
                 // If right mouse button, set the other engine as well
                 if (rightMouseDown)
@@ -363,21 +363,21 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 // as in practice if you want to steer with only one schottel, you just
                 // leave the other dead ahead, for small steering corrections then that
                 // is adequate
-                irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
+                float angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
                 // not intersted in magnitude
                 model->setPortSchottel(angle);
             } // end if schottel port
 
             if (id == GUIMain::GUI_ID_SCHOTTEL_STBD)
             {
-                irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
+                float angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
                 // not intersted in magnitude
                 model->setStbdSchottel(angle);
             } // end if schottel stbd
 
             if (id == GUIMain::GUI_ID_AZIMUTH_ENGINE_PORT)
             {
-                irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
+                float angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
                                                                                                // we arent interested in the getMag
                                                                                                // DEE_Boxing_Day_2022 vvvv
 
@@ -388,7 +388,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_AZIMUTH_ENGINE_STBD)
             {
                 // DEE_Boxing_Day_2022 vvvv
-                irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
+                float angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
                                                                                                // we arent interested in the getMag
                                                                                                // DEE_Boxing_Day_2022 vvvv
                 model->setStbdAzimuthThrustLever(model->inputToAzimuthEngineMapping(angle));
@@ -399,12 +399,12 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_BOWTHRUSTER_SCROLL_BAR)
             {
-                irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from +-100 to +-1
+                float value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from +-100 to +-1
                 model->setBowThruster(value);
             }
             if (id == GUIMain::GUI_ID_STERNTHRUSTER_SCROLL_BAR)
             {
-                irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from +-100 to +-1
+                float value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from +-100 to +-1
                 model->setSternThruster(value);
             }
 
@@ -422,7 +422,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }
             if (id == GUIMain::GUI_ID_RADAR_BRILL_SCROLL_BAR)
             {
-                irr::f32 value = ((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from 0-100 to 0-1
+                float value = ((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from 0-100 to 0-1
                 model->setBrilliance(value);
             }
             if (id == GUIMain::GUI_ID_WEATHER_SCROLL_BAR)
@@ -455,8 +455,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }   
             if (id == GUIMain::GUI_ID_MAGNIFICATION_SCROLL_BAR)
             {   
-                irr::s32 rawZoomLevel = ((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-                irr::f32 zoomLevel = (irr::f32)rawZoomLevel / 10.0;
+                signed int rawZoomLevel = ((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+                float zoomLevel = (float)rawZoomLevel / 10.0;
                 if (rawZoomLevel > 10) {
                     gui->zoomOn();
                     model->setZoom(true, zoomLevel);
@@ -785,7 +785,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if ((id == GUIMain::GUI_ID_ARPA_ON_BOX || id == GUIMain::GUI_ID_BIG_ARPA_ON_BOX))
             {
                 // ARPA on/off options
-                irr::s32 boxState = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
+                signed int boxState = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
                 model->setArpaMode(boxState);
 
                 // Set the linked checkbox (big/small radar window)
@@ -794,7 +794,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_ARPA_TRUE_REL_BOX || id == GUIMain::GUI_ID_BIG_ARPA_TRUE_REL_BOX)
             {
-                irr::s32 selected = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
+                signed int selected = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
                 if (selected == 0)
                 {
                     model->setRadarARPATrue();
@@ -823,7 +823,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             std::wstring boxWString = std::wstring(((irr::gui::IGUIEditBox *)event.GUIEvent.Caller)->getText());
             std::string boxString(boxWString.begin(), boxWString.end());
-            irr::f32 value = Utilities::lexical_cast<irr::f32>(boxString);
+            float value = Utilities::lexical_cast<float>(boxString);
 
             if (value > 0 && value <= 60)
             {
@@ -873,7 +873,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 }
 
                 // Get PI data for the newly selected PI
-                irr::s32 selectedPI = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected(); //(-1 or 0-9)
+                signed int selectedPI = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected(); //(-1 or 0-9)
                 // TODO: Use this to get data from model, and set fields
                 irr::gui::IGUIElement *piBrg = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_BEARING_BOX, true);
                 irr::gui::IGUIElement *piRng = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_RANGE_BOX, true);
@@ -937,15 +937,15 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     irr::gui::IGUIElement *piRng = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_RANGE_BOX, true);
                     if (piCombo && piBrg && piRng)
                     {
-                        irr::s32 selectedPI = ((irr::gui::IGUIComboBox *)piCombo)->getSelected(); //(0-9)
+                        signed int selectedPI = ((irr::gui::IGUIComboBox *)piCombo)->getSelected(); //(0-9)
 
                         std::wstring brgWString = std::wstring(piBrg->getText());
                         std::string brgString(brgWString.begin(), brgWString.end());
-                        irr::f32 bearingChosen = Utilities::lexical_cast<irr::f32>(brgString);
+                        float bearingChosen = Utilities::lexical_cast<float>(brgString);
 
                         std::wstring rngWString = std::wstring(piRng->getText());
                         std::string rngString(rngWString.begin(), rngWString.end());
-                        irr::f32 rangeChosen = Utilities::lexical_cast<irr::f32>(rngString);
+                        float rangeChosen = Utilities::lexical_cast<float>(rngString);
 
                         // Apply to model
                         model->setPIData(selectedPI, bearingChosen, rangeChosen);
@@ -1369,24 +1369,24 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         }
 
         // Keep joystick values the same unless they are being changed by user input
-        irr::f32 newJoystickPort = previousJoystickPort;
-        irr::f32 newJoystickStbd = previousJoystickStbd;
-        irr::f32 newJoystickRudder = previousJoystickRudder;
+        float newJoystickPort = previousJoystickPort;
+        float newJoystickStbd = previousJoystickStbd;
+        float newJoystickRudder = previousJoystickRudder;
 
         // DEE 10JAN23 vvvv Azimuth drive physical controls
         // for disambuigity then define a separate variable for thrust levers, as they control the engine but are not the engine
-        irr::f32 newJoystickThrustLeverPort = previousJoystickThrustLeverPort;
-        irr::f32 newJoystickThrustLeverStbd = previousJoystickThrustLeverStbd;
+        float newJoystickThrustLeverPort = previousJoystickThrustLeverPort;
+        float newJoystickThrustLeverStbd = previousJoystickThrustLeverStbd;
         // DEE 10JAN23 ^^^^
 
         // DEE 10JAN23 vvvv
-        //            irr::f32 newJoystickAzimuthAngPort = previousJoystickAzimuthAngPort;
-        //            irr::f32 newJoystickAzimuthAngStbd = previousJoystickAzimuthAngStbd;
-        irr::f32 newJoystickSchottelPort = previousJoystickSchottelPort;
-        irr::f32 newJoystickSchottelStbd = previousJoystickSchottelStbd;
+        //            float newJoystickAzimuthAngPort = previousJoystickAzimuthAngPort;
+        //            float newJoystickAzimuthAngStbd = previousJoystickAzimuthAngStbd;
+        float newJoystickSchottelPort = previousJoystickSchottelPort;
+        float newJoystickSchottelStbd = previousJoystickSchottelStbd;
         // DEE 10JAN23 ^^^^
-        irr::f32 newJoystickBowThruster = previousJoystickBowThruster;
-        irr::f32 newJoystickSternThruster = previousJoystickSternThruster;
+        float newJoystickBowThruster = previousJoystickBowThruster;
+        float newJoystickSternThruster = previousJoystickSternThruster;
 
         for (irr::u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++)
         {
@@ -1514,8 +1514,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         bool stbdChanged = fabs(newJoystickStbd - previousJoystickStbd) > 0.01;
         bool wheelChanged = fabs(newJoystickRudder - previousJoystickRudder) > 0.01;
         // DEE 10JAN23 vvvv
-        //	    irr::f32 azimuth1AngChange = fabs(newJoystickAzimuthAngPort - previousJoystickAzimuthAngPort);
-        //          irr::f32 azimuth2AngChange = fabs(newJoystickAzimuthAngStbd - previousJoystickAzimuthAngStbd);
+        //	    float azimuth1AngChange = fabs(newJoystickAzimuthAngPort - previousJoystickAzimuthAngPort);
+        //          float azimuth2AngChange = fabs(newJoystickAzimuthAngStbd - previousJoystickAzimuthAngStbd);
 
         bool thrustLeverPortChanged = fabs(newJoystickThrustLeverPort - previousJoystickThrustLeverPort) > 0.01;
         bool thrustLeverStbdChanged = fabs(newJoystickThrustLeverStbd - previousJoystickThrustLeverStbd) > 0.01;
@@ -1524,7 +1524,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         // DEE 10JAN23 ^^^^
 
         // DEE
-        //            irr::f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
+        //            float rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
         bool bowThrusterChanged = fabs(newJoystickBowThruster - previousJoystickBowThruster) > 0.01;
         bool sternThrusterChanged = fabs(newJoystickSternThruster - previousJoystickSternThruster) > 0.01;
         // DEE
@@ -1543,7 +1543,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (newJoystickPort < INFINITY && (joystickSetup.updateAllAxes || portChanged))
             { // refers to the port engine control
-                irr::f32 mappedValue = lookup1D(newJoystickPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
+                float mappedValue = lookup1D(newJoystickPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
                 // DEE 10JAN23 vvvv
                 // if this an azidrive then change thrust lever.  In fact in the future I suggest that all engines are controlled via thrust lever
                 // as the bigger the engine, then the longer the spool up time is.
@@ -1557,7 +1557,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (newJoystickStbd < INFINITY && (joystickSetup.updateAllAxes || stbdChanged))
             { // refers to the starboard engine control
-                irr::f32 mappedValue = lookup1D(newJoystickStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
+                float mappedValue = lookup1D(newJoystickStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
                 if (!(model->isAzimuthDrive()))
                 {
                     model->setStbdEngine(mappedValue);
@@ -1575,7 +1575,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 if (newJoystickThrustLeverPort < INFINITY && (joystickSetup.updateAllAxes || thrustLeverPortChanged))
                 {
 
-                    irr::f32 mappedValue = lookup1D(newJoystickThrustLeverPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
+                    float mappedValue = lookup1D(newJoystickThrustLeverPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
                     if (model->isAzimuthAsternAllowed()) {
                         model->setPortAzimuthThrustLever(newJoystickThrustLeverPort);
                     } else {
@@ -1590,7 +1590,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 // Stbd Thrust Lever
                 if (newJoystickThrustLeverStbd < INFINITY && (joystickSetup.updateAllAxes || thrustLeverStbdChanged))
                 {
-                    irr::f32 mappedValue = lookup1D(newJoystickThrustLeverStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
+                    float mappedValue = lookup1D(newJoystickThrustLeverStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
                     if (model->isAzimuthAsternAllowed()) {
                         model->setStbdAzimuthThrustLever(newJoystickThrustLeverStbd);
                     } else {
@@ -1651,8 +1651,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             joystickPreviousButtonStates.push_back(0); // All zeros equivalent to no buttons pressed
         }
 
-        irr::u32 thisButtonState = event.JoystickEvent.ButtonStates;
-        irr::u32 previousButtonState = joystickPreviousButtonStates.at(thisJoystick);
+        unsigned int thisButtonState = event.JoystickEvent.ButtonStates;
+        unsigned int previousButtonState = joystickPreviousButtonStates.at(thisJoystick);
 
         // Horn
         if (thisJoystick == joystickSetup.joystickNoHorn)
@@ -2077,7 +2077,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
     return false;
 }
 
-irr::f32 MyEventReceiver::lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints)
+float MyEventReceiver::lookup1D(float lookupValue, std::vector<float> inputPoints, std::vector<float> outputPoints)
 {
     // Check that the input and output points list are the same length
     if (inputPoints.size() != outputPoints.size() || inputPoints.size() < 2)
@@ -2086,7 +2086,7 @@ irr::f32 MyEventReceiver::lookup1D(irr::f32 lookupValue, std::vector<irr::f32> i
         return 0;
     }
 
-    std::vector<irr::f32>::size_type numberOfPoints = inputPoints.size();
+    std::vector<float>::size_type numberOfPoints = inputPoints.size();
 
     // Check that inputPoints does not have decreasing values (must be increasing or equal)
     for (unsigned int i = 0; i + 1 < numberOfPoints; i++)
@@ -2126,7 +2126,7 @@ irr::f32 MyEventReceiver::lookup1D(irr::f32 lookupValue, std::vector<irr::f32> i
     return outputPoints.at(nextPoint - 1) + (outputPoints.at(nextPoint) - outputPoints.at(nextPoint - 1)) * (lookupValue - inputPoints.at(nextPoint - 1)) / (inputPoints.at(nextPoint) - inputPoints.at(nextPoint - 1));
 }
 
-std::wstring MyEventReceiver::f32To3dp(irr::f32 value, bool stripZeros)
+std::wstring MyEventReceiver::f32To3dp(float value, bool stripZeros)
 {
     // Convert a floating point value to a wstring, with 3dp
     char tempStr[100];
@@ -2147,7 +2147,7 @@ std::wstring MyEventReceiver::f32To3dp(irr::f32 value, bool stripZeros)
     return outputWstring;
 }
 
-bool MyEventReceiver::IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) const
+bool MyEventReceiver::IsButtonPressed(unsigned int button, unsigned int buttonBitmap) const
 {
     if (button >= 32)
         return false;
@@ -2195,7 +2195,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 std::vector<std::string> splitName = Utilities::split(nodeName, '_');
                 if (splitName.size() == 2)
                 {
-                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                    nodeID = Utilities::lexical_cast<signed int>(splitName.at(1));
                 }
             }
             else if (nodeName.find("Buoy") == 0)
@@ -2205,7 +2205,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 std::vector<std::string> splitName = Utilities::split(nodeName, '_');
                 if (splitName.size() == 2)
                 {
-                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                    nodeID = Utilities::lexical_cast<signed int>(splitName.at(1));
                 }
             }
             else if (nodeName.find("LandObject") == 0)
@@ -2215,7 +2215,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 std::vector<std::string> splitName = Utilities::split(nodeName, '_');
                 if (splitName.size() == 2)
                 {
-                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                    nodeID = Utilities::lexical_cast<signed int>(splitName.at(1));
                 }
             }
             else if (nodeName.find("Terrain") == 0)
@@ -2225,14 +2225,14 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 std::vector<std::string> splitName = Utilities::split(nodeName, '_');
                 if (splitName.size() == 2)
                 {
-                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                    nodeID = Utilities::lexical_cast<signed int>(splitName.at(1));
                 }
             }
             // std::cout << "Node name: " << nodeName << " nodeType: " << nodeType << " nodeID: " << nodeID << std::endl;
 
             if (linesMode == 2)
             {
-                irr::f32 nominalMass = model->getOwnShipMassEstimate();
+                float nominalMass = model->getOwnShipMassEstimate();
                 if (nodeType == 2) {
                     // If connecting to another ship, find the minimum mass to use as the nominal mass for estimating default line properties
                     nominalMass = fmin(model->getOtherShipMassEstimate(nodeID), nominalMass);
@@ -2252,7 +2252,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 // special case for 'anchoring', set end node at sea bed under the starting node
                 if (gui->getAnchorLine()) {
                     
-                    irr::f32 nominalMass = model->getOwnShipMassEstimate();
+                    float nominalMass = model->getOwnShipMassEstimate();
 
                     // Create a 'contact node' at the terrain height below the anchor point
                     irr::core::vector3df intersection = contactNode->getAbsolutePosition();
@@ -2289,12 +2289,12 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
 }
 
 /*
-    irr::s32 MyEventReceiver::GetScrollBarPosSpeed() const
+    signed int MyEventReceiver::GetScrollBarPosSpeed() const
     {
         return scrollBarPosSpeed;
     }
 
-    irr::s32 MyEventReceiver::GetScrollBarPosHeading() const
+    signed int MyEventReceiver::GetScrollBarPosHeading() const
     {
         return scrollBarPosHeading;
     }

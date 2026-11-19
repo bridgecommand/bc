@@ -35,7 +35,7 @@ Water::~Water()
     //dtor
 }
 
-void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, irr::f32 weather, irr::u32 disableShaders, bool withReflection, irr::u32 segments)
+void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, float weather, unsigned int disableShaders, bool withReflection, unsigned int segments)
 {
 
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
@@ -53,12 +53,12 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShi
 
 }
 
-void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather)
+void Water::update(float tideHeight, irr::core::vector3df viewPosition, unsigned int lightLevel, float weather)
 {
     //Round these to nearest tileWidth
-    irr::f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
-    irr::f32 yPos = tideHeight;
-    irr::f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
+    float xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
+    float yPos = tideHeight;
+    float zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
 
     //std::cout << "xPos: " << xPos << " yPos: " << yPos << " zPos: " << zPos << std::endl;
 
@@ -70,12 +70,12 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::
 
 }
 
-irr::f32 Water::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const
+float Water::getWaveHeight(float relPosX, float relPosZ) const
 {
     return waterNode->getWaveHeight(relPosX,relPosZ);
 }
 
-irr::core::vector2df Water::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const
+irr::core::vector2df Water::getLocalNormals(float relPosX, float relPosZ) const
 {
     return waterNode->getLocalNormals(relPosX,relPosZ);
 }

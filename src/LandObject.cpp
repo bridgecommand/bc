@@ -24,11 +24,11 @@
 
 //using namespace irr;
 
-LandObject::LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, bool dummyObject, irr::f32 sectionLength)
+LandObject::LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, float rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, bool dummyObject, float sectionLength)
 {
 
-    const irr::f32 tallHeightRatio = 5.0;  // Minimum ratio of height to max of width, length for an object to be considered 'tall'
-    const irr::f32 nearlyFlatHeight = 1.0; // Max height in model units for a 'flat' object
+    const float tallHeightRatio = 5.0;  // Minimum ratio of height to max of width, length for an object to be considered 'tall'
+    const float nearlyFlatHeight = 1.0; // Max height in model units for a 'flat' object
     
     this->collisionObject = collisionObject;
 
@@ -52,7 +52,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     std::string objectFileName = IniFile::iniFileToString(objectIniFilename,"FileName", "object.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    irr::f32 objectScale = IniFile::iniFileTof32(objectIniFilename,"Scalefactor", 1.f);
+    float objectScale = IniFile::iniFileTof32(objectIniFilename,"Scalefactor", 1.f);
 
     std::string objectFullPath = basePath + objectFileName;
 
@@ -123,7 +123,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(landObject->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<landObject->getMaterialCount();mat++) {
+        for(unsigned int mat=0;mat<landObject->getMaterialCount();mat++) {
             landObject->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
@@ -146,7 +146,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
             irr::core::vector3df boundingBoxExtent = mb->getBoundingBox().getExtent();
 
             if (mb->getVertexType() == irr::video::EVT_STANDARD) {
-                const irr::u32 vtxCnt = mb->getVertexCount();
+                const unsigned int vtxCnt = mb->getVertexCount();
                 irr::video::S3DVertex* v = (irr::video::S3DVertex*)mb->getVertices();
                 for (int vertexId = 0; vertexId < vtxCnt; vertexId++) {
                     // Find global location for each vertex, using transformation matrix
@@ -170,7 +170,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
                     localToWorld.transformVect(worldBoundingBoxCentre);
 
                     // Find terrain height here
-                    irr::f32 terrainY;
+                    float terrainY;
 
                     // Choose if we modify vertex based on the terrain at the centre of the bounding box, or move locally
                     // Default to 'morph' locally, unless height is more than 5x the maximum of the width or length
@@ -214,21 +214,21 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     if (radarObject) {
 
         irr::core::aabbox3df boundingBox = landObject->getTransformedBoundingBox();
-        irr::f32 minX = boundingBox.MinEdge.X;
-        irr::f32 maxX = boundingBox.MaxEdge.X;
-        irr::f32 minY = boundingBox.MinEdge.Y;
-        irr::f32 maxY = boundingBox.MaxEdge.Y;
-        irr::f32 minZ = boundingBox.MinEdge.Z;
-        irr::f32 maxZ = boundingBox.MaxEdge.Z;
+        float minX = boundingBox.MinEdge.X;
+        float maxX = boundingBox.MaxEdge.X;
+        float minY = boundingBox.MinEdge.Y;
+        float maxY = boundingBox.MaxEdge.Y;
+        float minZ = boundingBox.MinEdge.Z;
+        float maxZ = boundingBox.MaxEdge.Z;
 
         //Grid from above looking down (hard coded 129x129 points)
-        std::vector<std::vector<irr::f32>> generatedMap;
+        std::vector<std::vector<float>> generatedMap;
         for (int i = 0; i<129; i++) {
-            std::vector<irr::f32> generatedMapLine;
+            std::vector<float> generatedMapLine;
             for (int j = 0; j<129; j++) {
 
-                irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)j/(irr::f32)(129-1);
-                irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)i/(irr::f32)(129-1);
+                float xTestPos = minX + (maxX-minX)*(float)j/(float)(129-1);
+                float zTestPos = minZ + (maxZ-minZ)*(float)i/(float)(129-1);
 
                 irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking down
                 ray.start.X = xTestPos; ray.start.Y = maxY+0.1; ray.start.Z = zTestPos;
@@ -236,7 +236,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
                 ray.end.Y = minY-0.1;
 
                 //Check the ray and add the contact point if it exists
-                irr::f32 pointY = findContactYFromRay(ray);
+                float pointY = findContactYFromRay(ray);
                 generatedMapLine.push_back(pointY);
             }
             generatedMap.push_back(generatedMapLine);
@@ -263,7 +263,7 @@ LandObject::~LandObject()
     //dtor
 }
 
-irr::f32 LandObject::findContactYFromRay(irr::core::line3d<irr::f32> ray)
+float LandObject::findContactYFromRay(irr::core::line3d<float> ray)
 {
     irr::core::vector3df intersection;
     irr::core::triangle3df hitTriangle;
@@ -289,12 +289,12 @@ irr::core::vector3df LandObject::getPosition() const
     return landObject->getAbsolutePosition();
 }
 
-void LandObject::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void LandObject::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     irr::core::vector3df currentPos = landObject->getPosition();
-    irr::f32 newPosX = currentPos.X + deltaX;
-    irr::f32 newPosY = currentPos.Y + deltaY;
-    irr::f32 newPosZ = currentPos.Z + deltaZ;
+    float newPosX = currentPos.X + deltaX;
+    float newPosY = currentPos.Y + deltaY;
+    float newPosZ = currentPos.Z + deltaZ;
 
     landObject->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }
@@ -319,7 +319,7 @@ void LandObject::enableTriangleSelector(bool selectorEnabled)
     }
 }
 
-irr::f32 LandObject::getHeightCorrection() const
+float LandObject::getHeightCorrection() const
 {
     return heightCorrection;
 }
