@@ -62,6 +62,7 @@ public:
         irr::f32 cameraMaxDistance;
         irr::u32 disableShaders;
         irr::u32 waterSegments;
+        bool waterReflection;
         irr::core::vector3di numberOfContactPoints;
         irr::f32 minContactPointSpacing;
         irr::f32 contactStiffnessFactor;
