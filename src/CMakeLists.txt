@@ -43,9 +43,12 @@ endif (WIN32)
 
 add_definitions(-DWITH_SOUND)
 # add_definitions(-DWITH_PROFILING)
-if (NOT APPLE)
-    #add_definitions(-DFOR_DEB)
-endif (NOT APPLE)
+
+# Build for a Debian (.deb) package. Enable with: cmake -DFOR_DEB=ON
+option(FOR_DEB "Build for a Debian (.deb) package" OFF)
+if (FOR_DEB AND NOT APPLE)
+    add_definitions(-DFOR_DEB)
+endif()
 
 # optional tools
 add_subdirectory(controller)
