@@ -1,5 +1,16 @@
 #!/bin/sh
 
+# Create the directory structure for the app bundle
+mkdir -p BridgeCommand.app/Contents/MacOS
+mkdir -p BridgeCommand.app/Contents/Helpers/bc.app/Contents/MacOS
+mkdir -p BridgeCommand.app/Contents/Helpers/mc.app/Contents/MacOS
+mkdir -p BridgeCommand.app/Contents/Helpers/ed.app/Contents/MacOS
+mkdir -p BridgeCommand.app/Contents/Helpers/ini.app/Contents/MacOS
+mkdir -p BridgeCommand.app/Contents/Helpers/mh.app/Contents/MacOS
+mkdir -p BridgeCommand.app/Contents/Helpers/rp.app/Contents/MacOS
+mkdir -p BridgeCommand.app/Contents/Resources
+
+# Copy the executables into the app bundle
 cp bridgecommand BridgeCommand.app/Contents/MacOS/BridgeCommand
 cp bridgecommand-bc BridgeCommand.app/Contents/Helpers/bc.app/Contents/MacOS/bc
 cp bridgecommand-mc BridgeCommand.app/Contents/Helpers/mc.app/Contents/MacOS/mc
@@ -8,13 +19,7 @@ cp bridgecommand-ini BridgeCommand.app/Contents/Helpers/ini.app/Contents/MacOS/i
 cp bridgecommand-mh BridgeCommand.app/Contents/Helpers/mh.app/Contents/MacOS/mh
 cp bridgecommand-rp BridgeCommand.app/Contents/Helpers/rp.app/Contents/MacOS/rp
 
-rm -f BridgeCommand.app/Helpers/MacOS/bc.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Helpers/MacOS/mc.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Helpers/MacOS/ed.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Helpers/MacOS/ini.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Helpers/MacOS/mh.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Helpers/MacOS/rp.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/.gitignore
+# Remove existing resources to avoid stale files, then copy the resources into the app bundle
 rm -rf BridgeCommand.app/Contents/Resources/doc
 rm -rf BridgeCommand.app/Contents/Resources/media
 rm -rf BridgeCommand.app/Contents/Resources/Models
