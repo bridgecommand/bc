@@ -70,7 +70,10 @@ public:
         GUI_ID_STREAMOVERRIDE_BOX,
         GUI_ID_BRIGHTNESS_SCROLLBAR,
         GUI_ID_TIMEFORWARD_BUTTON,
-        GUI_ID_TIMEBACKWARD_BUTTON
+        GUI_ID_TIMEBACKWARD_BUTTON,
+        GUI_ID_SET_GPS_ERROR_BUTTON,
+        GUI_ID_GPS_ERROR_X_EDITBOX,
+        GUI_ID_GPS_ERROR_Y_EDITBOX
     };
 
     void updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain, irr::f32 windDirection, irr::f32 windSpeed, irr::f32 streamDirection, irr::f32 streamSpeed, bool streamOverride);
@@ -79,6 +82,8 @@ public:
     irr::f32 getEditBoxSpeed() const;
     irr::f32 getEditBoxDistance() const;
     irr::u32 getEditBoxMMSI() const;
+    irr::f32 getEditBoxGPSErrorX() const;
+    irr::f32 getEditBoxGPSErrorY() const;
     int getSelectedShip() const;
     int getSelectedLeg() const;
     irr::core::vector2df getScreenCentrePosition() const;
@@ -91,6 +96,8 @@ public:
     irr::f32 getStreamSpeed() const;
     bool getStreamOverride() const;
     irr::f32 getBrightnessScaling() const;
+    irr::f32 getGPSerrorX() const;
+    irr::f32 getGPSerrorY() const;
 
 private:
 
@@ -113,6 +120,8 @@ private:
     irr::gui::IGUIEditBox* legSpeedEdit;
     irr::gui::IGUIEditBox* legDistanceEdit;
     irr::gui::IGUIEditBox* mmsiEdit;
+    irr::gui::IGUIEditBox* gpsErrorXEdit;
+    irr::gui::IGUIEditBox* gpsErrorYEdit;
     irr::gui::IGUICheckBox* sartEnable;
     irr::gui::IGUIButton* changeLeg;
     irr::gui::IGUIButton* changeLegCourseSpeed;

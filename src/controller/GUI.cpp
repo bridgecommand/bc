@@ -170,6 +170,12 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,5.5*fh,35*fw,6.5*fh),failureTab,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,6.5*fh,35*fw,7.5*fh),failureTab,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
     
+    //Add interface to allow user to set GPS error
+    guienv->addStaticText(language->translate("setGPSError").c_str(), irr::core::rect<irr::s32>(1 * fw, 8 * fh, 35 * fw, 9 * fh), false, true, failureTab)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+    gpsErrorXEdit = guienv->addEditBox(L"0", irr::core::rect<irr::s32>(1 * fw, 10 * fh, 17 * fw, 11 * fh), false, failureTab, GUI_ID_GPS_ERROR_X_EDITBOX);
+    gpsErrorYEdit = guienv->addEditBox(L"0", irr::core::rect<irr::s32>(19 * fw, 10 * fh, 35 * fw, 11 * fh), false, failureTab, GUI_ID_GPS_ERROR_Y_EDITBOX);
+    guienv->addButton(irr::core::rect<irr::s32>(1 * fw, 12 * fh, 35 * fw, 14 * fh), failureTab, GUI_ID_SET_GPS_ERROR_BUTTON, language->translate("setGPSErrorShort").c_str());
+
     // Display settings
     guienv->addStaticText(language->translate("brightness").c_str(), irr::core::rect<irr::s32>(1 * fw, 0.5 * fh, 9 * fw, 1.5 * fh), false, true, extraTab)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
     brightnessBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5 * fw, 5 * fh), 4 * fw, guienv, extraTab, GUI_ID_BRIGHTNESS_SCROLLBAR);
@@ -653,6 +659,18 @@ irr::u32 GUIMain::getEditBoxMMSI() const {
     wchar_t* endPtr;
     irr::u32 mmsi = wcstol(mmsiEdit->getText(),&endPtr,10); //TODO: Check portability
     return mmsi;
+}
+
+irr::f32 GUIMain::getEditBoxGPSErrorX() const {
+    wchar_t* endPtr;
+    irr::f32 gpsErrorX = wcstof(gpsErrorXEdit->getText(), &endPtr); //TODO: Check portability
+    return gpsErrorX;
+}
+
+irr::f32 GUIMain::getEditBoxGPSErrorY() const {
+    wchar_t* endPtr;
+    irr::f32 gpsErrorY = wcstof(gpsErrorYEdit->getText(), &endPtr); //TODO: Check portability
+    return gpsErrorY;
 }
 
 int GUIMain::getSelectedShip() const {
