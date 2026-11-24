@@ -93,3 +93,6 @@ nonMultiplayerNoMP="El nombre de los escenario que NO son multijugador NO debe t
 
 shiftTimeForward="Adelantar la hora del día"
 shiftTimeBackward="Retroceder la hora del día"
+
+setGPSError="Configurar el error del GPS en metros, E/O y N/S"
+setGPSErrorShort="Configurar el error del GPS"

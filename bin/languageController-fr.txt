@@ -93,3 +93,6 @@ nonMultiplayerNoMP="Le scénario non multijoueurs ne doit pas se terminer par  _
 
 shiftTimeForward="Avancer l'heure de la journée"
 shiftTimeBackward="Reculer l'heure de la journée"
+
+setGPSError="Paramétrer l'erreur GPS en mètres, E/O et N/S"
+setGPSErrorShort="Paramétrer l'erreur GPS"

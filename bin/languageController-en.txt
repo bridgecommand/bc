@@ -94,3 +94,6 @@ nonMultiplayerNoMP="Non-multiplayer scenario name must not end in _mp"
 shiftTimeForward="Change time of day later"
 shiftTimeBackward="Change time of day earlier"
 
+setGPSError="Set GPS error in metres, E/W and N/S"
+setGPSErrorShort="Set GPS error"
+
