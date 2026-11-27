@@ -181,8 +181,8 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         zoomLevel = 7.0; //Default zoom of 7x
 
         // Set initial GPS error to zero
-        GPSerrorX = 0;
-        GPSerrorY = 0;
+        GPSerrorLat = 0;
+        GPSerrorLong = 0;
 
         //make a camera, setting parent and offset
         std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
@@ -308,7 +308,7 @@ SimulationModel::~SimulationModel()
 
     irr::f32 SimulationModel::getLat(bool useGPSerror)  const{
         if (useGPSerror) {
-            return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z + GPSerrorY);
+            return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z) + GPSerrorLat;
         } else {
             return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z);
         }
@@ -316,15 +316,15 @@ SimulationModel::~SimulationModel()
 
     irr::f32 SimulationModel::getLong(bool useGPSerror) const{
         if (useGPSerror) {
-            return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X + GPSerrorX);
+            return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X) + GPSerrorLong;
         } else {
             return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X);
         }
     }
 
-    void SimulationModel::setGPSError(irr::f32 gpsErrorX, irr::f32 gpsErrorY) {
-        GPSerrorX = gpsErrorX;
-        GPSerrorY = gpsErrorY;
+    void SimulationModel::setGPSError(irr::f32 gpsErrorLat, irr::f32 gpsErrorLong) {
+        GPSerrorLat = gpsErrorLat;
+        GPSerrorLong = gpsErrorLong;
     }
 
     irr::f32 SimulationModel::getPosX() const{

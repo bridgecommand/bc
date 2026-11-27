@@ -206,13 +206,13 @@
                 }
 
                 if (id == GUIMain::GUI_ID_SET_GPS_ERROR_BUTTON) {
-                    irr::f32 gpsErrorX = gui->getEditBoxGPSErrorX();
-                    irr::f32 gpsErrorY = gui->getEditBoxGPSErrorY();
+                    irr::f32 gpsErrorLat = gui->getEditBoxGPSErrorLat();
+                    irr::f32 gpsErrorLong = gui->getEditBoxGPSErrorLong();
 
                     std::string messageToSend = "MCGE,";
-                    messageToSend.append(Utilities::lexical_cast<std::string>(gpsErrorX));
+                    messageToSend.append(Utilities::lexical_cast<std::string>(gpsErrorLat));
                     messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(gpsErrorY));
+                    messageToSend.append(Utilities::lexical_cast<std::string>(gpsErrorLong));
                     messageToSend.append("#");
                     network->setStringToSend(messageToSend);
                 }

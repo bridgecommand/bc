@@ -422,9 +422,9 @@ void NetworkPrimary::receiveNetwork()
                                         //'GE', GPS error
                                         std::vector<std::string> parts = Utilities::split(thisCommand, ','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size() == 3) {
-                                            irr::f32 gpsErrorX = Utilities::lexical_cast<irr::f32>(parts.at(1));
-                                            irr::f32 gpsErrorY = Utilities::lexical_cast<irr::f32>(parts.at(2));
-                                            model->setGPSError(gpsErrorX, gpsErrorY);
+                                            irr::f32 gpsErrorLat = Utilities::lexical_cast<irr::f32>(parts.at(1));
+                                            irr::f32 gpsErrorLong = Utilities::lexical_cast<irr::f32>(parts.at(2));
+                                            model->setGPSError(gpsErrorLat, gpsErrorLong);
                                         }
                                     }
 
