@@ -180,6 +180,10 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         currentZoom = 1.0;
         zoomLevel = 7.0; //Default zoom of 7x
 
+        // Set initial GPS error to zero
+        GPSerrorLat = 0;
+        GPSerrorLong = 0;
+
         //make a camera, setting parent and offset
         std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         std::vector<bool> isHighView = ownShip.getCameraIsHighView(); //Are these special 'looking down' views
@@ -302,12 +306,25 @@ SimulationModel::~SimulationModel()
          ownShip.setSpeed(spd);
     }
 
-    irr::f32 SimulationModel::getLat()  const{
-        return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z);
+    irr::f32 SimulationModel::getLat(bool useGPSerror)  const{
+        if (useGPSerror) {
+            return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z) + GPSerrorLat;
+        } else {
+            return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z);
+        }
     }
 
-    irr::f32 SimulationModel::getLong() const{
-        return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X);
+    irr::f32 SimulationModel::getLong(bool useGPSerror) const{
+        if (useGPSerror) {
+            return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X) + GPSerrorLong;
+        } else {
+            return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X);
+        }
+    }
+
+    void SimulationModel::setGPSError(irr::f32 gpsErrorLat, irr::f32 gpsErrorLong) {
+        GPSerrorLat = gpsErrorLat;
+        GPSerrorLong = gpsErrorLong;
     }
 
     irr::f32 SimulationModel::getPosX() const{
@@ -2043,8 +2060,8 @@ SimulationModel::~SimulationModel()
         }{ IPROF("Collate GUI data ");
 
         //Collate data to show in gui
-        guiData->lat = getLat();
-        guiData->longitude = getLong();
+        guiData->lat = getLat(true); // include GPS error in GUI display
+        guiData->longitude = getLong(true); // include GPS error in GUI display
         guiData->hdg = ownShip.getHeading();
         
         irr::core::vector3df cameraForwardVector = camera.getForwardVector(); 

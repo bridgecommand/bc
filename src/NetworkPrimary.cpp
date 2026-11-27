@@ -418,6 +418,14 @@ void NetworkPrimary::receiveNetwork()
                                             irr::f32 timeChange = Utilities::lexical_cast<irr::f32>(parts.at(1));
                                             model->changeTime(timeChange);
                                         }
+                                    } else if(thisCommand.substr(0, 2).compare("GE") == 0) {
+                                        //'GE', GPS error
+                                        std::vector<std::string> parts = Utilities::split(thisCommand, ','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 3) {
+                                            irr::f32 gpsErrorLat = Utilities::lexical_cast<irr::f32>(parts.at(1));
+                                            irr::f32 gpsErrorLong = Utilities::lexical_cast<irr::f32>(parts.at(2));
+                                            model->setGPSError(gpsErrorLat, gpsErrorLong);
+                                        }
                                     }
 
 

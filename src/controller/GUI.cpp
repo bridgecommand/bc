@@ -170,6 +170,12 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,5.5*fh,35*fw,6.5*fh),failureTab,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,6.5*fh,35*fw,7.5*fh),failureTab,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
     
+    //Add interface to allow user to set GPS error
+    guienv->addStaticText(language->translate("setGPSError").c_str(), irr::core::rect<irr::s32>(1 * fw, 8 * fh, 35 * fw, 10 * fh), false, true, failureTab)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+    gpsErrorLatEdit = guienv->addEditBox(L"0", irr::core::rect<irr::s32>(1 * fw, 11 * fh, 17 * fw, 12 * fh), false, failureTab, GUI_ID_GPS_ERROR_LAT_EDITBOX);
+    gpsErrorLongEdit = guienv->addEditBox(L"0", irr::core::rect<irr::s32>(19 * fw, 11 * fh, 35 * fw, 12 * fh), false, failureTab, GUI_ID_GPS_ERROR_LONG_EDITBOX);
+    guienv->addButton(irr::core::rect<irr::s32>(1 * fw, 13 * fh, 35 * fw, 15 * fh), failureTab, GUI_ID_SET_GPS_ERROR_BUTTON, language->translate("setGPSErrorShort").c_str());
+
     // Display settings
     guienv->addStaticText(language->translate("brightness").c_str(), irr::core::rect<irr::s32>(1 * fw, 0.5 * fh, 9 * fw, 1.5 * fh), false, true, extraTab)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
     brightnessBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5 * fw, 5 * fh), 4 * fw, guienv, extraTab, GUI_ID_BRIGHTNESS_SCROLLBAR);
@@ -653,6 +659,18 @@ irr::u32 GUIMain::getEditBoxMMSI() const {
     wchar_t* endPtr;
     irr::u32 mmsi = wcstol(mmsiEdit->getText(),&endPtr,10); //TODO: Check portability
     return mmsi;
+}
+
+irr::f32 GUIMain::getEditBoxGPSErrorLat() const {
+    wchar_t* endPtr;
+    irr::f32 gpsErrorLat = wcstof(gpsErrorLatEdit->getText(), &endPtr); //TODO: Check portability
+    return gpsErrorLat;
+}
+
+irr::f32 GUIMain::getEditBoxGPSErrorLong() const {
+    wchar_t* endPtr;
+    irr::f32 gpsErrorLong = wcstof(gpsErrorLongEdit->getText(), &endPtr); //TODO: Check portability
+    return gpsErrorLong;
 }
 
 int GUIMain::getSelectedShip() const {

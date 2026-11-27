@@ -404,8 +404,8 @@ void NMEA::updateNMEA()
         Utilities::round(model->getPortEngineRPM())  // idx=2, even (port)
     };
 
-    irr::f32 lat = model->getLat();
-    irr::f32 lon = model->getLong();
+    irr::f32 lat = model->getLat(true); // use GPS error for NMEA output
+    irr::f32 lon = model->getLong(true); // use GPS error for NMEA output
 
     irr::f32 cog = model->getCOG();
     irr::f32 sog = model->getSOG()*MPS_TO_KTS;

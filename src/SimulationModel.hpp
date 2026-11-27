@@ -164,13 +164,14 @@ public:
     irr::f32 getAccelerator() const;
     irr::f32 getHeading() const; //Gets the own ship's heading
 
-    irr::f32 getLat() const;
-    irr::f32 getLong() const;
+    irr::f32 getLat(bool useGPSerror = false) const;
+    irr::f32 getLong(bool useGPSerror = false) const;
     irr::f32 getPosX() const;
     irr::f32 getPosZ() const;
     irr::f32 getCOG() const;
     irr::f32 getSOG() const; //In metres/second
     irr::f32 getDepth() const;
+    void setGPSError(irr::f32 gpsErrorLat, irr::f32 gpsErrorLong);
 
     irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
     irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
@@ -407,6 +408,8 @@ private:
     irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
     irr::f32 currentZoom; // Zoom currently in use
     irr::f32 zoomLevel; // Zoom level that should be used if binos are on
+    irr::f32 GPSerrorLat; //GPS error in decimal degrees, positive is north
+    irr::f32 GPSerrorLong; //GPS error in decimal degrees, positive is east
     Terrain terrain;
     Light light;
     OwnShip ownShip;
